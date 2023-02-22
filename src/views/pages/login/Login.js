@@ -1,85 +1,84 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import {
-  CButton,
-  CCard,
-  CCardBody,
-  CCardGroup,
-  CCol,
-  CContainer,
-  CForm,
-  CFormInput,
-  CInputGroup,
-  CInputGroupText,
-  CRow,
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilLockLocked, cilUser } from '@coreui/icons'
 
 const Login = () => {
   return (
-    <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
-      <CContainer>
-        <CRow className="justify-content-center">
-          <CCol md={8}>
-            <CCardGroup>
-              <CCard className="p-4">
-                <CCardBody>
-                  <CForm>
-                    <h1>Login</h1>
-                    <p className="text-medium-emphasis">Sign In to your account</p>
-                    <CInputGroup className="mb-3">
-                      <CInputGroupText>
-                        <CIcon icon={cilUser} />
-                      </CInputGroupText>
-                      <CFormInput placeholder="Username" autoComplete="username" />
-                    </CInputGroup>
-                    <CInputGroup className="mb-4">
-                      <CInputGroupText>
-                        <CIcon icon={cilLockLocked} />
-                      </CInputGroupText>
-                      <CFormInput
-                        type="password"
-                        placeholder="Password"
-                        autoComplete="current-password"
-                      />
-                    </CInputGroup>
-                    <CRow>
-                      <CCol xs={6}>
-                        <CButton color="primary" className="px-4">
-                          Login
-                        </CButton>
-                      </CCol>
-                      <CCol xs={6} className="text-right">
-                        <CButton color="link" className="px-0">
-                          Forgot password?
-                        </CButton>
-                      </CCol>
-                    </CRow>
-                  </CForm>
-                </CCardBody>
-              </CCard>
-              <CCard className="text-white bg-primary py-5" style={{ width: '44%' }}>
-                <CCardBody className="text-center">
-                  <div>
-                    <h2>Sign up</h2>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                      tempor incididunt ut labore et dolore magna aliqua.
-                    </p>
-                    <Link to="/register">
-                      <CButton color="primary" className="mt-3" active tabIndex={-1}>
-                        Register Now!
-                      </CButton>
-                    </Link>
+    <>
+      <div className="col-sm-6 row d-flex mx-auto">
+        <div className="container-fluid h-custom">
+          <div className="row d-flex justify-content-center align-items-center h-100">
+            <div className="col-md-9 col-lg-6 col-xl-5">
+              <img
+                src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+                className="img-fluid"
+                alt="Sample"
+              />
+            </div>
+            <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+              <form>
+                <div className="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
+                  <h2>Sign In</h2>
+                </div>
+                <div className="divider d-flex align-items-center my-4"></div>
+                <div className="form-outline mb-4">
+                  <label className="form-label" htmlFor="form3Example3">
+                    Email address
+                  </label>
+                  <input
+                    type="email"
+                    id="form3Example3"
+                    className="form-control form-control-lg"
+                    placeholder="Enter Email Address"
+                  />
+                </div>
+                <div className="form-outline mb-3">
+                  <label className="form-label" htmlFor="form3Example4">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    id="form3Example4"
+                    className="form-control form-control-lg"
+                    placeholder="Enter Password"
+                  />
+                </div>
+                <div className="d-flex justify-content-between align-items-center">
+                  <div className="form-check mb-0">
+                    <input
+                      className="form-check-input me-2"
+                      type="checkbox"
+                      defaultValue
+                      id="form2Example3"
+                    />
+                    <label className="form-check-label" htmlFor="form2Example3">
+                      Remember me
+                    </label>
                   </div>
-                </CCardBody>
-              </CCard>
-            </CCardGroup>
-          </CCol>
-        </CRow>
-      </CContainer>
-    </div>
+                  <a href="#!" className="text-body">
+                    Forgot password?
+                  </a>
+                </div>
+                <div className="divider d-flex align-items-center my-2"></div>
+                <div className="d-flex justify-content-between align-items-center">
+                  <div className="d-grid">
+                    <button type="button" className="btn btn-primary">
+                      Sign In
+                    </button>
+                  </div>
+                </div>
+                <div className="text-center text-lg-start mt-4 pt-2">
+                  <p className="small fw-bold mt-2 pt-1 mb-0">
+                    Dont have an account?
+                    <a href="/register" className="link-primary">
+                      Register
+                    </a>
+                  </p>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
 
