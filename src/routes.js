@@ -4,6 +4,11 @@ const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
 
+//Activity
+const Screenshots = React.lazy(() => import('./views/activity/screenshots/Screenshots'))
+const Apps = React.lazy(() => import('./views/activity/apps/Apps'))
+const Urls = React.lazy(() => import('./views/activity/urls/Urls'))
+
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
 const Breadcrumbs = React.lazy(() => import('./views/base/breadcrumbs/Breadcrumbs'))
@@ -53,6 +58,9 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+  { path: '/activity/screenshots', name: 'Screenshots', element: Screenshots },
+  { path: '/activity/apps', name: 'Apps', element: Apps },
+  { path: '/activity/urls', name: 'Urls', element: Urls },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },
