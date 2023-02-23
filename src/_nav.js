@@ -108,18 +108,18 @@ const _nav = [
     items: [
       {
         component: CNavItem,
-        name: 'Buttons',
-        to: '/buttons/buttons',
+        name: 'Screenshots',
+        to: '/activity/screenshots',
       },
       {
         component: CNavItem,
-        name: 'Buttons groups',
-        to: '/buttons/button-groups',
+        name: 'Apps',
+        to: '/activity/apps',
       },
       {
         component: CNavItem,
-        name: 'Dropdowns',
-        to: '/buttons/dropdowns',
+        name: 'URLs',
+        to: '/activity/urls',
       },
     ],
   },

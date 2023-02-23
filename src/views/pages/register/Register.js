@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, Space } from 'antd'
+// import { Select, Form } from 'antd'
 
 const Register = () => {
   const [selectedOption, setSelectedOption] = useState('option1')
@@ -7,6 +7,7 @@ const Register = () => {
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value)
   }
+
   return (
     <>
       <div className="col-sm-6 row d-flex mx-auto">
@@ -40,6 +41,7 @@ const Register = () => {
                     placeholder="Enter Email Address"
                   />
                 </div>
+
                 <div className="form-outline mb-3">
                   <label className="form-label" htmlFor="form3Example4">
                     Password
@@ -62,15 +64,15 @@ const Register = () => {
                     placeholder="Confirm Password"
                   />
                 </div>
+                <div className="divider d-flex align-items-center my-3"></div>
                 <div className="form-outline mb-10">
-                  <label className="form-label" htmlFor="form3Example4">
-                    Select Role
-                  </label>
-                  <select value={selectedOption} onChange={handleOptionChange}>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
-                  </select>
+                  {/* <Form.Item label="Role">
+                    <Select>
+                      <Select.Option value="admin">Admin</Select.Option>
+                      <Select.Option value="superadmin">Super Admin</Select.Option>
+                      <Select.Option value="user">User</Select.Option>
+                    </Select>
+                  </Form.Item> */}
                 </div>
                 <div className="divider d-flex align-items-center my-2"></div>
                 <div className="d-flex justify-content-between align-items-center">
