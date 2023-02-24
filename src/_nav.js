@@ -11,9 +11,8 @@ import {
   cilSpreadsheet,
   cilCalendar,
   cilCash,
-  cilStar,
 } from '@coreui/icons'
-import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
+import { CNavGroup, CNavItem, } from '@coreui/react'
 
 const _nav = [
   {
@@ -25,85 +24,25 @@ const _nav = [
   {
     component: CNavGroup,
     name: 'Timesheets',
-    to: '/base',
+    to: '/timesheets',
     icon: <CIcon icon={cilClock} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,
-        name: 'Accordion',
-        to: '/base/accordion',
+        name: 'View & Edit',
+        to: '/timesheets/viewedit',
       },
       {
         component: CNavItem,
-        name: 'Breadcrumb',
-        to: '/base/breadcrumbs',
-      },
-      {
-        component: CNavItem,
-        name: 'Cards',
-        to: '/base/cards',
-      },
-      {
-        component: CNavItem,
-        name: 'Carousel',
-        to: '/base/carousels',
-      },
-      {
-        component: CNavItem,
-        name: 'Collapse',
-        to: '/base/collapses',
-      },
-      {
-        component: CNavItem,
-        name: 'List group',
-        to: '/base/list-groups',
-      },
-      {
-        component: CNavItem,
-        name: 'Navs & Tabs',
-        to: '/base/navs',
-      },
-      {
-        component: CNavItem,
-        name: 'Pagination',
-        to: '/base/paginations',
-      },
-      {
-        component: CNavItem,
-        name: 'Placeholders',
-        to: '/base/placeholders',
-      },
-      {
-        component: CNavItem,
-        name: 'Popovers',
-        to: '/base/popovers',
-      },
-      {
-        component: CNavItem,
-        name: 'Progress',
-        to: '/base/progress',
-      },
-      {
-        component: CNavItem,
-        name: 'Spinners',
-        to: '/base/spinners',
-      },
-      {
-        component: CNavItem,
-        name: 'Tables',
-        to: '/base/tables',
-      },
-      {
-        component: CNavItem,
-        name: 'Tooltips',
-        to: '/base/tooltips',
+        name: 'Approvals',
+        to: '/timesheets/approvals',
       },
     ],
   },
   {
     component: CNavGroup,
     name: 'Activity',
-    to: '/buttons',
+    to: '/activity',
     icon: <CIcon icon={cilChartLine} customClassName="nav-icon" />,
     items: [
       {
@@ -126,13 +65,13 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Insights',
-    to: '/theme/colors',
+    to: '/insights',
     icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Map',
-    to: '/theme/typography',
+    to: '/map',
     icon: <CIcon icon={cilMap} customClassName="nav-icon" />,
   },
   {
@@ -143,17 +82,17 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Projects',
-        to: '/Project_Management/Projects',
+        to: '/projectmanagement/projects',
       },
       {
         component: CNavItem,
         name: 'To-dos',
-        to: '/Project_Management/To-Dos',
+        to: '/projectmanagement/todos',
       },
       {
         component: CNavItem,
-        name: 'clients',
-        to: '/Project_Management/clients',
+        name: 'Clients',
+        to: '/projectmanagement/client',
       },
     ],
   },
@@ -164,22 +103,13 @@ const _nav = [
     items: [
       {
         component: CNavItem,
-        name: 'CoreUI Free',
-        to: '/icons/coreui-icons',
-        badge: {
-          color: 'success',
-          text: 'NEW',
-        },
+        name: 'Schedules',
+        to: '/calendar/schedules',
       },
       {
         component: CNavItem,
-        name: 'CoreUI Flags',
-        to: '/icons/flags',
-      },
-      {
-        component: CNavItem,
-        name: 'CoreUI Brands',
-        to: '/icons/brands',
+        name: 'Time off Requests',
+        to: '/calendar/timeoffrequests',
       },
     ],
   },
@@ -190,71 +120,43 @@ const _nav = [
     items: [
       {
         component: CNavItem,
-        name: 'Alerts',
-        to: '/notifications/alerts',
+        name: 'Time & Activity',
+        to: '/reports/timenactivity',
       },
       {
         component: CNavItem,
-        name: 'Badges',
-        to: '/notifications/badges',
+        name: 'Weekly',
+        to: '/reports/weekly',
       },
       {
         component: CNavItem,
-        name: 'Modal',
-        to: '/notifications/modals',
+        name: 'Accounts Owed',
+        to: '/reports/accountsowed',
       },
       {
         component: CNavItem,
-        name: 'Toasts',
-        to: '/notifications/toasts',
+        name: 'Payments',
+        to: '/reports/payments',
+      },
+      {
+        component: CNavItem,
+        name: 'All Reports',
+        to: '/reports/allreports',
       },
     ],
   },
   {
     component: CNavItem,
     name: 'Teams',
-    to: '/charts',
+    to: '/teams',
     icon: <CIcon icon={cilChartPie} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Expenses',
-    to: '/widgets',
+    to: '/expenses',
     icon: <CIcon icon={cilCash} customClassName="nav-icon" />,
   },
-  {
-    component: CNavGroup,
-    name: 'Pages',
-    icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Login',
-        to: '/login',
-      },
-      {
-        component: CNavItem,
-        name: 'Register',
-        to: '/register',
-      },
-      {
-        component: CNavItem,
-        name: 'Error 404',
-        to: '/404',
-      },
-      {
-        component: CNavItem,
-        name: 'Error 500',
-        to: '/500',
-      },
-    ],
-  },
-  // {
-  //   component: CNavItem,
-  //   name: 'Docs',
-  //   href: 'https://coreui.io/react/docs/templates/installation/',
-  //   icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
-  // },
 ]
 
 export default _nav
