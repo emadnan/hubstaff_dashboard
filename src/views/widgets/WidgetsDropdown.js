@@ -28,7 +28,7 @@ const WidgetsDropdown = () => {
               </span>
             </>
           }
-          title="Users"
+          title="Activity"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">

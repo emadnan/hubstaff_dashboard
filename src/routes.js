@@ -10,9 +10,7 @@ const Apps = React.lazy(() => import('./views/activity/apps/Apps'))
 const Urls = React.lazy(() => import('./views/activity/urls/Urls'))
 
 //Project Management
-const Projects = React.lazy(() => import('./views/projectMangement/Projects'))
-const Client = React.lazy(() => import('./views/projectMangement/Client'))
-const Todos = React.lazy(() => import('./views/projectMangement/Todos'))
+
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -66,9 +64,7 @@ const routes = [
   { path: '/activity/screenshots', name: 'Screenshots', element: Screenshots },
   { path: '/activity/apps', name: 'Apps', element: Apps },
   { path: '/activity/urls', name: 'Urls', element: Urls },
-  {path:  '/projectMangement/projects', name: 'Projects', element: Projects},
-  {path:  '/projectMangement/client', name: 'Client', element: Client},
-  {path:  '/projectMangement/todos', name: 'Todos', element: Todos},
+
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },
