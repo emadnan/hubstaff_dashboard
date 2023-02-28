@@ -1,5 +1,5 @@
 import { React } from 'react'
-import { DatePicker, Button, Space, Divider } from 'antd'
+import { DatePicker, Button, Divider } from 'antd'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 dayjs.extend(customParseFormat)
@@ -41,15 +41,15 @@ const Viewedit = () => {
   const style3 = {
     color: 'blue',
   }
-  const style4 = { 
-    display: 'flex', 
+  const style4 = {
+    display: 'flex',
     justifyContent: 'flex-end',
     float: 'right',
   }
-  const headingStyle = { 
+  const headingStyle = {
     color: 'blue',
   }
-  const divider = { 
+  const divider = {
     color: 'blue',
     height: '20px',
   }
@@ -92,6 +92,7 @@ const Viewedit = () => {
       </div>
 
       <Divider />
+
     </>
   )
 }

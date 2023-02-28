@@ -1,11 +1,32 @@
 import React, { useState } from 'react'
-// import { Select, Form } from 'antd'
 
 const Register = () => {
   const [selectedOption, setSelectedOption] = useState('option1')
 
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value)
+  }
+
+  const [name, setName] = useState("")
+  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState("")
+  const [confirmpass, setConfirmPass] = useState("")
+
+  async function signUp() {
+    let item = {name,password,email,confirmpass}
+    console.warn(item)
+
+    let result = await fetch("http://127.0.0.1:8000/api/register",
+    {
+      method: 'POST',
+      body: JSON.stringify(item),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+
+    })
+    result = await result.json()
+    console.warn("result", result)
   }
 
   return (
@@ -25,7 +46,8 @@ const Register = () => {
                   </label>
                   <input
                     type="text"
-                    id="form3Example4"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Username"
                   />
@@ -36,7 +58,8 @@ const Register = () => {
                   </label>
                   <input
                     type="email"
-                    id="form3Example3"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Email Address"
                   />
@@ -48,7 +71,8 @@ const Register = () => {
                   </label>
                   <input
                     type="password"
-                    id="form3Example4"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Password"
                   />
@@ -59,25 +83,19 @@ const Register = () => {
                   </label>
                   <input
                     type="password"
-                    id="form3Example4"
+                    value={confirmpass}
+                    onChange={(e) => setConfirmPass(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Confirm Password"
                   />
                 </div>
                 <div className="divider d-flex align-items-center my-3"></div>
                 <div className="form-outline mb-10">
-                  {/* <Form.Item label="Role">
-                    <Select>
-                      <Select.Option value="admin">Admin</Select.Option>
-                      <Select.Option value="superadmin">Super Admin</Select.Option>
-                      <Select.Option value="user">User</Select.Option>
-                    </Select>
-                  </Form.Item> */}
                 </div>
                 <div className="divider d-flex align-items-center my-2"></div>
                 <div className="d-flex justify-content-between align-items-center">
                   <div className="d-grid">
-                    <button type="button" className="btn btn-primary">
+                    <button type="button" className="btn btn-primary" onClick={signUp}>
                       Sign In
                     </button>
                   </div>
