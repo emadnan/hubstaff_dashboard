@@ -31,7 +31,7 @@ const Card = () => {
      
       <div className="card-body">
         
-        <a href="#" className="btn btn-primary" style={{ marginLeft: '85%' }}>Add Project</a>
+        <a href="#" className="btn btn-primary" style={{ marginLeft: '85%' }}>Add a Project</a>
         <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
                 <CTableHead color="light" >
                   <CTableRow>
