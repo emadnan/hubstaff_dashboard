@@ -1,5 +1,5 @@
-import React from 'react'
-import { DatePicker, Button, Space } from 'antd'
+import { React } from 'react'
+import { DatePicker, Button, Space, Divider } from 'antd'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 dayjs.extend(customParseFormat)
@@ -38,19 +38,30 @@ const Viewedit = () => {
     backgroundColor: "#cccccc",
     borderRadius: "25px",
   };
+  const style3 = {
+    color: 'blue',
+  }
+  const style4 = { 
+    display: 'flex', 
+    justifyContent: 'flex-end',
+    float: 'right',
+  }
+  const headingStyle = { 
+    color: 'blue',
+  }
+  const divider = { 
+    color: 'blue',
+    height: '20px',
+  }
 
   return (
     <>
-      <h3>View & Edit Timesheets</h3>
+      <h3 style={headingStyle}>View & Edit Timesheets</h3>
+
       <div className='row'>
-        <div className='col-md 6'>
-          <RangePicker />
-          <Button>Filter</Button>
-        </div>
-      </div>
-      <div className='row'>
-      <div className='col-md-3'></div>
-        <div className='col-md-6' style={mystyle1}>
+        <div className='col-md-4'></div>
+
+        <div className='col-md-4' style={mystyle1}>
           <div className='row'>
             <div className='col-md-2'></div>
             <div className='col-md-1'>
@@ -68,8 +79,19 @@ const Viewedit = () => {
           </div>
         </div>
 
-        <div className='col-md-3'></div>
+        <div className='col-md-4'></div>
       </div>
+
+      <div className='row'>
+        <div className='col-md 6'>
+          <RangePicker />
+        </div>
+        <div className='col-md 6'>
+          <Button style={style4}>Filter</Button>
+        </div>
+      </div>
+
+      <Divider />
     </>
   )
 }
