@@ -1,6 +1,31 @@
-import React from 'react'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+
+  async function login() {
+    let item = { email, password }
+    console.warn(item)
+
+    let result = await fetch("http://127.0.0.1:8000/api/login",
+      {
+        method: 'POST',
+        body: JSON.stringify(item),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+      })
+    result = await result.json()
+    navigate("/Dashboard")
+
+  }
+
   return (
     <>
       <div className="col-sm-20 row-sm-20 d-flex">
@@ -17,28 +42,34 @@ const Login = () => {
               <h2>Sign In</h2>
             </div>
             <div className="divider d-flex align-items-center my-4"></div>
+
             <div className="form-outline mb-4">
               <label className="form-label" htmlFor="form3Example3">
                 Email address
               </label>
               <input
                 type="email"
-                id="form3Example3"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Email Address"
               />
             </div>
+
+
             <div className="form-outline mb-3">
               <label className="form-label" htmlFor="form3Example4">
                 Password
               </label>
               <input
                 type="password"
-                id="form3Example4"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Password"
               />
             </div>
+
             <div className="d-flex justify-content-between align-items-center">
               <div className="form-check mb-0">
                 <input
@@ -55,14 +86,17 @@ const Login = () => {
                 Forgot password?
               </a>
             </div>
+
             <div className="divider d-flex align-items-center my-2"></div>
+
             <div className="d-flex justify-content-between align-items-center">
               <div className="d-grid">
-                <button type="button" className="btn btn-primary">
+                <button type="button" className="btn btn-primary" onClick={login}>
                   Sign In
                 </button>
               </div>
             </div>
+
             <div className="text-center text-lg-start mt-4 pt-2">
               <p className="small fw-bold mt-2 pt-1 mb-0">
                 Dont have an account?
@@ -71,6 +105,7 @@ const Login = () => {
                 </a>
               </p>
             </div>
+
           </form>
         </div>
       </div>

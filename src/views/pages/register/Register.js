@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
   const [selectedOption, setSelectedOption] = useState('option1')
@@ -7,13 +8,15 @@ const Register = () => {
     setSelectedOption(event.target.value)
   }
 
-  const [name, setName] = useState("")
-  const [password, setPassword] = useState("")
-  const [email, setEmail] = useState("")
-  const [confirmpass, setConfirmPass] = useState("")
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [confirmpass, setConfirmPass] = useState("");
+
+  const navigate = useNavigate();
 
   async function signUp() {
-    let item = {name,password,email,confirmpass}
+    let item = {name,email,password,confirmpass}
     console.warn(item)
 
     let result = await fetch("http://127.0.0.1:8000/api/register",
@@ -26,7 +29,8 @@ const Register = () => {
 
     })
     result = await result.json()
-    console.warn("result", result)
+    navigate("/Login")
+
   }
 
   return (

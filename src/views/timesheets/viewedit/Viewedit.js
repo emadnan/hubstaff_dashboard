@@ -90,9 +90,12 @@ const Viewedit = () => {
           <Button style={style4}>Filter</Button>
         </div>
       </div>
+      <br></br>
 
-      <Divider />
-
+      <div className='row'>
+        <input type="checkbox" />
+        <Divider />
+      </div>
     </>
   )
 }
