@@ -22,11 +22,10 @@ const WidgetsDropdown = () => {
         <CCol sm={3} lg={2}>
           <CWidgetStatsA
             className="mb-2"
-            color="info"
+            color="secondary"
             value={
               <>
                 <p>{'Project Worked'}</p>
-                <p>{'______________'}</p>
                 <span className="fs-6 fw-normal">
                 </span>
               </>
@@ -56,7 +55,6 @@ const WidgetsDropdown = () => {
             value={
               <>
                 <p>{'Today Activity'}</p>
-                <p>{'______________'}</p>
                 <span className="fs-6 fw-normal">
                 </span>
               </>
@@ -86,7 +84,6 @@ const WidgetsDropdown = () => {
             value={
               <>
                 <p>{'Today Worked'}</p>
-                <p>{'______________'}</p>
                 <span className="fs-6 fw-normal">
                 </span>
               </>
@@ -112,11 +109,10 @@ const WidgetsDropdown = () => {
         <CCol sm={3} lg={2}>
           <CWidgetStatsA
             className="mb-2"
-            color="info"
+            color="warning"
             value={
               <>
                 <p>{'Weekly Activity'}</p>
-                <p>{'______________'}</p>
                 <span className="fs-6 fw-normal">
                 </span>
               </>
@@ -142,11 +138,10 @@ const WidgetsDropdown = () => {
         <CCol sm={3} lg={2}>
           <CWidgetStatsA
             className="mb-2"
-            color="info"
+            color="warning"
             value={
               <>
                 <p>{'Weekly Worked'}</p>
-                <p>{'______________'}</p>
                 <span className="fs-6 fw-normal">
                 </span>
               </>
@@ -172,11 +167,10 @@ const WidgetsDropdown = () => {
         <CCol sm={3} lg={2}>
           <CWidgetStatsA
             className="mb-2"
-            color="info"
+            color="danger"
             value={
               <>
                 <p>{'Earned Amount'}</p>
-                <p>{'______________'}</p>
                 <span className="fs-6 fw-normal">
                 </span>
 
