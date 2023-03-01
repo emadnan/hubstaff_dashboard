@@ -3,25 +3,25 @@ import { DatePicker, Button, Divider } from 'antd'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 dayjs.extend(customParseFormat)
-const weekFormat = 'MM/DD'
+// const weekFormat = 'MM/DD'
 
 const { RangePicker } = DatePicker;
 
 const Viewedit = () => {
 
-  const dateFormatList = ['DD/MM/YYYY', 'DD/MM/YY', 'DD-MM-YYYY', 'DD-MM-YY']
-  const customWeekStartEndFormat = (value) =>
-    `${dayjs(value).startOf('week').format(weekFormat)} ~ ${dayjs(value)
-      .endOf('week')
-      .format(weekFormat)}`
+  // const dateFormatList = ['DD/MM/YYYY', 'DD/MM/YY', 'DD-MM-YYYY', 'DD-MM-YY']
+  // const customWeekStartEndFormat = (value) =>
+  //   `${dayjs(value).startOf('week').format(weekFormat)} ~ ${dayjs(value)
+  //     .endOf('week')
+  //     .format(weekFormat)}`
 
-  const mystyle = {
-    padding: "0px",
-    fontFamily: "Arial",
-    textAlign: 'center',
-    alignSelf: 'flex-start',
-    color: '#3366ff',
-  };
+  // const mystyle = {
+  //   padding: "0px",
+  //   fontFamily: "Arial",
+  //   textAlign: 'center',
+  //   alignSelf: 'flex-start',
+  //   color: '#3366ff',
+  // };
   const mystyle2 = {
     padding: "0px",
     fontFamily: "Arial",
@@ -38,9 +38,9 @@ const Viewedit = () => {
     backgroundColor: "#cccccc",
     borderRadius: "25px",
   };
-  const style3 = {
-    color: 'blue',
-  }
+  // const style3 = {
+  //   color: 'blue',
+  // }
   const style4 = {
     display: 'flex',
     justifyContent: 'flex-end',
@@ -49,10 +49,10 @@ const Viewedit = () => {
   const headingStyle = {
     color: 'blue',
   }
-  const divider = {
-    color: 'blue',
-    height: '20px',
-  }
+  // const divider = {
+  //   color: 'blue',
+  //   height: '20px',
+  // }
 
   return (
     <>

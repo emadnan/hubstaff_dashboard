@@ -1,19 +1,12 @@
 import React from 'react'
 
 import {
-  CAvatar,
-  CButton,
-  CButtonGroup,
   CCard,
   CCardBody,
-  CCardFooter,
-  CCardHeader,
   CCol,
-  CProgress,
   CRow,
   CTable,
   CTableBody,
-  CTableDataCell,
   CTableHead,
   CTableHeaderCell,
   CTableRow,
@@ -24,7 +17,6 @@ import {
   CWidgetStatsA,
 } from '@coreui/react'
 import { CChartLine } from '@coreui/react-chartjs'
-import { getStyle, hexToRgba } from '@coreui/utils'
 import CIcon from '@coreui/icons-react'
 import {
   cibCcAmex,
@@ -43,12 +35,10 @@ import {
   cifPl,
   cifUs,
   cibTwitter,
-  cilCloudDownload,
-  cilPeople,
   cilUser,
   cilUserFemale,
 } from '@coreui/icons'
-import { cilArrowBottom, cilArrowTop, cilOptions } from '@coreui/icons'
+import { cilOptions } from '@coreui/icons'
 
 import avatar1 from 'src/assets/images/avatars/1.jpg'
 import avatar2 from 'src/assets/images/avatars/2.jpg'
