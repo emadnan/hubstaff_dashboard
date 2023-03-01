@@ -22,7 +22,7 @@ const Login = () => {
 
       })
     result = await result.json()
-    localStorage.getItem('user-info')
+    localStorage.setItem("user-info", JSON.stringify(result))
     navigate("/Dashboard")
 
   }
