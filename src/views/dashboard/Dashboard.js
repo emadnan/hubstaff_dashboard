@@ -138,6 +138,7 @@ const Dashboard = () => {
         color: 'warning',
       },
       payment: { name: 'Stripe', icon: cibCcStripe },
+      
       activity: '1 hour ago',
     },
     {
