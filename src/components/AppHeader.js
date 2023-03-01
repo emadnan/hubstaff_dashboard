@@ -1,6 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import {
   CContainer,
   CHeader,
@@ -12,7 +13,7 @@ import {
   CNavItem,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilBell, cilEnvelopeOpen, cilList, cilMenu } from '@coreui/icons'
+import { cilBell, cilEnvelopeOpen, cilList, cilMenu, cilAccountLogout } from '@coreui/icons'
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
@@ -21,6 +22,15 @@ import { logo } from 'src/assets/brand/logo'
 const AppHeader = () => {
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
+  const navigate = useNavigate();
+
+  let user = JSON.parse(localStorage.getItem("user-info"))
+  console.warn(user)
+
+  function logOut() {
+    localStorage.clear();
+    navigate("/Login")
+  }
 
   return (
     <CHeader position="sticky" className="mb-4">
@@ -44,12 +54,17 @@ const AppHeader = () => {
         <CHeaderNav>
           <CNavItem>
             <CNavLink href="#">
+              <CIcon icon={cilAccountLogout} size="lg" onClick={logOut} />
+            </CNavLink>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink href="#">
               <CIcon icon={cilBell} size="lg" />
             </CNavLink>
           </CNavItem>
           <CNavItem>
             <CNavLink href="#">
-              <CIcon icon={cilList} size="lg" />
+              <CIcon icon={cilList} size="lg"/>
             </CNavLink>
           </CNavItem>
           <CNavItem>
