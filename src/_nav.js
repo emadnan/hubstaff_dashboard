@@ -91,6 +91,12 @@ const _nav = [
     ],
   },
   {
+    component: CNavItem,
+    name: 'Companies',
+    to: '/companies/Companies',
+    icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
+  },
+  {
     component: CNavGroup,
     name: 'Calendar',
     icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
