@@ -25,7 +25,7 @@ import {
   
   import React from 'react';
   
-  const Card = () => {
+  const App = () => {
     return (
       <div className="card">
        
@@ -56,5 +56,5 @@ import {
     );
   }
   
-  export default Card;
+  export default App;
   

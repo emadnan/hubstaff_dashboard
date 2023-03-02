@@ -9,7 +9,7 @@ import {
 
 import React from 'react';
 
-const Card = () => {
+const Team = () => {
   return (
     <div className="card">
      
@@ -40,4 +40,4 @@ const Card = () => {
   );
 }
 
-export default Card;
+export default Team;

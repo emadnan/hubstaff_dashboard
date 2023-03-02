@@ -9,7 +9,7 @@ import {
 
 import React from 'react';
 
-const Card = () => {
+const Client = () => {
   return (
     <div className="card">
      
@@ -41,4 +41,4 @@ const Card = () => {
   );
 }
 
-export default Card;
+export default Client;

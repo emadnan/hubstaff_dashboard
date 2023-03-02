@@ -10,7 +10,7 @@ import {
 
 import React from 'react';
 
-const Card = () => {
+const Projects = () => {
   return (
     <div className="card">
      
@@ -41,4 +41,4 @@ const Card = () => {
   );
 }
 
-export default Card;
+export default Projects;

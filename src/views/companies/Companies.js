@@ -8,7 +8,7 @@ import {
   
   import React from 'react';
   
-  const Card = () => {
+  const Companies = () => {
     return (
       <div className="card">
        
@@ -41,4 +41,4 @@ import {
     );
   }
   
-  export default Card;
+  export default Companies;
