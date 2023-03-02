@@ -14,7 +14,7 @@ import {
        
         <div className="card-body">
           
-          <a href="#" className="btn btn-primary" style={{ marginLeft: '90%' }}>Add Company</a>
+          <a href="/showModal" className="btn btn-primary" style={{ marginLeft: '90%' }}>Add a Company</a>
           
           <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
                   <CTableHead color="light" >
@@ -25,8 +25,8 @@ import {
 
                       <CTableHeaderCell>SR_NO</CTableHeaderCell>
                       <CTableHeaderCell>company_name</CTableHeaderCell>
-                      <CTableHeaderCell className="text-center">address</CTableHeaderCell>
-                      <CTableHeaderCell className="text-center">company_eamil</CTableHeaderCell>
+                      <CTableHeaderCell>address</CTableHeaderCell>
+                      <CTableHeaderCell>company_eamil</CTableHeaderCell>
                       <CTableHeaderCell className="text-center">contact_no</CTableHeaderCell>
                       <CTableHeaderCell className="text-center">city</CTableHeaderCell>
                       <CTableHeaderCell className="text-center">country</CTableHeaderCell>
@@ -38,6 +38,7 @@ import {
                 </CTable>
         </div>
       </div>
+      
     );
   }
   

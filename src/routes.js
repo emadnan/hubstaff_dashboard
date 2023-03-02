@@ -20,7 +20,7 @@ const Todos = React.lazy(() => import('./views/projectmanagement/todos/Todos'))
 
 //companies
 const Companies = React.lazy(() => import('./views/companies/Companies'))
-
+const AddCompany = React.lazy(() => import('./views/companies/Companies'))
 //Insights
 const Insights = React.lazy(() => import('./views/insights/Insights'))
 
@@ -100,6 +100,7 @@ const routes = [
   { path: '/projectmanagement/projects', name: 'Projects', element: Projects},
   { path: '/projectmanagement/todos', name: 'Todos', element: Todos},
   { path: '/companies/Companies', name: 'Companies', element: Companies},
+  { path: '/companies/AddCompany', name: 'Companies', element: AddCompany},
   { path: '/timesheets/approvals', name: 'Approvals', element: Approvals},
   { path: '/timesheets/viewedit', name: 'View & Edit', element: Viewedit},
   { path: '/insights', name: 'Insights', element: Insights},
