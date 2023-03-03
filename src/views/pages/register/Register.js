@@ -57,6 +57,7 @@ const Register = () => {
                     placeholder="Enter Username"
                   />
                 </div>
+
                 <div className="form-outline mb-4">
                   <label className="form-label" htmlFor="form3Example3">
                     Email address
@@ -82,6 +83,7 @@ const Register = () => {
                     placeholder="Enter Password"
                   />
                 </div>
+                
                 <div className="form-outline mb-10">
                   <label className="form-label" htmlFor="form3Example4">
                     Confirm Password
