@@ -21,6 +21,7 @@ const Todos = React.lazy(() => import('./views/projectmanagement/todos/Todos'))
 //companies
 const Companies = React.lazy(() => import('./views/companies/Companies'))
 const AddCompany = React.lazy(() => import('./views/companies/Companies'))
+
 //Insights
 const Insights = React.lazy(() => import('./views/insights/Insights'))
 

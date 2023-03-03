@@ -22,14 +22,13 @@ import {
                       
                       <CTableHeaderCell className="text-center">
                       </CTableHeaderCell>
-
-                      <CTableHeaderCell>SR_NO</CTableHeaderCell>
-                      <CTableHeaderCell>company_name</CTableHeaderCell>
-                      <CTableHeaderCell>address</CTableHeaderCell>
-                      <CTableHeaderCell>company_eamil</CTableHeaderCell>
-                      <CTableHeaderCell className="text-center">contact_no</CTableHeaderCell>
-                      <CTableHeaderCell className="text-center">city</CTableHeaderCell>
-                      <CTableHeaderCell className="text-center">country</CTableHeaderCell>
+                      <CTableHeaderCell>Sr/No</CTableHeaderCell>
+                      <CTableHeaderCell>Company Name</CTableHeaderCell>
+                      <CTableHeaderCell>Address</CTableHeaderCell>
+                      <CTableHeaderCell>Company Email</CTableHeaderCell>
+                      <CTableHeaderCell className="text-center">Contact No</CTableHeaderCell>
+                      <CTableHeaderCell className="text-center">City</CTableHeaderCell>
+                      <CTableHeaderCell className="text-center">Country</CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
