@@ -1,14 +1,5 @@
-
-import {
-  CTable,
-  CTableBody,
-  CTableHead,
-  CTableHeaderCell,
-  CTableRow,
-
-} from '@coreui/react'
-import { React, useState } from 'react';
-
+import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
+import { React, useState, useEffect } from 'react';
 import { Modal } from 'antd';
 
 const Projects = () => {
@@ -34,143 +25,168 @@ const Projects = () => {
     setIsModalOpen(false);
   };
 
+  const [users, setUsers] = useState([])
+
+  const fetchData = () => {
+    fetch("http://127.0.0.1:8000/api/getproject")
+      .then(response => {
+        return response.json()
+      })
+      .then(data => {
+        setUsers(data)
+      })
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
   async function addProject() {
-    let user = {user_id,department_id,company_id,project_name,start_date,dead_line,team_id,to_dos,budget}
+    let user = { user_id, department_id, company_id, project_name, start_date, dead_line, team_id, to_dos, budget }
     console.warn(user)
 
     let result = await fetch("http://127.0.0.1:8000/api/add_project",
-    {
-      method: 'POST',
-      body: JSON.stringify(user),
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      {
+        method: 'POST',
+        body: JSON.stringify(user),
+        headers: {
+          'Content-Type': 'application/json'
+        },
 
-    })
+      })
     result = await result.json()
 
   }
-
   return (
-    <div className="card">
+    <>
+      <div className="card">
 
-      <div className="card-body">
+        <div className="card-body">
 
-        <a className="btn btn-primary" style={{ marginLeft: '85%' }} onClick={showModal}>Add a Project</a>
-        <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-          <CTableHead color="light" >
-            <CTableRow>
+          <a className="btn btn-primary" style={{ marginLeft: '85%' }} onClick={showModal}>Add a Project</a>
+          <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
+            <CTableHead color="light" >
 
-              <CTableHeaderCell className="text-center">
-              </CTableHeaderCell>
+              <CTableRow>
+                <CTableHeaderCell className="text-center">Name</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">Teams</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">TO-DOS</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">Budget</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">Start</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">Deadline</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">Action</CTableHeaderCell>
+              </CTableRow>
 
-              <CTableHeaderCell className="text-center">Name</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">Teams</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">TO-DOS</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">Budget</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">Start</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">Deadline</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">Action</CTableHeaderCell>
-            </CTableRow>
-          </CTableHead>
-          <CTableBody>
-            <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+              <CTableRow>
+                <CTableHeaderCell className="text-center">Name</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">Teams</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">TO-DOS</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">Budget</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">Start</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">Deadline</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">Action</CTableHeaderCell>
+              </CTableRow>
 
-              <div className="form-outline mb-3">
-                <input
-                  type="number"
-                  value={user_id}
-                  onChange={(e) => setUserId(e.target.value)}
-                  className="form-control form-control-lg"
-                  placeholder="Enter User Id"
-                />
-              </div>
+            </CTableHead>
+            <CTableBody>
+              <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
 
-              <div className="form-outline mb-3">
-                <input
-                  type="number"
-                  value={department_id}
-                  onChange={(e) => setDepartmentId(e.target.value)}
-                  className="form-control form-control-lg"
-                  placeholder="Enter Department Id"
-                />
-              </div>
+                <div className="form-outline mb-3">
+                  <input
+                    type="number"
+                    value={user_id}
+                    onChange={(e) => setUserId(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter User Id"
+                  />
+                </div>
 
-              <div className="form-outline mb-3">
-                <input
-                  type="number"
-                  value={company_id}
-                  onChange={(e) => setCompanyId(e.target.value)}
-                  className="form-control form-control-lg"
-                  placeholder="Enter Company Id"
-                />
-              </div>
+                <div className="form-outline mb-3">
+                  <input
+                    type="number"
+                    value={department_id}
+                    onChange={(e) => setDepartmentId(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Department Id"
+                  />
+                </div>
 
-              <div className="form-outline mb-3">
-                <input
-                  type="text"
-                  value={project_name}
-                  onChange={(e) => setProjectName(e.target.value)}
-                  className="form-control form-control-lg"
-                  placeholder="Enter Project Name"
-                />
-              </div>
+                <div className="form-outline mb-3">
+                  <input
+                    type="number"
+                    value={company_id}
+                    onChange={(e) => setCompanyId(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Company Id"
+                  />
+                </div>
 
-              <div className="form-outline mb-3">
-                <input
-                  type="date"
-                  value={start_date}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="form-control form-control-lg"
-                  placeholder="Enter Start Date"
-                />
-              </div>
+                <div className="form-outline mb-3">
+                  <input
+                    type="text"
+                    value={project_name}
+                    onChange={(e) => setProjectName(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Project Name"
+                  />
+                </div>
 
-              <div className="form-outline mb-3">
-                <input
-                  type="date"
-                  value={dead_line}
-                  onChange={(e) => setDeadLine(e.target.value)}
-                  className="form-control form-control-lg"
-                  placeholder="Enter Dead Line"
-                />
-              </div>
+                <div className="form-outline mb-3">
+                  <input
+                    type="date"
+                    value={start_date}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Start Date"
+                  />
+                </div>
 
-              <div className="form-outline mb-3">
-                <input
-                  type="number"
-                  value={team_id}
-                  onChange={(e) => setTeamId(e.target.value)}
-                  className="form-control form-control-lg"
-                  placeholder="Enter Team Id"
-                />
-              </div>
+                <div className="form-outline mb-3">
+                  <input
+                    type="date"
+                    value={dead_line}
+                    onChange={(e) => setDeadLine(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Dead Line"
+                  />
+                </div>
 
-              <div className="form-outline mb-3">
-                <input
-                  type="text"
-                  value={to_dos}
-                  onChange={(e) => setTodos(e.target.value)}
-                  className="form-control form-control-lg"
-                  placeholder="Enter Todos"
-                />
-              </div>
+                <div className="form-outline mb-3">
+                  <input
+                    type="number"
+                    value={team_id}
+                    onChange={(e) => setTeamId(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Team Id"
+                  />
+                </div>
 
-              <div className="form-outline mb-3">
-                <input
-                  type="number"
-                  value={budget}
-                  onChange={(e) => setBudget(e.target.value)}
-                  className="form-control form-control-lg"
-                  placeholder="Enter Budget"
-                />
-              </div>
+                <div className="form-outline mb-3">
+                  <input
+                    type="text"
+                    value={to_dos}
+                    onChange={(e) => setTodos(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Todos"
+                  />
+                </div>
 
-            </Modal>
-          </CTableBody>
-        </CTable>
+                <div className="form-outline mb-3">
+                  <input
+                    type="number"
+                    value={budget}
+                    onChange={(e) => setBudget(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Budget"
+                  />
+                </div>
+
+              </Modal>
+            </CTableBody>
+          </CTable>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

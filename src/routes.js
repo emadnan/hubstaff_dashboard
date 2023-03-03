@@ -28,6 +28,9 @@ const Insights = React.lazy(() => import('./views/insights/Insights'))
 //Map
 const Map = React.lazy(() => import('./views/map/Map'))
 
+//Users
+const Users = React.lazy(() => import('./views/users/Users'))
+
 //Calendar
 const Schedules = React.lazy(() => import('./views/calendar/schedules/Schedules'))
 const Timeoffrequests = React.lazy(() => import('./views/calendar/timeoffrequests/Timeoffrequests'))
@@ -106,6 +109,7 @@ const routes = [
   { path: '/timesheets/viewedit', name: 'View & Edit', element: Viewedit},
   { path: '/insights', name: 'Insights', element: Insights},
   { path: '/map', name: 'Map', element: Map},
+  { path: '/users/Users', name: 'Users', element: Users},
   { path: '/calendar/schedules', name: 'Schedules', element: Schedules},
   { path: '/calendar/timeoffrequests', name: 'Time-Off-Requests', element: Timeoffrequests},
   { path: '/reports/accountsowed', name: 'Accounts Owed', element: Accountsowed },
