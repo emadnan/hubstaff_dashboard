@@ -1,6 +1,6 @@
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { React, useState, useEffect } from 'react';
-import { Modal } from 'antd';
+import { Modal, Button } from 'antd';
 
 const Projects = () => {
 
@@ -20,30 +20,27 @@ const Projects = () => {
   };
   const handleOk = () => {
     addProject();
+    setIsModalOpen(false);
   };
   const handleCancel = () => {
     setIsModalOpen(false);
   };
 
-  const [users, setUsers] = useState([])
-
-  const fetchData = () => {
-    fetch("http://127.0.0.1:8000/api/getproject")
-      .then(response => {
-        return response.json()
-      })
-      .then(data => {
-        setUsers(data)
-      })
-  }
+  const [projects, setProjects] = useState([]);
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    getList()
+  }, []);
+
+  function getList() {
+    fetch("http://127.0.0.1:8000/api/getproject")
+      .then((response) => response.json())
+      .then((data) => setProjects(data.projects))
+      .catch((error) => console.log(error));
+  }
 
   async function addProject() {
     let user = { user_id, department_id, company_id, project_name, start_date, dead_line, team_id, to_dos, budget }
-    console.warn(user)
 
     let result = await fetch("http://127.0.0.1:8000/api/add_project",
       {
@@ -55,8 +52,31 @@ const Projects = () => {
 
       })
     result = await result.json()
+  }
+
+  async function deleteUser(newid) {
+    await fetch('http://127.0.0.1:8000/api/delete-project', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: newid
+      })
+    }).then(response => {
+        if (response.ok) {
+          console.log('Project deleted successfully');
+          getList()
+        } else {
+          console.error('Failed to delete project');
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
 
   }
+
   return (
     <>
       <div className="card">
@@ -76,16 +96,19 @@ const Projects = () => {
                 <CTableHeaderCell className="text-center">Deadline</CTableHeaderCell>
                 <CTableHeaderCell className="text-center">Action</CTableHeaderCell>
               </CTableRow>
-
-              <CTableRow>
-                <CTableHeaderCell className="text-center">Name</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Teams</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">TO-DOS</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Budget</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Start</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Deadline</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Action</CTableHeaderCell>
-              </CTableRow>
+              {projects.map((project) => (
+                <CTableRow key={project.id}>
+                  <CTableHeaderCell className="text-center">{project.project_name}</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center">{project.team_id}</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center">{project.to_dos}</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center">{project.budget}</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center">{project.start_date}</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center">{project.dead_line}</CTableHeaderCell>
+                  <CTableHeaderCell className="text-left">
+                  <Button type="primary" onClick={() => deleteUser(project.id)}>Delete</Button>
+                  </CTableHeaderCell>
+                </CTableRow>
+              ))}
 
             </CTableHead>
             <CTableBody>
