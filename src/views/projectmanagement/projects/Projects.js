@@ -42,7 +42,7 @@ const Projects = () => {
   async function addProject() {
     let user = { user_id, department_id, company_id, project_name, start_date, dead_line, team_id, to_dos, budget }
 
-    let result = await fetch("http://127.0.0.1:8000/api/add_project",
+    await fetch("http://127.0.0.1:8000/api/add_project",
       {
         method: 'POST',
         body: JSON.stringify(user),
@@ -50,8 +50,17 @@ const Projects = () => {
           'Content-Type': 'application/json'
         },
 
+      }).then(response => {
+        if (response.ok) {
+          console.log('Project added Successfully');
+          getList()
+        } else {
+          console.error('Failed to add project');
+        }
       })
-    result = await result.json()
+      .catch(error => {
+        console.error(error);
+      });
   }
 
   async function deleteUser(newid) {

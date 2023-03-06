@@ -1,6 +1,6 @@
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { React, useState, useEffect } from 'react';
-import { Modal } from 'antd';
+import { Modal , Button} from 'antd';
 
 const Users = () => {
 
@@ -14,26 +14,29 @@ const Users = () => {
         setIsModalOpen(true);
     };
     const handleOk = () => {
-        addUser();
+        addUser()
+        setIsModalOpen(false);
     };
     const handleCancel = () => {
         setIsModalOpen(false);
     };
 
     const [users, setUsers] = useState([]);
-    console.log(users);
 
-    useEffect(() => {
+    function getList() {
         fetch("http://127.0.0.1:8000/api/get_users")
             .then((response) => response.json())
             .then((data) => setUsers(data.Users))
             .catch((error) => console.log(error));
+    }
+
+    useEffect(() => {
+        getList()
     }, []);
     async function addUser() {
         let adduser = { name, email, password, role_id }
-        console.warn(adduser)
 
-        let result = await fetch("http://127.0.0.1:8000/api/add_user",
+        await fetch("http://127.0.0.1:8000/api/add_user",
             {
                 method: 'POST',
                 body: JSON.stringify(adduser),
@@ -41,10 +44,42 @@ const Users = () => {
                     'Content-Type': 'application/json'
                 },
 
-            })
-        result = await result.json()
-
+            }).then(response => {
+                if (response.ok) {
+                  console.log('User added Successfully');
+                  getList()
+                } else {
+                  console.error('Failed to add project');
+                }
+              })
+              .catch(error => {
+                console.error(error);
+              });
     }
+
+    async function deleteUser(newid) {
+        await fetch('http://127.0.0.1:8000/api/delete_user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            id: newid
+          })
+        }).then(response => {
+            if (response.ok) {
+              console.log('Project deleted successfully');
+              getList()
+            } else {
+              console.error('Failed to delete project');
+            }
+          })
+          .catch(error => {
+            console.error(error);
+          });
+    
+    }
+
         return (
             <>
                 <div className="card">
@@ -66,8 +101,8 @@ const Users = () => {
                                         <CTableHeaderCell className="text-center">{user.email}</CTableHeaderCell>
                                         <CTableHeaderCell className="text-center">{user.role_id}</CTableHeaderCell>
                                         <CTableHeaderCell className="text-left" style={{ marginLeft: '85%' }}>
-                                            <a className="btn btn-primary">Delete</a>
-                                            <a className="btn btn-primary">Update</a>
+                                        <Button type="primary" style={{ marginLeft: '35%' }} onClick={() => deleteUser(user.id)}>Delete</Button>
+                                        <Button type="primary">Update</Button>
                                         </CTableHeaderCell>
                                     </CTableRow>
                                 ))}
@@ -117,7 +152,7 @@ const Users = () => {
                                         />
                                     </div>
 
-                                </Modal>
+                                </Modal> 
                             </CTableBody>
                         </CTable>
                     </div>
