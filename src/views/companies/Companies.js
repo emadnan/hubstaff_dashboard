@@ -5,7 +5,7 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react'
-import { Modal, Button } from 'antd';
+import { Modal, Button, Select, Form } from 'antd';
 import { React, useState, useEffect } from 'react';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -35,6 +35,11 @@ const Companies = () => {
   };
 
   const [users, setUsers] = useState([]);
+  const [countries, setCountries] = useState([]);
+
+  const handleCountryChange = (value) => {
+    setCountry(value);
+  };
 
   const modalStyle = {
     position: "fixed",
@@ -62,8 +67,16 @@ const Companies = () => {
       .catch((error) => console.log(error));
   }
 
+  function getCountry() {
+    fetch("http://127.0.0.1:8000/api/get_country")
+      .then((response) => response.json())
+      .then((data) => setCountries(data.Country))
+      .catch((error) => console.log(error));
+  }
+
   useEffect(() => {
     getList()
+    getCountry()
   }, []);
 
   async function addCompany() {
@@ -92,26 +105,26 @@ const Companies = () => {
 
   async function deleteCompany(newid) {
     await fetch('http://127.0.0.1:8000/api/delete-company', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            id: newid
-        })
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: newid
+      })
     }).then(response => {
-        if (response.ok) {
-            console.log('Company deleted successfully');
-            getList()
-        } else {
-            console.error('Failed to delete company');
-        }
+      if (response.ok) {
+        console.log('Company deleted successfully');
+        getList()
+      } else {
+        console.error('Failed to delete company');
+      }
     })
-        .catch(error => {
-            console.error(error);
-        });
+      .catch(error => {
+        console.error(error);
+      });
 
-}
+  }
 
 
   return (
@@ -207,13 +220,15 @@ const Companies = () => {
                 </div>
 
                 <div className="form-outline mb-3">
-                  <input
-                    type="text"
-                    value={country}
-                    onChange={(e) => setCountry(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Country"
-                  />
+                  <Form.Item>
+                    <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
+                      {countries.map((count) => (
+                        <Select.Option value={count.name} key={count.id}>
+                          {count.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
                 </div>
 
               </Modal>
