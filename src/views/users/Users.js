@@ -104,9 +104,15 @@ const Users = () => {
 
     return (
         <>
+            <div className='row'>
+                <div className='col-md 6'></div>
+                <div className='col-md 6'>
+                    <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add User</Button>
+                </div>
+            </div>
+            <br></br>
             <div className="card">
                 <div className="card-body">
-                    <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add User</Button>
                     <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
                         <CTableHead color="light" >
 

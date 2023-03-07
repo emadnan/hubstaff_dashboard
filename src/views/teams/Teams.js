@@ -5,8 +5,8 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react'
-import { React, useState} from 'react';
-import { Modal, Button} from 'antd';
+import { React, useState } from 'react';
+import { Modal, Button } from 'antd';
 
 const Team = () => {
 
@@ -46,11 +46,17 @@ const Team = () => {
   };
 
   return (
+    <>
+    <div className='row'>
+        <div className='col-md 6'></div>
+        <div className='col-md 6'>
+        <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Team</Button>
+        </div>
+    </div>
+    <br></br>
     <div className="card">
-
       <div className="card-body">
-      <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Team</Button>
-        <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
+        <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '10px' }}>
           <CTableHead color="light" >
             <CTableRow>
               <CTableHeaderCell className="text-center" style={mystyle}>Name</CTableHeaderCell>
@@ -99,6 +105,7 @@ const Team = () => {
         </CTable>
       </div>
     </div>
+    </>
   );
 }
 

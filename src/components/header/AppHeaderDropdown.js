@@ -15,7 +15,7 @@ import {
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { useNavigate } from 'react-router-dom';
-import biafologo from './../../assets/images/biafologo.png'
+import black from './../../assets/images/black.png'
 
 const AppHeaderDropdown = () => {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ const AppHeaderDropdown = () => {
     <CDropdown variant="nav-item">
       
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
-        <CAvatar src={biafologo} size="md" />
+        <CAvatar src={black} size="col-md-6" />
       </CDropdownToggle>
 
       <CDropdownMenu className="pt-0" placement="bottom-end">
