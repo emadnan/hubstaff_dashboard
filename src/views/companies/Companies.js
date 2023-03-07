@@ -19,13 +19,9 @@ import {
           <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
                   <CTableHead color="light" >
                     <CTableRow>
-                      
-                      <CTableHeaderCell className="text-center">
-                      </CTableHeaderCell>
-                      <CTableHeaderCell>Sr/No</CTableHeaderCell>
-                      <CTableHeaderCell>Company Name</CTableHeaderCell>
-                      <CTableHeaderCell>Address</CTableHeaderCell>
-                      <CTableHeaderCell>Company Email</CTableHeaderCell>
+                      <CTableHeaderCell className="text-center">Company Name</CTableHeaderCell>
+                      <CTableHeaderCell className="text-center">Address</CTableHeaderCell>
+                      <CTableHeaderCell className="text-center">Company Email</CTableHeaderCell>
                       <CTableHeaderCell className="text-center">Contact No</CTableHeaderCell>
                       <CTableHeaderCell className="text-center">City</CTableHeaderCell>
                       <CTableHeaderCell className="text-center">Country</CTableHeaderCell>

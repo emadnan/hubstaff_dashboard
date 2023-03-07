@@ -1,6 +1,9 @@
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { React, useState, useEffect } from 'react';
-import { Modal , Button} from 'antd';
+import { Modal, Button } from 'antd';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 const Users = () => {
 
@@ -19,6 +22,12 @@ const Users = () => {
     };
     const handleCancel = () => {
         setIsModalOpen(false);
+    };
+
+    const modalStyle = {
+        position: "fixed",
+        top: "25%",
+        left: "40%",
     };
 
     const [users, setUsers] = useState([]);
@@ -46,120 +55,124 @@ const Users = () => {
 
             }).then(response => {
                 if (response.ok) {
-                  console.log('User added Successfully');
-                  getList()
+                    console.log('User added Successfully');
+                    getList()
                 } else {
-                  console.error('Failed to add project');
+                    console.error('Failed to add project');
                 }
-              })
-              .catch(error => {
+            })
+            .catch(error => {
                 console.error(error);
-              });
+            });
     }
 
     async function deleteUser(newid) {
         await fetch('http://127.0.0.1:8000/api/delete_user', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            id: newid
-          })
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: newid
+            })
         }).then(response => {
             if (response.ok) {
-              console.log('Project deleted successfully');
-              getList()
+                console.log('Project deleted successfully');
+                getList()
             } else {
-              console.error('Failed to delete project');
+                console.error('Failed to delete project');
             }
-          })
-          .catch(error => {
-            console.error(error);
-          });
-    
+        })
+            .catch(error => {
+                console.error(error);
+            });
+
     }
 
-        return (
-            <>
-                <div className="card">
-                    <div className="card-body">
-                        <a className="btn btn-primary" style={{ marginLeft: '85%' }} onClick={showModal}>Add User</a>
-                        <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-                            <CTableHead color="light" >
+    return (
+        <>
+        <Button className="btn btn-primary" style={{ marginLeft: '85%' }} onClick={showModal}>Add User</Button>
+            <div className="card">
+                <div className="card-body">
+                    <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
+                        <CTableHead color="light" >
 
-                                <CTableRow>
-                                    <CTableHeaderCell className="text-center">Name</CTableHeaderCell>
-                                    <CTableHeaderCell className="text-center">Email</CTableHeaderCell>
-                                    <CTableHeaderCell className="text-center">Role-Id</CTableHeaderCell>
-                                    <CTableHeaderCell className="text-center">Action</CTableHeaderCell>
+                            <CTableRow>
+                                <CTableHeaderCell className="text-center">Name</CTableHeaderCell>
+                                <CTableHeaderCell className="text-center">Email</CTableHeaderCell>
+                                <CTableHeaderCell className="text-center">Role-Id</CTableHeaderCell>
+                                <CTableHeaderCell className="text-center">Action</CTableHeaderCell>
+                            </CTableRow>
+
+                            {users.map((user) => (
+                                <CTableRow key={user.id}>
+                                    <CTableHeaderCell className="text-cente">{user.name}</CTableHeaderCell>
+                                    <CTableHeaderCell className="text-center">{user.email}</CTableHeaderCell>
+                                    <CTableHeaderCell className="text-center">{user.role_id}</CTableHeaderCell>
+                                    <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
+                                        <IconButton aria-label="delete" onClick={() => deleteUser(user.id)}>
+                                            <DeleteIcon color="primary"/>
+                                        </IconButton>
+                                        <IconButton aria-label="delete">
+                      <EditIcon color="primary" />
+                    </IconButton>
+                                    </CTableHeaderCell>
                                 </CTableRow>
+                            ))}
 
-                                {users.map((user) => (
-                                    <CTableRow key={user.id}>
-                                        <CTableHeaderCell className="text-center">{user.name}</CTableHeaderCell>
-                                        <CTableHeaderCell className="text-center">{user.email}</CTableHeaderCell>
-                                        <CTableHeaderCell className="text-center">{user.role_id}</CTableHeaderCell>
-                                        <CTableHeaderCell className="text-left" style={{ marginLeft: '85%' }}>
-                                        <Button type="primary" style={{ marginLeft: '35%' }} onClick={() => deleteUser(user.id)}>Delete</Button>
-                                        <Button type="primary">Update</Button>
-                                        </CTableHeaderCell>
-                                    </CTableRow>
-                                ))}
+                        </CTableHead>
+                        <CTableBody>
 
-                            </CTableHead>
-                            <CTableBody>
+                            <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
-                                <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                                <div className="form-outline mb-3">
+                                    <input
+                                        type="text"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        className="form-control form-control-lg"
+                                        placeholder="Enter User Name"
+                                    />
+                                </div>
 
-                                    <div className="form-outline mb-3">
-                                        <input
-                                            type="text"
-                                            value={name}
-                                            onChange={(e) => setName(e.target.value)}
-                                            className="form-control form-control-lg"
-                                            placeholder="Enter User Name"
-                                        />
-                                    </div>
+                                <div className="form-outline mb-3">
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="form-control form-control-lg"
+                                        placeholder="Enter Email"
+                                    />
+                                </div>
 
-                                    <div className="form-outline mb-3">
-                                        <input
-                                            type="email"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            className="form-control form-control-lg"
-                                            placeholder="Enter Email"
-                                        />
-                                    </div>
+                                <div className="form-outline mb-3">
+                                    <input
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="form-control form-control-lg"
+                                        placeholder="Enter Password"
+                                    />
+                                </div>
 
-                                    <div className="form-outline mb-3">
-                                        <input
-                                            type="password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            className="form-control form-control-lg"
-                                            placeholder="Enter Password"
-                                        />
-                                    </div>
+                                <div className="form-outline mb-3">
+                                    <input
+                                        type="number"
+                                        value={role_id}
+                                        onChange={(e) => setRoleId(e.target.value)}
+                                        className="form-control form-control-lg"
+                                        placeholder="Enter Role Id"
+                                    />
+                                </div>
 
-                                    <div className="form-outline mb-3">
-                                        <input
-                                            type="number"
-                                            value={role_id}
-                                            onChange={(e) => setRoleId(e.target.value)}
-                                            className="form-control form-control-lg"
-                                            placeholder="Enter Role Id"
-                                        />
-                                    </div>
-
-                                </Modal> 
-                            </CTableBody>
-                        </CTable>
-                    </div>
+                            </Modal>
+                        </CTableBody>
+                    </CTable>
                 </div>
-            </>
-        );
-    }
+            </div>
+        </>
+    );
+}
 
 export default Users;
 

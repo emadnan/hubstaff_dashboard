@@ -99,6 +99,12 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'Departments',
+    to: '/departments/Departments',
+    icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
     name: 'Users',
     to: '/users/Users',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,

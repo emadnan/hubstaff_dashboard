@@ -1,6 +1,9 @@
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { React, useState, useEffect } from 'react';
-import { Modal, Button } from 'antd';
+import { Modal } from 'antd';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 const Projects = () => {
 
@@ -39,6 +42,12 @@ const Projects = () => {
       .catch((error) => console.log(error));
   }
 
+  const modalStyle = {
+    position: "fixed",
+    top: "15%",
+    left: "40%",
+  };
+
   async function addProject() {
     let user = { user_id, department_id, company_id, project_name, start_date, dead_line, team_id, to_dos, budget }
 
@@ -73,13 +82,13 @@ const Projects = () => {
         id: newid
       })
     }).then(response => {
-        if (response.ok) {
-          console.log('Project deleted successfully');
-          getList()
-        } else {
-          console.error('Failed to delete project');
-        }
-      })
+      if (response.ok) {
+        console.log('Project deleted successfully');
+        getList()
+      } else {
+        console.error('Failed to delete project');
+      }
+    })
       .catch(error => {
         console.error(error);
       });
@@ -99,7 +108,7 @@ const Projects = () => {
               <CTableRow>
                 <CTableHeaderCell className="text-center">Name</CTableHeaderCell>
                 <CTableHeaderCell className="text-center">Teams</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">TO-DOS</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">Todos</CTableHeaderCell>
                 <CTableHeaderCell className="text-center">Budget</CTableHeaderCell>
                 <CTableHeaderCell className="text-center">Start</CTableHeaderCell>
                 <CTableHeaderCell className="text-center">Deadline</CTableHeaderCell>
@@ -113,15 +122,21 @@ const Projects = () => {
                   <CTableHeaderCell className="text-center">{project.budget}</CTableHeaderCell>
                   <CTableHeaderCell className="text-center">{project.start_date}</CTableHeaderCell>
                   <CTableHeaderCell className="text-center">{project.dead_line}</CTableHeaderCell>
-                  <CTableHeaderCell className="text-left">
-                  <Button type="primary" onClick={() => deleteUser(project.id)}>Delete</Button>
+                  <CTableHeaderCell className="text-center">
+                    <IconButton aria-label="delete" onClick={() => deleteUser(project.id)}>
+                      <DeleteIcon color="primary" />
+                    </IconButton>
+                    <IconButton aria-label="delete">
+                      <EditIcon color="primary" />
+                    </IconButton>
                   </CTableHeaderCell>
                 </CTableRow>
               ))}
 
             </CTableHead>
             <CTableBody>
-              <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+
+              <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
                 <div className="form-outline mb-3">
                   <input
@@ -214,6 +229,7 @@ const Projects = () => {
                 </div>
 
               </Modal>
+
             </CTableBody>
           </CTable>
         </div>
