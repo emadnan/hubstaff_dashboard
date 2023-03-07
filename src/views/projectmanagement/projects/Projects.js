@@ -1,6 +1,6 @@
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { React, useState, useEffect } from 'react';
-import { Modal } from 'antd';
+import { Modal, Button } from 'antd';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -46,6 +46,19 @@ const Projects = () => {
     position: "fixed",
     top: "15%",
     left: "40%",
+  };
+
+  const mystyle = {
+    color: "white",
+    backgroundColor: "#0070FF ",
+    padding: "15px",
+    fontFamily: "Arial",
+    textAlign: 'center',
+    alignSelf: 'flex-end',
+  };
+
+  const buttonStyle = {
+    marginLeft: '85%',
   };
 
   async function addProject() {
@@ -100,19 +113,18 @@ const Projects = () => {
       <div className="card">
 
         <div className="card-body">
-
-          <a className="btn btn-primary" style={{ marginLeft: '85%' }} onClick={showModal}>Add a Project</a>
+        <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Project</Button>
           <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
             <CTableHead color="light" >
 
               <CTableRow>
-                <CTableHeaderCell className="text-center">Name</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Teams</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Todos</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Budget</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Start</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Deadline</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Action</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Name</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Teams</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Todos</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Budget</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Start Date</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Deadline</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
               </CTableRow>
               {projects.map((project) => (
                 <CTableRow key={project.id}>

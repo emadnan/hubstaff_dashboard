@@ -30,6 +30,19 @@ const Users = () => {
         left: "40%",
     };
 
+    const mystyle = {
+        color: "white",
+        backgroundColor: "#0070FF ",
+        padding: "15px",
+        fontFamily: "Arial",
+        textAlign: 'center',
+        alignSelf: 'flex-end',
+    };
+
+    const buttonStyle = {
+        marginLeft: '85%',
+    }
+
     const [users, setUsers] = useState([]);
 
     function getList() {
@@ -91,31 +104,31 @@ const Users = () => {
 
     return (
         <>
-        <Button className="btn btn-primary" style={{ marginLeft: '85%' }} onClick={showModal}>Add User</Button>
             <div className="card">
                 <div className="card-body">
+                    <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add User</Button>
                     <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
                         <CTableHead color="light" >
 
                             <CTableRow>
-                                <CTableHeaderCell className="text-center">Name</CTableHeaderCell>
-                                <CTableHeaderCell className="text-center">Email</CTableHeaderCell>
-                                <CTableHeaderCell className="text-center">Role-Id</CTableHeaderCell>
-                                <CTableHeaderCell className="text-center">Action</CTableHeaderCell>
+                                <CTableHeaderCell className="text-center" style={mystyle}>Name</CTableHeaderCell>
+                                <CTableHeaderCell className="text-center" style={mystyle}>Email</CTableHeaderCell>
+                                <CTableHeaderCell className="text-center" style={mystyle}>Role-Id</CTableHeaderCell>
+                                <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
                             </CTableRow>
 
                             {users.map((user) => (
                                 <CTableRow key={user.id}>
-                                    <CTableHeaderCell className="text-cente">{user.name}</CTableHeaderCell>
+                                    <CTableHeaderCell className="text-center">{user.name}</CTableHeaderCell>
                                     <CTableHeaderCell className="text-center">{user.email}</CTableHeaderCell>
                                     <CTableHeaderCell className="text-center">{user.role_id}</CTableHeaderCell>
                                     <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
                                         <IconButton aria-label="delete" onClick={() => deleteUser(user.id)}>
-                                            <DeleteIcon color="primary"/>
+                                            <DeleteIcon color="primary" />
                                         </IconButton>
                                         <IconButton aria-label="delete">
-                      <EditIcon color="primary" />
-                    </IconButton>
+                                            <EditIcon color="primary" />
+                                        </IconButton>
                                     </CTableHeaderCell>
                                 </CTableRow>
                             ))}
@@ -123,7 +136,7 @@ const Users = () => {
                         </CTableHead>
                         <CTableBody>
 
-                            <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+                            <Modal title="Add a User" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
                                 <div className="form-outline mb-3">
                                     <input

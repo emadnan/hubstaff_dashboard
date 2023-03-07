@@ -3,7 +3,6 @@ import CIcon from '@coreui/icons-react'
 import {
   cilBell,
   cilChartPie,
-  cilDrop,
   cilSpeedometer,
   cilClock,
   cilChartLine,

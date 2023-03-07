@@ -33,12 +33,16 @@ const Departments = () => {
 
     const mystyle = {
         color: "white",
-        backgroundColor: "DodgerBlue",
+        backgroundColor: "#0070FF ",
         padding: "15px",
         fontFamily: "Arial",
         textAlign: 'center',
         alignSelf: 'flex-end',
     };
+
+    const buttonStyle = {
+        marginLeft: '85%',
+    }
 
     function getList() {
         fetch("http://127.0.0.1:8000/api/getdepartment")
@@ -100,9 +104,9 @@ const Departments = () => {
 
     return (
         <>
-        <Button className="btn btn-primary" style={{ marginLeft: '85%' }} onClick={showModal}>Add Department</Button>
             <div className="card">
                 <div className="card-body">
+                    <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Department</Button>
                     <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
                         <CTableHead color="light" >
 
@@ -114,24 +118,24 @@ const Departments = () => {
                             </CTableRow>
 
                             {users.map((department) => (
-                            <CTableRow key={department.id}>
-                                <CTableHeaderCell className="text-center">{department.company_id}</CTableHeaderCell>
-                                <CTableHeaderCell className="text-center">{department.department_name}</CTableHeaderCell>
-                                <CTableHeaderCell className="text-center">{department.description}</CTableHeaderCell>
-                                <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
+                                <CTableRow key={department.id}>
+                                    <CTableHeaderCell className="text-center">{department.company_id}</CTableHeaderCell>
+                                    <CTableHeaderCell className="text-center">{department.department_name}</CTableHeaderCell>
+                                    <CTableHeaderCell className="text-center">{department.description}</CTableHeaderCell>
+                                    <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
                                         <IconButton aria-label="delete" onClick={() => deleteDepartment(department.id)}>
-                                            <DeleteIcon color="primary"/>
+                                            <DeleteIcon color="primary" />
                                         </IconButton>
-                                        <IconButton aria-label="delete">
-                      <EditIcon color="primary" />
-                    </IconButton>
+                                        <IconButton aria-label="update">
+                                            <EditIcon color="primary " />
+                                        </IconButton>
                                     </CTableHeaderCell>
-                            </CTableRow>
+                                </CTableRow>
                             ))}
 
                         </CTableHead>
                         <CTableBody>
-                            <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+                            <Modal title="Add a Department" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
                                 <div className="form-outline mb-3">
                                     <input

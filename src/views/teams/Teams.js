@@ -5,8 +5,8 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react'
-import { React, useState, useEffect } from 'react';
-import { Modal, Button } from 'antd';
+import { React, useState} from 'react';
+import { Modal, Button} from 'antd';
 
 const Team = () => {
 
@@ -32,30 +32,36 @@ const Team = () => {
     left: "40%",
   };
 
+  const mystyle = {
+    color: "white",
+    backgroundColor: "#0070FF ",
+    padding: "15px",
+    fontFamily: "Arial",
+    textAlign: 'center',
+    alignSelf: 'flex-end',
+  };
+
+  const buttonStyle = {
+    marginLeft: '85%',
+  };
+
   return (
     <div className="card">
 
       <div className="card-body">
-
-        <a href="#" className="btn btn-primary" style={{ marginLeft: '85%' }} onClick={showModal}>Add a Team</a>
+      <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Team</Button>
         <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
           <CTableHead color="light" >
             <CTableRow>
-
-              <CTableHeaderCell className="text-center">
-              </CTableHeaderCell>
-
-              <CTableHeaderCell>Name</CTableHeaderCell>
-              <CTableHeaderCell className="text-center"></CTableHeaderCell>
-              <CTableHeaderCell className="text-center">Members</CTableHeaderCell>
-              <CTableHeaderCell className="text-center"></CTableHeaderCell>
-              <CTableHeaderCell className="text-center">Projects</CTableHeaderCell>
-              <CTableHeaderCell className="text-center"></CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle}>Name</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle}>Members</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle}>Projects</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
             </CTableRow>
           </CTableHead>
           <CTableBody>
 
-            <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+            <Modal title="Add a Team" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
               <div className="form-outline mb-3">
                 <input
