@@ -24,6 +24,35 @@ const Users = () => {
         setIsModalOpen(false);
     };
 
+    const [isModalOpen2, setIsModalOpen2] = useState(false);
+    const showModal2 = (id) => {
+        setIsModalOpen2(id);
+    };
+
+    const handleOk2 = () => {
+        deleteUser(isModalOpen2);
+        setIsModalOpen2(false);
+    };
+
+    const handleCancel2 = () => {
+        setIsModalOpen2(false);
+    };
+
+    const [isModalOpen3, setIsModalOpen3] = useState(false);
+    const showModal3 = (id) => {
+        setIsModalOpen3(id);
+    };
+
+    const handleOk3 = () => {
+        updateUser(isModalOpen3);
+        setIsModalOpen3(false);
+    };
+
+    const handleCancel3 = () => {
+        setIsModalOpen3(false);
+    };
+
+
     const modalStyle = {
         position: "fixed",
         top: "25%",
@@ -102,6 +131,34 @@ const Users = () => {
 
     }
 
+    async function updateUser(newid) {
+        await fetch('http://127.0.0.1:8000/api/update_user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: newid,
+                name: name,
+                email: email,
+                password: password,
+                role_id: role_id,
+
+            })
+        }).then(response => {
+            if (response.ok) {
+                console.log('User updated successfully');
+                getList()
+            } else {
+                console.error('Failed to update user');
+            }
+        })
+            .catch(error => {
+                console.error(error);
+            });
+
+    }
+
     return (
         <>
             <div className='row'>
@@ -129,10 +186,10 @@ const Users = () => {
                                     <CTableHeaderCell className="text-center">{user.email}</CTableHeaderCell>
                                     <CTableHeaderCell className="text-center">{user.role_id}</CTableHeaderCell>
                                     <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
-                                        <IconButton aria-label="delete" onClick={() => deleteUser(user.id)}>
+                                        <IconButton aria-label="delete" onClick={() => showModal2(user.id)}>
                                             <DeleteIcon color="primary" />
                                         </IconButton>
-                                        <IconButton aria-label="delete">
+                                        <IconButton aria-label="delete" onClick={() => showModal3(user.id)}>
                                             <EditIcon color="primary" />
                                         </IconButton>
                                     </CTableHeaderCell>
@@ -185,6 +242,54 @@ const Users = () => {
                                 </div>
 
                             </Modal>
+
+                            <Modal title="Update a User" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
+
+                                <div className="form-outline mb-3">
+                                    <input
+                                        type="text"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        className="form-control form-control-lg"
+                                        placeholder="Enter User Name"
+                                    />
+                                </div>
+
+                                <div className="form-outline mb-3">
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="form-control form-control-lg"
+                                        placeholder="Enter Email"
+                                    />
+                                </div>
+
+                                <div className="form-outline mb-3">
+                                    <input
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="form-control form-control-lg"
+                                        placeholder="Enter Password"
+                                    />
+                                </div>
+
+                                <div className="form-outline mb-3">
+                                    <input
+                                        type="number"
+                                        value={role_id}
+                                        onChange={(e) => setRoleId(e.target.value)}
+                                        className="form-control form-control-lg"
+                                        placeholder="Enter Role Id"
+                                    />
+                                </div>
+
+                            </Modal>
+
+                            <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
+                            </Modal>
+
                         </CTableBody>
                     </CTable>
                 </div>
