@@ -13,6 +13,7 @@ import EditIcon from '@mui/icons-material/Edit';
 
 const Companies = () => {
 
+  // Variable declarations
   const [company_name, setCompanyName] = useState("");
   const [address, setAddress] = useState("");
   const [company_email, setCompanyEmail] = useState("");
@@ -20,27 +21,7 @@ const Companies = () => {
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    addCompany()
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const [users, setUsers] = useState([]);
-  const [countries, setCountries] = useState([]);
-
-  const handleCountryChange = (value) => {
-    setCountry(value);
-  };
-
+  // CSS Styling
   const modalStyle = {
     position: "fixed",
     top: "25%",
@@ -60,6 +41,31 @@ const Companies = () => {
     marginLeft: '85%',
   };
 
+  // Functions of Add Company Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    addCompany()
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  // Countries API Functions
+  const [users, setUsers] = useState([]);
+  const [countries, setCountries] = useState([]);
+
+  const handleCountryChange = (value) => {
+    setCountry(value);
+  };
+
+
+  // Get API calls
   function getList() {
     fetch("http://127.0.0.1:8000/api/getcompany")
       .then((response) => response.json())
@@ -79,6 +85,7 @@ const Companies = () => {
     getCountry()
   }, []);
 
+  // Add API call
   async function addCompany() {
     let item = { company_name, address, company_email, contact_no, city, country }
 
@@ -103,6 +110,7 @@ const Companies = () => {
       });
   }
 
+  // Delete API call
   async function deleteCompany(newid) {
     await fetch('http://127.0.0.1:8000/api/delete-company', {
       method: 'POST',
@@ -129,18 +137,19 @@ const Companies = () => {
 
   return (
     <>
-    <div className='row'>
+      <div className='row'>
         <div className='col-md 6'></div>
         <div className='col-md 6'>
-        <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Company</Button>
+          <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Company</Button>
         </div>
-    </div>
-    <br></br>
+      </div>
+      <br></br>
       <div className="card">
         <div className="card-body">
           <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
             <CTableHead color="light" >
 
+              {/* Users table heading */}
               <CTableRow>
                 <CTableHeaderCell className="text-center" style={mystyle}>Company Name</CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle}>Address</CTableHeaderCell>
@@ -151,6 +160,7 @@ const Companies = () => {
                 <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
               </CTableRow>
 
+              {/* Get API Users */}
               {users.map((company) => (
                 <CTableRow key={company.id}>
                   <CTableHeaderCell className="text-center">{company.company_name}</CTableHeaderCell>
@@ -173,6 +183,7 @@ const Companies = () => {
             </CTableHead>
             <CTableBody>
 
+              {/* Modal for Add Company */}
               <Modal title="Add a Company" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
                 <div className="form-outline mb-3">
@@ -225,6 +236,7 @@ const Companies = () => {
                   />
                 </div>
 
+                {/* Select Country  */}
                 <div className="form-outline mb-3">
                   <Form.Item>
                     <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
