@@ -49,7 +49,6 @@ const Departments = () => {
     const handleOk = () => {
         addDepartment()
         setIsModalOpen(false);
-        handleButtonClick();
     };
     const handleCancel = () => {
         setIsModalOpen(false);
@@ -64,7 +63,6 @@ const Departments = () => {
     const handleOk2 = () => {
         deleteDepartment(isModalOpen2);
         setIsModalOpen2(false);
-        handleButtonClick2();
     };
 
     const handleCancel2 = () => {
@@ -80,35 +78,34 @@ const Departments = () => {
     const handleOk3 = () => {
         updateDepartment(isModalOpen3);
         setIsModalOpen3(false);
-        handleButtonClick3();
     };
 
     const handleCancel3 = () => {
         setIsModalOpen3(false);
     };
 
-    // Functions for Add User Alert
-    const [showAlert, setShowAlert] = useState(false);
+    // Functions for Add Department Success
+    const [showAlert1, setShowAlert1] = useState(false);
 
-    function handleButtonClick() {
-        setShowAlert(true);
+    function handleButtonClick1() {
+        setShowAlert1(true);
     }
 
-    function handleCloseAlert() {
-        setShowAlert(false);
+    function handleCloseAlert1() {
+        setShowAlert1(false);
     }
 
     useEffect(() => {
-        if (showAlert) {
+        if (showAlert1) {
             const timer = setTimeout(() => {
-                setShowAlert(false);
+                setShowAlert1(false);
             }, 3000);
 
             return () => clearTimeout(timer);
         }
-    }, [showAlert]);
+    }, [showAlert1]);
 
-    // Functions for Delete User Alert
+    // Functions for Add Department Failure
     const [showAlert2, setShowAlert2] = useState(false);
 
     function handleButtonClick2() {
@@ -129,7 +126,7 @@ const Departments = () => {
         }
     }, [showAlert2]);
 
-    // Functions for Update User Alert
+    // Functions for Delete Department Success
     const [showAlert3, setShowAlert3] = useState(false);
 
     function handleButtonClick3() {
@@ -149,6 +146,69 @@ const Departments = () => {
             return () => clearTimeout(timer);
         }
     }, [showAlert3]);
+
+    // Functions for Delete Department Failure
+    const [showAlert4, setShowAlert4] = useState(false);
+
+    function handleButtonClick4() {
+        setShowAlert4(true);
+    }
+
+    function handleCloseAlert4() {
+        setShowAlert4(false);
+    }
+
+    useEffect(() => {
+        if (showAlert4) {
+            const timer = setTimeout(() => {
+                setShowAlert4(false);
+            }, 3000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [showAlert4]);
+
+    // Functions for Update Department Failure
+    const [showAlert5, setShowAlert5] = useState(false);
+
+    function handleButtonClick5() {
+        setShowAlert5(true);
+    }
+
+    function handleCloseAlert5() {
+        setShowAlert5(false);
+    }
+
+    useEffect(() => {
+        if (showAlert5) {
+            const timer = setTimeout(() => {
+                setShowAlert5(false);
+            }, 3000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [showAlert5]);
+
+    // Functions for Update Department Failure
+    const [showAlert6, setShowAlert6] = useState(false);
+
+    function handleButtonClick6() {
+        setShowAlert6(true);
+    }
+
+    function handleCloseAlert6() {
+        setShowAlert6(false);
+    }
+
+    useEffect(() => {
+        if (showAlert6) {
+            const timer = setTimeout(() => {
+                setShowAlert6(false);
+            }, 3000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [showAlert6]);
 
     const [users, setUsers] = useState([]);
 
@@ -178,10 +238,10 @@ const Departments = () => {
 
             }).then(response => {
                 if (response.ok) {
-                    console.log('Department added Successfully');
+                    handleButtonClick1();
                     getList()
                 } else {
-                    console.error('Failed to add department');
+                    handleButtonClick2();
                 }
             })
             .catch(error => {
@@ -201,10 +261,10 @@ const Departments = () => {
             })
         }).then(response => {
             if (response.ok) {
-                console.log('Department deleted successfully');
+                handleButtonClick3();
                 getList()
             } else {
-                console.error('Failed to delete department');
+                handleButtonClick4();
             }
         })
             .catch(error => {
@@ -228,10 +288,10 @@ const Departments = () => {
             })
         }).then(response => {
             if (response.ok) {
-                console.log('Department updated successfully');
+                handleButtonClick5();
                 getList()
             } else {
-                console.error('Failed to update department');
+                handleButtonClick6();
             }
         })
             .catch(error => {
@@ -357,24 +417,45 @@ const Departments = () => {
                             <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
                             </Modal>
 
-                            {/* Alert for Add Department */}
-                            {showAlert && (
-                                <Alert onClose={handleCloseAlert} severity="success" style={modalStyle2}>
-                                    Department has been added
+                            {/* Alert for Add Department Success*/}
+                            {showAlert1 && (
+                                <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
+                                    Department Added Successfully
                                 </Alert>
                             )}
 
-                            {/* Alert for Delete Department */}
+                            {/* Alert for Add Department Failure*/}
                             {showAlert2 && (
                                 <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
-                                    Department has been deleted
+                                    Failed to Add Department
                                 </Alert>
                             )}
 
-                            {/* Alert for Update Department */}
+                            {/* Alert for Delete Department Success*/}
                             {showAlert3 && (
-                                <Alert onClose={handleCloseAlert3} severity="info" style={modalStyle2}>
-                                    Department has been updated
+                                <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
+                                    Department Deleted Successfully
+                                </Alert>
+                            )}
+
+                            {/* Alert for Delete Department Failure*/}
+                            {showAlert4 && (
+                                <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
+                                    Failed to Delete Department
+                                </Alert>
+                            )}
+
+                            {/* Alert for Update Department Success*/}
+                            {showAlert5 && (
+                                <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
+                                    Department Updated Successfully
+                                </Alert>
+                            )}
+
+                            {/* Alert for Update Department Failure*/}
+                            {showAlert6 && (
+                                <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
+                                    Failed to Update Department
                                 </Alert>
                             )}
 

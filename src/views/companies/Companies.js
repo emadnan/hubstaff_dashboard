@@ -228,6 +228,13 @@ const Companies = () => {
     setCountry(value);
   };
 
+  // Cities API Functions
+  const [cities, setCities] = useState([]);
+
+  const handleCityChange = (value) => {
+    setCities(value);
+  };
+
 
   // Get API calls
   function getList() {
@@ -244,9 +251,24 @@ const Companies = () => {
       .catch((error) => console.log(error));
   }
 
+  function getCity() {
+    fetch("http://127.0.0.1:8000/api/get_cities/167")
+      .then((response) => response.json())
+      .then((data) => setCities(data.Cities))
+      .catch((error) => console.log(error));
+  }
+
+  // function getCity(id) {
+  //   fetch(`http://127.0.0.1:8000/api/get_cities/${id}`)
+  //     .then((response) => response.json())
+  //     .then((data) => setCities(data.Cities))
+  //     .catch((error) => console.log(error));
+  // }
+
   useEffect(() => {
     getList()
     getCountry()
+    getCity()
   }, []);
 
   // Add API call
@@ -327,7 +349,6 @@ const Companies = () => {
       });
 
   }
-
 
   return (
     <>
@@ -430,8 +451,21 @@ const Companies = () => {
                   />
                 </div>
 
-                {/* Select Country  */}
+                {/* Select City  */}
                 <div className="form-outline mb-3">
+                  <Form.Item>
+                    <Select placeholder="Select City" onChange={handleCityChange} value={city}>
+                      {cities.map((citi) => (
+                        <Select.Option value={citi.name} key={citi.id}>
+                          {citi.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+
+                {/* Select Country  */}
+                 <div className="form-outline mb-3">
                   <Form.Item>
                     <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
                       {countries.map((count) => (
@@ -442,6 +476,7 @@ const Companies = () => {
                     </Select>
                   </Form.Item>
                 </div>
+
               </Modal>
 
               {/* Modal for deletion confirmation */}
