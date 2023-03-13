@@ -1,10 +1,4 @@
-import {
-  CTable,
-  CTableBody,
-  CTableHead,
-  CTableHeaderCell,
-  CTableRow,
-} from '@coreui/react'
+import { CTable , CTableBody , CTableHead , CTableHeaderCell , CTableRow } from '@coreui/react'
 import { Modal, Button, Select, Form } from 'antd';
 import { React, useState, useEffect } from 'react';
 import IconButton from '@mui/material/IconButton';
@@ -224,15 +218,21 @@ const Companies = () => {
   const [users, setUsers] = useState([]);
   const [countries, setCountries] = useState([]);
 
+  // const handleCountryChange = (value) => {
+  //   setCountry(value);
+  // };
+
   const handleCountryChange = (value) => {
     setCountry(value);
-  };
+    const selectedCountry = countries.find((country) => country.name === value);
+    getCity(selectedCountry.id);
+  }
 
   // Cities API Functions
   const [cities, setCities] = useState([]);
 
   const handleCityChange = (value) => {
-    setCities(value);
+    setCity(value);
   };
 
 
@@ -251,24 +251,16 @@ const Companies = () => {
       .catch((error) => console.log(error));
   }
 
-  function getCity() {
-    fetch("http://127.0.0.1:8000/api/get_cities/167")
+  function getCity(id) {
+    fetch(`http://127.0.0.1:8000/api/get_cities/${id}`)
       .then((response) => response.json())
       .then((data) => setCities(data.Cities))
       .catch((error) => console.log(error));
   }
 
-  // function getCity(id) {
-  //   fetch(`http://127.0.0.1:8000/api/get_cities/${id}`)
-  //     .then((response) => response.json())
-  //     .then((data) => setCities(data.Cities))
-  //     .catch((error) => console.log(error));
-  // }
-
   useEffect(() => {
     getList()
     getCountry()
-    getCity()
   }, []);
 
   // Add API call
@@ -441,14 +433,17 @@ const Companies = () => {
                   />
                 </div>
 
+                {/* Select Country  */}
                 <div className="form-outline mb-3">
-                  <input
-                    type="text"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter City"
-                  />
+                  <Form.Item>
+                    <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
+                      {countries.map((count) => (
+                        <Select.Option value={count.name} key={count.id}>
+                          {count.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
                 </div>
 
                 {/* Select City  */}
@@ -458,19 +453,6 @@ const Companies = () => {
                       {cities.map((citi) => (
                         <Select.Option value={citi.name} key={citi.id}>
                           {citi.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
-
-                {/* Select Country  */}
-                 <div className="form-outline mb-3">
-                  <Form.Item>
-                    <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
-                      {countries.map((count) => (
-                        <Select.Option value={count.name} key={count.id}>
-                          {count.name}
                         </Select.Option>
                       ))}
                     </Select>
@@ -523,16 +505,6 @@ const Companies = () => {
                     onChange={(e) => setContactNo(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Contact No"
-                  />
-                </div>
-
-                <div className="form-outline mb-3">
-                  <input
-                    type="text"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter City"
                   />
                 </div>
 
