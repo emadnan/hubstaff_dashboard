@@ -43,7 +43,11 @@ const Projects = () => {
   };
 
   const buttonStyle = {
-    marginLeft: '-100%',
+    float: "right",
+    padding: "2px",
+    width: "120px",
+    backgroundColor: "#0070ff",
+    fontWeight: "bold",
   }
 
   // Functions for Add Project Modal
@@ -314,15 +318,17 @@ const Projects = () => {
   return (
     <>
       <div className='row'>
-        <div className='col-md 6'></div>
+        <div className='col-md 6'>
+          <h3>Projects</h3>
+        </div>
         <div className='col-md 6'>
           {/* Add Project Button */}
           <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Project</Button>
         </div>
       </div>
       <br></br>
-      <div className="card">
-        <div className="card-body">
+      {/* <div className="card">
+        <div className="card-body"> */}
           <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
             <CTableHead color="light" >
 
@@ -347,12 +353,13 @@ const Projects = () => {
                   <CTableHeaderCell className="text-center">{project.start_date}</CTableHeaderCell>
                   <CTableHeaderCell className="text-center">{project.dead_line}</CTableHeaderCell>
                   <CTableHeaderCell className="text-center">
+                  <IconButton aria-label="delete" onClick={() => showModal3(project.id)}>
+                      <EditIcon htmlColor='#0070ff'/>
+                    </IconButton>
                     <IconButton aria-label="delete" onClick={() => showModal2(project.id)}>
-                      <DeleteIcon color="primary" />
+                      <DeleteIcon htmlColor='#FF0000'/>
                     </IconButton>
-                    <IconButton aria-label="delete" onClick={() => showModal3(project.id)}>
-                      <EditIcon color="primary" />
-                    </IconButton>
+                    
                   </CTableHeaderCell>
                 </CTableRow>
               ))}
@@ -598,8 +605,8 @@ const Projects = () => {
 
             </CTableBody>
           </CTable>
-        </div>
-      </div>
+        {/* </div>
+      </div> */}
     </>
   );
 }
