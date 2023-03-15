@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { CTableBody, CTableHead, CTableHeaderCell, CTableRow, CTable } from '@coreui/react'
-import { Modal, Button } from 'antd';
+import { Modal, Button, Form, Select } from 'antd';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -33,8 +33,13 @@ const Departments = () => {
     };
 
     const buttonStyle = {
-        marginLeft: '-100%',
-    }
+        float: "right",
+        padding: "2px",
+        width: "150px",
+        backgroundColor: "#0070ff",
+        fontWeight: "bold",
+        color: "white",
+    };
 
     // Variable declarations
     const [company_id, setCompanyId] = useState("");
@@ -210,7 +215,12 @@ const Departments = () => {
         }
     }, [showAlert6]);
 
+    const handleCompanyChange = (value) => {
+        setCompanyId(value);
+    };
+
     const [users, setUsers] = useState([]);
+    const [company, setCompanies] = useState([]);
 
     // Get API call
     function getList() {
@@ -222,7 +232,15 @@ const Departments = () => {
 
     useEffect(() => {
         getList()
+        getCompany()
     }, []);
+
+    function getCompany() {
+        fetch("http://127.0.0.1:8000/api/getcompany")
+            .then((response) => response.json())
+            .then((data) => setCompanies(data.companies))
+            .catch((error) => console.log(error));
+    }
 
     // Add API call
     async function addDepartment() {
@@ -303,166 +321,174 @@ const Departments = () => {
     return (
         <>
             <div className='row'>
-                <div className='col-md 6'></div>
                 <div className='col-md 6'>
-                    {/* Add Department Button */}
+                    <h3>Departments</h3>
+                </div>
+                <div className='col-md 6'>
+                    {/* Add Project Button */}
                     <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Department</Button>
                 </div>
             </div>
             <br></br>
-            <div className="card">
-                <div className="card-body">
-                    <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-                        <CTableHead color="light" >
+            <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
+                <CTableHead color="light" >
 
-                            {/* Users table heading */}
-                            <CTableRow>
-                                <CTableHeaderCell className="text-center" style={mystyle}>Company Id</CTableHeaderCell>
-                                <CTableHeaderCell className="text-center" style={mystyle}>Department Name</CTableHeaderCell>
-                                <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell>
-                                <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
-                            </CTableRow>
+                    {/* Users table heading */}
+                    <CTableRow>
+                        <CTableHeaderCell className="text-center" style={mystyle}>SR/No</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Company Name</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Department Name</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
+                    </CTableRow>
 
-                            {/* Get API Users */}
-                            {users.map((department) => (
-                                <CTableRow key={department.id}>
-                                    <CTableHeaderCell className="text-center">{department.company_id}</CTableHeaderCell>
-                                    <CTableHeaderCell className="text-center">{department.department_name}</CTableHeaderCell>
-                                    <CTableHeaderCell className="text-center">{department.description}</CTableHeaderCell>
-                                    <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
-                                        <IconButton aria-label="delete" onClick={() => showModal2(department.id)}>
-                                            <DeleteIcon color="primary" />
-                                        </IconButton>
-                                        <IconButton aria-label="update" onClick={() => showModal3(department.id)}>
-                                            <EditIcon color="primary " />
-                                        </IconButton>
-                                    </CTableHeaderCell>
-                                </CTableRow>
-                            ))}
+                    {/* Get API Users */}
+                    {users.map((department, index) => (
+                        <CTableRow key={department.id}>
+                            <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
+                            {/* <CTableHeaderCell className="text-center">{department.company_id}</CTableHeaderCell> */}
+                            <CTableHeaderCell className="text-center">{department.company_name}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">{department.department_name}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">{department.description}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
+                                <IconButton aria-label="update" onClick={() => showModal3(department.id)}>
+                                    <EditIcon htmlColor='#28B463' />
+                                </IconButton>
+                                <IconButton aria-label="delete" onClick={() => showModal2(department.id)}>
+                                    <DeleteIcon htmlColor='#FF0000' />
+                                </IconButton>
 
-                        </CTableHead>
-                        <CTableBody>
+                            </CTableHeaderCell>
+                        </CTableRow>
+                    ))}
 
-                            {/* Modal for Add Department */}
-                            <Modal title="Add a Department" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+                </CTableHead>
+                <CTableBody>
 
-                                <div className="form-outline mb-3">
-                                    <input
-                                        type="number"
-                                        value={company_id}
-                                        onChange={(e) => setCompanyId(e.target.value)}
-                                        className="form-control form-control-lg"
-                                        placeholder="Enter Company Id"
-                                    />
-                                </div>
+                    {/* Modal for Add Department */}
+                    <Modal title="Add a Department" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
-                                <div className="form-outline mb-3">
-                                    <input
-                                        type="text"
-                                        value={department_name}
-                                        onChange={(e) => setDepartmentName(e.target.value)}
-                                        className="form-control form-control-lg"
-                                        placeholder="Enter Department Name"
-                                    />
-                                </div>
+                        {/* Select Company  */}
+                        <div className="form-outline mb-3">
+                            <Form.Item label="Company">
+                                <Select placeholder="Select Company" onChange={handleCompanyChange} value={company_id}>
+                                    {company.map((count) => (
+                                        <Select.Option value={count.name} key={count.id}>
+                                            {count.company_name}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </div>
 
-                                <div className="form-outline mb-3">
-                                    <input
-                                        type="text"
-                                        value={description}
-                                        onChange={(e) => setDescription(e.target.value)}
-                                        className="form-control form-control-lg"
-                                        placeholder="Enter Description"
-                                    />
-                                </div>
+                        <div className="form-outline mb-3">
+                            <input
+                                type="text"
+                                value={department_name}
+                                onChange={(e) => setDepartmentName(e.target.value)}
+                                className="form-control form-control-lg"
+                                placeholder="Enter Department Name"
+                            />
+                        </div>
 
-                            </Modal>
+                        <div className="form-outline mb-3">
+                            <input
+                                type="text"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                className="form-control form-control-lg"
+                                placeholder="Enter Description"
+                            />
+                        </div>
 
-                            {/* Modal for Update Department */}
-                            <Modal title="Update a Department" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
+                    </Modal>
 
-                                <div className="form-outline mb-3">
-                                    <input
-                                        type="number"
-                                        value={company_id}
-                                        onChange={(e) => setCompanyId(e.target.value)}
-                                        className="form-control form-control-lg"
-                                        placeholder="Enter Company Id"
-                                    />
-                                </div>
+                    {/* Modal for Update Department */}
+                    <Modal title="Update a Department" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
 
-                                <div className="form-outline mb-3">
-                                    <input
-                                        type="text"
-                                        value={department_name}
-                                        onChange={(e) => setDepartmentName(e.target.value)}
-                                        className="form-control form-control-lg"
-                                        placeholder="Enter Department Name"
-                                    />
-                                </div>
+                        {/* Select Company  */}
+                        <div className="form-outline mb-3">
+                            <Form.Item label="Company">
+                                <Select placeholder="Select Company" onChange={handleCompanyChange} value={company_id}>
+                                    {company.map((count) => (
+                                        <Select.Option value={count.name} key={count.id}>
+                                            {count.company_name}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </div>
 
-                                <div className="form-outline mb-3">
-                                    <input
-                                        type="text"
-                                        value={description}
-                                        onChange={(e) => setDescription(e.target.value)}
-                                        className="form-control form-control-lg"
-                                        placeholder="Enter Description"
-                                    />
-                                </div>
+                        <div className="form-outline mb-3">
+                            <input
+                                type="text"
+                                value={department_name}
+                                onChange={(e) => setDepartmentName(e.target.value)}
+                                className="form-control form-control-lg"
+                                placeholder="Enter Department Name"
+                            />
+                        </div>
 
-                            </Modal>
+                        <div className="form-outline mb-3">
+                            <input
+                                type="text"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                className="form-control form-control-lg"
+                                placeholder="Enter Description"
+                            />
+                        </div>
 
-                            {/* Modal for deletion confirmation */}
-                            <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
-                            </Modal>
+                    </Modal>
 
-                            {/* Alert for Add Department Success*/}
-                            {showAlert1 && (
-                                <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
-                                    Department Added Successfully
-                                </Alert>
-                            )}
+                    {/* Modal for deletion confirmation */}
+                    <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
+                    </Modal>
 
-                            {/* Alert for Add Department Failure*/}
-                            {showAlert2 && (
-                                <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
-                                    Failed to Add Department
-                                </Alert>
-                            )}
+                    {/* Alert for Add Department Success*/}
+                    {showAlert1 && (
+                        <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
+                            Department Added Successfully
+                        </Alert>
+                    )}
 
-                            {/* Alert for Delete Department Success*/}
-                            {showAlert3 && (
-                                <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
-                                    Department Deleted Successfully
-                                </Alert>
-                            )}
+                    {/* Alert for Add Department Failure*/}
+                    {showAlert2 && (
+                        <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
+                            Failed to Add Department
+                        </Alert>
+                    )}
 
-                            {/* Alert for Delete Department Failure*/}
-                            {showAlert4 && (
-                                <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
-                                    Failed to Delete Department
-                                </Alert>
-                            )}
+                    {/* Alert for Delete Department Success*/}
+                    {showAlert3 && (
+                        <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
+                            Department Deleted Successfully
+                        </Alert>
+                    )}
 
-                            {/* Alert for Update Department Success*/}
-                            {showAlert5 && (
-                                <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
-                                    Department Updated Successfully
-                                </Alert>
-                            )}
+                    {/* Alert for Delete Department Failure*/}
+                    {showAlert4 && (
+                        <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
+                            Failed to Delete Department
+                        </Alert>
+                    )}
 
-                            {/* Alert for Update Department Failure*/}
-                            {showAlert6 && (
-                                <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
-                                    Failed to Update Department
-                                </Alert>
-                            )}
+                    {/* Alert for Update Department Success*/}
+                    {showAlert5 && (
+                        <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
+                            Department Updated Successfully
+                        </Alert>
+                    )}
 
-                        </CTableBody>
-                    </CTable>
-                </div>
-            </div>
+                    {/* Alert for Update Department Failure*/}
+                    {showAlert6 && (
+                        <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
+                            Failed to Update Department
+                        </Alert>
+                    )}
+
+                </CTableBody>
+            </CTable>
         </>
     )
 }

@@ -7,9 +7,9 @@ import routes from '../routes'
 
 const AppContent = () => {
 
-  const backgrounds = {
-    backgroundColor: "white",
-  };
+  // const backgrounds = {
+  //   backgroundColor: "white",
+  // };
 
   return (
     <CContainer fluid>

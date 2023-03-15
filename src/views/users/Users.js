@@ -38,8 +38,13 @@ const Users = () => {
     };
 
     const buttonStyle = {
-        marginLeft: '-100%',
-    }
+        float: "right",
+        padding: "2px",
+        width: "120px",
+        backgroundColor: "#0070ff",
+        fontWeight: "bold",
+        color: "white",
+    };
 
     // Functions for Add User Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -305,186 +310,187 @@ const Users = () => {
     return (
         <>
             <div className='row'>
-                <div className='col-md 6'></div>
                 <div className='col-md 6'>
-                    {/* Add User Button */}
+                    <h3>Users</h3>
+                </div>
+                <div className='col-md 6'>
+                    {/* Add Project Button */}
                     <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add User</Button>
                 </div>
             </div>
             <br></br>
-            <div className="card">
-                <div className="card-body">
-                    <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-                        <CTableHead color="light" >
+            <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
+                <CTableHead color="light" >
 
-                            {/* Users table heading */}
-                            <CTableRow>
-                                <CTableHeaderCell className="text-center" style={mystyle}>Name</CTableHeaderCell>
-                                <CTableHeaderCell className="text-center" style={mystyle}>Email</CTableHeaderCell>
-                                <CTableHeaderCell className="text-center" style={mystyle}>Role-Id</CTableHeaderCell>
-                                <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
-                            </CTableRow>
+                    {/* Users table heading */}
+                    <CTableRow>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>User Name</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Email</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Role-Id</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
+                    </CTableRow>
 
-                            {/* Get API Users */}
-                            {users.map((user) => (
-                                <CTableRow key={user.id}>
-                                    <CTableHeaderCell className="text-center">{user.name}</CTableHeaderCell>
-                                    <CTableHeaderCell className="text-center">{user.email}</CTableHeaderCell>
-                                    <CTableHeaderCell className="text-center">{user.role_id}</CTableHeaderCell>
-                                    <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
-                                        <IconButton aria-label="delete" onClick={() => showModal2(user.id)}>
-                                            <DeleteIcon color="primary" />
-                                        </IconButton>
-                                        <IconButton aria-label="delete" onClick={() => showModal3(user.id)}>
-                                            <EditIcon color="primary" />
-                                        </IconButton>
-                                    </CTableHeaderCell>
-                                </CTableRow>
-                            ))}
+                    {/* Get API Users */}
+                    {users.map((user, index) => (
+                        <CTableRow key={user.id}>
+                            <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">{user.name}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">{user.email}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">{user.role_id}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
+                                <IconButton aria-label="update" onClick={() => showModal3(user.id)}>
+                                    <EditIcon htmlColor='#28B463' />
+                                </IconButton>
+                                <IconButton aria-label="delete" onClick={() => showModal2(user.id)}>
+                                    <DeleteIcon htmlColor='#FF0000' />
+                                </IconButton>
 
-                        </CTableHead>
-                        <CTableBody>
+                            </CTableHeaderCell>
+                        </CTableRow>
+                    ))}
 
-                            {/* Modal for Add User */}
-                            <Modal title="Add a User" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+                </CTableHead>
+                <CTableBody>
 
-                                <div className="form-outline mb-3">
-                                    <input
-                                        type="text"
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                        className="form-control form-control-lg"
-                                        placeholder="Enter User Name"
-                                    />
-                                </div>
+                    {/* Modal for Add User */}
+                    <Modal title="Add a User" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
-                                <div className="form-outline mb-3">
-                                    <input
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className="form-control form-control-lg"
-                                        placeholder="Enter Email"
-                                    />
-                                </div>
+                        <div className="form-outline mb-3">
+                            <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="form-control form-control-lg"
+                                placeholder="Enter User Name"
+                            />
+                        </div>
 
-                                <div className="form-outline mb-3">
-                                    <input
-                                        type="password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        className="form-control form-control-lg"
-                                        placeholder="Enter Password"
-                                    />
-                                </div>
+                        <div className="form-outline mb-3">
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="form-control form-control-lg"
+                                placeholder="Enter Email"
+                            />
+                        </div>
 
-                                <div className="form-outline mb-3">
-                                    <input
-                                        type="number"
-                                        value={role_id}
-                                        onChange={(e) => setRoleId(e.target.value)}
-                                        className="form-control form-control-lg"
-                                        placeholder="Enter Role Id"
-                                    />
-                                </div>
+                        <div className="form-outline mb-3">
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="form-control form-control-lg"
+                                placeholder="Enter Password"
+                            />
+                        </div>
 
-                            </Modal>
+                        <div className="form-outline mb-3">
+                            <input
+                                type="number"
+                                value={role_id}
+                                onChange={(e) => setRoleId(e.target.value)}
+                                className="form-control form-control-lg"
+                                placeholder="Enter Role Id"
+                            />
+                        </div>
 
-                            {/* Modal for Update User */}
-                            <Modal title="Update a User" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
+                    </Modal>
 
-                                <div className="form-outline mb-3">
-                                    <input
-                                        type="text"
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                        className="form-control form-control-lg"
-                                        placeholder="Enter User Name"
-                                    />
-                                </div>
+                    {/* Modal for Update User */}
+                    <Modal title="Update a User" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
 
-                                <div className="form-outline mb-3">
-                                    <input
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className="form-control form-control-lg"
-                                        placeholder="Enter Email"
-                                    />
-                                </div>
+                        <div className="form-outline mb-3">
+                            <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="form-control form-control-lg"
+                                placeholder="Enter User Name"
+                            />
+                        </div>
 
-                                <div className="form-outline mb-3">
-                                    <input
-                                        type="password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        className="form-control form-control-lg"
-                                        placeholder="Enter Password"
-                                    />
-                                </div>
+                        <div className="form-outline mb-3">
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="form-control form-control-lg"
+                                placeholder="Enter Email"
+                            />
+                        </div>
 
-                                <div className="form-outline mb-3">
-                                    <input
-                                        type="number"
-                                        value={role_id}
-                                        onChange={(e) => setRoleId(e.target.value)}
-                                        className="form-control form-control-lg"
-                                        placeholder="Enter Role Id"
-                                    />
-                                </div>
+                        <div className="form-outline mb-3">
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="form-control form-control-lg"
+                                placeholder="Enter Password"
+                            />
+                        </div>
 
-                            </Modal>
+                        <div className="form-outline mb-3">
+                            <input
+                                type="number"
+                                value={role_id}
+                                onChange={(e) => setRoleId(e.target.value)}
+                                className="form-control form-control-lg"
+                                placeholder="Enter Role Id"
+                            />
+                        </div>
 
-                            {/* Modal for Deletion Confirmation */}
-                            <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
-                            </Modal>
+                    </Modal>
 
-                            {/* Alert for Add User Success*/}
-                            {showAlert1 && (
-                                <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
-                                    User Added Successfully
-                                </Alert>
-                            )}
+                    {/* Modal for Deletion Confirmation */}
+                    <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
+                    </Modal>
 
-                            {/* Alert for Add User Failure*/}
-                            {showAlert2 && (
-                                <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
-                                    Failed to Add User
-                                </Alert>
-                            )}
+                    {/* Alert for Add User Success*/}
+                    {showAlert1 && (
+                        <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
+                            User Added Successfully
+                        </Alert>
+                    )}
 
-                            {/* Alert for Delete User Success*/}
-                            {showAlert3 && (
-                                <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
-                                    User Deleted Successfully
-                                </Alert>
-                            )}
+                    {/* Alert for Add User Failure*/}
+                    {showAlert2 && (
+                        <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
+                            Failed to Add User
+                        </Alert>
+                    )}
 
-                            {/* Alert for Delete User Failure*/}
-                            {showAlert4 && (
-                                <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
-                                    Failed to Delete User
-                                </Alert>
-                            )}
+                    {/* Alert for Delete User Success*/}
+                    {showAlert3 && (
+                        <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
+                            User Deleted Successfully
+                        </Alert>
+                    )}
 
-                            {/* Alert for Update User Success*/}
-                            {showAlert5 && (
-                                <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
-                                    User Updated Successfully
-                                </Alert>
-                            )}
+                    {/* Alert for Delete User Failure*/}
+                    {showAlert4 && (
+                        <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
+                            Failed to Delete User
+                        </Alert>
+                    )}
 
-                            {/* Alert for Update User Failure*/}
-                            {showAlert6 && (
-                                <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
-                                    Failed to Update User
-                                </Alert>
-                            )}
+                    {/* Alert for Update User Success*/}
+                    {showAlert5 && (
+                        <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
+                            User Updated Successfully
+                        </Alert>
+                    )}
 
-                        </CTableBody>
-                    </CTable>
-                </div>
-            </div>
+                    {/* Alert for Update User Failure*/}
+                    {showAlert6 && (
+                        <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
+                            Failed to Update User
+                        </Alert>
+                    )}
+
+                </CTableBody>
+            </CTable>
         </>
     );
 }

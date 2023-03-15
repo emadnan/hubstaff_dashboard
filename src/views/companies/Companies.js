@@ -1,4 +1,4 @@
-import { CTable , CTableBody , CTableHead , CTableHeaderCell , CTableRow } from '@coreui/react'
+import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { Modal, Button, Select, Form } from 'antd';
 import { React, useState, useEffect } from 'react';
 import IconButton from '@mui/material/IconButton';
@@ -40,8 +40,13 @@ const Companies = () => {
   };
 
   const buttonStyle = {
-    marginLeft: '-100%',
-  };
+    float: "right",
+    padding: "2px",
+    width: "120px",
+    backgroundColor: "#0070ff",
+    fontWeight: "bold",
+    color: "white",
+  }
 
   // Functions of Add Company Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -345,229 +350,244 @@ const Companies = () => {
   return (
     <>
       <div className='row'>
-        <div className='col-md 6'></div>
         <div className='col-md 6'>
+          <h3>Companies</h3>
+        </div>
+        <div className='col-md 6'>
+          {/* Add Project Button */}
           <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Company</Button>
         </div>
       </div>
       <br></br>
-      <div className="card">
-        <div className="card-body">
-          <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-            <CTableHead color="light" >
+      <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
+        <CTableHead color="light" >
 
-              {/* Users table heading */}
-              <CTableRow>
-                <CTableHeaderCell className="text-center" style={mystyle}>Company Name</CTableHeaderCell>
-                <CTableHeaderCell className="text-center" style={mystyle}>Address</CTableHeaderCell>
-                <CTableHeaderCell className="text-center" style={mystyle}>Company Email</CTableHeaderCell>
-                <CTableHeaderCell className="text-center" style={mystyle}>Contact No</CTableHeaderCell>
-                <CTableHeaderCell className="text-center" style={mystyle}>City</CTableHeaderCell>
-                <CTableHeaderCell className="text-center" style={mystyle}>Country</CTableHeaderCell>
-                <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
-              </CTableRow>
+          {/* Users table heading */}
+          <CTableRow>
+            <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>Company Name</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>Address</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>Company Email</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>Contact No</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>City</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>Country</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
+          </CTableRow>
 
-              {/* Get API Users */}
-              {users.map((company) => (
-                <CTableRow key={company.id}>
-                  <CTableHeaderCell className="text-center">{company.company_name}</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center">{company.address}</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center">{company.company_email}</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center">{company.contact_no}</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center">{company.city}</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center">{company.country}</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
-                    <IconButton aria-label="delete" onClick={() => showModal2(company.id)}>
-                      <DeleteIcon color="primary" />
-                    </IconButton>
-                    <IconButton aria-label="update" onClick={() => showModal3(company.id)}>
-                      <EditIcon color="primary " />
-                    </IconButton>
-                  </CTableHeaderCell>
-                </CTableRow>
-              ))}
+          {/* Get API Users */}
+          {users.map((company, index) => (
+            <CTableRow key={company.id}>
+              <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center">{company.company_name}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center">{company.address}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center">{company.company_email}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center">{company.contact_no}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center">{company.city}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center">{company.country}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
+                <IconButton aria-label="update" onClick={() => showModal3(company.id)}>
+                  <EditIcon htmlColor='#28B463'/>
+                </IconButton>
+                <IconButton aria-label="delete" onClick={() => showModal2(company.id)}>
+                  <DeleteIcon htmlColor='#FF0000'/>
+                </IconButton>
 
-            </CTableHead>
-            <CTableBody>
+              </CTableHeaderCell>
+            </CTableRow>
+          ))}
 
-              {/* Modal for Add Company */}
-              <Modal title="Add a Company" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+        </CTableHead>
+        <CTableBody>
 
-                <div className="form-outline mb-3">
-                  <input
-                    type="text"
-                    value={company_name}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Company Name"
-                  />
-                </div>
+          {/* Modal for Add Company */}
+          <Modal title="Add a Company" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
-                <div className="form-outline mb-3">
-                  <input
-                    type="text"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Address"
-                  />
-                </div>
+            <div className="form-outline mb-3">
+              <input
+                type="text"
+                value={company_name}
+                onChange={(e) => setCompanyName(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Company Name"
+              />
+            </div>
 
-                <div className="form-outline mb-3">
-                  <input
-                    type="text"
-                    value={company_email}
-                    onChange={(e) => setCompanyEmail(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Company Email"
-                  />
-                </div>
+            <div className="form-outline mb-3">
+              <input
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Address"
+              />
+            </div>
 
-                <div className="form-outline mb-3">
-                  <input
-                    type="text"
-                    value={contact_no}
-                    onChange={(e) => setContactNo(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Contact No"
-                  />
-                </div>
+            <div className="form-outline mb-3">
+              <input
+                type="text"
+                value={company_email}
+                onChange={(e) => setCompanyEmail(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Company Email"
+              />
+            </div>
 
-                {/* Select Country  */}
-                <div className="form-outline mb-3">
-                  <Form.Item>
-                    <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
-                      {countries.map((count) => (
-                        <Select.Option value={count.name} key={count.id}>
-                          {count.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
+            <div className="form-outline mb-3">
+              <input
+                type="text"
+                value={contact_no}
+                onChange={(e) => setContactNo(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Contact No"
+              />
+            </div>
 
-                {/* Select City  */}
-                <div className="form-outline mb-3">
-                  <Form.Item>
-                    <Select placeholder="Select City" onChange={handleCityChange} value={city}>
-                      {cities.map((citi) => (
-                        <Select.Option value={citi.name} key={citi.id}>
-                          {citi.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
+            {/* Select Country  */}
+            <div className="form-outline mb-3">
+              <Form.Item label="Country">
+                <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
+                  {countries.map((count) => (
+                    <Select.Option value={count.name} key={count.id}>
+                      {count.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
 
-              </Modal>
+            {/* Select City  */}
+            <div className="form-outline mb-3">
+              <Form.Item label="City">
+                <Select placeholder="Select City" onChange={handleCityChange} value={city}>
+                  {cities.map((citi) => (
+                    <Select.Option value={citi.name} key={citi.id}>
+                      {citi.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
 
-              {/* Modal for deletion confirmation */}
-              <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
-              </Modal>
+          </Modal>
 
-              {/* Modal for Update Company */}
-              <Modal title="Update a Company" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
+          {/* Modal for deletion confirmation */}
+          <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
+          </Modal>
 
-                <div className="form-outline mb-3">
-                  <input
-                    type="text"
-                    value={company_name}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Company Name"
-                  />
-                </div>
+          {/* Modal for Update Company */}
+          <Modal title="Update a Company" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
 
-                <div className="form-outline mb-3">
-                  <input
-                    type="text"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Address"
-                  />
-                </div>
+            <div className="form-outline mb-3">
+              <input
+                type="text"
+                value={company_name}
+                onChange={(e) => setCompanyName(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Company Name"
+              />
+            </div>
 
-                <div className="form-outline mb-3">
-                  <input
-                    type="text"
-                    value={company_email}
-                    onChange={(e) => setCompanyEmail(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Company Email"
-                  />
-                </div>
+            <div className="form-outline mb-3">
+              <input
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Address"
+              />
+            </div>
 
-                <div className="form-outline mb-3">
-                  <input
-                    type="text"
-                    value={contact_no}
-                    onChange={(e) => setContactNo(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Contact No"
-                  />
-                </div>
+            <div className="form-outline mb-3">
+              <input
+                type="text"
+                value={company_email}
+                onChange={(e) => setCompanyEmail(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Company Email"
+              />
+            </div>
 
-                {/* Select Country  */}
-                <div className="form-outline mb-3">
-                  <Form.Item>
-                    <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
-                      {countries.map((count) => (
-                        <Select.Option value={count.name} key={count.id}>
-                          {count.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
-              </Modal>
+            <div className="form-outline mb-3">
+              <input
+                type="text"
+                value={contact_no}
+                onChange={(e) => setContactNo(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Contact No"
+              />
+            </div>
 
-              {/* Alert for Add Company Success*/}
-              {showAlert1 && (
-                <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
-                  Company Added Successfully
-                </Alert>
-              )}
+            {/* Select Country  */}
+            <div className="form-outline mb-3">
+              <Form.Item label="Country">
+                <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
+                  {countries.map((count) => (
+                    <Select.Option value={count.name} key={count.id}>
+                      {count.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
 
-              {/* Alert for Add Company Failure*/}
-              {showAlert2 && (
-                <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
-                  Failed to Add Company
-                </Alert>
-              )}
+            {/* Select City  */}
+            <div className="form-outline mb-3">
+              <Form.Item label="City">
+                <Select placeholder="Select City" onChange={handleCityChange} value={city}>
+                  {cities.map((citi) => (
+                    <Select.Option value={citi.name} key={citi.id}>
+                      {citi.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
+          </Modal>
 
-              {/* Alert for Delete Company Success*/}
-              {showAlert3 && (
-                <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
-                  Company Deleted Successfully
-                </Alert>
-              )}
+          {/* Alert for Add Company Success*/}
+          {showAlert1 && (
+            <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
+              Company Added Successfully
+            </Alert>
+          )}
 
-              {/* Alert for Delete Company Failure*/}
-              {showAlert4 && (
-                <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
-                  Failed to Delete Company
-                </Alert>
-              )}
+          {/* Alert for Add Company Failure*/}
+          {showAlert2 && (
+            <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
+              Failed to Add Company
+            </Alert>
+          )}
 
-              {/* Alert for Update Company Success*/}
-              {showAlert5 && (
-                <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
-                  Company Updated Successfully
-                </Alert>
-              )}
+          {/* Alert for Delete Company Success*/}
+          {showAlert3 && (
+            <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
+              Company Deleted Successfully
+            </Alert>
+          )}
 
-              {/* Alert for Update Company Failure*/}
-              {showAlert6 && (
-                <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
-                  Failed to Update Company
-                </Alert>
-              )}
+          {/* Alert for Delete Company Failure*/}
+          {showAlert4 && (
+            <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
+              Failed to Delete Company
+            </Alert>
+          )}
 
-            </CTableBody>
-          </CTable>
-        </div>
-      </div>
+          {/* Alert for Update Company Success*/}
+          {showAlert5 && (
+            <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
+              Company Updated Successfully
+            </Alert>
+          )}
+
+          {/* Alert for Update Company Failure*/}
+          {showAlert6 && (
+            <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
+              Failed to Update Company
+            </Alert>
+          )}
+
+        </CTableBody>
+      </CTable>
     </>
   );
 }
