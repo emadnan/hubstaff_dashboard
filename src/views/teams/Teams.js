@@ -1,36 +1,8 @@
-import {
-  CTable,
-  CTableBody,
-  CTableHead,
-  CTableHeaderCell,
-  CTableRow,
-} from '@coreui/react'
-import { React, useState } from 'react';
-import { Modal, Button } from 'antd';
+import { CTable , CTableBody , CTableHead , CTableHeaderCell , CTableRow } from '@coreui/react'
+import { React } from 'react';
+import { Button } from 'antd';
 
 const Team = () => {
-
-  const [team_name, setTeamName] = useState("");
-  const [members, setMembers] = useState("");
-  const [projects, setProjects] = useState("");
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    // addUser()
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const modalStyle = {
-    position: "fixed",
-    top: "25%",
-    left: "40%",
-  };
 
   const mystyle = {
     color: "white",
@@ -42,69 +14,40 @@ const Team = () => {
   };
 
   const buttonStyle = {
-    marginLeft: '85%',
+    float: "right",
+    padding: "2px",
+    width: "120px",
+    backgroundColor: "#0070ff",
+    fontWeight: "bold",
+    color: "white",
   };
 
   return (
     <>
-    <div className='row'>
-        <div className='col-md 6'></div>
+      <div className='row'>
         <div className='col-md 6'>
-        <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Team</Button>
+          <h3>Teams</h3>
         </div>
-    </div>
-    <br></br>
-    <div className="card">
-      <div className="card-body">
-        <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '10px' }}>
-          <CTableHead color="light" >
-            <CTableRow>
-              <CTableHeaderCell className="text-center" style={mystyle}>Name</CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle}>Members</CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle}>Projects</CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
-            </CTableRow>
-          </CTableHead>
-          <CTableBody>
-
-            <Modal title="Add a Team" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
-
-              <div className="form-outline mb-3">
-                <input
-                  type="text"
-                  value={team_name}
-                  onChange={(e) => setTeamName(e.target.value)}
-                  className="form-control form-control-lg"
-                  placeholder="Enter Team Name"
-                />
-              </div>
-
-              <div className="form-outline mb-3">
-                <input
-                  type="text"
-                  value={members}
-                  onChange={(e) => setMembers(e.target.value)}
-                  className="form-control form-control-lg"
-                  placeholder="Enter Member"
-                />
-              </div>
-
-              <div className="form-outline mb-3">
-                <input
-                  type="text"
-                  value={projects}
-                  onChange={(e) => setProjects(e.target.value)}
-                  className="form-control form-control-lg"
-                  placeholder="Enter Project Name"
-                />
-              </div>
-
-            </Modal>
-
-          </CTableBody>
-        </CTable>
+        <div className='col-md 6'>
+          {/* Add Project Button */}
+          <Button className="btn btn-primary" style={buttonStyle}>Add Team</Button>
+        </div>
       </div>
-    </div>
+      <br></br>
+      <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '10px' }}>
+        <CTableHead color="light" >
+          <CTableRow>
+            <CTableHeaderCell className="text-center" style={mystyle}>Name</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>Members</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>Projects</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
+          </CTableRow>
+        </CTableHead>
+
+        <CTableBody>
+
+        </CTableBody>
+      </CTable>
     </>
   );
 }
