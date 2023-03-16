@@ -3,15 +3,15 @@ import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
 
+  //Variable Declarations
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
 
+  //Login API call
   async function login() {
     let item = { email, password }
-    console.warn(item)
-
     let result = await fetch("http://127.0.0.1:8000/api/login",
       {
         method: 'POST',
@@ -34,7 +34,7 @@ const Login = () => {
           <img
             src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
             className="img-fluid"
-            alt="Sample Image"
+            alt="Sample"
           />
         </div>
         <div className="col-md-10 col-lg-6 col-xl-4 offset-xl-1">
@@ -44,7 +44,7 @@ const Login = () => {
             </div>
             <div className="divider d-flex align-items-center my-4"></div>
 
-            <div className="form-outline mb-4">
+            <div className="form-outline mb-4" >
               <label className="form-label" htmlFor="form3Example3">
                 Email address
               </label>
@@ -72,17 +72,6 @@ const Login = () => {
             </div>
 
             <div className="d-flex justify-content-between align-items-center">
-              <div className="form-check mb-0">
-                <input
-                  className="form-check-input me-2"
-                  type="checkbox"
-                  defaultValue
-                  id="form2Example3"
-                />
-                <label className="form-check-label" htmlFor="form2Example3">
-                  Remember me
-                </label>
-              </div>
               <a href="#!" className="text-body">
                 Forgot password?
               </a>

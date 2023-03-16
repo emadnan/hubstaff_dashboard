@@ -7,6 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
 
 const Projects = () => {
+
   // Variable declarations
   const [user_id, setUserId] = useState("");
   const [department_id, setDepartmentId] = useState("");
@@ -219,6 +220,7 @@ const Projects = () => {
     }
   }, [showAlert6]);
 
+  //Get calls handling
   const handleCompanyChange = (value) => {
     setCompanyId(value);
   };
@@ -231,6 +233,7 @@ const Projects = () => {
     setDepartmentId(value);
   };
 
+  // Get API call
   const [projects, setProjects] = useState([]);
   const [company, setCompanies] = useState([]);
   const [users, setUsers] = useState([]);
@@ -243,7 +246,6 @@ const Projects = () => {
     getDepartment()
   }, []);
 
-  // Get API call
   function getList() {
     fetch("http://127.0.0.1:8000/api/getproject")
       .then((response) => response.json())
@@ -416,7 +418,6 @@ const Projects = () => {
           {/* Modal for Add Projects */}
           <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
-            {/* Select Users  */}
             <div className="form-outline mb-3">
               <Form.Item label="Users">
                 <Select placeholder="Select Users" onChange={handleUserChange} value={user_id}>
@@ -429,7 +430,6 @@ const Projects = () => {
               </Form.Item>
             </div>
 
-            {/* Select Company  */}
             <div className="form-outline mb-3">
               <Form.Item label="Company">
                 <Select placeholder="Select Company" onChange={handleCompanyChange} value={company_id}>
@@ -442,7 +442,6 @@ const Projects = () => {
               </Form.Item>
             </div>
 
-            {/* Select Department  */}
             <div className="form-outline mb-3">
               <Form.Item label="Departments">
                 <Select placeholder="Select Departments" onChange={handleDepartmentChange} value={department_id}>
@@ -520,7 +519,6 @@ const Projects = () => {
           {/* Modal for Update User */}
           <Modal title="Update a Project" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
 
-            {/* Select Users  */}
             <div className="form-outline mb-3">
               <Form.Item label="Users">
                 <Select placeholder="Select Users" onChange={handleUserChange} value={user_id}>
@@ -533,7 +531,6 @@ const Projects = () => {
               </Form.Item>
             </div>
 
-            {/* Select Company  */}
             <div className="form-outline mb-3">
               <Form.Item label="Company">
                 <Select placeholder="Select Company" onChange={handleCompanyChange} value={company_id}>
@@ -546,7 +543,6 @@ const Projects = () => {
               </Form.Item>
             </div>
 
-            {/* Select Department  */}
             <div className="form-outline mb-3">
               <Form.Item label="Departments">
                 <Select placeholder="Select Departments" onChange={handleDepartmentChange} value={department_id}>
@@ -625,42 +621,42 @@ const Projects = () => {
           <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
           </Modal>
 
-          {/* Alert for Add Department Success*/}
+          {/* Alert for Add Project Success*/}
           {showAlert1 && (
             <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
               Project Added Successfully
             </Alert>
           )}
 
-          {/* Alert for Add Department Failure*/}
+          {/* Alert for Add Project Failure*/}
           {showAlert2 && (
             <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
               Failed to Add Project
             </Alert>
           )}
 
-          {/* Alert for Delete Department Success*/}
+          {/* Alert for Delete Project Success*/}
           {showAlert3 && (
             <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
               Project Deleted Successfully
             </Alert>
           )}
 
-          {/* Alert for Delete Department Failure*/}
+          {/* Alert for Delete Project Failure*/}
           {showAlert4 && (
             <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
               Failed to Delete Project
             </Alert>
           )}
 
-          {/* Alert for Update Department Success*/}
+          {/* Alert for Update Project Success*/}
           {showAlert5 && (
             <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
               Project Updated Successfully
             </Alert>
           )}
 
-          {/* Alert for Update Department Failure*/}
+          {/* Alert for Update Project Failure*/}
           {showAlert6 && (
             <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
               Failed to Update Project

@@ -314,7 +314,7 @@ const Users = () => {
                     <h3>Users</h3>
                 </div>
                 <div className='col-md 6'>
-                    {/* Add Project Button */}
+                    {/* Add Users Button */}
                     <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add User</Button>
                 </div>
             </div>

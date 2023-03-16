@@ -1,22 +1,15 @@
 import React from 'react'
-import {
-  CRow,
-  CCol,
-  CDropdown,
-  CDropdownMenu,
-  CDropdownItem,
-  CDropdownToggle,
-  CWidgetStatsA,
-} from '@coreui/react'
+import { CRow , CCol , CDropdown , CDropdownMenu , CDropdownItem , CDropdownToggle , CWidgetStatsA} from '@coreui/react'
 import { CChartLine } from '@coreui/react-chartjs'
 import CIcon from '@coreui/icons-react'
 import { cilOptions } from '@coreui/icons'
 
 const WidgetsDropdown = () => {
   return (
-    <div className="card">
-      <div style={{ padding: '10px' }}>
+    <>
+      <div style={{ padding: '20px' }}>
       <CRow>
+        
         <CCol sm={3} lg={2}>
           <CWidgetStatsA
             className="mb-2"
@@ -46,6 +39,7 @@ const WidgetsDropdown = () => {
             }
           />
         </CCol>
+
         <CCol sm={3} lg={2}>
           <CWidgetStatsA
             className="mb-2"
@@ -75,6 +69,7 @@ const WidgetsDropdown = () => {
             }
           />
         </CCol>
+
         <CCol sm={3} lg={2}>
           <CWidgetStatsA
             className="mb-2"
@@ -104,6 +99,7 @@ const WidgetsDropdown = () => {
             }
           />
         </CCol>
+
         <CCol sm={3} lg={2}>
           <CWidgetStatsA
             className="mb-2"
@@ -133,6 +129,7 @@ const WidgetsDropdown = () => {
             }
           />
         </CCol>
+
         <CCol sm={3} lg={2}>
           <CWidgetStatsA
             className="mb-2"
@@ -162,6 +159,7 @@ const WidgetsDropdown = () => {
             }
           />
         </CCol>
+
         <CCol sm={3} lg={2}>
           <CWidgetStatsA
             className="mb-2"
@@ -193,9 +191,10 @@ const WidgetsDropdown = () => {
             }
           />
         </CCol>
+
       </CRow>
     </div>
-    </div>
+    </>
   )
 }
 

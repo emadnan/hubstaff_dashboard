@@ -8,6 +8,11 @@ import Alert from '@mui/material/Alert';
 
 const Departments = () => {
 
+    // Variable declarations
+    const [company_id, setCompanyId] = useState("");
+    const [department_name, setDepartmentName] = useState("");
+    const [description, setDescription] = useState("");
+
     // CSS Stylings
     const modalStyle = {
         position: "fixed",
@@ -40,11 +45,6 @@ const Departments = () => {
         fontWeight: "bold",
         color: "white",
     };
-
-    // Variable declarations
-    const [company_id, setCompanyId] = useState("");
-    const [department_name, setDepartmentName] = useState("");
-    const [description, setDescription] = useState("");
 
     // Functions for Add Department Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -173,7 +173,7 @@ const Departments = () => {
         }
     }, [showAlert4]);
 
-    // Functions for Update Department Failure
+    // Functions for Update Department Success
     const [showAlert5, setShowAlert5] = useState(false);
 
     function handleButtonClick5() {
@@ -215,14 +215,16 @@ const Departments = () => {
         }
     }, [showAlert6]);
 
+    //Get calls handling
     const handleCompanyChange = (value) => {
         setCompanyId(value);
     };
 
+    // Get API call
+
     const [users, setUsers] = useState([]);
     const [company, setCompanies] = useState([]);
 
-    // Get API call
     function getList() {
         fetch("http://127.0.0.1:8000/api/getdepartment")
             .then((response) => response.json())
@@ -230,17 +232,17 @@ const Departments = () => {
             .catch((error) => console.log(error));
     }
 
-    useEffect(() => {
-        getList()
-        getCompany()
-    }, []);
-
     function getCompany() {
         fetch("http://127.0.0.1:8000/api/getcompany")
             .then((response) => response.json())
             .then((data) => setCompanies(data.companies))
             .catch((error) => console.log(error));
     }
+
+    useEffect(() => {
+        getList()
+        getCompany()
+    }, []);
 
     // Add API call
     async function addDepartment() {
@@ -317,7 +319,6 @@ const Departments = () => {
             });
 
     }
-
     return (
         <>
             <div className='row'>
@@ -325,7 +326,7 @@ const Departments = () => {
                     <h3>Departments</h3>
                 </div>
                 <div className='col-md 6'>
-                    {/* Add Project Button */}
+                    {/* Add Department Button */}
                     <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Department</Button>
                 </div>
             </div>
@@ -368,7 +369,6 @@ const Departments = () => {
                     {/* Modal for Add Department */}
                     <Modal title="Add a Department" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
-                        {/* Select Company  */}
                         <div className="form-outline mb-3">
                             <Form.Item label="Company">
                                 <Select placeholder="Select Company" onChange={handleCompanyChange} value={company_id}>
@@ -406,7 +406,6 @@ const Departments = () => {
                     {/* Modal for Update Department */}
                     <Modal title="Update a Department" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
 
-                        {/* Select Company  */}
                         <div className="form-outline mb-3">
                             <Form.Item label="Company">
                                 <Select placeholder="Select Company" onChange={handleCompanyChange} value={company_id}>
@@ -491,6 +490,7 @@ const Departments = () => {
             </CTable>
         </>
     )
+                    
 }
 
 export default Departments

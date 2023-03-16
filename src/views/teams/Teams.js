@@ -4,6 +4,7 @@ import { Button } from 'antd';
 
 const Team = () => {
 
+  //CSS Styling
   const mystyle = {
     color: "white",
     backgroundColor: "#0070FF ",
@@ -29,13 +30,15 @@ const Team = () => {
           <h3>Teams</h3>
         </div>
         <div className='col-md 6'>
-          {/* Add Project Button */}
+          {/* Add Team Button */}
           <Button className="btn btn-primary" style={buttonStyle}>Add Team</Button>
         </div>
       </div>
       <br></br>
       <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '10px' }}>
         <CTableHead color="light" >
+
+          {/* Teams table heading */}
           <CTableRow>
             <CTableHeaderCell className="text-center" style={mystyle}>Name</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Members</CTableHeaderCell>

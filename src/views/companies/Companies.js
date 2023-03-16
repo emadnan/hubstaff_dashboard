@@ -177,7 +177,7 @@ const Companies = () => {
     }
   }, [showAlert4]);
 
-  // Functions for Update Company Failure
+  // Functions for Update Company Success
   const [showAlert5, setShowAlert5] = useState(false);
 
   function handleButtonClick5() {
@@ -219,22 +219,12 @@ const Companies = () => {
     }
   }, [showAlert6]);
 
-  // Countries API Functions
-  const [users, setUsers] = useState([]);
-  const [countries, setCountries] = useState([]);
-
-  // const handleCountryChange = (value) => {
-  //   setCountry(value);
-  // };
-
+  //Get calls handling
   const handleCountryChange = (value) => {
     setCountry(value);
     const selectedCountry = countries.find((country) => country.name === value);
     getCity(selectedCountry.id);
   }
-
-  // Cities API Functions
-  const [cities, setCities] = useState([]);
 
   const handleCityChange = (value) => {
     setCity(value);
@@ -242,6 +232,10 @@ const Companies = () => {
 
 
   // Get API calls
+  const [users, setUsers] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [cities, setCities] = useState([]);
+
   function getList() {
     fetch("http://127.0.0.1:8000/api/getcompany")
       .then((response) => response.json())
@@ -354,7 +348,7 @@ const Companies = () => {
           <h3>Companies</h3>
         </div>
         <div className='col-md 6'>
-          {/* Add Project Button */}
+          {/* Add Company Button */}
           <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Company</Button>
         </div>
       </div>
@@ -386,10 +380,10 @@ const Companies = () => {
               <CTableHeaderCell className="text-center">{company.country}</CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
                 <IconButton aria-label="update" onClick={() => showModal3(company.id)}>
-                  <EditIcon htmlColor='#28B463'/>
+                  <EditIcon htmlColor='#28B463' />
                 </IconButton>
                 <IconButton aria-label="delete" onClick={() => showModal2(company.id)}>
-                  <DeleteIcon htmlColor='#FF0000'/>
+                  <DeleteIcon htmlColor='#FF0000' />
                 </IconButton>
 
               </CTableHeaderCell>
@@ -442,7 +436,6 @@ const Companies = () => {
               />
             </div>
 
-            {/* Select Country  */}
             <div className="form-outline mb-3">
               <Form.Item label="Country">
                 <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
@@ -455,7 +448,6 @@ const Companies = () => {
               </Form.Item>
             </div>
 
-            {/* Select City  */}
             <div className="form-outline mb-3">
               <Form.Item label="City">
                 <Select placeholder="Select City" onChange={handleCityChange} value={city}>
@@ -517,7 +509,6 @@ const Companies = () => {
               />
             </div>
 
-            {/* Select Country  */}
             <div className="form-outline mb-3">
               <Form.Item label="Country">
                 <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
@@ -530,7 +521,6 @@ const Companies = () => {
               </Form.Item>
             </div>
 
-            {/* Select City  */}
             <div className="form-outline mb-3">
               <Form.Item label="City">
                 <Select placeholder="Select City" onChange={handleCityChange} value={city}>

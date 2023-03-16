@@ -4,6 +4,7 @@ import React from 'react';
 
 const Client = () => {
 
+  //CSS Styling
   const buttonStyle = {
     float: "right",
     padding: "2px",
@@ -29,13 +30,15 @@ const Client = () => {
           <h3>Clients</h3>
         </div>
         <div className='col-md 6'>
-          {/* Add Project Button */}
+          {/* Add Client Button */}
           <Button className="btn btn-primary" style={buttonStyle}>Add Client</Button>
         </div>
       </div>
       <br></br>
       <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
         <CTableHead color="light" >
+
+          {/* Clients table heading */}
           <CTableRow>
             <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Client List</CTableHeaderCell>
