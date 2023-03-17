@@ -3,6 +3,8 @@ import { Button, DatePicker, Select, Form, Divider, Modal } from 'antd'
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import screen1 from 'src/assets/screenshots/screen1.png';
+import screen2 from 'src/assets/screenshots/screen2.png';
+import screen3 from 'src/assets/screenshots/screen3.png';
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 dayjs.extend(customParseFormat)
 const { Option } = Select;
@@ -95,7 +97,10 @@ const Screenshots = () => {
             <Divider></Divider>
 
             <img src={screen1} width={350} height={250} alt='' />
-            <img src={screen1} width={350} height={250} alt='' />
+            &nbsp; &nbsp;
+            <img src={screen2} width={350} height={250} alt='' />
+            &nbsp; &nbsp;
+            <img src={screen3} width={350} height={250} alt='' />
 
             <Modal title="Filters" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 

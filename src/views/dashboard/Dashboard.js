@@ -7,6 +7,7 @@ import { Card, Divider, Button } from 'antd'
 
 const Dashboard = () => {
 
+  //CSS Stylings
   const mystyle = {
     color: "white",
     backgroundColor: "#0070FF ",
@@ -48,18 +49,17 @@ const Dashboard = () => {
     fontSize: 30,
   };
 
-  const buttonStyle = {
-
-  };
-
+  //Get API calls and functions
   const [users, setUsers] = useState([]);
   const [projects, setProjects] = useState([]);
   const [departments, setDepartments] = useState([]);
+  const [clients, setClients] = useState([]);
 
   useEffect(() => {
     getCompanies()
     getProjects()
     getDepartments()
+    getClients()
   }, []);
 
   function getCompanies() {
@@ -83,6 +83,13 @@ const Dashboard = () => {
       .catch((error) => console.log(error));
   };
 
+  function getClients() {
+    fetch("http://127.0.0.1:8000/api/get_client")
+      .then((response) => response.json())
+      .then((data) => setClients(data.Departments))
+      .catch((error) => console.log(error));
+  };
+
   return (
     <>
       <div className='row'>
@@ -90,8 +97,11 @@ const Dashboard = () => {
           <h4 style={headStyle}>Dashboard</h4>
         </div>
       </div>
+
       <br></br>
       <br></br>
+
+      {/* Statistics Data Modal Starts */}
       <Card style={cardStyle}>
         <div className='row'>
           <div className='col-md-2'>
@@ -120,11 +130,14 @@ const Dashboard = () => {
           </div>
         </div>
       </Card>
+      {/* Statistics Data Modal Ends */}
+
       <br></br>
 
       <div className='row'>
-        {/* <CRow> */}
         <div className='col-md-6'>
+
+          {/* Card for Recent Activity Starts */}
           <Card style={cardStyle2}>
             <h5 style={head}>RECENT ACTIVITY</h5>
             <Divider></Divider>
@@ -145,12 +158,15 @@ const Dashboard = () => {
 
             <Divider></Divider>
             <div className='text-center'>
-              <Button type="link" style={buttonStyle} href="/activity/screenshots">View recent activity &gt;</Button>
+              <Button type="link" href="/activity/screenshots">View recent activity &gt;</Button>
             </div>
 
           </Card>
+          {/* Card for Recent Activity Ends */}
 
           <br></br>
+
+          {/* Card for Companies Modal Starts */}
           <Card style={cardStyle2}>
             <h5 style={head}>COMPANIES</h5>
             <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
@@ -178,10 +194,14 @@ const Dashboard = () => {
 
             <Divider></Divider>
             <div className='text-center'>
-              <Button type="link" style={buttonStyle} href="/companies/Companies">View companies &gt;</Button>
+              <Button type="link" href="/companies/Companies">View companies &gt;</Button>
             </div>
           </Card>
+          {/* Card for Companies Modal Ends */}
+
           <br></br>
+
+          {/* Card for Departments Modal Starts  */}
           <Card style={cardStyle2}>
             <h5 style={head}>DEPARTMENTS</h5>
             <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
@@ -207,13 +227,16 @@ const Dashboard = () => {
 
             <Divider></Divider>
             <div className='text-center'>
-              <Button type="link" style={buttonStyle} href="/departments/Departments">View departments &gt;</Button>
+              <Button type="link" href="/departments/Departments">View departments &gt;</Button>
             </div>
 
           </Card>
+          {/* Card for Departments Modal Ends */}
         </div>
 
         <div className='col-md-6'>
+
+          {/* Card for Time Sheets Modal Starts */}
           <Card style={cardStyle2}>
             <h5 style={head}>TIME SHEETS</h5>
             <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
@@ -234,12 +257,15 @@ const Dashboard = () => {
 
             <Divider></Divider>
             <div className='text-center'>
-              <Button type="link" style={buttonStyle} href="/timesheets/viewedit">View daily timesheets &gt;</Button>
+              <Button type="link" href="/timesheets/viewedit">View daily timesheets &gt;</Button>
             </div>
 
           </Card>
+          {/* Card for Time Sheets Modal Ends */}
 
           <br></br>
+
+          {/* Card for Projects Modal Starts */}
           <Card style={cardStyle2}>
             <h5 style={head}>PROJECTS</h5>
             <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
@@ -266,12 +292,15 @@ const Dashboard = () => {
 
             <Divider></Divider>
             <div className='text-center'>
-              <Button type="link" style={buttonStyle} href="/projectmanagement/projects">View projects &gt;</Button>
+              <Button type="link" href="/projectmanagement/projects">View projects &gt;</Button>
             </div>
 
           </Card>
+          {/* Card for Projects Modal Ends */}
 
           <br></br>
+
+          {/* Card for Apps Modal Starts */}
           <Card style={cardStyle2}>
             <h5 style={head}>APPS & URLS</h5>
             <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
@@ -291,14 +320,51 @@ const Dashboard = () => {
 
             <Divider></Divider>
             <div className='text-center'>
-              <Button type="link" style={buttonStyle} href="/activity/apps">View apps activity &gt;</Button>
+              <Button type="link" href="/activity/apps">View apps activity &gt;</Button>
             </div>
 
           </Card>
+          {/* Card for Apps Modal Ends */}
+
+          <br></br>
+
+          {/* Card for Clients Modal Start */}
+          <Card style={cardStyle2}>
+            <h5 style={head}>CLIENTS</h5>
+            <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
+              <CTableHead color="light" >
+
+
+                <CTableRow>
+                  <CTableHeaderCell className="text-center" style={mystyle}>Client Name</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center" style={mystyle}>Project</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center" style={mystyle}>Status</CTableHeaderCell>
+                </CTableRow>
+
+                {clients.slice(0, 3).map((client) => (
+                  <CTableRow key={client.id}>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>{client.client_name}</CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>{client.project}</CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>{client.project_status}</CTableHeaderCell>
+                  </CTableRow>
+                ))}
+
+              </CTableHead>
+
+              <CTableBody>
+              </CTableBody>
+            </CTable>
+
+            <Divider></Divider>
+            <div className='text-center'>
+              <Button type="link" href="/projectmanagement/client">View clients &gt;</Button>
+            </div>
+
+          </Card>
+          {/* Card for Clients Modal Ends */}
+
         </div>
       </div>
-
-      {/* </CRow> */}
 
     </>
   )

@@ -1,10 +1,12 @@
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
-import { Button, Modal } from 'antd';
+import { Button, Modal, Select, Form } from 'antd';
 import { React, useEffect, useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
+
+const { Option } = Select;
 
 const Client = () => {
 
@@ -217,6 +219,10 @@ const Client = () => {
     }
   }, [showAlert6]);
 
+  const handleProjectStatus = (value) => {
+    setProjectStatus(value);
+  };
+
   // Get API calls
   const [users, setUsers] = useState([]);
 
@@ -233,7 +239,7 @@ const Client = () => {
 
   // Add API call
   async function addClient() {
-    let item = { client_name, project, invoicing, project_status  }
+    let item = { client_name, project, invoicing, project_status }
 
     await fetch("http://127.0.0.1:8000/api/add_client",
       {
@@ -390,13 +396,13 @@ const Client = () => {
             </div>
 
             <div className="form-outline mb-3">
-              <input
-                type="text"
-                value={project_status}
-                onChange={(e) => setProjectStatus(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Project Status"
-              />
+              <Form.Item label="Status">
+                <Select placeholder="Select Project Status" onChange={handleProjectStatus}>
+                  <Option value="in_progress">In Progress</Option>
+                  <Option value="pending">Pending</Option>
+                  <Option value="completed">Completed</Option>
+                </Select>
+              </Form.Item>
             </div>
 
           </Modal>
@@ -439,14 +445,15 @@ const Client = () => {
             </div>
 
             <div className="form-outline mb-3">
-              <input
-                type="text"
-                value={project_status}
-                onChange={(e) => setProjectStatus(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Project Status"
-              />
+              <Form.Item label="Status">
+                <Select placeholder="Select Project Status" onChange={handleProjectStatus}>
+                  <Option value="in_progress">In Progress</Option>
+                  <Option value="pending">Pending</Option>
+                  <Option value="completed">Completed</Option>
+                </Select>
+              </Form.Item>
             </div>
+
           </Modal>
 
           {/* Alert for Add Client Success*/}
