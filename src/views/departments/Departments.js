@@ -22,7 +22,7 @@ const Departments = () => {
 
     const modalStyle2 = {
         position: "fixed",
-        top: "13%",
+        top: "10%",
         left: "55%",
         transform: "translateX(-50%)",
     };
@@ -336,7 +336,7 @@ const Departments = () => {
 
                     {/* Users table heading */}
                     <CTableRow>
-                        <CTableHeaderCell className="text-center" style={mystyle}>SR/No</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Company Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Department Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell>

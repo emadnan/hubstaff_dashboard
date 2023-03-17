@@ -22,16 +22,18 @@ const Timenactivity = () => {
           <h4>Time & Activity Reports</h4>
         </div>
       </div>
+
       <br></br>
-      <div className='col-md-6'></div>
+
       <div className='row justify-content-end'>
-        <div className='col-md-6'>
+        <div className='col-md-3'>
           <RangePicker />
           &nbsp; &nbsp;
           <Button type="primary">Filters</Button>
         </div>
       </div>
       <br></br>
+
       <Card style={cardStyle}>
         <div className='row'>
           <div className='col-md-4'>

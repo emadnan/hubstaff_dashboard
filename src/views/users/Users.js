@@ -23,7 +23,7 @@ const Users = () => {
 
     const modalStyle2 = {
         position: "fixed",
-        top: "13%",
+        top: "10%",
         left: "55%",
         transform: "translateX(-50%)",
     };

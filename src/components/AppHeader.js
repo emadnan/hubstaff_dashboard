@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   CContainer,
   CHeader,
-  CHeaderDivider,
+  // CHeaderDivider,
   CHeaderNav,
   CHeaderToggler,
   CNavLink,
@@ -12,7 +12,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilMenu } from '@coreui/icons'
-import { AppBreadcrumb } from './index'
+// import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
 
 const AppHeader = () => {
@@ -39,10 +39,10 @@ const AppHeader = () => {
           <AppHeaderDropdown />
         </CHeaderNav>
       </CContainer>
-      <CHeaderDivider />
-      <CContainer fluid>
+      {/* <CHeaderDivider /> */}
+      {/* <CContainer fluid>
         <AppBreadcrumb />
-      </CContainer>
+      </CContainer> */}
     </CHeader>
   )
 }

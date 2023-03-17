@@ -31,9 +31,8 @@ const Weekly = () => {
         </div>
       </div>
       <br></br>
-      <div className='col-md-6'></div>
       <div className='row justify-content-end'>
-        <div className='col-md-6'>
+        <div className='col-md-5'>
           <Button type="default" style={arrowStyle} icon={<ArrowLeftOutlined />} />
           &nbsp;
           <Button type="default" style={arrowStyle} icon={<ArrowRightOutlined />} />
