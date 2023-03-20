@@ -6,11 +6,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
 
-const Roles = () => {
+const Permission = () => {
 
     // Variable declarations
     const [name, setName] = useState("");
-    
+
     // const [guard_name, setGuardName] = useState("");
 
     // CSS Stylings
@@ -39,33 +39,33 @@ const Roles = () => {
     const buttonStyle = {
         float: "right",
         padding: "2px",
-        width: "120px",
+        width: "140px",
         backgroundColor: "#0070ff",
         fontWeight: "bold",
         color: "white",
     };
 
-    // Functions for Add Role Modal
+    // Functions for Add Permission Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
     const showModal = () => {
         setIsModalOpen(true);
     };
     const handleOk = () => {
-        addRole()
+        addPermission()
         setIsModalOpen(false);
     };
     const handleCancel = () => {
         setIsModalOpen(false);
     };
 
-    // Functions for Delete Role Modal
+    // Functions for Delete Permission Modal
     const [isModalOpen2, setIsModalOpen2] = useState(false);
     const showModal2 = (id) => {
         setIsModalOpen2(id);
     };
 
     const handleOk2 = () => {
-        deleteRole(isModalOpen2);
+        deletePermission(isModalOpen2);
         setIsModalOpen2(false);
     };
 
@@ -73,14 +73,14 @@ const Roles = () => {
         setIsModalOpen2(false);
     };
 
-    // Functions for Update Role Modal
+    // Functions for Update Permission Modal
     const [isModalOpen3, setIsModalOpen3] = useState(false);
     const showModal3 = (id) => {
         setIsModalOpen3(id);
     };
 
     const handleOk3 = () => {
-        updateRole(isModalOpen3);
+        updatePermission(isModalOpen3);
         setIsModalOpen3(false);
     };
 
@@ -88,7 +88,7 @@ const Roles = () => {
         setIsModalOpen3(false);
     };
 
-    // Functions for Add Role Success
+    // Functions for Add Permission Success
     const [showAlert1, setShowAlert1] = useState(false);
 
     function handleButtonClick1() {
@@ -109,7 +109,7 @@ const Roles = () => {
         }
     }, [showAlert1]);
 
-    // Functions for Add Role Failure
+    // Functions for Add Permission Failure
     const [showAlert2, setShowAlert2] = useState(false);
 
     function handleButtonClick2() {
@@ -130,7 +130,7 @@ const Roles = () => {
         }
     }, [showAlert2]);
 
-    // Functions for Delete Role Success
+    // Functions for Delete Permission Success
     const [showAlert3, setShowAlert3] = useState(false);
 
     function handleButtonClick3() {
@@ -151,7 +151,7 @@ const Roles = () => {
         }
     }, [showAlert3]);
 
-    // Functions for Delete Role Failure
+    // Functions for Delete Permission Failure
     const [showAlert4, setShowAlert4] = useState(false);
 
     function handleButtonClick4() {
@@ -172,7 +172,7 @@ const Roles = () => {
         }
     }, [showAlert4]);
 
-    // Functions for Update Role Success
+    // Functions for Update Permission Success
     const [showAlert5, setShowAlert5] = useState(false);
 
     function handleButtonClick5() {
@@ -193,7 +193,7 @@ const Roles = () => {
         }
     }, [showAlert5]);
 
-    // Functions for Update Role Failure
+    // Functions for Update Permission Failure
     const [showAlert6, setShowAlert6] = useState(false);
 
     function handleButtonClick6() {
@@ -214,28 +214,28 @@ const Roles = () => {
         }
     }, [showAlert6]);
 
-    const [roles, setRoles] = useState([]);
+    const [permission, setPermission] = useState([]);
 
     // Get API call
-    function getRoles() {
-        fetch("http://127.0.0.1:8000/api/getroles")
+    function getPermission() {
+        fetch("http://127.0.0.1:8000/api/getpermissions")
             .then((response) => response.json())
-            .then((data) => setRoles(data.roles))
+            .then((data) => setPermission(data.permissions))
             .catch((error) => console.log(error));
     }
 
     useEffect(() => {
-        getRoles()
+        getPermission()
     }, []);
 
     // Add API call
-    async function addRole() {
-        let addrole = { name}
+    async function addPermission() {
+        let addpermission = { name }
 
-        await fetch("http://127.0.0.1:8000/api/addrole",
+        await fetch("http://127.0.0.1:8000/api/addpermission",
             {
                 method: 'POST',
-                body: JSON.stringify(addrole),
+                body: JSON.stringify(addpermission),
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -243,7 +243,7 @@ const Roles = () => {
             }).then(response => {
                 if (response.ok) {
                     handleButtonClick1();
-                    getRoles()
+                    getPermission()
                 } else {
                     handleButtonClick2();
                 }
@@ -254,8 +254,8 @@ const Roles = () => {
     }
 
     // Delete API call
-    async function deleteRole(newid) {
-        await fetch('http://127.0.0.1:8000/api/delete-role', {
+    async function deletePermission(newid) {
+        await fetch('http://127.0.0.1:8000/api/delete-permission', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -266,7 +266,7 @@ const Roles = () => {
         }).then(response => {
             if (response.ok) {
                 handleButtonClick3();
-                getRoles()
+                getPermission()
             } else {
                 handleButtonClick4();
             }
@@ -278,8 +278,8 @@ const Roles = () => {
     }
 
     // Update API call
-    async function updateRole(newid) {
-        await fetch('http://127.0.0.1:8000/api/update-role', {
+    async function updatePermission(newid) {
+        await fetch('http://127.0.0.1:8000/api/update-permission', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -292,7 +292,7 @@ const Roles = () => {
         }).then(response => {
             if (response.ok) {
                 handleButtonClick5();
-                getRoles()
+                getPermission()
             } else {
                 handleButtonClick6();
             }
@@ -307,11 +307,11 @@ const Roles = () => {
         <>
             <div className='row'>
                 <div className='col-md 6'>
-                    <h3>Roles</h3>
+                    <h3>Permissions</h3>
                 </div>
                 <div className='col-md 6'>
-                    {/* Add Roles Button */}
-                    <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Role</Button>
+                    {/* Add Permission Button */}
+                    <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Permission</Button>
                 </div>
             </div>
             <br></br>
@@ -321,25 +321,24 @@ const Roles = () => {
                     {/* Users table heading */}
                     <CTableRow>
                         <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Role Name</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Permission Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Guard Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
                     </CTableRow>
 
                     {/* Get API Users */}
-                    {roles.map((role, index) => (
-                        <CTableRow key={role.id}>
+                    {permission.map((perm, index) => (
+                        <CTableRow key={perm.id}>
                             <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">{role.name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">{role.guard_name}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">{perm.name}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">{perm.guard_name}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
-                                <IconButton aria-label="update" onClick={() => showModal3(role.id)}>
+                                <IconButton aria-label="update" onClick={() => showModal3(perm.id)}>
                                     <EditIcon htmlColor='#28B463' />
                                 </IconButton>
-                                <IconButton aria-label="delete" onClick={() => showModal2(role.id)}>
+                                <IconButton aria-label="delete" onClick={() => showModal2(perm.id)}>
                                     <DeleteIcon htmlColor='#FF0000' />
                                 </IconButton>
-                                <Button className="btn btn-primary" >Permissions</Button>
 
                             </CTableHeaderCell>
                         </CTableRow>
@@ -348,8 +347,8 @@ const Roles = () => {
                 </CTableHead>
                 <CTableBody>
 
-                    {/* Modal for Add Role */}
-                    <Modal title="Add a Role" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+                    {/* Modal for Add Permission */}
+                    <Modal title="Add a Permission" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
                         <div className="form-outline mb-3">
                             <input
@@ -373,8 +372,8 @@ const Roles = () => {
 
                     </Modal>
 
-                    {/* Modal for Update Role */}
-                    <Modal title="Update a Role" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
+                    {/* Modal for Update Permission */}
+                    <Modal title="Update a Permission" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
 
                         <div className="form-outline mb-3">
                             <input
@@ -402,45 +401,45 @@ const Roles = () => {
                     <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
                     </Modal>
 
-                    {/* Alert for Add Role Success*/}
+                    {/* Alert for Add Permission Success*/}
                     {showAlert1 && (
                         <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
-                            Role Added Successfully
+                            Permission Added Successfully
                         </Alert>
                     )}
 
-                    {/* Alert for Add Role Failure*/}
+                    {/* Alert for Add Permission Failure*/}
                     {showAlert2 && (
                         <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
-                            Failed to Add Role
+                            Failed to Add Permission
                         </Alert>
                     )}
 
-                    {/* Alert for Delete Role Success*/}
+                    {/* Alert for Delete Permission Success*/}
                     {showAlert3 && (
                         <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
-                            Role Deleted Successfully
+                            Permission Deleted Successfully
                         </Alert>
                     )}
 
-                    {/* Alert for Delete Role Failure*/}
+                    {/* Alert for Delete Permission Failure*/}
                     {showAlert4 && (
                         <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
-                            Failed to Delete Role
+                            Failed to Delete Permission
                         </Alert>
                     )}
 
-                    {/* Alert for Update Role Success*/}
+                    {/* Alert for Update Permission Success*/}
                     {showAlert5 && (
                         <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
-                            Role Updated Successfully
+                            Permission Updated Successfully
                         </Alert>
                     )}
 
-                    {/* Alert for Update Role Failure*/}
+                    {/* Alert for Update Permission Failure*/}
                     {showAlert6 && (
                         <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
-                            Failed to Update Role
+                            Failed to Update Permission
                         </Alert>
                     )}
 
@@ -450,4 +449,4 @@ const Roles = () => {
     )
 }
 
-export default Roles
+export default Permission

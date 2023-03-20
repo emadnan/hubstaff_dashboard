@@ -15,6 +15,7 @@ const Viewedit = React.lazy(() => import('./views/timesheets/viewedit/Viewedit')
 const Projects = React.lazy(() => import('./views/projectmanagement/projects/Projects'))
 const Client = React.lazy(() => import('./views/projectmanagement/client/Client'))
 const Todos = React.lazy(() => import('./views/projectmanagement/todos/Todos'))
+const AssignedProjects = React.lazy(() => import('./views/projectmanagement/assigned/AssignedProjects'))
 
 //Companies
 const Companies = React.lazy(() => import('./views/companies/Companies'))
@@ -33,6 +34,9 @@ const Users = React.lazy(() => import('./views/users/Users'))
 
 //Roles
 const Roles = React.lazy(() => import('./views/roles/Roles'))
+
+//Permissions
+const Permissions = React.lazy(() => import('./views/permissions/Permission'))
 
 //Calendar
 const Schedules = React.lazy(() => import('./views/calendar/schedules/Schedules'))
@@ -60,6 +64,7 @@ const routes = [
   { path: '/projectmanagement/client', name: 'Client', element: Client },
   { path: '/projectmanagement/projects', name: 'Projects', element: Projects},
   { path: '/projectmanagement/todos', name: 'Todos', element: Todos},
+  { path: '/projectmanagement/assigned', name: 'Assigned Projects', element: AssignedProjects},
   { path: '/companies/Companies', name: 'Companies', element: Companies},
   { path: '/departments/Departments', name: 'Departments', element: Departments},
   { path: '/timesheets/approvals', name: 'Approvals', element: Approvals},
@@ -68,6 +73,7 @@ const routes = [
   { path: '/map', name: 'Map', element: Map},
   { path: '/users/Users', name: 'Users', element: Users},
   { path: '/roles/Roles', name: 'Roles', element: Roles},
+  { path: '/permissions/Permission', name: 'Permissions', element: Permissions},
   { path: '/calendar/schedules', name: 'Schedules', element: Schedules},
   { path: '/calendar/timeoffrequests', name: 'Time-Off-Requests', element: Timeoffrequests},
   { path: '/reports/accountsowed', name: 'Accounts Owed', element: Accountsowed },

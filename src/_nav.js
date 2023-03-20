@@ -80,6 +80,11 @@ const _nav = [
       },
       {
         component: CNavItem,
+        name: 'Assigned Projects',
+        to: '/projectmanagement/assigned',
+      },
+      {
+        component: CNavItem,
         name: 'To-dos',
         to: '/projectmanagement/todos',
       },
@@ -112,6 +117,12 @@ const _nav = [
     component: CNavItem,
     name: 'Roles',
     to: '/roles/Roles',
+    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Permissions',
+    to: '/permissions/Permission',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {

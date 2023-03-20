@@ -6,11 +6,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
 
-const Roles = () => {
+const AssignedProjects = () => {
 
     // Variable declarations
     const [name, setName] = useState("");
-    
     // const [guard_name, setGuardName] = useState("");
 
     // CSS Stylings
@@ -51,7 +50,7 @@ const Roles = () => {
         setIsModalOpen(true);
     };
     const handleOk = () => {
-        addRole()
+        // addRole()
         setIsModalOpen(false);
     };
     const handleCancel = () => {
@@ -65,7 +64,7 @@ const Roles = () => {
     };
 
     const handleOk2 = () => {
-        deleteRole(isModalOpen2);
+        // deleteRole(isModalOpen2);
         setIsModalOpen2(false);
     };
 
@@ -80,7 +79,7 @@ const Roles = () => {
     };
 
     const handleOk3 = () => {
-        updateRole(isModalOpen3);
+        // updateRole(isModalOpen3);
         setIsModalOpen3(false);
     };
 
@@ -217,101 +216,101 @@ const Roles = () => {
     const [roles, setRoles] = useState([]);
 
     // Get API call
-    function getRoles() {
-        fetch("http://127.0.0.1:8000/api/getroles")
-            .then((response) => response.json())
-            .then((data) => setRoles(data.roles))
-            .catch((error) => console.log(error));
-    }
+    // function getRoles() {
+    //     fetch("http://127.0.0.1:8000/api/getroles")
+    //         .then((response) => response.json())
+    //         .then((data) => setRoles(data.roles))
+    //         .catch((error) => console.log(error));
+    // }
 
-    useEffect(() => {
-        getRoles()
-    }, []);
+    // useEffect(() => {
+    //     getRoles()
+    // }, []);
 
     // Add API call
-    async function addRole() {
-        let addrole = { name}
+    // async function addRole() {
+    //     let addrole = { name}
 
-        await fetch("http://127.0.0.1:8000/api/addrole",
-            {
-                method: 'POST',
-                body: JSON.stringify(addrole),
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+    //     await fetch("http://127.0.0.1:8000/api/addrole",
+    //         {
+    //             method: 'POST',
+    //             body: JSON.stringify(addrole),
+    //             headers: {
+    //                 'Content-Type': 'application/json'
+    //             },
 
-            }).then(response => {
-                if (response.ok) {
-                    handleButtonClick1();
-                    getRoles()
-                } else {
-                    handleButtonClick2();
-                }
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    }
+    //         }).then(response => {
+    //             if (response.ok) {
+    //                 handleButtonClick1();
+    //                 getRoles()
+    //             } else {
+    //                 handleButtonClick2();
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error(error);
+    //         });
+    // }
 
     // Delete API call
-    async function deleteRole(newid) {
-        await fetch('http://127.0.0.1:8000/api/delete-role', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id: newid
-            })
-        }).then(response => {
-            if (response.ok) {
-                handleButtonClick3();
-                getRoles()
-            } else {
-                handleButtonClick4();
-            }
-        })
-            .catch(error => {
-                console.error(error);
-            });
+    // async function deleteRole(newid) {
+    //     await fetch('http://127.0.0.1:8000/api/delete-role', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({
+    //             id: newid
+    //         })
+    //     }).then(response => {
+    //         if (response.ok) {
+    //             handleButtonClick3();
+    //             getRoles()
+    //         } else {
+    //             handleButtonClick4();
+    //         }
+    //     })
+    //         .catch(error => {
+    //             console.error(error);
+    //         });
 
-    }
+    // }
 
     // Update API call
-    async function updateRole(newid) {
-        await fetch('http://127.0.0.1:8000/api/update-role', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id: newid,
-                name: name,
-                // guard_name: guard_name,
-            })
-        }).then(response => {
-            if (response.ok) {
-                handleButtonClick5();
-                getRoles()
-            } else {
-                handleButtonClick6();
-            }
-        })
-            .catch(error => {
-                console.error(error);
-            });
+    // async function updateRole(newid) {
+    //     await fetch('http://127.0.0.1:8000/api/update-role', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({
+    //             id: newid,
+    //             name: name,
+    //             // guard_name: guard_name,
+    //         })
+    //     }).then(response => {
+    //         if (response.ok) {
+    //             handleButtonClick5();
+    //             getRoles()
+    //         } else {
+    //             handleButtonClick6();
+    //         }
+    //     })
+    //         .catch(error => {
+    //             console.error(error);
+    //         });
 
-    }
+    // }
 
     return (
         <>
-            <div className='row'>
+        <div className='row'>
                 <div className='col-md 6'>
-                    <h3>Roles</h3>
+                    <h3>Assigned Project</h3>
                 </div>
                 <div className='col-md 6'>
                     {/* Add Roles Button */}
-                    <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Role</Button>
+                    <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add New</Button>
                 </div>
             </div>
             <br></br>
@@ -321,7 +320,7 @@ const Roles = () => {
                     {/* Users table heading */}
                     <CTableRow>
                         <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Role Name</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>User Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Guard Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
                     </CTableRow>
@@ -339,7 +338,6 @@ const Roles = () => {
                                 <IconButton aria-label="delete" onClick={() => showModal2(role.id)}>
                                     <DeleteIcon htmlColor='#FF0000' />
                                 </IconButton>
-                                <Button className="btn btn-primary" >Permissions</Button>
 
                             </CTableHeaderCell>
                         </CTableRow>
@@ -450,4 +448,4 @@ const Roles = () => {
     )
 }
 
-export default Roles
+export default AssignedProjects
