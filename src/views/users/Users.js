@@ -1,6 +1,6 @@
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { React, useState, useEffect } from 'react';
-import { Modal, Button } from 'antd';
+import { Modal, Button, Form, Select } from 'antd';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -12,7 +12,7 @@ const Users = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [role_id, setRoleId] = useState("");
+    const [role, setRole] = useState("");
 
     // CSS Stylings
     const modalStyle = {
@@ -216,6 +216,7 @@ const Users = () => {
     }, [showAlert6]);
 
     const [users, setUsers] = useState([]);
+    const [roles, setRoles] = useState([]);
 
     // Get API call
     function getList() {
@@ -225,13 +226,27 @@ const Users = () => {
             .catch((error) => console.log(error));
     }
 
+    function getRoles() {
+        fetch("http://127.0.0.1:8000/api/getroles")
+            .then((response) => response.json())
+            .then((data) => setRoles(data.roles))
+            .catch((error) => console.log(error));
+    }
+
+
     useEffect(() => {
         getList()
+        getRoles()
     }, []);
+
+    //Get calls handling
+    const handleRoleChange = (value) => {
+        setRole(value);
+    };
 
     // Add API call
     async function addUser() {
-        let adduser = { name, email, password, role_id }
+        let adduser = { name, email, password, role }
 
         await fetch("http://127.0.0.1:8000/api/add_user",
             {
@@ -290,7 +305,7 @@ const Users = () => {
                 name: name,
                 email: email,
                 password: password,
-                role_id: role_id,
+                role_id: role,
 
             })
         }).then(response => {
@@ -327,7 +342,7 @@ const Users = () => {
                         <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>User Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Email</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Role-Id</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Role</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
                     </CTableRow>
 
@@ -337,7 +352,7 @@ const Users = () => {
                             <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center">{user.name}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center">{user.email}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">{user.role_id}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">{user.role}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
                                 <IconButton aria-label="update" onClick={() => showModal3(user.id)}>
                                     <EditIcon htmlColor='#28B463' />
@@ -386,7 +401,7 @@ const Users = () => {
                             />
                         </div>
 
-                        <div className="form-outline mb-3">
+                        {/* <div className="form-outline mb-3">
                             <input
                                 type="number"
                                 value={role_id}
@@ -394,6 +409,18 @@ const Users = () => {
                                 className="form-control form-control-lg"
                                 placeholder="Enter Role Id"
                             />
+                        </div> */}
+
+                        <div className="form-outline mb-3">
+                            <Form.Item label="Role">
+                                <Select placeholder="Select Role Id" onChange={handleRoleChange} value={role}>
+                                    {roles.map((user) => (
+                                        <Select.Option value={user.name} key={user.id}>
+                                            {user.name}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
                         </div>
 
                     </Modal>
@@ -428,16 +455,6 @@ const Users = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="form-control form-control-lg"
                                 placeholder="Enter Password"
-                            />
-                        </div>
-
-                        <div className="form-outline mb-3">
-                            <input
-                                type="number"
-                                value={role_id}
-                                onChange={(e) => setRoleId(e.target.value)}
-                                className="form-control form-control-lg"
-                                placeholder="Enter Role Id"
                             />
                         </div>
 

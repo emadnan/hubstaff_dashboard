@@ -322,7 +322,6 @@ const Permission = () => {
                     <CTableRow>
                         <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Permission Name</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Guard Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
                     </CTableRow>
 
@@ -331,7 +330,6 @@ const Permission = () => {
                         <CTableRow key={perm.id}>
                             <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center">{perm.name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">{perm.guard_name}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
                                 <IconButton aria-label="update" onClick={() => showModal3(perm.id)}>
                                     <EditIcon htmlColor='#28B463' />
