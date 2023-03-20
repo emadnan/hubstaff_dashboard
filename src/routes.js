@@ -31,6 +31,9 @@ const Map = React.lazy(() => import('./views/map/Map'))
 //Users
 const Users = React.lazy(() => import('./views/users/Users'))
 
+//Roles
+const Roles = React.lazy(() => import('./views/roles/Roles'))
+
 //Calendar
 const Schedules = React.lazy(() => import('./views/calendar/schedules/Schedules'))
 const Timeoffrequests = React.lazy(() => import('./views/calendar/timeoffrequests/Timeoffrequests'))
@@ -64,6 +67,7 @@ const routes = [
   { path: '/insights', name: 'Insights', element: Insights},
   { path: '/map', name: 'Map', element: Map},
   { path: '/users/Users', name: 'Users', element: Users},
+  { path: '/roles/Roles', name: 'Roles', element: Roles},
   { path: '/calendar/schedules', name: 'Schedules', element: Schedules},
   { path: '/calendar/timeoffrequests', name: 'Time-Off-Requests', element: Timeoffrequests},
   { path: '/reports/accountsowed', name: 'Accounts Owed', element: Accountsowed },

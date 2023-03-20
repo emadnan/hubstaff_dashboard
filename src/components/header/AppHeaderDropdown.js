@@ -1,4 +1,4 @@
-import React from 'react'
+import { React, useState } from 'react';
 import {
   CAvatar,
   CDropdown,
@@ -8,6 +8,7 @@ import {
   CDropdownMenu,
   CDropdownToggle,
 } from '@coreui/react'
+import { Modal } from 'antd';
 import {
   cilSettings,
   cilUser,
@@ -18,6 +19,13 @@ import { useNavigate } from 'react-router-dom';
 import black from './../../assets/images/black.png'
 
 const AppHeaderDropdown = () => {
+
+  const modalStyle = {
+    position: "fixed",
+    top: "35%",
+    left: "40%",
+  };
+
   const navigate = useNavigate();
   let user = JSON.parse(localStorage.getItem("user-info"))
   console.warn(user)
@@ -27,37 +35,58 @@ const AppHeaderDropdown = () => {
     navigate("/Login")
   }
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    logOut()
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   return (
-    <CDropdown variant="nav-item">
-      
-      <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
-        <CAvatar src={black} size="col-md-6" />
-      </CDropdownToggle>
+    <>
+      <CDropdown variant="nav-item">
 
-      <CDropdownMenu className="pt-0" placement="bottom-end">
+        <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
+          <CAvatar src={black} size="col-md-6" />
+        </CDropdownToggle>
 
-        <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
+        <CDropdownMenu className="pt-0" placement="bottom-end">
 
-        <CDropdownItem href="#">
-          <CIcon icon={cilUser} className="me-2" />
-          Profile
-        </CDropdownItem>
+          <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
 
-        <CDropdownItem href="#">
-          <CIcon icon={cilSettings} className="me-2"/>
-          Change Password
-        </CDropdownItem>
+          <CDropdownItem href="#">
+            <CIcon icon={cilUser} className="me-2" />
+            Profile
+          </CDropdownItem>
 
-        <CDropdownDivider />
+          <CDropdownItem href="#">
+            <CIcon icon={cilSettings} className="me-2" />
+            Change Password
+          </CDropdownItem>
 
-        <CDropdownItem href="#" onClick={logOut}>
-          <CIcon icon={cilAccountLogout} className="me-2"/>
-          Logout
-        </CDropdownItem>
+          <CDropdownDivider />
 
-      </CDropdownMenu>
+          <CDropdownItem href="#" onClick={showModal}>
+            <CIcon icon={cilAccountLogout} className="me-2" />
+            Logout
+          </CDropdownItem>
 
-    </CDropdown>
+        </CDropdownMenu>
+
+      </CDropdown>
+
+      <Modal title="Exit" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+        <p>Are you sure you want to exit?</p>
+      </Modal>
+
+    </>
   )
 }
 
