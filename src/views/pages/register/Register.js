@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
-  const [selectedOption, setSelectedOption] = useState('option1')
+  // const [selectedOption, setSelectedOption] = useState('option1')
 
-  const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value)
-  }
+  // const handleOptionChange = (event) => {
+  //   setSelectedOption(event.target.value)
+  // }
 
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");

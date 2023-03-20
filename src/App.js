@@ -15,6 +15,7 @@ const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
 const Login = React.lazy(() => import('./views/pages/login/Login'))
 const Register = React.lazy(() => import('./views/pages/register/Register'))
 const Changepassword = React.lazy(() => import('./views/pages/changepassword/Changepassword'))
+// const SelectPermission = React.lazy(() => import('./views/permissions/SelectPermission'))
 
 class App extends Component {
   render() {
@@ -25,6 +26,7 @@ class App extends Component {
             <Route exact path="/login" name="Login Page" element={<Login />} />
             <Route exact path="/register" name="Register Page" element={<Register />} />
             <Route exact path="/changepassword" name="Change Password" element={<Changepassword/>} />
+            {/* <Route exact path='/selectpermission' name="Select Permission" element={<SelectPermission/>}/> */}
             <Route path="*" name="Home" element={<DefaultLayout />} />
           </Routes>
         </Suspense>

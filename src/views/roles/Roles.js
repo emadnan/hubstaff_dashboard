@@ -1,16 +1,17 @@
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { React, useState, useEffect } from 'react';
-import { Modal, Button } from 'antd';
+import { Modal, Button, Divider, Checkbox } from 'antd';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
 
+
 const Roles = () => {
 
     // Variable declarations
     const [name, setName] = useState("");
-    
+
     // const [guard_name, setGuardName] = useState("");
 
     // CSS Stylings
@@ -18,6 +19,16 @@ const Roles = () => {
         position: "fixed",
         top: "25%",
         left: "40%",
+    };
+
+    const perStyle = {
+        fontSize: 14,
+    };
+
+    const heading = {
+        display: 'flex',
+        justifyContent: 'flex-end',
+        float: 'right',
     };
 
     const modalStyle2 = {
@@ -40,6 +51,14 @@ const Roles = () => {
         float: "right",
         padding: "2px",
         width: "120px",
+        backgroundColor: "#0070ff",
+        fontWeight: "bold",
+        color: "white",
+    };
+
+    const buttonStyle2 = {
+        padding: "2px",
+        width: "100px",
         backgroundColor: "#0070ff",
         fontWeight: "bold",
         color: "white",
@@ -86,6 +105,21 @@ const Roles = () => {
 
     const handleCancel3 = () => {
         setIsModalOpen3(false);
+    };
+
+    // Functions for Add Permission Modal
+    const [isModalOpen4, setIsModalOpen4] = useState(false);
+    const showModal4 = (id) => {
+        setIsModalOpen4(id);
+    };
+
+    const handleOk4 = () => {
+        updateRole(isModalOpen4);
+        setIsModalOpen4(false);
+    };
+
+    const handleCancel4 = () => {
+        setIsModalOpen4(false);
     };
 
     // Functions for Add Role Success
@@ -215,6 +249,7 @@ const Roles = () => {
     }, [showAlert6]);
 
     const [roles, setRoles] = useState([]);
+    const [permission, setPermission] = useState([]);
 
     // Get API call
     function getRoles() {
@@ -224,13 +259,21 @@ const Roles = () => {
             .catch((error) => console.log(error));
     }
 
+    function getPermission() {
+        fetch("http://127.0.0.1:8000/api/getpermissions")
+            .then((response) => response.json())
+            .then((data) => setPermission(data.permissions))
+            .catch((error) => console.log(error));
+    }
+
     useEffect(() => {
         getRoles()
+        getPermission()
     }, []);
 
     // Add API call
     async function addRole() {
-        let addrole = { name}
+        let addrole = { name }
 
         await fetch("http://127.0.0.1:8000/api/addrole",
             {
@@ -339,8 +382,7 @@ const Roles = () => {
                                 <IconButton aria-label="delete" onClick={() => showModal2(role.id)}>
                                     <DeleteIcon htmlColor='#FF0000' />
                                 </IconButton>
-                                <Button className="btn btn-primary" >Permissions</Button>
-
+                                <Button className="btn btn-primary" style={buttonStyle2} onClick={() => showModal4(role.id)}>Permissions</Button>
                             </CTableHeaderCell>
                         </CTableRow>
                     ))}
@@ -348,104 +390,125 @@ const Roles = () => {
                 </CTableHead>
                 <CTableBody>
 
-                    {/* Modal for Add Role */}
-                    <Modal title="Add a Role" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
-
-                        <div className="form-outline mb-3">
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="form-control form-control-lg"
-                                placeholder="Enter Role Name"
-                            />
-                        </div>
-
-                        {/* <div className="form-outline mb-3">
-                            <input
-                                type="text"
-                                value={guard_name}
-                                onChange={(e) => setGuardName(e.target.value)}
-                                className="form-control form-control-lg"
-                                placeholder="Enter Guard Name"
-                            />
-                        </div> */}
-
-                    </Modal>
-
-                    {/* Modal for Update Role */}
-                    <Modal title="Update a Role" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
-
-                        <div className="form-outline mb-3">
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="form-control form-control-lg"
-                                placeholder="Enter Role Name"
-                            />
-                        </div>
-
-                        {/* <div className="form-outline mb-3">
-                            <input
-                                type="text"
-                                value={guard_name}
-                                onChange={(e) => setGuardName(e.target.value)}
-                                className="form-control form-control-lg"
-                                placeholder="Enter Guard Name"
-                            />
-                        </div> */}
-
-                    </Modal>
-
-                    {/* Modal for Deletion Confirmation */}
-                    <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
-                    </Modal>
-
-                    {/* Alert for Add Role Success*/}
-                    {showAlert1 && (
-                        <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
-                            Role Added Successfully
-                        </Alert>
-                    )}
-
-                    {/* Alert for Add Role Failure*/}
-                    {showAlert2 && (
-                        <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
-                            Failed to Add Role
-                        </Alert>
-                    )}
-
-                    {/* Alert for Delete Role Success*/}
-                    {showAlert3 && (
-                        <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
-                            Role Deleted Successfully
-                        </Alert>
-                    )}
-
-                    {/* Alert for Delete Role Failure*/}
-                    {showAlert4 && (
-                        <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
-                            Failed to Delete Role
-                        </Alert>
-                    )}
-
-                    {/* Alert for Update Role Success*/}
-                    {showAlert5 && (
-                        <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
-                            Role Updated Successfully
-                        </Alert>
-                    )}
-
-                    {/* Alert for Update Role Failure*/}
-                    {showAlert6 && (
-                        <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
-                            Failed to Update Role
-                        </Alert>
-                    )}
 
                 </CTableBody>
             </CTable>
+
+            {/* Modal for Add Role */}
+            <Modal title="Add a Role" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+
+                <div className="form-outline mb-3">
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="form-control form-control-lg"
+                        placeholder="Enter Role Name"
+                    />
+                </div>
+
+            </Modal>
+
+            {/* Modal for Update Role */}
+            <Modal title="Update a Role" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
+
+                <div className="form-outline mb-3">
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="form-control form-control-lg"
+                        placeholder="Enter Role Name"
+                    />
+                </div>
+
+            </Modal>
+
+            {/* Modal for Deletion Confirmation */}
+            <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}></Modal>
+
+            {/* Add Permission Modal */}
+            <Modal title="Add Permissions" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4}>
+
+                <br></br>
+                <div className='row'>
+                    <div className='col md-2 text-center'>
+                        <h6>Sr/No</h6>
+                    </div>
+                    <div className='col md-3'></div>
+                    <div className='col md-2 text-center'>
+                        <h6>Permission</h6>
+                    </div>
+                    <div className='col md-3'></div>
+                    <div className='col md-2 text-center'>
+                        <h6 style={heading}></h6>
+                    </div>
+                    &nbsp;
+                    <Divider></Divider>
+                </div>
+
+                {permission.map((perm, index) => (
+                <div className='row' key={perm.id}>
+                    <div className='col md-2 text-center'>
+                        <h6 style={perStyle}>{index + 1}</h6>
+                    </div>
+                    <div className='col md-3'></div>
+                    <div className='col md-2 text-center'>
+                        <h6 style={perStyle}>{perm.name}</h6>
+                    </div>
+                    <div className='col md-3'></div>
+                    <div className='col md-2 text-center'>
+                    <Checkbox></Checkbox>
+                    </div>
+                    &nbsp;
+                    <Divider></Divider>
+                </div>
+                 ))}
+
+            </Modal>
+
+            {/* Alert for Add Role Success*/}
+            {showAlert1 && (
+                <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
+                    Role Added Successfully
+                </Alert>
+            )}
+
+            {/* Alert for Add Role Failure*/}
+            {showAlert2 && (
+                <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
+                    Failed to Add Role
+                </Alert>
+            )}
+
+            {/* Alert for Delete Role Success*/}
+            {showAlert3 && (
+                <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
+                    Role Deleted Successfully
+                </Alert>
+            )}
+
+            {/* Alert for Delete Role Failure*/}
+            {showAlert4 && (
+                <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
+                    Failed to Delete Role
+                </Alert>
+            )}
+
+            {/* Alert for Update Role Success*/}
+            {showAlert5 && (
+                <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
+                    Role Updated Successfully
+                </Alert>
+            )}
+
+            {/* Alert for Update Role Failure*/}
+            {showAlert6 && (
+                <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
+                    Failed to Update Role
+                </Alert>
+            )}
+
         </>
     )
 }
