@@ -393,9 +393,9 @@ const Projects = () => {
             <CTableRow key={project.id}>
               <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.project_name}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{project.company_id}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{project.department_id}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{project.user_id}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center">{project.company_name}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center">{project.department_name}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center">{project.name}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.to_dos}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.budget}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.start_date}</CTableHeaderCell>

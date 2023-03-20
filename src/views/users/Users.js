@@ -401,16 +401,6 @@ const Users = () => {
                             />
                         </div>
 
-                        {/* <div className="form-outline mb-3">
-                            <input
-                                type="number"
-                                value={role_id}
-                                onChange={(e) => setRoleId(e.target.value)}
-                                className="form-control form-control-lg"
-                                placeholder="Enter Role Id"
-                            />
-                        </div> */}
-
                         <div className="form-outline mb-3">
                             <Form.Item label="Role">
                                 <Select placeholder="Select Role Id" onChange={handleRoleChange} value={role}>
@@ -456,6 +446,18 @@ const Users = () => {
                                 className="form-control form-control-lg"
                                 placeholder="Enter Password"
                             />
+                        </div>
+
+                        <div className="form-outline mb-3">
+                            <Form.Item label="Role">
+                                <Select placeholder="Select Role Id" onChange={handleRoleChange} value={role}>
+                                    {roles.map((user) => (
+                                        <Select.Option value={user.name} key={user.id}>
+                                            {user.name}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
                         </div>
 
                     </Modal>
