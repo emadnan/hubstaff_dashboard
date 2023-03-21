@@ -1,29 +1,44 @@
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { React, useState, useEffect } from 'react';
-import { Modal, Button, Form, Select } from 'antd';
+import { Modal, Button, Form, Select, Divider, Checkbox } from 'antd';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const Projects = () => {
 
   // Variable declarations
-  const [user_id, setUserId] = useState("");
+  // const [user_id, setUserId] = useState("");
   const [department_id, setDepartmentId] = useState("");
   const [company_id, setCompanyId] = useState("");
   const [project_name, setProjectName] = useState("");
+  const [description, setDescription] = useState("");
   const [start_date, setStartDate] = useState("");
   const [dead_line, setDeadLine] = useState("");
   const [team_id, setTeamId] = useState("");
   const [to_dos, setTodos] = useState("");
   const [budget, setBudget] = useState("");
 
+
+  const [selectedUsers, setSelectedUsers] = useState([]);
+
   // CSS Styling
   const modalStyle = {
     position: "fixed",
     top: "25%",
     left: "40%",
+  };
+
+  const perStyle = {
+    fontSize: 14,
+  };
+
+  const heading = {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    float: 'right',
   };
 
   const modalStyle2 = {
@@ -46,6 +61,14 @@ const Projects = () => {
     float: "right",
     padding: "2px",
     width: "120px",
+    backgroundColor: "#0070ff",
+    fontWeight: "bold",
+    color: "white",
+  };
+
+  const buttonStyle2 = {
+    padding: "2px",
+    width: "100px",
     backgroundColor: "#0070ff",
     fontWeight: "bold",
     color: "white",
@@ -92,6 +115,36 @@ const Projects = () => {
 
   const handleCancel3 = () => {
     setIsModalOpen3(false);
+  };
+
+  // Functions for Assign Users Modal
+  const [isModalOpen4, setIsModalOpen4] = useState(false);
+  const showModal4 = (id) => {
+    setIsModalOpen4(id);
+  };
+
+  const handleOk4 = () => {
+    // console.log(selectedUsers);
+    addAssignProject(isModalOpen4)
+    setIsModalOpen4(false);
+  };
+
+  const handleCancel4 = () => {
+    setIsModalOpen4(false);
+  };
+
+  // Functions for Show Description Modal
+  const [isModalOpen5, setIsModalOpen5] = useState(false);
+  const showModal5 = (id) => {
+    setIsModalOpen5(id)
+  };
+
+  const handleOk5 = () => {
+    setIsModalOpen4(false);
+  };
+
+  const handleCancel5 = () => {
+    setIsModalOpen5(false);
   };
 
   // Functions for Add Project Success
@@ -220,14 +273,56 @@ const Projects = () => {
     }
   }, [showAlert6]);
 
+  // Functions for Assign User Success
+  const [showAlert7, setShowAlert7] = useState(false);
+
+  function handleButtonClick7() {
+    setShowAlert7(true);
+  }
+
+  function handleCloseAlert7() {
+    setShowAlert7(false);
+  }
+
+  useEffect(() => {
+    if (showAlert7) {
+      const timer = setTimeout(() => {
+        setShowAlert7(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert7]);
+
+  // Functions for Assign User Failure
+  const [showAlert8, setShowAlert8] = useState(false);
+
+  function handleButtonClick8() {
+    setShowAlert8(true);
+  }
+
+  function handleCloseAlert8() {
+    setShowAlert8(false);
+  }
+
+  useEffect(() => {
+    if (showAlert8) {
+      const timer = setTimeout(() => {
+        setShowAlert8(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert8]);
+
   //Get calls handling
   const handleCompanyChange = (value) => {
     setCompanyId(value);
   };
 
-  const handleUserChange = (value) => {
-    setUserId(value);
-  };
+  // const handleUserChange = (value) => {
+  //   setUserId(value);
+  // };
 
   const handleDepartmentChange = (value) => {
     setDepartmentId(value);
@@ -279,7 +374,7 @@ const Projects = () => {
 
   // Add API call
   async function addProject() {
-    let user = { user_id, department_id, company_id, project_name, start_date, dead_line, team_id, to_dos, budget }
+    let user = { department_id, company_id, project_name, description, start_date, dead_line, team_id, to_dos, budget }
 
     await fetch("http://127.0.0.1:8000/api/add_project",
       {
@@ -301,6 +396,30 @@ const Projects = () => {
         console.error(error);
       });
   }
+
+  async function addAssignProject(newid) {
+    await fetch('http://127.0.0.1:8000/api/assign_projects', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        project_id: newid,
+        user_ids: selectedUsers,
+      })
+    }).then(response => {
+      if (response.ok) {
+        handleButtonClick7();
+        getList()
+      } else {
+        handleButtonClick8();
+      }
+    })
+      .catch(error => {
+        console.error(error);
+      });
+
+  };
 
   // Delete API call
   async function deleteProject(newid) {
@@ -335,10 +454,10 @@ const Projects = () => {
       },
       body: JSON.stringify({
         id: newid,
-        user_id: user_id,
         department_id: department_id,
         company_id: company_id,
         project_name: project_name,
+        description: description,
         start_date: start_date,
         dead_line: dead_line,
         team_id: team_id,
@@ -380,11 +499,11 @@ const Projects = () => {
             <CTableHeaderCell className="text-center" style={mystyle}>Project Name</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Company Name</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Department Name</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Users</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Todos</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Budget</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Start Date</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Deadline</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
           </CTableRow>
 
@@ -395,19 +514,23 @@ const Projects = () => {
               <CTableHeaderCell className="text-center">{project.project_name}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.company_name}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.department_name}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{project.name}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.to_dos}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.budget}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.start_date}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.dead_line}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">
-                <IconButton aria-label="update" onClick={() => showModal3(project.id)}>
+                <IconButton aria-label="description" onClick={() => showModal5(project.project_id)}>
+                  <VisibilityIcon htmlColor='#0070ff' />
+                </IconButton>
+              </CTableHeaderCell>
+              <CTableHeaderCell className="text-center">
+                <IconButton aria-label="update" onClick={() => showModal3(project.project_id)}>
                   <EditIcon htmlColor='#28B463' />
                 </IconButton>
-                <IconButton aria-label="delete" onClick={() => showModal2(project.id)}>
+                <IconButton aria-label="delete" onClick={() => showModal2(project.project_id)}>
                   <DeleteIcon htmlColor='#FF0000' />
                 </IconButton>
-
+                <Button className="btn btn-primary" style={buttonStyle2} onClick={() => showModal4(project.project_id)}>Assign</Button>
               </CTableHeaderCell>
             </CTableRow>
           ))}
@@ -417,18 +540,6 @@ const Projects = () => {
 
           {/* Modal for Add Projects */}
           <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
-
-            <div className="form-outline mb-3">
-              <Form.Item label="Users">
-                <Select placeholder="Select Users" onChange={handleUserChange} value={user_id}>
-                  {users.map((form) => (
-                    <Select.Option value={form.nname} key={form.id}>
-                      {form.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
 
             <div className="form-outline mb-3">
               <Form.Item label="Company">
@@ -461,6 +572,16 @@ const Projects = () => {
                 onChange={(e) => setProjectName(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Project Name"
+              />
+            </div>
+
+            <div className="form-outline mb-3">
+              <input
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Description"
               />
             </div>
 
@@ -520,18 +641,6 @@ const Projects = () => {
           <Modal title="Update a Project" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
 
             <div className="form-outline mb-3">
-              <Form.Item label="Users">
-                <Select placeholder="Select Users" onChange={handleUserChange} value={user_id}>
-                  {users.map((form) => (
-                    <Select.Option value={form.nname} key={form.id}>
-                      {form.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
-
-            <div className="form-outline mb-3">
               <Form.Item label="Company">
                 <Select placeholder="Select Company" onChange={handleCompanyChange} value={company_id}>
                   {company.map((count) => (
@@ -562,6 +671,16 @@ const Projects = () => {
                 onChange={(e) => setProjectName(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Project Name"
+              />
+            </div>
+
+            <div className="form-outline mb-3">
+              <input
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Description"
               />
             </div>
 
@@ -621,6 +740,61 @@ const Projects = () => {
           <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
           </Modal>
 
+          {/* Modal for Show Description */}
+          <Modal title="Description" open={isModalOpen5} onOk={handleOk5} onCancel={handleCancel5} style={modalStyle}>
+            {projects.map((project) => (
+              <p key={project.id}>{project.project_description}</p>
+            ))}
+          </Modal>
+
+          {/* Modal for Assign User */}
+          <Modal title="Assign Users" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4}>
+
+            <br></br>
+            <div className='row'>
+              <div className='col md-2 text-center'>
+                <h6>Sr/No</h6>
+              </div>
+              <div className='col md-3'></div>
+              <div className='col md-2 text-center'>
+                <h6>Users</h6>
+              </div>
+              <div className='col md-3'></div>
+              <div className='col md-2 text-center'>
+                <h6 style={heading}>Select</h6>
+              </div>
+              &nbsp;
+              <Divider></Divider>
+            </div>
+
+            {users.map((user, index) => (
+              <div className='row' key={user.id}>
+                <div className='col md-2 text-center'>
+                  <h6 style={perStyle}>{index + 1}</h6>
+                </div>
+                <div className='col md-3'></div>
+                <div className='col md-2 text-center'>
+                  <h6 style={perStyle}>{user.name}</h6>
+                </div>
+                <div className='col md-3'></div>
+                <div className='col md-2 text-center'>
+                  <Checkbox
+                    checked={selectedUsers.includes(user.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedUsers([...selectedUsers, user.id]);
+                      } else {
+                        setSelectedUsers(selectedUsers.filter((id) => id !== user.id));
+                      }
+                    }}
+                  />
+                </div>
+                &nbsp;
+                <Divider></Divider>
+              </div>
+            ))}
+          </Modal>
+
           {/* Alert for Add Project Success*/}
           {showAlert1 && (
             <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
@@ -660,6 +834,20 @@ const Projects = () => {
           {showAlert6 && (
             <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
               Failed to Update Project
+            </Alert>
+          )}
+
+          {/* Alert for User Assign Success*/}
+          {showAlert7 && (
+            <Alert onClose={handleCloseAlert7} severity="success" style={modalStyle2}>
+              Users Assigned Successfully
+            </Alert>
+          )}
+
+          {/* Alert for User Assign Failure*/}
+          {showAlert8 && (
+            <Alert onClose={handleCloseAlert8} severity="error" style={modalStyle2}>
+              Failed to Assign Users
             </Alert>
           )}
 
