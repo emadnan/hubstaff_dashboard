@@ -12,6 +12,8 @@ const Roles = () => {
     // Variable declarations
     const [name, setName] = useState("");
 
+    const [selectedUsers, setSelectedUsers] = useState([]);
+
     // const [guard_name, setGuardName] = useState("");
 
     // CSS Stylings
@@ -107,14 +109,14 @@ const Roles = () => {
         setIsModalOpen3(false);
     };
 
-    // Functions for Add Permission Modal
+    // Functions for Assign Users Modal
     const [isModalOpen4, setIsModalOpen4] = useState(false);
     const showModal4 = (id) => {
         setIsModalOpen4(id);
     };
 
     const handleOk4 = () => {
-        updateRole(isModalOpen4);
+        assignPermissions(isModalOpen4)
         setIsModalOpen4(false);
     };
 
@@ -248,6 +250,48 @@ const Roles = () => {
         }
     }, [showAlert6]);
 
+    // Functions for Assign Permission Success
+    const [showAlert7, setShowAlert7] = useState(false);
+
+    function handleButtonClick7() {
+        setShowAlert7(true);
+    }
+
+    function handleCloseAlert7() {
+        setShowAlert7(false);
+    }
+
+    useEffect(() => {
+        if (showAlert7) {
+            const timer = setTimeout(() => {
+                setShowAlert7(false);
+            }, 3000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [showAlert7]);
+
+    // Functions for Assign Permissions Failure
+    const [showAlert8, setShowAlert8] = useState(false);
+
+    function handleButtonClick8() {
+        setShowAlert8(true);
+    }
+
+    function handleCloseAlert8() {
+        setShowAlert8(false);
+    }
+
+    useEffect(() => {
+        if (showAlert8) {
+            const timer = setTimeout(() => {
+                setShowAlert8(false);
+            }, 3000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [showAlert8]);
+
     const [roles, setRoles] = useState([]);
     const [permission, setPermission] = useState([]);
 
@@ -346,6 +390,30 @@ const Roles = () => {
 
     }
 
+    async function assignPermissions(newid) {
+        await fetch('http://127.0.0.1:8000/api/role-permissions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                role_id: newid,
+                permissions: selectedUsers,
+            })
+        }).then(response => {
+            if (response.ok) {
+                handleButtonClick7();
+                getPermission()
+            } else {
+                handleButtonClick8();
+            }
+        })
+            .catch(error => {
+                console.error(error);
+            });
+
+    };
+
     return (
         <>
             <div className='row'>
@@ -427,8 +495,8 @@ const Roles = () => {
             {/* Modal for Deletion Confirmation */}
             <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}></Modal>
 
-            {/* Add Permission Modal */}
-            <Modal title="Add Permissions" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4}>
+            {/* Modal for Assign Permissions */}
+            <Modal title="Assign Permissions" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4}>
 
                 <br></br>
                 <div className='row'>
@@ -437,34 +505,42 @@ const Roles = () => {
                     </div>
                     <div className='col md-3'></div>
                     <div className='col md-2 text-center'>
-                        <h6>Permission</h6>
+                        <h6>Permissions</h6>
                     </div>
                     <div className='col md-3'></div>
                     <div className='col md-2 text-center'>
-                        <h6 style={heading}></h6>
+                        <h6 style={heading}>Select</h6>
                     </div>
                     &nbsp;
                     <Divider></Divider>
                 </div>
 
                 {permission.map((perm, index) => (
-                <div className='row' key={perm.id}>
-                    <div className='col md-2 text-center'>
-                        <h6 style={perStyle}>{index + 1}</h6>
+                    <div className='row' key={perm.id}>
+                        <div className='col md-2 text-center'>
+                            <h6 style={perStyle}>{index + 1}</h6>
+                        </div>
+                        <div className='col md-3'></div>
+                        <div className='col md-2 text-center'>
+                            <h6 style={perStyle}>{perm.name}</h6>
+                        </div>
+                        <div className='col md-3'></div>
+                        <div className='col md-2 text-center'>
+                            <Checkbox
+                                checked={selectedUsers.includes(perm.id)}
+                                onChange={(e) => {
+                                    if (e.target.checked) {
+                                        setSelectedUsers([...selectedUsers, perm.id]);
+                                    } else {
+                                        setSelectedUsers(selectedUsers.filter((id) => id !== perm.id));
+                                    }
+                                }}
+                            />
+                        </div>
+                        &nbsp;
+                        <Divider></Divider>
                     </div>
-                    <div className='col md-3'></div>
-                    <div className='col md-2 text-center'>
-                        <h6 style={perStyle}>{perm.name}</h6>
-                    </div>
-                    <div className='col md-3'></div>
-                    <div className='col md-2 text-center'>
-                    <Checkbox></Checkbox>
-                    </div>
-                    &nbsp;
-                    <Divider></Divider>
-                </div>
-                 ))}
-
+                ))}
             </Modal>
 
             {/* Alert for Add Role Success*/}
@@ -506,6 +582,20 @@ const Roles = () => {
             {showAlert6 && (
                 <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
                     Failed to Update Role
+                </Alert>
+            )}
+
+            {/* Alert for Permission Assign Success*/}
+            {showAlert7 && (
+                <Alert onClose={handleCloseAlert7} severity="success" style={modalStyle2}>
+                    Permissions Assigned Successfully
+                </Alert>
+            )}
+
+            {/* Alert for Permission Assign Failure*/}
+            {showAlert8 && (
+                <Alert onClose={handleCloseAlert8} severity="error" style={modalStyle2}>
+                    Failed to Assign Permissions
                 </Alert>
             )}
 
