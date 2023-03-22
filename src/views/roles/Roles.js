@@ -11,10 +11,7 @@ const Roles = () => {
 
     // Variable declarations
     const [name, setName] = useState("");
-
     const [selectedUsers, setSelectedUsers] = useState([]);
-
-    // const [guard_name, setGuardName] = useState("");
 
     // CSS Stylings
     const modalStyle = {
@@ -433,7 +430,6 @@ const Roles = () => {
                     <CTableRow>
                         <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Role Name</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Guard Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
                     </CTableRow>
 
@@ -442,7 +438,6 @@ const Roles = () => {
                         <CTableRow key={role.id}>
                             <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center">{role.name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">{role.guard_name}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
                                 <IconButton aria-label="update" onClick={() => showModal3(role.id)}>
                                     <EditIcon htmlColor='#28B463' />

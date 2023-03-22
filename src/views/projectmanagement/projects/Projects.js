@@ -105,6 +105,7 @@ const Projects = () => {
   // Functions for Update Project Modal
   const [isModalOpen3, setIsModalOpen3] = useState(false);
   const showModal3 = (id) => {
+    getProjectById(id)
     setIsModalOpen3(id);
   };
 
@@ -124,7 +125,6 @@ const Projects = () => {
   };
 
   const handleOk4 = () => {
-    // console.log(selectedUsers);
     addAssignProject(isModalOpen4)
     setIsModalOpen4(false);
   };
@@ -136,11 +136,12 @@ const Projects = () => {
   // Functions for Show Description Modal
   const [isModalOpen5, setIsModalOpen5] = useState(false);
   const showModal5 = (id) => {
+    getProjectById(id)
     setIsModalOpen5(id)
   };
 
   const handleOk5 = () => {
-    setIsModalOpen4(false);
+    setIsModalOpen5(false);
   };
 
   const handleCancel5 = () => {
@@ -328,11 +329,16 @@ const Projects = () => {
     setDepartmentId(value);
   };
 
+  const handleTodoChange = (value) => {
+    setTodos(value);
+  }
+
   // Get API call
   const [projects, setProjects] = useState([]);
   const [company, setCompanies] = useState([]);
   const [users, setUsers] = useState([]);
   const [department, setDepartment] = useState([]);
+  const [byproject, setByProject] = useState([]);
 
   useEffect(() => {
     getList()
@@ -345,6 +351,13 @@ const Projects = () => {
     fetch("http://127.0.0.1:8000/api/getproject")
       .then((response) => response.json())
       .then((data) => setProjects(data.projects))
+      .catch((error) => console.log(error));
+  };
+
+  function getProjectById(id) {
+    fetch(`http://127.0.0.1:8000/api/get-project-by-project-id/${id}`)
+      .then((response) => response.json())
+      .then((data) => setByProject(data.projects))
       .catch((error) => console.log(error));
   };
 
@@ -397,6 +410,7 @@ const Projects = () => {
       });
   }
 
+  //Assign users API call
   async function addAssignProject(newid) {
     await fetch('http://127.0.0.1:8000/api/assign_projects', {
       method: 'POST',
@@ -518,6 +532,7 @@ const Projects = () => {
               <CTableHeaderCell className="text-center">{project.budget}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.start_date}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.dead_line}</CTableHeaderCell>
+              {/* <CTableHeaderCell className="text-center">{project.project_description}</CTableHeaderCell> */}
               <CTableHeaderCell className="text-center">
                 <IconButton aria-label="description" onClick={() => showModal5(project.project_id)}>
                   <VisibilityIcon htmlColor='#0070ff' />
@@ -616,13 +631,16 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
-              <input
-                type="text"
-                value={to_dos}
-                onChange={(e) => setTodos(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Todos"
-              />
+              <Form.Item label="Todos">
+                <Select
+                  placeholder="Select Todos"
+                  onChange={handleTodoChange}
+                  value={to_dos}
+                >
+                  <Select.Option value="y">Yes</Select.Option>
+                  <Select.Option value="n">No</Select.Option>
+                </Select>
+              </Form.Item>
             </div>
 
             <div className="form-outline mb-3">
@@ -667,11 +685,19 @@ const Projects = () => {
             <div className="form-outline mb-3">
               <input
                 type="text"
+                defaultValue="My default value"
                 value={project_name}
                 onChange={(e) => setProjectName(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Project Name"
               />
+              {/* <input
+               type="text"
+               defaultValue={project.project_name}
+               onChange={(e) => setProjectName(e.target.value)}
+               className="form-control form-control-lg"
+               placeholder='Enter Project Name'
+              /> */}
             </div>
 
             <div className="form-outline mb-3">
@@ -715,13 +741,16 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
-              <input
-                type="text"
-                value={to_dos}
-                onChange={(e) => setTodos(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Todos"
-              />
+              <Form.Item label="Todos">
+                <Select
+                  placeholder="Select Todos"
+                  onChange={handleTodoChange}
+                  value={to_dos}
+                >
+                  <Select.Option value="y">Yes</Select.Option>
+                  <Select.Option value="n">No</Select.Option>
+                </Select>
+              </Form.Item>
             </div>
 
             <div className="form-outline mb-3">
@@ -742,8 +771,8 @@ const Projects = () => {
 
           {/* Modal for Show Description */}
           <Modal title="Description" open={isModalOpen5} onOk={handleOk5} onCancel={handleCancel5} style={modalStyle}>
-            {projects.map((project) => (
-              <p key={project.id}>{project.project_description}</p>
+            {byproject.map((proj) => (
+              <p key={proj.id}>{proj.description}</p>
             ))}
           </Modal>
 
