@@ -17,7 +17,7 @@ const AssignedProjects = () => {
 
     // Get API call
     function getAssigns() {
-        fetch("http://127.0.0.1:8000/api/get_assign_projects")
+        fetch("http://10.3.3.80/api/get_assign_projects")
             .then((response) => response.json())
             .then((data) => setAssigns(data.Project_Assigns))
             .catch((error) => console.log(error));

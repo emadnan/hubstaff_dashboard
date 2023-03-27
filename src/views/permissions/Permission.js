@@ -218,7 +218,7 @@ const Permission = () => {
 
     // Get API call
     function getPermission() {
-        fetch("http://127.0.0.1:8000/api/getpermissions")
+        fetch("http://10.3.3.80/api/getpermissions")
             .then((response) => response.json())
             .then((data) => setPermission(data.permissions))
             .catch((error) => console.log(error));
@@ -232,7 +232,7 @@ const Permission = () => {
     async function addPermission() {
         let addpermission = { name }
 
-        await fetch("http://127.0.0.1:8000/api/addpermission",
+        await fetch("http://10.3.3.80/api/addpermission",
             {
                 method: 'POST',
                 body: JSON.stringify(addpermission),
@@ -255,7 +255,7 @@ const Permission = () => {
 
     // Delete API call
     async function deletePermission(newid) {
-        await fetch('http://127.0.0.1:8000/api/delete-permission', {
+        await fetch('http://10.3.3.80/api/delete-permission', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -279,7 +279,7 @@ const Permission = () => {
 
     // Update API call
     async function updatePermission(newid) {
-        await fetch('http://127.0.0.1:8000/api/update-permission', {
+        await fetch('http://10.3.3.80/api/update-permission', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -354,7 +354,7 @@ const Permission = () => {
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 className="form-control form-control-lg"
-                                placeholder="Enter Role Name"
+                                placeholder="Enter Permission Name"
                             />
                         </div>
 
@@ -379,7 +379,7 @@ const Permission = () => {
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 className="form-control form-control-lg"
-                                placeholder="Enter Role Name"
+                                placeholder="Enter Permission Name"
                             />
                         </div>
 

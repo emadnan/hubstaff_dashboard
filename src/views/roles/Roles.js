@@ -294,14 +294,14 @@ const Roles = () => {
 
     // Get API call
     function getRoles() {
-        fetch("http://127.0.0.1:8000/api/getroles")
+        fetch("http://10.3.3.80/api/getroles")
             .then((response) => response.json())
             .then((data) => setRoles(data.roles))
             .catch((error) => console.log(error));
     }
 
     function getPermission() {
-        fetch("http://127.0.0.1:8000/api/getpermissions")
+        fetch("http://10.3.3.80/api/getpermissions")
             .then((response) => response.json())
             .then((data) => setPermission(data.permissions))
             .catch((error) => console.log(error));
@@ -316,7 +316,7 @@ const Roles = () => {
     async function addRole() {
         let addrole = { name }
 
-        await fetch("http://127.0.0.1:8000/api/addrole",
+        await fetch("http://10.3.3.80/api/addrole",
             {
                 method: 'POST',
                 body: JSON.stringify(addrole),
@@ -339,7 +339,7 @@ const Roles = () => {
 
     // Delete API call
     async function deleteRole(newid) {
-        await fetch('http://127.0.0.1:8000/api/delete-role', {
+        await fetch('http://10.3.3.80/api/delete-role', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -363,7 +363,7 @@ const Roles = () => {
 
     // Update API call
     async function updateRole(newid) {
-        await fetch('http://127.0.0.1:8000/api/update-role', {
+        await fetch('http://10.3.3.80/api/update-role', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -388,7 +388,7 @@ const Roles = () => {
     }
 
     async function assignPermissions(newid) {
-        await fetch('http://127.0.0.1:8000/api/role-permissions', {
+        await fetch('http://10.3.3.80/api/role-permissions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

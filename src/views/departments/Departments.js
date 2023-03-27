@@ -226,14 +226,14 @@ const Departments = () => {
     const [company, setCompanies] = useState([]);
 
     function getList() {
-        fetch("http://127.0.0.1:8000/api/getdepartment")
+        fetch("http://10.3.3.80/api/getdepartment")
             .then((response) => response.json())
             .then((data) => setUsers(data.Departments))
             .catch((error) => console.log(error));
     }
 
     function getCompany() {
-        fetch("http://127.0.0.1:8000/api/getcompany")
+        fetch("http://10.3.3.80/api/getcompany")
             .then((response) => response.json())
             .then((data) => setCompanies(data.companies))
             .catch((error) => console.log(error));
@@ -248,7 +248,7 @@ const Departments = () => {
     async function addDepartment() {
         let item = { company_id, department_name, description }
 
-        await fetch("http://127.0.0.1:8000/api/add_department",
+        await fetch("http://10.3.3.80/api/add_department",
             {
                 method: 'POST',
                 body: JSON.stringify(item),
@@ -271,7 +271,7 @@ const Departments = () => {
 
     // Delete API call
     async function deleteDepartment(newid) {
-        await fetch('http://127.0.0.1:8000/api/delete-department', {
+        await fetch('http://10.3.3.80/api/delete-department', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -295,7 +295,7 @@ const Departments = () => {
 
     // Update API call
     async function updateDepartment(newid) {
-        await fetch('http://127.0.0.1:8000/api/update-department', {
+        await fetch('http://10.3.3.80/api/update-department', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

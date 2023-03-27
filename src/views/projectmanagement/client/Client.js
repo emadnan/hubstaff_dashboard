@@ -227,7 +227,7 @@ const Client = () => {
   const [users, setUsers] = useState([]);
 
   function getClients() {
-    fetch("http://127.0.0.1:8000/api/get_client")
+    fetch("http://10.3.3.80/api/get_client")
       .then((response) => response.json())
       .then((data) => setUsers(data.Departments))
       .catch((error) => console.log(error));
@@ -241,7 +241,7 @@ const Client = () => {
   async function addClient() {
     let item = { client_name, project, invoicing, project_status }
 
-    await fetch("http://127.0.0.1:8000/api/add_client",
+    await fetch("http://10.3.3.80/api/add_client",
       {
         method: 'POST',
         body: JSON.stringify(item),
@@ -264,7 +264,7 @@ const Client = () => {
 
   // Delete API call
   async function deleteClient(newid) {
-    await fetch('http://127.0.0.1:8000/api/delete_client', {
+    await fetch('http://10.3.3.80/api/delete_client', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -288,7 +288,7 @@ const Client = () => {
 
   // Update API call
   async function updateClient(newid) {
-    await fetch('http://127.0.0.1:8000/api/update_client', {
+    await fetch('http://10.3.3.80/api/update_client', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

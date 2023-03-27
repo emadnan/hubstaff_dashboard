@@ -220,14 +220,14 @@ const Users = () => {
 
     // Get API call
     function getList() {
-        fetch("http://127.0.0.1:8000/api/get_users")
+        fetch("http://10.3.3.80/api/get_users")
             .then((response) => response.json())
             .then((data) => setUsers(data.Users))
             .catch((error) => console.log(error));
     }
 
     function getRoles() {
-        fetch("http://127.0.0.1:8000/api/getroles")
+        fetch("http://10.3.3.80/api/getroles")
             .then((response) => response.json())
             .then((data) => setRoles(data.roles))
             .catch((error) => console.log(error));
@@ -248,7 +248,7 @@ const Users = () => {
     async function addUser() {
         let adduser = { name, email, password, role }
 
-        await fetch("http://127.0.0.1:8000/api/add_user",
+        await fetch("http://10.3.3.80/api/add_user",
             {
                 method: 'POST',
                 body: JSON.stringify(adduser),
@@ -271,7 +271,7 @@ const Users = () => {
 
     // Delete API call
     async function deleteUser(newid) {
-        await fetch('http://127.0.0.1:8000/api/delete_user', {
+        await fetch('http://10.3.3.80/api/delete_user', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -295,7 +295,7 @@ const Users = () => {
 
     // Update API call
     async function updateUser(newid) {
-        await fetch('http://127.0.0.1:8000/api/update_user', {
+        await fetch('http://10.3.3.80/api/update_user', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

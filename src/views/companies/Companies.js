@@ -237,21 +237,21 @@ const Companies = () => {
   const [cities, setCities] = useState([]);
 
   function getList() {
-    fetch("http://127.0.0.1:8000/api/getcompany")
+    fetch("http://10.3.3.80/api/getcompany")
       .then((response) => response.json())
       .then((data) => setUsers(data.companies))
       .catch((error) => console.log(error));
   }
 
   function getCountry() {
-    fetch("http://127.0.0.1:8000/api/get_country")
+    fetch("http://10.3.3.80/api/get_country")
       .then((response) => response.json())
       .then((data) => setCountries(data.Country))
       .catch((error) => console.log(error));
   }
 
   function getCity(id) {
-    fetch(`http://127.0.0.1:8000/api/get_cities/${id}`)
+    fetch(`http://10.3.3.80/api/get_cities/${id}`)
       .then((response) => response.json())
       .then((data) => setCities(data.Cities))
       .catch((error) => console.log(error));
@@ -266,7 +266,7 @@ const Companies = () => {
   async function addCompany() {
     let item = { company_name, address, company_email, contact_no, city, country }
 
-    await fetch("http://127.0.0.1:8000/api/addcompany",
+    await fetch("http://10.3.3.80/api/api/addcompany",
       {
         method: 'POST',
         body: JSON.stringify(item),
@@ -289,7 +289,7 @@ const Companies = () => {
 
   // Delete API call
   async function deleteCompany(newid) {
-    await fetch('http://127.0.0.1:8000/api/delete-company', {
+    await fetch('http://10.3.3.80/api/delete-company', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -313,7 +313,7 @@ const Companies = () => {
 
   // Update API call
   async function updateCompany(newid) {
-    await fetch('http://127.0.0.1:8000/api/update-company', {
+    await fetch('http://10.3.3.80/api/update-company', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

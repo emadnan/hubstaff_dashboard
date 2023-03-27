@@ -63,28 +63,28 @@ const Dashboard = () => {
   }, []);
 
   function getCompanies() {
-    fetch("http://127.0.0.1:8000/api/getcompany")
+    fetch("http://10.3.3.80/api/getcompany")
       .then((response) => response.json())
       .then((data) => setUsers(data.companies))
       .catch((error) => console.log(error));
   };
 
   function getProjects() {
-    fetch("http://127.0.0.1:8000/api/getproject")
+    fetch("http://10.3.3.80/api/getproject")
       .then((response) => response.json())
       .then((data) => setProjects(data.projects))
       .catch((error) => console.log(error));
   };
 
   function getDepartments() {
-    fetch("http://127.0.0.1:8000/api/getdepartment")
+    fetch("http://10.3.3.80/api/getdepartment")
       .then((response) => response.json())
       .then((data) => setDepartments(data.Departments))
       .catch((error) => console.log(error));
   };
 
   function getClients() {
-    fetch("http://127.0.0.1:8000/api/get_client")
+    fetch("http://10.3.3.80/api/get_client")
       .then((response) => response.json())
       .then((data) => setClients(data.Departments))
       .catch((error) => console.log(error));
