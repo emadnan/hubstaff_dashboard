@@ -348,7 +348,10 @@ const Permission = () => {
                     {/* Modal for Add Permission */}
                     <Modal title="Add a Permission" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
+                        <br></br>
+
                         <div className="form-outline mb-3">
+                        <label>Permission</label>
                             <input
                                 type="text"
                                 value={name}
@@ -357,23 +360,16 @@ const Permission = () => {
                                 placeholder="Enter Permission Name"
                             />
                         </div>
-
-                        {/* <div className="form-outline mb-3">
-                            <input
-                                type="text"
-                                value={guard_name}
-                                onChange={(e) => setGuardName(e.target.value)}
-                                className="form-control form-control-lg"
-                                placeholder="Enter Guard Name"
-                            />
-                        </div> */}
 
                     </Modal>
 
                     {/* Modal for Update Permission */}
                     <Modal title="Update a Permission" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
 
+                        <br></br>
+
                         <div className="form-outline mb-3">
+                        <label>Permission</label>
                             <input
                                 type="text"
                                 value={name}
@@ -382,16 +378,6 @@ const Permission = () => {
                                 placeholder="Enter Permission Name"
                             />
                         </div>
-
-                        {/* <div className="form-outline mb-3">
-                            <input
-                                type="text"
-                                value={guard_name}
-                                onChange={(e) => setGuardName(e.target.value)}
-                                className="form-control form-control-lg"
-                                placeholder="Enter Guard Name"
-                            />
-                        </div> */}
 
                     </Modal>
 

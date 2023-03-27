@@ -371,7 +371,10 @@ const Users = () => {
                     {/* Modal for Add User */}
                     <Modal title="Add a User" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
+                        <br></br>
+
                         <div className="form-outline mb-3">
+                        <label>Username</label>
                             <input
                                 type="text"
                                 value={name}
@@ -382,6 +385,7 @@ const Users = () => {
                         </div>
 
                         <div className="form-outline mb-3">
+                        <label>Email</label>
                             <input
                                 type="email"
                                 value={email}
@@ -392,6 +396,7 @@ const Users = () => {
                         </div>
 
                         <div className="form-outline mb-3">
+                        <label>Password</label>
                             <input
                                 type="password"
                                 value={password}
@@ -402,8 +407,9 @@ const Users = () => {
                         </div>
 
                         <div className="form-outline mb-3">
-                            <Form.Item label="Role">
-                                <Select placeholder="Select Role Id" onChange={handleRoleChange} value={role}>
+                        <label>Role</label>
+                            <Form.Item>
+                                <Select placeholder='Select' onChange={handleRoleChange} value={role}>
                                     {roles.map((user) => (
                                         <Select.Option value={user.name} key={user.id}>
                                             {user.name}
@@ -418,7 +424,10 @@ const Users = () => {
                     {/* Modal for Update User */}
                     <Modal title="Update a User" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
 
+                        <br></br>
+
                         <div className="form-outline mb-3">
+                        <label>Username</label>
                             <input
                                 type="text"
                                 value={name}
@@ -429,6 +438,7 @@ const Users = () => {
                         </div>
 
                         <div className="form-outline mb-3">
+                        <label>Email</label>
                             <input
                                 type="email"
                                 value={email}
@@ -439,6 +449,7 @@ const Users = () => {
                         </div>
 
                         <div className="form-outline mb-3">
+                        <label>Password</label>
                             <input
                                 type="password"
                                 value={password}
@@ -449,7 +460,8 @@ const Users = () => {
                         </div>
 
                         <div className="form-outline mb-3">
-                            <Form.Item label="Role">
+                        <label>Role</label>
+                            <Form.Item>
                                 <Select placeholder="Select Role Id" onChange={handleRoleChange} value={role}>
                                     {roles.map((user) => (
                                         <Select.Option value={user.name} key={user.id}>

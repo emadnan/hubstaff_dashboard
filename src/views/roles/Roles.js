@@ -460,7 +460,10 @@ const Roles = () => {
             {/* Modal for Add Role */}
             <Modal title="Add a Role" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
+                <br></br>
+
                 <div className="form-outline mb-3">
+                <label>Role</label>
                     <input
                         type="text"
                         value={name}

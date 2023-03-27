@@ -425,6 +425,7 @@ const Projects = () => {
       if (response.ok) {
         handleButtonClick7();
         getList()
+        
       } else {
         handleButtonClick8();
       }

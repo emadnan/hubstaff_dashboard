@@ -266,7 +266,7 @@ const Companies = () => {
   async function addCompany() {
     let item = { company_name, address, company_email, contact_no, city, country }
 
-    await fetch("http://10.3.3.80/api/api/addcompany",
+    await fetch("http://10.3.3.80/api/addcompany",
       {
         method: 'POST',
         body: JSON.stringify(item),
@@ -396,7 +396,10 @@ const Companies = () => {
           {/* Modal for Add Company */}
           <Modal title="Add a Company" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
+            <br></br>
+
             <div className="form-outline mb-3">
+            <label>Company</label>
               <input
                 type="text"
                 value={company_name}
@@ -407,6 +410,7 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
+            <label>Address</label>
               <input
                 type="text"
                 value={address}
@@ -417,16 +421,18 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
+            <label>Email</label>
               <input
                 type="text"
                 value={company_email}
                 onChange={(e) => setCompanyEmail(e.target.value)}
                 className="form-control form-control-lg"
-                placeholder="Enter Company Email"
+                placeholder="Enter Email"
               />
             </div>
 
             <div className="form-outline mb-3">
+            <label>Contact</label>
               <input
                 type="text"
                 value={contact_no}
@@ -437,7 +443,8 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
-              <Form.Item label="Country">
+            <label>Country</label>
+              <Form.Item>
                 <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
                   {countries.map((count) => (
                     <Select.Option value={count.name} key={count.id}>
@@ -449,7 +456,8 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
-              <Form.Item label="City">
+            <label>City</label>
+              <Form.Item>
                 <Select placeholder="Select City" onChange={handleCityChange} value={city}>
                   {cities.map((citi) => (
                     <Select.Option value={citi.name} key={citi.id}>
@@ -469,7 +477,10 @@ const Companies = () => {
           {/* Modal for Update Company */}
           <Modal title="Update a Company" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
 
+            <br></br>
+
             <div className="form-outline mb-3">
+            <label>Company</label>
               <input
                 type="text"
                 value={company_name}
@@ -480,6 +491,7 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
+            <label>Address</label>
               <input
                 type="text"
                 value={address}
@@ -490,16 +502,18 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
+            <label>Company</label>
               <input
                 type="text"
                 value={company_email}
                 onChange={(e) => setCompanyEmail(e.target.value)}
                 className="form-control form-control-lg"
-                placeholder="Enter Company Email"
+                placeholder="Enter Email"
               />
             </div>
 
             <div className="form-outline mb-3">
+            <label>Contact</label>
               <input
                 type="text"
                 value={contact_no}
@@ -510,7 +524,8 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
-              <Form.Item label="Country">
+            <label>Country</label>
+              <Form.Item>
                 <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
                   {countries.map((count) => (
                     <Select.Option value={count.name} key={count.id}>
@@ -522,7 +537,8 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
-              <Form.Item label="City">
+            <label>City</label>
+              <Form.Item>
                 <Select placeholder="Select City" onChange={handleCityChange} value={city}>
                   {cities.map((citi) => (
                     <Select.Option value={citi.name} key={citi.id}>

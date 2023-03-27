@@ -12,7 +12,7 @@ const Login = () => {
   //Login API call
   async function login() {
     let item = { email, password }
-    let result = await fetch("http://127.0.0.1:8000/api/login",
+    let result = await fetch("http://10.3.3.80/api/login",
       {
         method: 'POST',
         body: JSON.stringify(item),
@@ -30,13 +30,13 @@ const Login = () => {
   return (
     <>
       <div className="col-sm-20 row-sm-20 d-flex">
-        <div className="col-md-9 col-lg-6 col-xl-5">
+        {/* <div className="col-md-9 col-lg-6 col-xl-5">
           <img
             src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
             className="img-fluid"
             alt="Sample"
           />
-        </div>
+        </div> */}
         <div className="col-md-10 col-lg-6 col-xl-4 offset-xl-1">
           <form>
             <div className="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
