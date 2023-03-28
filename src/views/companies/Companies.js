@@ -394,12 +394,12 @@ const Companies = () => {
         <CTableBody>
 
           {/* Modal for Add Company */}
-          <Modal title="Add a Company" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+          <Modal title="Add a Company" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
 
             <br></br>
 
             <div className="form-outline mb-3">
-            <label>Company</label>
+              <label>Company</label>
               <input
                 type="text"
                 value={company_name}
@@ -410,7 +410,7 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>Address</label>
+              <label>Address</label>
               <input
                 type="text"
                 value={address}
@@ -421,7 +421,7 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>Email</label>
+              <label>Email</label>
               <input
                 type="text"
                 value={company_email}
@@ -432,7 +432,7 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>Contact</label>
+              <label>Contact</label>
               <input
                 type="text"
                 value={contact_no}
@@ -443,7 +443,7 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>Country</label>
+              <label>Country</label>
               <Form.Item>
                 <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
                   {countries.map((count) => (
@@ -456,7 +456,7 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>City</label>
+              <label>City</label>
               <Form.Item>
                 <Select placeholder="Select City" onChange={handleCityChange} value={city}>
                   {cities.map((citi) => (
@@ -475,12 +475,12 @@ const Companies = () => {
           </Modal>
 
           {/* Modal for Update Company */}
-          <Modal title="Update a Company" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
+          <Modal title="Update a Company" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3}>
 
             <br></br>
 
             <div className="form-outline mb-3">
-            <label>Company</label>
+              <label>Company</label>
               <input
                 type="text"
                 value={company_name}
@@ -491,7 +491,7 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>Address</label>
+              <label>Address</label>
               <input
                 type="text"
                 value={address}
@@ -502,7 +502,7 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>Company</label>
+              <label>Company</label>
               <input
                 type="text"
                 value={company_email}
@@ -513,7 +513,7 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>Contact</label>
+              <label>Contact</label>
               <input
                 type="text"
                 value={contact_no}
@@ -524,7 +524,7 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>Country</label>
+              <label>Country</label>
               <Form.Item>
                 <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
                   {countries.map((count) => (
@@ -537,7 +537,7 @@ const Companies = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>City</label>
+              <label>City</label>
               <Form.Item>
                 <Select placeholder="Select City" onChange={handleCityChange} value={city}>
                   {cities.map((citi) => (

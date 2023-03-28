@@ -514,11 +514,11 @@ const Projects = () => {
             <CTableHeaderCell className="text-center" style={mystyle}>Project Name</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Company Name</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Department Name</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Todos</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Budget</CTableHeaderCell>
+            {/* <CTableHeaderCell className="text-center" style={mystyle}>Todos</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>Budget</CTableHeaderCell> */}
             <CTableHeaderCell className="text-center" style={mystyle}>Start Date</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Deadline</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>End Date</CTableHeaderCell>
+            {/* <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell> */}
             <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
           </CTableRow>
 
@@ -529,17 +529,15 @@ const Projects = () => {
               <CTableHeaderCell className="text-center">{project.project_name}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.company_name}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.department_name}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{project.to_dos}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{project.budget}</CTableHeaderCell>
+              {/* <CTableHeaderCell className="text-center">{project.to_dos}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center">{project.budget}</CTableHeaderCell> */}
               <CTableHeaderCell className="text-center">{project.start_date}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.dead_line}</CTableHeaderCell>
               {/* <CTableHeaderCell className="text-center">{project.project_description}</CTableHeaderCell> */}
               <CTableHeaderCell className="text-center">
-                <IconButton aria-label="description" onClick={() => showModal5(project.project_id)}>
+              <IconButton aria-label="description" onClick={() => showModal5(project.project_id)}>
                   <VisibilityIcon htmlColor='#0070ff' />
                 </IconButton>
-              </CTableHeaderCell>
-              <CTableHeaderCell className="text-center">
                 <IconButton aria-label="update" onClick={() => showModal3(project.project_id)}>
                   <EditIcon htmlColor='#28B463' />
                 </IconButton>
@@ -555,10 +553,13 @@ const Projects = () => {
         <CTableBody>
 
           {/* Modal for Add Projects */}
-          <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+          <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+
+            <br></br>
 
             <div className="form-outline mb-3">
-              <Form.Item label="Company">
+            <label>Company</label>
+              <Form.Item>
                 <Select placeholder="Select Company" onChange={handleCompanyChange} value={company_id}>
                   {company.map((count) => (
                     <Select.Option value={count.name} key={count.id}>
@@ -570,7 +571,8 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
-              <Form.Item label="Departments">
+            <label>Department</label>
+              <Form.Item>
                 <Select placeholder="Select Departments" onChange={handleDepartmentChange} value={department_id}>
                   {department.map((count) => (
                     <Select.Option value={count.nnname} key={count.id}>
@@ -582,6 +584,7 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
+            <label>Project Name</label>
               <input
                 type="text"
                 value={project_name}
@@ -592,6 +595,7 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
+            <label>Description</label>
               <input
                 type="text"
                 value={description}
@@ -602,6 +606,7 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
+            <label>Start Date</label>
               <input
                 type="date"
                 value={start_date}
@@ -612,6 +617,7 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
+            <label>End Date</label>
               <input
                 type="date"
                 value={dead_line}
@@ -621,7 +627,8 @@ const Projects = () => {
               />
             </div>
 
-            <div className="form-outline mb-3">
+            {/* <div className="form-outline mb-3">
+            <label>Team Id</label>
               <input
                 type="number"
                 value={team_id}
@@ -632,7 +639,8 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
-              <Form.Item label="Todos">
+            <label>Todos</label>
+              <Form.Item>
                 <Select
                   placeholder="Select Todos"
                   onChange={handleTodoChange}
@@ -645,6 +653,7 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
+            <label>Budget</label>
               <input
                 type="number"
                 value={budget}
@@ -652,15 +661,18 @@ const Projects = () => {
                 className="form-control form-control-lg"
                 placeholder="Enter Budget"
               />
-            </div>
+            </div> */}
 
           </Modal>
 
           {/* Modal for Update User */}
-          <Modal title="Update a Project" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
+          <Modal title="Update a Project" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3}>
+
+            <br></br>
 
             <div className="form-outline mb-3">
-              <Form.Item label="Company">
+            <label>Company</label>
+              <Form.Item>
                 <Select placeholder="Select Company" onChange={handleCompanyChange} value={company_id}>
                   {company.map((count) => (
                     <Select.Option value={count.name} key={count.id}>
@@ -672,7 +684,8 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
-              <Form.Item label="Departments">
+            <label>Department</label>
+              <Form.Item>
                 <Select placeholder="Select Departments" onChange={handleDepartmentChange} value={department_id}>
                   {department.map((count) => (
                     <Select.Option value={count.nnname} key={count.id}>
@@ -684,6 +697,7 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
+            <label>Project Name</label>
               <input
                 type="text"
                 defaultValue="My default value"
@@ -692,16 +706,10 @@ const Projects = () => {
                 className="form-control form-control-lg"
                 placeholder="Enter Project Name"
               />
-              {/* <input
-               type="text"
-               defaultValue={project.project_name}
-               onChange={(e) => setProjectName(e.target.value)}
-               className="form-control form-control-lg"
-               placeholder='Enter Project Name'
-              /> */}
             </div>
 
             <div className="form-outline mb-3">
+            <label>Description</label>
               <input
                 type="text"
                 value={description}
@@ -712,6 +720,7 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
+            <label>Start Date</label>
               <input
                 type="date"
                 value={start_date}
@@ -722,6 +731,7 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
+            <label>End Date</label>
               <input
                 type="date"
                 value={dead_line}
@@ -731,7 +741,8 @@ const Projects = () => {
               />
             </div>
 
-            <div className="form-outline mb-3">
+            {/* <div className="form-outline mb-3">
+            <label>Team Id</label>
               <input
                 type="number"
                 value={team_id}
@@ -742,7 +753,8 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
-              <Form.Item label="Todos">
+            <label>Todos</label>
+              <Form.Item>
                 <Select
                   placeholder="Select Todos"
                   onChange={handleTodoChange}
@@ -755,6 +767,7 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
+            <label>Budget</label>
               <input
                 type="number"
                 value={budget}
@@ -762,7 +775,7 @@ const Projects = () => {
                 className="form-control form-control-lg"
                 placeholder="Enter Budget"
               />
-            </div>
+            </div> */}
 
           </Modal>
 

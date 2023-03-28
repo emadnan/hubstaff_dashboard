@@ -367,12 +367,12 @@ const Departments = () => {
                 <CTableBody>
 
                     {/* Modal for Add Department */}
-                    <Modal title="Add a Department" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+                    <Modal title="Add a Department" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
 
                         <br></br>
 
                         <div className="form-outline mb-3">
-                        <label>Company</label>
+                            <label>Company</label>
                             <Form.Item>
                                 <Select placeholder="Select Company" onChange={handleCompanyChange} value={company_id}>
                                     {company.map((count) => (
@@ -385,7 +385,7 @@ const Departments = () => {
                         </div>
 
                         <div className="form-outline mb-3">
-                        <label>Department</label>
+                            <label>Department</label>
                             <input
                                 type="text"
                                 value={department_name}
@@ -396,7 +396,7 @@ const Departments = () => {
                         </div>
 
                         <div className="form-outline mb-3">
-                        <label>Description</label>
+                            <label>Description</label>
                             <input
                                 type="text"
                                 value={description}
@@ -409,12 +409,12 @@ const Departments = () => {
                     </Modal>
 
                     {/* Modal for Update Department */}
-                    <Modal title="Update a Department" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
+                    <Modal title="Update a Department" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3}>
 
                         <br></br>
 
                         <div className="form-outline mb-3">
-                        <label>Company</label>
+                            <label>Company</label>
                             <Form.Item>
                                 <Select placeholder="Select Company" onChange={handleCompanyChange} value={company_id}>
                                     {company.map((count) => (
@@ -427,7 +427,7 @@ const Departments = () => {
                         </div>
 
                         <div className="form-outline mb-3">
-                        <label>Department</label>
+                            <label>Department</label>
                             <input
                                 type="text"
                                 value={department_name}
@@ -438,7 +438,7 @@ const Departments = () => {
                         </div>
 
                         <div className="form-outline mb-3">
-                        <label>Description</label>
+                            <label>Description</label>
                             <input
                                 type="text"
                                 value={description}
@@ -500,7 +500,7 @@ const Departments = () => {
             </CTable>
         </>
     )
-                    
+
 }
 
 export default Departments

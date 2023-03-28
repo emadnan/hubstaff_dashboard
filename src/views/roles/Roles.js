@@ -458,12 +458,12 @@ const Roles = () => {
             </CTable>
 
             {/* Modal for Add Role */}
-            <Modal title="Add a Role" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+            <Modal title="Add a Role" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
 
                 <br></br>
 
                 <div className="form-outline mb-3">
-                <label>Role</label>
+                    <label>Role</label>
                     <input
                         type="text"
                         value={name}
@@ -476,7 +476,7 @@ const Roles = () => {
             </Modal>
 
             {/* Modal for Update Role */}
-            <Modal title="Update a Role" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
+            <Modal title="Update a Role" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3}>
 
                 <div className="form-outline mb-3">
                     <input
@@ -491,7 +491,8 @@ const Roles = () => {
             </Modal>
 
             {/* Modal for Deletion Confirmation */}
-            <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}></Modal>
+            <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
+            </Modal>
 
             {/* Modal for Assign Permissions */}
             <Modal title="Assign Permissions" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4}>

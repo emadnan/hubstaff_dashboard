@@ -305,7 +305,7 @@ const Users = () => {
                 name: name,
                 email: email,
                 password: password,
-                role_id: role,
+                role: role,
 
             })
         }).then(response => {
@@ -369,12 +369,12 @@ const Users = () => {
                 <CTableBody>
 
                     {/* Modal for Add User */}
-                    <Modal title="Add a User" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+                    <Modal title="Add a User" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
 
                         <br></br>
 
                         <div className="form-outline mb-3">
-                        <label>Username</label>
+                            <label>Username</label>
                             <input
                                 type="text"
                                 value={name}
@@ -385,7 +385,7 @@ const Users = () => {
                         </div>
 
                         <div className="form-outline mb-3">
-                        <label>Email</label>
+                            <label>Email</label>
                             <input
                                 type="email"
                                 value={email}
@@ -396,7 +396,7 @@ const Users = () => {
                         </div>
 
                         <div className="form-outline mb-3">
-                        <label>Password</label>
+                            <label>Password</label>
                             <input
                                 type="password"
                                 value={password}
@@ -407,7 +407,7 @@ const Users = () => {
                         </div>
 
                         <div className="form-outline mb-3">
-                        <label>Role</label>
+                            <label>Role</label>
                             <Form.Item>
                                 <Select placeholder='Select' onChange={handleRoleChange} value={role}>
                                     {roles.map((user) => (
@@ -422,12 +422,12 @@ const Users = () => {
                     </Modal>
 
                     {/* Modal for Update User */}
-                    <Modal title="Update a User" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
+                    <Modal title="Update a User" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3}>
 
                         <br></br>
 
                         <div className="form-outline mb-3">
-                        <label>Username</label>
+                            <label>Username</label>
                             <input
                                 type="text"
                                 value={name}
@@ -438,7 +438,7 @@ const Users = () => {
                         </div>
 
                         <div className="form-outline mb-3">
-                        <label>Email</label>
+                            <label>Email</label>
                             <input
                                 type="email"
                                 value={email}
@@ -449,7 +449,7 @@ const Users = () => {
                         </div>
 
                         <div className="form-outline mb-3">
-                        <label>Password</label>
+                            <label>Password</label>
                             <input
                                 type="password"
                                 value={password}
@@ -460,7 +460,7 @@ const Users = () => {
                         </div>
 
                         <div className="form-outline mb-3">
-                        <label>Role</label>
+                            <label>Role</label>
                             <Form.Item>
                                 <Select placeholder="Select Role Id" onChange={handleRoleChange} value={role}>
                                     {roles.map((user) => (

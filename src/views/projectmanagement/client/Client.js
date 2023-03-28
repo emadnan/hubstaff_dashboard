@@ -363,9 +363,12 @@ const Client = () => {
         <CTableBody>
 
           {/* Modal for Add Client */}
-          <Modal title="Add a Client" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+          <Modal title="Add a Client" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+
+            <br></br>
 
             <div className="form-outline mb-3">
+              <label>Client Name</label>
               <input
                 type="text"
                 value={client_name}
@@ -376,6 +379,7 @@ const Client = () => {
             </div>
 
             <div className="form-outline mb-3">
+              <label>Project Name</label>
               <input
                 type="text"
                 value={project}
@@ -386,6 +390,7 @@ const Client = () => {
             </div>
 
             <div className="form-outline mb-3">
+              <label>Invoicing</label>
               <input
                 type="number"
                 value={invoicing}
@@ -396,7 +401,8 @@ const Client = () => {
             </div>
 
             <div className="form-outline mb-3">
-              <Form.Item label="Status">
+              <label>Status</label>
+              <Form.Item>
                 <Select placeholder="Select Project Status" onChange={handleProjectStatus}>
                   <Option value="in_progress">In Progress</Option>
                   <Option value="pending">Pending</Option>
@@ -412,9 +418,12 @@ const Client = () => {
           </Modal>
 
           {/* Modal for Update Client */}
-          <Modal title="Update a Client" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
+          <Modal title="Update a Client" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3}>
+
+            <br></br>
 
             <div className="form-outline mb-3">
+              <label>Client Name</label>
               <input
                 type="text"
                 value={client_name}
@@ -425,6 +434,7 @@ const Client = () => {
             </div>
 
             <div className="form-outline mb-3">
+              <label>Project Name</label>
               <input
                 type="text"
                 value={project}
@@ -435,6 +445,7 @@ const Client = () => {
             </div>
 
             <div className="form-outline mb-3">
+              <label>Invoicing</label>
               <input
                 type="number"
                 value={invoicing}
@@ -445,7 +456,8 @@ const Client = () => {
             </div>
 
             <div className="form-outline mb-3">
-              <Form.Item label="Status">
+              <label>Status</label>
+              <Form.Item>
                 <Select placeholder="Select Project Status" onChange={handleProjectStatus}>
                   <Option value="in_progress">In Progress</Option>
                   <Option value="pending">Pending</Option>
