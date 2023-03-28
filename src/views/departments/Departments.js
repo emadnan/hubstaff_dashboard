@@ -41,9 +41,9 @@ const Departments = () => {
         float: "right",
         padding: "2px",
         width: "150px",
-        backgroundColor: "#0070ff",
+        backgroundColor: "white",
         fontWeight: "bold",
-        color: "white",
+        color: "#0070ff",
     };
 
     // Functions for Add Department Modal

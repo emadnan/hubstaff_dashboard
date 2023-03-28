@@ -43,9 +43,9 @@ const Companies = () => {
     float: "right",
     padding: "2px",
     width: "120px",
-    backgroundColor: "#0070ff",
+    backgroundColor: "white",
     fontWeight: "bold",
-    color: "white",
+    color: "#0070ff",
   }
 
   // Functions of Add Company Modal
@@ -81,6 +81,7 @@ const Companies = () => {
   // Functions for Update Company Modal
   const [isModalOpen3, setIsModalOpen3] = useState(false);
   const showModal3 = (id) => {
+    getCompanyById(id)
     setIsModalOpen3(id);
   };
 
@@ -235,6 +236,7 @@ const Companies = () => {
   const [users, setUsers] = useState([]);
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
+  const [bycompany, setByCompany] = useState([]);
 
   function getList() {
     fetch("http://10.3.3.80/api/getcompany")
@@ -256,6 +258,13 @@ const Companies = () => {
       .then((data) => setCities(data.Cities))
       .catch((error) => console.log(error));
   }
+
+  function getCompanyById(id) {
+    fetch(`http://10.3.3.80/api/get_company_by_id/${id}`)
+      .then((response) => response.json())
+      .then((data) => setByCompany(data.company))
+      .catch((error) => console.log(error));
+  };
 
   useEffect(() => {
     getList()
@@ -478,76 +487,83 @@ const Companies = () => {
           <Modal title="Update a Company" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3}>
 
             <br></br>
+            {bycompany.map((company) => (
+              <div key={company.id}>
+                <div className="form-outline mb-3">
+                  <label>Company</label>
+                  <input
+                    type="text"
+                    defaultValue={company.company_name}
+                    // value={company_name}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Company Name"
+                  />
+                </div>
 
-            <div className="form-outline mb-3">
-              <label>Company</label>
-              <input
-                type="text"
-                value={company_name}
-                onChange={(e) => setCompanyName(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Company Name"
-              />
-            </div>
+                <div className="form-outline mb-3">
+                  <label>Address</label>
+                  <input
+                    type="text"
+                    defaultValue={company.address}
+                    // value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Address"
+                  />
+                </div>
 
-            <div className="form-outline mb-3">
-              <label>Address</label>
-              <input
-                type="text"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Address"
-              />
-            </div>
+                <div className="form-outline mb-3">
+                  <label>Company</label>
+                  <input
+                    type="text"
+                    defaultValue={company.company_email}
+                    // value={company_email}
+                    onChange={(e) => setCompanyEmail(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Email"
+                  />
+                </div>
 
-            <div className="form-outline mb-3">
-              <label>Company</label>
-              <input
-                type="text"
-                value={company_email}
-                onChange={(e) => setCompanyEmail(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Email"
-              />
-            </div>
+                <div className="form-outline mb-3">
+                  <label>Contact</label>
+                  <input
+                    type="text"
+                    defaultValue={company.contact_no}
+                    // value={contact_no}
+                    onChange={(e) => setContactNo(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Contact No"
+                  />
+                </div>
 
-            <div className="form-outline mb-3">
-              <label>Contact</label>
-              <input
-                type="text"
-                value={contact_no}
-                onChange={(e) => setContactNo(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Contact No"
-              />
-            </div>
+                <div className="form-outline mb-3">
+                  <label>Country</label>
+                  <Form.Item>
+                    <Select placeholder="Select Country" onChange={handleCountryChange} defaultValue={company.country}>
+                      {countries.map((count) => (
+                        <Select.Option value={count.name} key={count.id}>
+                          {count.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
 
-            <div className="form-outline mb-3">
-              <label>Country</label>
-              <Form.Item>
-                <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
-                  {countries.map((count) => (
-                    <Select.Option value={count.name} key={count.id}>
-                      {count.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
-
-            <div className="form-outline mb-3">
-              <label>City</label>
-              <Form.Item>
-                <Select placeholder="Select City" onChange={handleCityChange} value={city}>
-                  {cities.map((citi) => (
-                    <Select.Option value={citi.name} key={citi.id}>
-                      {citi.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
+                <div className="form-outline mb-3">
+                  <label>City</label>
+                  <Form.Item>
+                    <Select placeholder="Select City" onChange={handleCityChange} defaultValue={company.city}>
+                      {cities.map((citi) => (
+                        <Select.Option value={citi.name} key={citi.id}>
+                          {citi.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+              </div>
+            ))}
           </Modal>
 
           {/* Alert for Add Company Success*/}

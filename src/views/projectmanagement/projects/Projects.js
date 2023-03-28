@@ -35,6 +35,11 @@ const Projects = () => {
     fontSize: 14,
   };
 
+  const headStyle = {
+    color: "#0070ff",
+    fontWeight: "bold",
+  };
+
   const heading = {
     display: 'flex',
     justifyContent: 'flex-end',
@@ -61,9 +66,9 @@ const Projects = () => {
     float: "right",
     padding: "2px",
     width: "120px",
-    backgroundColor: "#0070ff",
+    backgroundColor: "white",
     fontWeight: "bold",
-    color: "white",
+    color: "#0070ff",
   };
 
   const buttonStyle2 = {
@@ -329,9 +334,9 @@ const Projects = () => {
     setDepartmentId(value);
   };
 
-  const handleTodoChange = (value) => {
-    setTodos(value);
-  }
+  // const handleTodoChange = (value) => {
+  //   setTodos(value);
+  // }
 
   // Get API call
   const [projects, setProjects] = useState([]);
@@ -425,7 +430,7 @@ const Projects = () => {
       if (response.ok) {
         handleButtonClick7();
         getList()
-        
+
       } else {
         handleButtonClick8();
       }
@@ -520,6 +525,7 @@ const Projects = () => {
             <CTableHeaderCell className="text-center" style={mystyle}>End Date</CTableHeaderCell>
             {/* <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell> */}
             <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>Assign</CTableHeaderCell>
           </CTableRow>
 
           {/* Get API Projects */}
@@ -535,7 +541,7 @@ const Projects = () => {
               <CTableHeaderCell className="text-center">{project.dead_line}</CTableHeaderCell>
               {/* <CTableHeaderCell className="text-center">{project.project_description}</CTableHeaderCell> */}
               <CTableHeaderCell className="text-center">
-              <IconButton aria-label="description" onClick={() => showModal5(project.project_id)}>
+                <IconButton aria-label="description" onClick={() => showModal5(project.project_id)}>
                   <VisibilityIcon htmlColor='#0070ff' />
                 </IconButton>
                 <IconButton aria-label="update" onClick={() => showModal3(project.project_id)}>
@@ -544,6 +550,8 @@ const Projects = () => {
                 <IconButton aria-label="delete" onClick={() => showModal2(project.project_id)}>
                   <DeleteIcon htmlColor='#FF0000' />
                 </IconButton>
+              </CTableHeaderCell>
+              <CTableHeaderCell className="text-center">
                 <Button className="btn btn-primary" style={buttonStyle2} onClick={() => showModal4(project.project_id)}>Assign</Button>
               </CTableHeaderCell>
             </CTableRow>
@@ -558,7 +566,7 @@ const Projects = () => {
             <br></br>
 
             <div className="form-outline mb-3">
-            <label>Company</label>
+              <label>Company</label>
               <Form.Item>
                 <Select placeholder="Select Company" onChange={handleCompanyChange} value={company_id}>
                   {company.map((count) => (
@@ -571,7 +579,7 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>Department</label>
+              <label>Department</label>
               <Form.Item>
                 <Select placeholder="Select Departments" onChange={handleDepartmentChange} value={department_id}>
                   {department.map((count) => (
@@ -584,7 +592,7 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>Project Name</label>
+              <label>Project Name</label>
               <input
                 type="text"
                 value={project_name}
@@ -595,7 +603,7 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>Description</label>
+              <label>Description</label>
               <input
                 type="text"
                 value={description}
@@ -606,7 +614,7 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>Start Date</label>
+              <label>Start Date</label>
               <input
                 type="date"
                 value={start_date}
@@ -617,7 +625,7 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>End Date</label>
+              <label>End Date</label>
               <input
                 type="date"
                 value={dead_line}
@@ -670,10 +678,12 @@ const Projects = () => {
 
             <br></br>
 
+            {byproject.map((pro) => (
+              <div key={pro.id}>
             <div className="form-outline mb-3">
-            <label>Company</label>
+              <label>Company</label>
               <Form.Item>
-                <Select placeholder="Select Company" onChange={handleCompanyChange} value={company_id}>
+                <Select placeholder="Select Company" onChange={handleCompanyChange} defaultValue={pro.company}>
                   {company.map((count) => (
                     <Select.Option value={count.name} key={count.id}>
                       {count.company_name}
@@ -684,11 +694,11 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>Department</label>
+              <label>Department</label>
               <Form.Item>
-                <Select placeholder="Select Departments" onChange={handleDepartmentChange} value={department_id}>
+                <Select placeholder="Select Departments" onChange={handleDepartmentChange} defaultValue={pro.department_name}>
                   {department.map((count) => (
-                    <Select.Option value={count.nnname} key={count.id}>
+                    <Select.Option value={count.name} key={count.id}>
                       {count.department_name}
                     </Select.Option>
                   ))}
@@ -697,11 +707,11 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>Project Name</label>
+              <label>Project Name</label>
               <input
                 type="text"
-                defaultValue="My default value"
-                value={project_name}
+                defaultValue={pro.project_name}
+                // value={project_name}
                 onChange={(e) => setProjectName(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Project Name"
@@ -709,10 +719,11 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>Description</label>
+              <label>Description</label>
               <input
                 type="text"
-                value={description}
+                defaultValue={pro.description}
+                // value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Description"
@@ -720,10 +731,11 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>Start Date</label>
+              <label>Start Date</label>
               <input
                 type="date"
-                value={start_date}
+                defaultValue={pro.start_date}
+                // value={start_date}
                 onChange={(e) => setStartDate(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Start Date"
@@ -731,15 +743,18 @@ const Projects = () => {
             </div>
 
             <div className="form-outline mb-3">
-            <label>End Date</label>
+              <label>End Date</label>
               <input
                 type="date"
-                value={dead_line}
+                defaultValue={pro.dead_line}
+                // value={dead_line}
                 onChange={(e) => setDeadLine(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Dead Line"
               />
             </div>
+            </div>
+             ))}
 
             {/* <div className="form-outline mb-3">
             <label>Team Id</label>
@@ -777,16 +792,31 @@ const Projects = () => {
               />
             </div> */}
 
+           
           </Modal>
 
           {/* Modal for Deletion Confirmation */}
           <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
           </Modal>
 
-          {/* Modal for Show Description */}
-          <Modal title="Description" open={isModalOpen5} onOk={handleOk5} onCancel={handleCancel5} style={modalStyle}>
+          {/* Modal for View Details */}
+          <Modal title="" open={isModalOpen5} onOk={handleOk5} onCancel={handleCancel5} style={modalStyle}>
+
             {byproject.map((proj) => (
-              <p key={proj.id}>{proj.description}</p>
+              <div key={proj.id}>
+                <h3 style={headStyle}>{proj.project_name}</h3>
+                <br></br>
+                <h6 style={perStyle}>Company Name</h6>
+                <p>{proj.company_name}</p>
+                <h6 style={perStyle}>Department Name</h6>
+                <p>{proj.department_name}</p>
+                <h6 style={perStyle}>Description</h6>
+                <p>{proj.description}</p>
+                <h6 style={perStyle}>Start Date</h6>
+                <p>{proj.start_date}</p>
+                <h6 style={perStyle}>End Date</h6>
+                <p>{proj.dead_line}</p>
+              </div>
             ))}
           </Modal>
 

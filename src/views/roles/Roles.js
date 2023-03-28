@@ -50,9 +50,9 @@ const Roles = () => {
         float: "right",
         padding: "2px",
         width: "120px",
-        backgroundColor: "#0070ff",
+        backgroundColor: "white",
         fontWeight: "bold",
-        color: "white",
+        color: "#0070ff",
     };
 
     const buttonStyle2 = {
