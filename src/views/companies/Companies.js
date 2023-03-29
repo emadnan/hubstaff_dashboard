@@ -5,6 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const Companies = () => {
 
@@ -21,6 +22,15 @@ const Companies = () => {
     position: "fixed",
     top: "25%",
     left: "40%",
+  };
+
+  const perStyle = {
+    fontSize: 14,
+  };
+
+  const headStyle = {
+    color: "#0070ff",
+    fontWeight: "bold",
   };
 
   const modalStyle2 = {
@@ -92,6 +102,21 @@ const Companies = () => {
 
   const handleCancel3 = () => {
     setIsModalOpen3(false);
+  };
+
+  // Functions for Show Details Modal
+  const [isModalOpen4, setIsModalOpen4] = useState(false);
+  const showModal4 = (id) => {
+    getCompanyById(id)
+    setIsModalOpen4(id)
+  };
+
+  const handleOk4 = () => {
+    setIsModalOpen4(false);
+  };
+
+  const handleCancel4 = () => {
+    setIsModalOpen4(false);
   };
 
   // Functions for Add Company Success
@@ -388,6 +413,9 @@ const Companies = () => {
               <CTableHeaderCell className="text-center">{company.city}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{company.country}</CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
+               <IconButton aria-label="description" onClick={() => showModal4(company.id)}>
+                  <VisibilityIcon htmlColor='#0070ff' />
+                </IconButton>
                 <IconButton aria-label="update" onClick={() => showModal3(company.id)}>
                   <EditIcon htmlColor='#28B463' />
                 </IconButton>
@@ -562,6 +590,27 @@ const Companies = () => {
                     </Select>
                   </Form.Item>
                 </div>
+              </div>
+            ))}
+          </Modal>
+
+          {/* Modal for View Details */}
+          <Modal title="" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4} style={modalStyle}>
+
+            {bycompany.map((comp) => (
+              <div key={comp.id}>
+                <h3 style={headStyle}>{comp.company_name}</h3>
+                <br></br>
+                <h6 style={perStyle}>Address</h6>
+                <p>{comp.address}</p>
+                <h6 style={perStyle}>Email</h6>
+                <p>{comp.company_email}</p>
+                <h6 style={perStyle}>Contact No</h6>
+                <p>{comp.contact_no}</p>
+                <h6 style={perStyle}>Country</h6>
+                <p>{comp.country}</p>
+                <h6 style={perStyle}>City</h6>
+                <p>{comp.city}</p>
               </div>
             ))}
           </Modal>

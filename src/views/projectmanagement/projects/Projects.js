@@ -1,11 +1,12 @@
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { React, useState, useEffect } from 'react';
-import { Modal, Button, Form, Select, Divider, Checkbox } from 'antd';
+import { Modal, Button, Select, Form, Divider, Checkbox } from 'antd';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 
 const Projects = () => {
 
@@ -40,6 +41,11 @@ const Projects = () => {
     fontWeight: "bold",
   };
 
+  const headStyle2 = {
+    color: "#black",
+    fontWeight: "bold",
+  };
+
   const heading = {
     display: 'flex',
     justifyContent: 'flex-end',
@@ -70,6 +76,10 @@ const Projects = () => {
     fontWeight: "bold",
     color: "#0070ff",
   };
+
+  const linkStyle = {
+    color: "#0070ff",
+  }
 
   const buttonStyle2 = {
     padding: "2px",
@@ -151,6 +161,21 @@ const Projects = () => {
 
   const handleCancel5 = () => {
     setIsModalOpen5(false);
+  };
+
+  // Functions for Streams Modal
+  const [isModalOpen6, setIsModalOpen6] = useState(false);
+  const showModal6 = (id) => {
+    getProjectById(id)
+    setIsModalOpen6(true)
+  };
+
+  const handleOk6 = () => {
+    setIsModalOpen6(false);
+  };
+
+  const handleCancel6 = () => {
+    setIsModalOpen6(false);
   };
 
   // Functions for Add Project Success
@@ -344,12 +369,14 @@ const Projects = () => {
   const [users, setUsers] = useState([]);
   const [department, setDepartment] = useState([]);
   const [byproject, setByProject] = useState([]);
+  const [stream, setStream] = useState([]);
 
   useEffect(() => {
     getList()
     getCompany()
     getUsers()
     getDepartment()
+    getStreams()
   }, []);
 
   function getList() {
@@ -387,6 +414,14 @@ const Projects = () => {
     fetch("http://10.3.3.80/api/getdepartment")
       .then((response) => response.json())
       .then((data) => setDepartment(data.Departments))
+      .catch((error) => console.log(error));
+  }
+
+  // Get Streams API call
+  function getStreams() {
+    fetch("http://10.3.3.80/api/get-streams")
+      .then((response) => response.json())
+      .then((data) => setStream(data.Streams))
       .catch((error) => console.log(error));
   }
 
@@ -519,11 +554,8 @@ const Projects = () => {
             <CTableHeaderCell className="text-center" style={mystyle}>Project Name</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Company Name</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Department Name</CTableHeaderCell>
-            {/* <CTableHeaderCell className="text-center" style={mystyle}>Todos</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Budget</CTableHeaderCell> */}
             <CTableHeaderCell className="text-center" style={mystyle}>Start Date</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>End Date</CTableHeaderCell>
-            {/* <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell> */}
             <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Assign</CTableHeaderCell>
           </CTableRow>
@@ -535,11 +567,8 @@ const Projects = () => {
               <CTableHeaderCell className="text-center">{project.project_name}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.company_name}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.department_name}</CTableHeaderCell>
-              {/* <CTableHeaderCell className="text-center">{project.to_dos}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{project.budget}</CTableHeaderCell> */}
               <CTableHeaderCell className="text-center">{project.start_date}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{project.dead_line}</CTableHeaderCell>
-              {/* <CTableHeaderCell className="text-center">{project.project_description}</CTableHeaderCell> */}
               <CTableHeaderCell className="text-center">
                 <IconButton aria-label="description" onClick={() => showModal5(project.project_id)}>
                   <VisibilityIcon htmlColor='#0070ff' />
@@ -552,7 +581,7 @@ const Projects = () => {
                 </IconButton>
               </CTableHeaderCell>
               <CTableHeaderCell className="text-center">
-                <Button className="btn btn-primary" style={buttonStyle2} onClick={() => showModal4(project.project_id)}>Assign</Button>
+                <Button className="btn btn-primary" style={buttonStyle2} onClick={() => showModal6(project.project_id)}>Streams</Button>
               </CTableHeaderCell>
             </CTableRow>
           ))}
@@ -635,42 +664,6 @@ const Projects = () => {
               />
             </div>
 
-            {/* <div className="form-outline mb-3">
-            <label>Team Id</label>
-              <input
-                type="number"
-                value={team_id}
-                onChange={(e) => setTeamId(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Team Id"
-              />
-            </div>
-
-            <div className="form-outline mb-3">
-            <label>Todos</label>
-              <Form.Item>
-                <Select
-                  placeholder="Select Todos"
-                  onChange={handleTodoChange}
-                  value={to_dos}
-                >
-                  <Select.Option value="y">Yes</Select.Option>
-                  <Select.Option value="n">No</Select.Option>
-                </Select>
-              </Form.Item>
-            </div>
-
-            <div className="form-outline mb-3">
-            <label>Budget</label>
-              <input
-                type="number"
-                value={budget}
-                onChange={(e) => setBudget(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Budget"
-              />
-            </div> */}
-
           </Modal>
 
           {/* Modal for Update User */}
@@ -680,119 +673,78 @@ const Projects = () => {
 
             {byproject.map((pro) => (
               <div key={pro.id}>
-            <div className="form-outline mb-3">
-              <label>Company</label>
-              <Form.Item>
-                <Select placeholder="Select Company" onChange={handleCompanyChange} defaultValue={pro.company}>
-                  {company.map((count) => (
-                    <Select.Option value={count.name} key={count.id}>
-                      {count.company_name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
+                <div className="form-outline mb-3">
+                  <label>Company</label>
+                  <Form.Item>
+                    <Select placeholder="Select Company" onChange={handleCompanyChange} defaultValue={pro.company_name}>
+                      {company.map((count) => (
+                        <Select.Option value={count.name} key={count.id}>
+                          {count.company_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
 
-            <div className="form-outline mb-3">
-              <label>Department</label>
-              <Form.Item>
-                <Select placeholder="Select Departments" onChange={handleDepartmentChange} defaultValue={pro.department_name}>
-                  {department.map((count) => (
-                    <Select.Option value={count.name} key={count.id}>
-                      {count.department_name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
+                <div className="form-outline mb-3">
+                  <label>Department</label>
+                  <Form.Item>
+                    <Select placeholder="Select Departments" onChange={handleDepartmentChange} defaultValue={pro.department_name}>
+                      {department.map((count) => (
+                        <Select.Option value={count.name} key={count.id}>
+                          {count.department_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
 
-            <div className="form-outline mb-3">
-              <label>Project Name</label>
-              <input
-                type="text"
-                defaultValue={pro.project_name}
-                // value={project_name}
-                onChange={(e) => setProjectName(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Project Name"
-              />
-            </div>
+                <div className="form-outline mb-3">
+                  <label>Project Name</label>
+                  <input
+                    type="text"
+                    defaultValue={pro.project_name}
+                    onChange={(e) => setProjectName(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Project Name"
+                  />
+                </div>
 
-            <div className="form-outline mb-3">
-              <label>Description</label>
-              <input
-                type="text"
-                defaultValue={pro.description}
-                // value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Description"
-              />
-            </div>
+                <div className="form-outline mb-3">
+                  <label>Description</label>
+                  <input
+                    type="text"
+                    defaultValue={pro.project_description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Description"
+                  />
+                </div>
 
-            <div className="form-outline mb-3">
-              <label>Start Date</label>
-              <input
-                type="date"
-                defaultValue={pro.start_date}
-                // value={start_date}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Start Date"
-              />
-            </div>
+                <div className="form-outline mb-3">
+                  <label>Start Date</label>
+                  <input
+                    type="date"
+                    defaultValue={pro.start_date}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Start Date"
+                  />
+                </div>
 
-            <div className="form-outline mb-3">
-              <label>End Date</label>
-              <input
-                type="date"
-                defaultValue={pro.dead_line}
-                // value={dead_line}
-                onChange={(e) => setDeadLine(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Dead Line"
-              />
-            </div>
-            </div>
-             ))}
+                <div className="form-outline mb-3">
+                  <label>End Date</label>
+                  <input
+                    type="date"
+                    defaultValue={pro.dead_line}
+                    onChange={(e) => setDeadLine(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Dead Line"
+                  />
+                </div>
+              </div>
+            ))}
 
-            {/* <div className="form-outline mb-3">
-            <label>Team Id</label>
-              <input
-                type="number"
-                value={team_id}
-                onChange={(e) => setTeamId(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Team Id"
-              />
-            </div>
-
-            <div className="form-outline mb-3">
-            <label>Todos</label>
-              <Form.Item>
-                <Select
-                  placeholder="Select Todos"
-                  onChange={handleTodoChange}
-                  value={to_dos}
-                >
-                  <Select.Option value="y">Yes</Select.Option>
-                  <Select.Option value="n">No</Select.Option>
-                </Select>
-              </Form.Item>
-            </div>
-
-            <div className="form-outline mb-3">
-            <label>Budget</label>
-              <input
-                type="number"
-                value={budget}
-                onChange={(e) => setBudget(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Budget"
-              />
-            </div> */}
-
-           
           </Modal>
 
           {/* Modal for Deletion Confirmation */}
@@ -811,7 +763,7 @@ const Projects = () => {
                 <h6 style={perStyle}>Department Name</h6>
                 <p>{proj.department_name}</p>
                 <h6 style={perStyle}>Description</h6>
-                <p>{proj.description}</p>
+                <p>{proj.project_description}</p>
                 <h6 style={perStyle}>Start Date</h6>
                 <p>{proj.start_date}</p>
                 <h6 style={perStyle}>End Date</h6>
@@ -820,8 +772,53 @@ const Projects = () => {
             ))}
           </Modal>
 
+          {/* Modal for Streams */}
+          <Modal title="" open={isModalOpen6} onOk={handleOk6} onCancel={handleCancel6} style={modalStyle}>
+
+          <h3 style={headStyle2}>Streams</h3>
+
+          <br></br>
+            <div className='row'>
+              <div className='col md-2 text-center'>
+                <h6>Sr/No</h6>
+              </div>
+              <div className='col md-3'></div>
+              <div className='col md-2 text-center'>
+                <h6 style={perStyle}>Name</h6>
+              </div>
+              <div className='col md-3'></div>
+              <div className='col md-2 text-center'>
+                <h6 style={perStyle}>Assign</h6>
+              </div>
+              &nbsp;
+              <Divider></Divider>
+            </div>
+
+            {stream.map((str, index) => (
+            <div className='row' key={str.id}>
+                <div className='col md-2 text-center'>
+                  <h6 style={perStyle}>{index+1}</h6>
+                </div>
+                <div className='col md-3'></div>
+                <div className='col md-2 text-center'>
+                  <h6 style={perStyle}>{str.stream_name}</h6>
+                </div>
+                <div className='col md-3'></div>
+                <div className='col md-2 text-center'>
+                <IconButton aria-label="user" onClick={() => showModal4(str.id)}>
+                  <AssignmentIndIcon htmlColor='#0070ff' />
+                </IconButton>
+                </div>
+                &nbsp;
+                <Divider></Divider>
+              </div>
+              ))}
+
+              <br></br>
+          </Modal>
+
           {/* Modal for Assign User */}
-          <Modal title="Assign Users" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4}>
+          <Modal title="Assign Users" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4} style={modalStyle}>
 
             <br></br>
             <div className='row'>

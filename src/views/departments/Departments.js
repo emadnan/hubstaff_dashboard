@@ -5,6 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const Departments = () => {
 
@@ -18,6 +19,15 @@ const Departments = () => {
         position: "fixed",
         top: "25%",
         left: "40%",
+    };
+
+    const perStyle = {
+        fontSize: 14,
+    };
+
+    const headStyle = {
+        color: "#0070ff",
+        fontWeight: "bold",
     };
 
     const modalStyle2 = {
@@ -87,6 +97,21 @@ const Departments = () => {
 
     const handleCancel3 = () => {
         setIsModalOpen3(false);
+    };
+
+    // Functions for Show Details Modal
+    const [isModalOpen4, setIsModalOpen4] = useState(false);
+    const showModal4 = (id) => {
+        getDepartmentById(id)
+        setIsModalOpen4(id)
+    };
+
+    const handleOk4 = () => {
+        setIsModalOpen4(false);
+    };
+
+    const handleCancel4 = () => {
+        setIsModalOpen4(false);
     };
 
     // Functions for Add Department Success
@@ -224,6 +249,7 @@ const Departments = () => {
 
     const [users, setUsers] = useState([]);
     const [company, setCompanies] = useState([]);
+    const [bydepartment, setByDepartment] = useState([]);
 
     function getList() {
         fetch("http://10.3.3.80/api/getdepartment")
@@ -236,6 +262,13 @@ const Departments = () => {
         fetch("http://10.3.3.80/api/getcompany")
             .then((response) => response.json())
             .then((data) => setCompanies(data.companies))
+            .catch((error) => console.log(error));
+    }
+
+    function getDepartmentById(id) {
+        fetch(`http://10.3.3.80/api/getdepartment-by-id/${id}`)
+            .then((response) => response.json())
+            .then((data) => setByDepartment(data.Departments))
             .catch((error) => console.log(error));
     }
 
@@ -352,6 +385,9 @@ const Departments = () => {
                             <CTableHeaderCell className="text-center">{department.department_name}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center">{department.description}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
+                                <IconButton aria-label="description" onClick={() => showModal4(department.id)}>
+                                    <VisibilityIcon htmlColor='#0070ff' />
+                                </IconButton>
                                 <IconButton aria-label="update" onClick={() => showModal3(department.id)}>
                                     <EditIcon htmlColor='#28B463' />
                                 </IconButton>
@@ -413,45 +449,64 @@ const Departments = () => {
 
                         <br></br>
 
-                        <div className="form-outline mb-3">
-                            <label>Company</label>
-                            <Form.Item>
-                                <Select placeholder="Select Company" onChange={handleCompanyChange} value={company_id}>
-                                    {company.map((count) => (
-                                        <Select.Option value={count.name} key={count.id}>
-                                            {count.company_name}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
-                            </Form.Item>
-                        </div>
+                        {bydepartment.map((dept) => (
+                            <div key={dept.id}>
+                                <div className="form-outline mb-3">
+                                    <label>Company</label>
+                                    <Form.Item>
+                                        <Select placeholder="Select Company" onChange={handleCompanyChange} defaultValue={dept.company_name}>
+                                            {company.map((count) => (
+                                                <Select.Option value={count.name} key={count.id}>
+                                                    {count.company_name}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
+                                </div>
 
-                        <div className="form-outline mb-3">
-                            <label>Department</label>
-                            <input
-                                type="text"
-                                value={department_name}
-                                onChange={(e) => setDepartmentName(e.target.value)}
-                                className="form-control form-control-lg"
-                                placeholder="Enter Department Name"
-                            />
-                        </div>
+                                <div className="form-outline mb-3">
+                                    <label>Department</label>
+                                    <input
+                                        type="text"
+                                        defaultValue={dept.department_name}
+                                        onChange={(e) => setDepartmentName(e.target.value)}
+                                        className="form-control form-control-lg"
+                                        placeholder="Enter Department Name"
+                                    />
+                                </div>
 
-                        <div className="form-outline mb-3">
-                            <label>Description</label>
-                            <input
-                                type="text"
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                className="form-control form-control-lg"
-                                placeholder="Enter Description"
-                            />
-                        </div>
+                                <div className="form-outline mb-3">
+                                    <label>Description</label>
+                                    <input
+                                        type="text"
+                                        defaultValue={dept.description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                        className="form-control form-control-lg"
+                                        placeholder="Enter Description"
+                                    />
+                                </div>
+                            </div>
+                        ))}
 
                     </Modal>
 
                     {/* Modal for deletion confirmation */}
                     <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
+                    </Modal>
+
+                    {/* Modal for View Details */}
+                    <Modal title="" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4} style={modalStyle}>
+
+                        {bydepartment.map((dept) => (
+                            <div key={dept.id}>
+                                <h3 style={headStyle}>{dept.department_name}</h3>
+                                <br></br>
+                                <h6 style={perStyle}>Company Name</h6>
+                                <p>{dept.company_name}</p>
+                                <h6 style={perStyle}>Description</h6>
+                                <p>{dept.description}</p>
+                            </div>
+                        ))}
                     </Modal>
 
                     {/* Alert for Add Department Success*/}
