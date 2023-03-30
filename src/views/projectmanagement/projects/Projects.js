@@ -7,6 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import moment from 'moment';
 
 const Projects = () => {
 
@@ -18,13 +19,12 @@ const Projects = () => {
   const [description, setDescription] = useState("");
   const [start_date, setStartDate] = useState("");
   const [dead_line, setDeadLine] = useState("");
-  const [team_id, setTeamId] = useState("");
-  const [to_dos, setTodos] = useState("");
-  const [budget, setBudget] = useState("");
+  // const [team_id, setTeamId] = useState("");
+  // const [to_dos, setTodos] = useState("");
+  // const [budget, setBudget] = useState("");
   const [stream_id, setStreamId] = useState("");
-  const [date] = useState("");
 
-
+  const [project_id, setProjectId] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
 
   // CSS Styling
@@ -78,10 +78,6 @@ const Projects = () => {
     fontWeight: "bold",
     color: "#0070ff",
   };
-
-  const linkStyle = {
-    color: "#0070ff",
-  }
 
   const buttonStyle2 = {
     padding: "2px",
@@ -169,6 +165,7 @@ const Projects = () => {
   // Functions for Streams Modal
   const [isModalOpen6, setIsModalOpen6] = useState(false);
   const showModal6 = (id) => {
+    setProjectId(id)
     getProjectById(id)
     setIsModalOpen6(true)
   };
@@ -430,7 +427,7 @@ const Projects = () => {
 
   // Add API call
   async function addProject() {
-    let user = { department_id, company_id, project_name, description, start_date, dead_line, team_id, to_dos, budget }
+    let user = { department_id, company_id, project_name, description, start_date, dead_line }
 
     await fetch("http://10.3.3.80/api/add_project",
       {
@@ -461,7 +458,8 @@ const Projects = () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        project_id: newid,
+        id: newid,
+        project_id: project_id,
         user_ids: selectedUsers,
         stream_id: stream_id,
       })
@@ -519,9 +517,6 @@ const Projects = () => {
         description: description,
         start_date: start_date,
         dead_line: dead_line,
-        team_id: team_id,
-        to_dos: to_dos,
-        budget: budget,
       })
     }).then(response => {
       if (response.ok) {
@@ -566,8 +561,8 @@ const Projects = () => {
 
           {/* Get API Projects */}
           {projects.map((project, index) => {
-            const startDate = new Date(project.start_date).toLocaleDateString();
-            const deadline = new Date(project.dead_line).toLocaleDateString();
+            const startDate = moment(project.start_date).format('DD-MM-YYYY');
+            const deadline = moment(project.dead_line).format('DD-MM-YYYY');
 
             return (
               <CTableRow key={project.id}>
@@ -578,7 +573,7 @@ const Projects = () => {
                 <CTableHeaderCell className="text-center">{startDate}</CTableHeaderCell>
                 <CTableHeaderCell className="text-center">{deadline}</CTableHeaderCell>
                 <CTableHeaderCell className="text-center">
-                  <IconButton aria-label="description" onClick={() => showModal5(project.project_id)}>
+                  <IconButton aria-label="view" onClick={() => showModal5(project.project_id)}>
                     <VisibilityIcon htmlColor='#0070ff' />
                   </IconButton>
                   <IconButton aria-label="update" onClick={() => showModal3(project.project_id)}>
@@ -764,8 +759,8 @@ const Projects = () => {
           <Modal title="" open={isModalOpen5} onOk={handleOk5} onCancel={handleCancel5} style={modalStyle}>
 
             {byproject.map((proj) => {
-              const start = new Date(proj.start_date).toLocaleDateString();
-              const dead = new Date(proj.dead_line).toLocaleDateString();
+             const start = moment(proj.start_date).format('DD-MM-YYYY');
+             const dead = moment(proj.dead_line).format('DD-MM-YYYY');
 
               return (
                 <div key={proj.id}>

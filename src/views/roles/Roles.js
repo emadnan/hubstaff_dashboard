@@ -5,6 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
+import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
 
 
 const Roles = () => {
@@ -55,13 +56,13 @@ const Roles = () => {
         color: "#0070ff",
     };
 
-    const buttonStyle2 = {
-        padding: "2px",
-        width: "100px",
-        backgroundColor: "#0070ff",
-        fontWeight: "bold",
-        color: "white",
-    };
+    // const buttonStyle2 = {
+    //     padding: "2px",
+    //     width: "100px",
+    //     backgroundColor: "#0070ff",
+    //     fontWeight: "bold",
+    //     color: "white",
+    // };
 
     // Functions for Add Role Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -438,14 +439,16 @@ const Roles = () => {
                         <CTableRow key={role.id}>
                             <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center">{role.name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
-                                <IconButton aria-label="update" onClick={() => showModal3(role.id)}>
+                            <CTableHeaderCell className="text-center">
+                                <IconButton aria-label="update" title="Update" onClick={() => showModal3(role.id)}>
                                     <EditIcon htmlColor='#28B463' />
                                 </IconButton>
-                                <IconButton aria-label="delete" onClick={() => showModal2(role.id)}>
+                                <IconButton aria-label="delete" title="Delete" onClick={() => showModal2(role.id)}>
                                     <DeleteIcon htmlColor='#FF0000' />
                                 </IconButton>
-                                <Button className="btn btn-primary" style={buttonStyle2} onClick={() => showModal4(role.id)}>Permissions</Button>
+                                <IconButton aria-label="assign" title="Assign Permission" onClick={() => showModal4(role.id)}>
+                                    <PermContactCalendarIcon htmlColor='#0070ff' />
+                                </IconButton>
                             </CTableHeaderCell>
                         </CTableRow>
                     ))}

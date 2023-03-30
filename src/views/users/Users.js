@@ -77,6 +77,7 @@ const Users = () => {
     // Functions for Update User Modal
     const [isModalOpen3, setIsModalOpen3] = useState(false);
     const showModal3 = (id) => {
+        // getUserById(id);
         setIsModalOpen3(id);
     };
 
@@ -217,6 +218,7 @@ const Users = () => {
 
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
+    // const [byuser, setByUser] = useState([]);
 
     // Get API call
     function getList() {
@@ -232,6 +234,13 @@ const Users = () => {
             .then((data) => setRoles(data.roles))
             .catch((error) => console.log(error));
     }
+
+    // function getUserById(id) {
+    //     fetch(`http://127.0.0.1:8000/api/get_user/${id}`)
+    //         .then((response) => response.json())
+    //         .then((data) => setByUser(data.User))
+    //         .catch((error) => console.log(error));
+    // }
 
 
     useEffect(() => {
@@ -471,7 +480,6 @@ const Users = () => {
                                 </Select>
                             </Form.Item>
                         </div>
-
                     </Modal>
 
                     {/* Modal for Deletion Confirmation */}
