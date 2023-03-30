@@ -8,7 +8,7 @@ const Changepassword = () => {
     let item = { password }
     console.warn(item)
 
-    let result = await fetch("http://127.0.0.1:8000/api/changepassword",
+     await fetch("http://127.0.0.1:8000/api/changepassword",
       {
         method: 'POST',
         body: JSON.stringify(item),
@@ -17,7 +17,7 @@ const Changepassword = () => {
         },
 
       })
-    result = await result.json()
+    // result = await result.json()
   }
 
   return (

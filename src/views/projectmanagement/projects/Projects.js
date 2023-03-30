@@ -7,6 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
 import moment from 'moment';
 
 const Projects = () => {
@@ -70,6 +71,10 @@ const Projects = () => {
     alignSelf: 'flex-end',
   };
 
+  const mystyle2 = {
+    backgroundColor: "white ",
+  };
+
   const buttonStyle = {
     float: "right",
     padding: "2px",
@@ -79,13 +84,13 @@ const Projects = () => {
     color: "#0070ff",
   };
 
-  const buttonStyle2 = {
-    padding: "2px",
-    width: "100px",
-    backgroundColor: "#0070ff",
-    fontWeight: "bold",
-    color: "white",
-  };
+  // const buttonStyle2 = {
+  //   padding: "2px",
+  //   width: "100px",
+  //   backgroundColor: "#0070ff",
+  //   fontWeight: "bold",
+  //   color: "white",
+  // };
 
   // Functions for Add Project Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -556,7 +561,7 @@ const Projects = () => {
             <CTableHeaderCell className="text-center" style={mystyle}>Start Date</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>End Date</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Assign</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>Streams</CTableHeaderCell>
           </CTableRow>
 
           {/* Get API Projects */}
@@ -566,13 +571,13 @@ const Projects = () => {
 
             return (
               <CTableRow key={project.id}>
-                <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">{project.project_name}</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">{project.company_name}</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">{project.department_name}</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">{startDate}</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">{deadline}</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">
+                <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle2}>{project.project_name}</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle2}>{project.company_name}</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle2}>{project.department_name}</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle2}>{startDate}</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle2}>{deadline}</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle2}>
                   <IconButton aria-label="view" onClick={() => showModal5(project.project_id)}>
                     <VisibilityIcon htmlColor='#0070ff' />
                   </IconButton>
@@ -583,8 +588,10 @@ const Projects = () => {
                     <DeleteIcon htmlColor='#FF0000' />
                   </IconButton>
                 </CTableHeaderCell>
-                <CTableHeaderCell className="text-center">
-                  <Button className="btn btn-primary" style={buttonStyle2} onClick={() => showModal6(project.project_id)}>Streams</Button>
+                <CTableHeaderCell className="text-center" style={mystyle2}>
+                  <IconButton aria-label="assign" title="Assign Permission" onClick={() => showModal6(project.project_id)}>
+                    <PermContactCalendarIcon htmlColor='#0070ff' />
+                  </IconButton>
                 </CTableHeaderCell>
               </CTableRow>
             );
@@ -759,8 +766,8 @@ const Projects = () => {
           <Modal title="" open={isModalOpen5} onOk={handleOk5} onCancel={handleCancel5} style={modalStyle}>
 
             {byproject.map((proj) => {
-             const start = moment(proj.start_date).format('DD-MM-YYYY');
-             const dead = moment(proj.dead_line).format('DD-MM-YYYY');
+              const start = moment(proj.start_date).format('DD-MM-YYYY');
+              const dead = moment(proj.dead_line).format('DD-MM-YYYY');
 
               return (
                 <div key={proj.id}>

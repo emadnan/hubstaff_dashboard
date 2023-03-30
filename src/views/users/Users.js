@@ -218,7 +218,6 @@ const Users = () => {
 
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
-    // const [byuser, setByUser] = useState([]);
 
     // Get API call
     function getList() {
@@ -234,14 +233,6 @@ const Users = () => {
             .then((data) => setRoles(data.roles))
             .catch((error) => console.log(error));
     }
-
-    // function getUserById(id) {
-    //     fetch(`http://127.0.0.1:8000/api/get_user/${id}`)
-    //         .then((response) => response.json())
-    //         .then((data) => setByUser(data.User))
-    //         .catch((error) => console.log(error));
-    // }
-
 
     useEffect(() => {
         getList()
@@ -362,7 +353,7 @@ const Users = () => {
                             <CTableHeaderCell className="text-center">{user.name}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center">{user.email}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center">{user.role}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
+                            <CTableHeaderCell className="text-center">
                                 <IconButton aria-label="update" onClick={() => showModal3(user.id)}>
                                     <EditIcon htmlColor='#28B463' />
                                 </IconButton>

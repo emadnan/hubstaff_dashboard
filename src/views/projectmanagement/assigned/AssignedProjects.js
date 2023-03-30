@@ -43,7 +43,6 @@ const AssignedProjects = () => {
                         <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Project Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Users</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Stream Name</CTableHeaderCell>
                     </CTableRow>
 
                     {/* Get API Users */}

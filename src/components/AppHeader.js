@@ -1,13 +1,10 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux';
 import {
   CContainer,
   CHeader,
-  // CHeaderDivider,
   CHeaderNav,
   CHeaderToggler,
-  CNavLink,
   CNavItem,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
@@ -30,19 +27,13 @@ const AppHeader = () => {
         </CHeaderToggler>
         <CHeaderNav className="d-none d-md-flex me-auto">
           <CNavItem>
-            <CNavLink to="/dashboard" component={NavLink}>
-              Dashboard
-            </CNavLink>
+            <h6>Company Name</h6>
           </CNavItem>
         </CHeaderNav>
         <CHeaderNav className="ms-3">
           <AppHeaderDropdown />
         </CHeaderNav>
       </CContainer>
-      {/* <CHeaderDivider /> */}
-      {/* <CContainer fluid>
-        <AppBreadcrumb />
-      </CContainer> */}
     </CHeader>
   )
 }
