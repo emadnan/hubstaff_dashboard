@@ -21,6 +21,8 @@ const Projects = () => {
   const [team_id, setTeamId] = useState("");
   const [to_dos, setTodos] = useState("");
   const [budget, setBudget] = useState("");
+  const [stream_id, setStreamId] = useState("");
+  const [date] = useState("");
 
 
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -136,6 +138,7 @@ const Projects = () => {
   // Functions for Assign Users Modal
   const [isModalOpen4, setIsModalOpen4] = useState(false);
   const showModal4 = (id) => {
+    setStreamId(id);
     setIsModalOpen4(id);
   };
 
@@ -460,6 +463,7 @@ const Projects = () => {
       body: JSON.stringify({
         project_id: newid,
         user_ids: selectedUsers,
+        stream_id: stream_id,
       })
     }).then(response => {
       if (response.ok) {
@@ -561,30 +565,35 @@ const Projects = () => {
           </CTableRow>
 
           {/* Get API Projects */}
-          {projects.map((project, index) => (
-            <CTableRow key={project.id}>
-              <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{project.project_name}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{project.company_name}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{project.department_name}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{project.start_date}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{project.dead_line}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">
-                <IconButton aria-label="description" onClick={() => showModal5(project.project_id)}>
-                  <VisibilityIcon htmlColor='#0070ff' />
-                </IconButton>
-                <IconButton aria-label="update" onClick={() => showModal3(project.project_id)}>
-                  <EditIcon htmlColor='#28B463' />
-                </IconButton>
-                <IconButton aria-label="delete" onClick={() => showModal2(project.project_id)}>
-                  <DeleteIcon htmlColor='#FF0000' />
-                </IconButton>
-              </CTableHeaderCell>
-              <CTableHeaderCell className="text-center">
-                <Button className="btn btn-primary" style={buttonStyle2} onClick={() => showModal6(project.project_id)}>Streams</Button>
-              </CTableHeaderCell>
-            </CTableRow>
-          ))}
+          {projects.map((project, index) => {
+            const startDate = new Date(project.start_date).toLocaleDateString();
+            const deadline = new Date(project.dead_line).toLocaleDateString();
+
+            return (
+              <CTableRow key={project.id}>
+                <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">{project.project_name}</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">{project.company_name}</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">{project.department_name}</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">{startDate}</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">{deadline}</CTableHeaderCell>
+                <CTableHeaderCell className="text-center">
+                  <IconButton aria-label="description" onClick={() => showModal5(project.project_id)}>
+                    <VisibilityIcon htmlColor='#0070ff' />
+                  </IconButton>
+                  <IconButton aria-label="update" onClick={() => showModal3(project.project_id)}>
+                    <EditIcon htmlColor='#28B463' />
+                  </IconButton>
+                  <IconButton aria-label="delete" onClick={() => showModal2(project.project_id)}>
+                    <DeleteIcon htmlColor='#FF0000' />
+                  </IconButton>
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center">
+                  <Button className="btn btn-primary" style={buttonStyle2} onClick={() => showModal6(project.project_id)}>Streams</Button>
+                </CTableHeaderCell>
+              </CTableRow>
+            );
+          })}
 
         </CTableHead>
         <CTableBody>
@@ -754,30 +763,36 @@ const Projects = () => {
           {/* Modal for View Details */}
           <Modal title="" open={isModalOpen5} onOk={handleOk5} onCancel={handleCancel5} style={modalStyle}>
 
-            {byproject.map((proj) => (
-              <div key={proj.id}>
-                <h3 style={headStyle}>{proj.project_name}</h3>
-                <br></br>
-                <h6 style={perStyle}>Company Name</h6>
-                <p>{proj.company_name}</p>
-                <h6 style={perStyle}>Department Name</h6>
-                <p>{proj.department_name}</p>
-                <h6 style={perStyle}>Description</h6>
-                <p>{proj.project_description}</p>
-                <h6 style={perStyle}>Start Date</h6>
-                <p>{proj.start_date}</p>
-                <h6 style={perStyle}>End Date</h6>
-                <p>{proj.dead_line}</p>
-              </div>
-            ))}
+            {byproject.map((proj) => {
+              const start = new Date(proj.start_date).toLocaleDateString();
+              const dead = new Date(proj.dead_line).toLocaleDateString();
+
+              return (
+                <div key={proj.id}>
+                  <h3 style={headStyle}>{proj.project_name}</h3>
+                  <br></br>
+                  <h6 style={perStyle}>Company Name</h6>
+                  <p>{proj.company_name}</p>
+                  <h6 style={perStyle}>Department Name</h6>
+                  <p>{proj.department_name}</p>
+                  <h6 style={perStyle}>Description</h6>
+                  <p>{proj.project_description}</p>
+                  <h6 style={perStyle}>Start Date</h6>
+                  <p>{start}</p>
+                  <h6 style={perStyle}>End Date</h6>
+                  <p>{dead}</p>
+                </div>
+              );
+            })}
+
           </Modal>
 
           {/* Modal for Streams */}
           <Modal title="" open={isModalOpen6} onOk={handleOk6} onCancel={handleCancel6} style={modalStyle}>
 
-          <h3 style={headStyle2}>Streams</h3>
+            <h3 style={headStyle2}>Streams</h3>
 
-          <br></br>
+            <br></br>
             <div className='row'>
               <div className='col md-2 text-center'>
                 <h6>Sr/No</h6>
@@ -795,9 +810,9 @@ const Projects = () => {
             </div>
 
             {stream.map((str, index) => (
-            <div className='row' key={str.id}>
+              <div className='row' key={str.id}>
                 <div className='col md-2 text-center'>
-                  <h6 style={perStyle}>{index+1}</h6>
+                  <h6 style={perStyle}>{index + 1}</h6>
                 </div>
                 <div className='col md-3'></div>
                 <div className='col md-2 text-center'>
@@ -805,16 +820,16 @@ const Projects = () => {
                 </div>
                 <div className='col md-3'></div>
                 <div className='col md-2 text-center'>
-                <IconButton aria-label="user" onClick={() => showModal4(str.id)}>
-                  <AssignmentIndIcon htmlColor='#0070ff' />
-                </IconButton>
+                  <IconButton aria-label="user" onClick={() => showModal4(str.id)}>
+                    <AssignmentIndIcon htmlColor='#0070ff' />
+                  </IconButton>
                 </div>
                 &nbsp;
                 <Divider></Divider>
               </div>
-              ))}
+            ))}
 
-              <br></br>
+            <br></br>
           </Modal>
 
           {/* Modal for Assign User */}
