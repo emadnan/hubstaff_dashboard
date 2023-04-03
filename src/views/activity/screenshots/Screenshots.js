@@ -1,10 +1,7 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import { Button, DatePicker, Select, Form, Divider, Modal } from 'antd'
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
-import screen1 from 'src/assets/screenshots/screen1.png';
-import screen2 from 'src/assets/screenshots/screen2.png';
-import screen3 from 'src/assets/screenshots/screen3.png';
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 dayjs.extend(customParseFormat)
 const { Option } = Select;
@@ -64,6 +61,19 @@ const Screenshots = () => {
         setIsModalOpen(false);
     };
 
+    const [images, setImages] = useState([]);
+
+    function getScreenshots() {
+        fetch("http://10.3.3.80/api/get_Project_Screenshots")
+            .then((response) => response.json())
+            .then((data) => setImages(data.ProjectScreenshot))
+            .catch((error) => console.log(error));
+    }
+
+    useEffect(() => {
+        getScreenshots()
+    }, []);
+
     return (
         <>
             <h3>Screenshots</h3>
@@ -96,11 +106,11 @@ const Screenshots = () => {
             </div>
             <Divider></Divider>
 
-            <img src={screen1} width={350} height={250} alt='' />
-            &nbsp; &nbsp;
-            <img src={screen2} width={350} height={250} alt='' />
-            &nbsp; &nbsp;
-            <img src={screen3} width={350} height={250} alt='' />
+            {images.map((image) => (
+            <div key={image.id}>
+                <img src={image.path_url} width={350} height={250} alt='' />
+            </div>
+            ))}
 
             <Modal title="Filters" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 

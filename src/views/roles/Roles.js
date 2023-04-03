@@ -432,6 +432,7 @@ const Roles = () => {
                         <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Role Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Assign</CTableHeaderCell>
                     </CTableRow>
 
                     {/* Get API Users */}
@@ -446,6 +447,8 @@ const Roles = () => {
                                 <IconButton aria-label="delete" title="Delete" onClick={() => showModal2(role.id)}>
                                     <DeleteIcon htmlColor='#FF0000' />
                                 </IconButton>
+                            </CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">
                                 <IconButton aria-label="assign" title="Assign Permission" onClick={() => showModal4(role.id)}>
                                     <PermContactCalendarIcon htmlColor='#0070ff' />
                                 </IconButton>
