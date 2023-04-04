@@ -1,10 +1,10 @@
 import { React, useState, useEffect } from 'react';
-import { Button, DatePicker, Select, Form, Divider, Modal } from 'antd'
+import { Button, DatePicker, Select, Form, Divider } from 'antd'
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 dayjs.extend(customParseFormat)
-const { Option } = Select;
+// const { Option } = Select;
 // const weekFormat = 'MM/DD'
 
 const Screenshots = () => {
@@ -15,10 +15,28 @@ const Screenshots = () => {
     //         .endOf('week')
     //         .format(weekFormat)}`
 
-    const timezone = {
-        color: "#787878",
-        fontSize: "13px",
-        fontWeight: "500",
+    // const timezone = {
+    //     color: "#787878",
+    //     fontSize: "13px",
+    //     fontWeight: "500",
+    // };
+
+    const imageContainer = {
+        display: "flex",
+        flexWrap: "wrap",
+    };
+
+    const projectNameStyle = {
+        color: "#0070ff",
+        fontWeight: "bold",
+    };
+
+    const timeStyle = {
+        fontSize: 14,
+    };
+
+    const imageWrapper = {
+        margin: "10px",
     };
 
     // const heading = {
@@ -41,38 +59,79 @@ const Screenshots = () => {
     //     backgroundColor: "green",
     // };
 
-    const modalStyle = {
-        position: "fixed",
-        top: "25%",
-        left: "40%",
-    };
+    // const modalStyle = {
+    //     position: "fixed",
+    //     top: "25%",
+    //     left: "40%",
+    // };
 
     // Functions of Add Company Modal
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const showModal = () => {
-        setIsModalOpen(true);
-    };
+    // const [isModalOpen, setIsModalOpen] = useState(false);
+    // const showModal = () => {
+    //     setIsModalOpen(true);
+    // };
 
-    const handleOk = () => {
-        setIsModalOpen(false);
-    };
+    // const handleOk = () => {
+    //     setIsModalOpen(false);
+    // };
 
-    const handleCancel = () => {
-        setIsModalOpen(false);
-    };
+    // const handleCancel = () => {
+    //     setIsModalOpen(false);
+    // };
 
     const [images, setImages] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [project, setProject] = useState([]);
+    const [user_id, setUserId] = useState("");
+    const [project_id, setProjectId] = useState("");
 
+    // Get API call
     function getScreenshots() {
         fetch("http://10.3.3.80/api/get_Project_Screenshots")
             .then((response) => response.json())
             .then((data) => setImages(data.ProjectScreenshot))
             .catch((error) => console.log(error));
-    }
+    };
+
+    function getUsers() {
+        fetch("http://10.3.3.80/api/get_users")
+            .then((response) => response.json())
+            .then((data) => setUsers(data.Users))
+            .catch((error) => console.log(error));
+    };
+
+    function getProjects() {
+        fetch("http://10.3.3.80/api/getproject")
+            .then((response) => response.json())
+            .then((data) => setProject(data.projects))
+            .catch((error) => console.log(error));
+    };
 
     useEffect(() => {
         getScreenshots()
+        getUsers()
+        getProjects()
     }, []);
+
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const handleClick = (imageUrl) => {
+        setSelectedImage(imageUrl);
+    }
+
+    const handleCloseModal = () => {
+        setSelectedImage(null);
+    }
+
+    const handleUserChange = (value) => {
+        setUserId(value);
+        console.log(user_id);
+    };
+
+    const handleProjectChange = (value) => {
+        setProjectId(value);
+        console.log(project_id);
+    };
 
     return (
         <>
@@ -84,35 +143,104 @@ const Screenshots = () => {
                     &nbsp;
                     <Button type="default" icon={<ArrowRightOutlined />} />
                     &nbsp;
-                    <DatePicker defaultValue={dayjs("01/01/2000", dateFormatList[2])} format={dateFormatList} />
+                    <DatePicker defaultValue={dayjs()} format={dateFormatList} />
                 </div>
                 <div className='col-md-4'></div>
                 <div className='col-md-4 mt-4'>
                     <div className='row'>
-                        <div className='col-md-8'>
+                        <div className="col-md-6">
                             <Form.Item name="select" hasFeedback>
-                                <Select placeholder="Members">
-                                    <Option value="Member 1">Member 1</Option>
-                                    <Option value="Member 2">Member 2</Option>
-                                    <Option value="Member 3">Member 3</Option>
+                                <Select placeholder="Members" onChange={handleUserChange} value={user_id}>
+                                    {users.map((user) => (
+                                        <Select.Option value={user.id} key={user.id}>
+                                            {user.name}
+                                        </Select.Option>
+                                    ))}
                                 </Select>
                             </Form.Item>
                         </div>
-                        <div className='col-md-4'>
-                            <Button type="primary" onClick={showModal}>Filters</Button>
+                        <div className="col-md-6">
+                            <Form.Item name="select" hasFeedback>
+                                <Select placeholder="Projects" onChange={handleProjectChange} value={project_id}>
+                                    {project.map((proj) => (
+                                        <Select.Option value={proj.project_id} key={proj.id}>
+                                            {proj.project_name}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
                         </div>
+                        {/* <div className='col-md-4'>
+                            <Button type="primary" onClick={showModal}>Filters</Button>
+                        </div> */}
                     </div>
                 </div>
             </div>
             <Divider></Divider>
 
-            {images.map((image) => (
-            <div key={image.id}>
-                <img src={image.path_url} width={350} height={250} alt='' />
-            </div>
-            ))}
+            {/* {images.map((image) => (
+                <div key={image.id}>
+                    <img src={image.path_url} width={350} height={250} alt='' />
+                </div>
+            ))} */}
 
-            <Modal title="Filters" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+            <div style={imageContainer}>
+                {user_id ? images.filter((image) => image.user_id === user_id).map((image) => {
+                    const start = image.start_time.substr(11, 8);
+                    // const end = image.end_time.substr(11, 8);
+
+                    return (
+                        <div key={image.id} style={imageWrapper}>
+                            <h6 style={projectNameStyle}>{image.project_name}</h6>
+                            <a href={image.path_url}>
+                                <img
+                                    src={image.path_url}
+                                    width={150}
+                                    height={100}
+                                    alt=""
+                                    onClick={() => handleClick(image.path_url)}
+                                />
+                            </a>
+                            <h6 style={timeStyle}>{start}</h6>
+                            {/* <h6>{image.end_time}</h6> */}
+                        </div>
+                    )
+                })
+                    : images.map((image) => {
+                        const start = image.start_time.substr(11, 8);
+                        // const end = image.end_time.substr(11, 8);
+
+                        return (
+                            <div key={image.id} style={imageWrapper}>
+                                <h6 style={projectNameStyle}>{image.project_name}</h6>
+                                <a href={image.path_url}>
+                                    <img
+                                        src={image.path_url}
+                                        width={150}
+                                        height={100}
+                                        alt=""
+                                        onClick={() => handleClick(image.path_url)}
+                                    />
+                                </a>
+                                <h6 style={timeStyle}>{start}</h6>
+                                {/* <h6>{image.end_time}</h6> */}
+                            </div>
+                        )
+                    })}
+                {selectedImage && (
+                    <div className="modal">
+                        <div className="modal-content">
+                            <span className="close" onClick={handleCloseModal}>
+                                &times;
+                            </span>
+                            <img src={selectedImage} alt="" />
+                        </div>
+                    </div>
+                )}
+            </div>
+
+
+            {/* <Modal title="Filters" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
                 <div className="form-outline mb-3">
                     <Form.Item name="select" hasFeedback>
@@ -184,8 +312,8 @@ const Screenshots = () => {
                     </Form.Item>
                 </div>
 
+            </Modal> */}
 
-            </Modal>
         </>
     );
 }

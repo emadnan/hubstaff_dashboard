@@ -1,9 +1,7 @@
 import { React, useEffect, useState } from 'react'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
-import screen1 from 'src/assets/screenshots/screen1.png';
-import screen2 from 'src/assets/screenshots/screen2.png';
-import screen3 from 'src/assets/screenshots/screen3.png';
 import { Card, Divider, Button } from 'antd'
+import moment from 'moment';
 
 const Dashboard = () => {
 
@@ -54,12 +52,14 @@ const Dashboard = () => {
   const [projects, setProjects] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [clients, setClients] = useState([]);
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
     getCompanies()
     getProjects()
     getDepartments()
     getClients()
+    getScreenshots()
   }, []);
 
   function getCompanies() {
@@ -87,6 +87,13 @@ const Dashboard = () => {
     fetch("http://10.3.3.80/api/get_client")
       .then((response) => response.json())
       .then((data) => setClients(data.Departments))
+      .catch((error) => console.log(error));
+  };
+
+  function getScreenshots() {
+    fetch("http://10.3.3.80/api/get_Project_Screenshots")
+      .then((response) => response.json())
+      .then((data) => setImages(data.ProjectScreenshot))
       .catch((error) => console.log(error));
   };
 
@@ -142,17 +149,13 @@ const Dashboard = () => {
             <h5 style={head}>RECENT ACTIVITY</h5>
             <Divider></Divider>
             <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-              <CTableHead color="light" >
-
-                <img src={screen1} width={200} height={150} alt='' />
-                &nbsp; &nbsp;
-                <img src={screen2} width={200} height={150} alt='' />
-                &nbsp; &nbsp;
-                <img src={screen3} width={200} height={150} alt='' />
-
-              </CTableHead>
-
+              <CTableHead color="light" ></CTableHead>
               <CTableBody>
+              {images.slice(0,3).map((image) => (
+                <div key={image.id}>
+                    <img src={image.path_url} width={350} height={250} alt='' />
+                </div>
+            ))}
               </CTableBody>
             </CTable>
 
@@ -236,6 +239,45 @@ const Dashboard = () => {
 
         <div className='col-md-6'>
 
+          {/* Card for Projects Modal Starts */}
+          <Card style={cardStyle2}>
+            <h5 style={head}>PROJECTS</h5>
+            <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
+              <CTableHead color="light" >
+
+
+                <CTableRow>
+                  <CTableHeaderCell className="text-center" style={mystyle}>Project</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center" style={mystyle}>Start Date</CTableHeaderCell>
+                </CTableRow>
+
+                {projects.slice(0, 4).map((proj) => {
+                  const start = moment(proj.start_date).format('DD-MM-YYYY');
+
+                  return(
+                  <CTableRow key={proj.id}>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>{proj.project_name}</CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>{start}</CTableHeaderCell>
+                  </CTableRow>
+                  )
+                  })}
+
+              </CTableHead>
+
+              <CTableBody>
+              </CTableBody>
+            </CTable>
+
+            <Divider></Divider>
+            <div className='text-center'>
+              <Button type="link" href="/projectmanagement/projects">View projects &gt;</Button>
+            </div>
+
+          </Card>
+          {/* Card for Projects Modal Ends */}
+
+          <br></br>
+
           {/* Card for Time Sheets Modal Starts */}
           <Card style={cardStyle2}>
             <h5 style={head}>TIME SHEETS</h5>
@@ -262,41 +304,6 @@ const Dashboard = () => {
 
           </Card>
           {/* Card for Time Sheets Modal Ends */}
-
-          <br></br>
-
-          {/* Card for Projects Modal Starts */}
-          <Card style={cardStyle2}>
-            <h5 style={head}>PROJECTS</h5>
-            <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-              <CTableHead color="light" >
-
-
-                <CTableRow>
-                  <CTableHeaderCell className="text-center" style={mystyle}>Project</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>Start Date</CTableHeaderCell>
-                </CTableRow>
-
-                {projects.slice(0, 4).map((proj) => (
-                  <CTableRow key={proj.id}>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>{proj.project_name}</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>{proj.start_date}</CTableHeaderCell>
-                  </CTableRow>
-                ))}
-
-              </CTableHead>
-
-              <CTableBody>
-              </CTableBody>
-            </CTable>
-
-            <Divider></Divider>
-            <div className='text-center'>
-              <Button type="link" href="/projectmanagement/projects">View projects &gt;</Button>
-            </div>
-
-          </Card>
-          {/* Card for Projects Modal Ends */}
 
           <br></br>
 
