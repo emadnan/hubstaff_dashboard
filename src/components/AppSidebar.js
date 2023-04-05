@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { CSidebar, CSidebarBrand, CSidebarNav, CSidebarToggler } from '@coreui/react'
 
 import { AppSidebarNav } from './AppSidebarNav'
-import biafologo from 'src/assets/images/biafologo.png'
+import worklog from 'src/assets/images/worklog.png'
 
 import SimpleBar from 'simplebar-react'
 import 'simplebar/dist/simplebar.min.css'
@@ -27,7 +27,7 @@ const AppSidebar = () => {
       }}
     >
       <CSidebarBrand className="d-none d-md-flex" to="/">
-        <img src={biafologo} width={150} height={50} alt='' />
+        <img src={worklog} width={150} height={50} alt='' />
       </CSidebarBrand>
       <CSidebarNav>
         <SimpleBar>

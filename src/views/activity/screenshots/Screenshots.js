@@ -136,6 +136,8 @@ const Screenshots = () => {
     return (
         <>
             <h3>Screenshots</h3>
+            <h6>{project_id}</h6>
+            <h6>{user_id}</h6>
             <div className='row'>
                 <div className='col-md-4'>
                     <br></br>
@@ -187,7 +189,6 @@ const Screenshots = () => {
             <div style={imageContainer}>
                 {user_id ? images.filter((image) => image.user_id === user_id).map((image) => {
                     const start = image.start_time.substr(11, 8);
-                    // const end = image.end_time.substr(11, 8);
 
                     return (
                         <div key={image.id} style={imageWrapper}>
@@ -202,13 +203,11 @@ const Screenshots = () => {
                                 />
                             </a>
                             <h6 style={timeStyle}>{start}</h6>
-                            {/* <h6>{image.end_time}</h6> */}
                         </div>
                     )
                 })
                     : images.map((image) => {
                         const start = image.start_time.substr(11, 8);
-                        // const end = image.end_time.substr(11, 8);
 
                         return (
                             <div key={image.id} style={imageWrapper}>
@@ -223,7 +222,6 @@ const Screenshots = () => {
                                     />
                                 </a>
                                 <h6 style={timeStyle}>{start}</h6>
-                                {/* <h6>{image.end_time}</h6> */}
                             </div>
                         )
                     })}
@@ -238,6 +236,43 @@ const Screenshots = () => {
                     </div>
                 )}
             </div>
+
+            {/* <div>
+      {Object.entries(groupedImages).map(([startTime, images]) => (
+        <div key={startTime}>
+          <h2>{startTime}</h2>
+          <div className="image-group">
+            {images.map((image, index) => (
+              <a
+                key={index}
+                href={image.path_url}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleClick(image.path_url);
+                }}
+              >
+                <img
+                  src={image.path_url}
+                  width={150}
+                  height={100}
+                  alt={`Image ${index}`}
+                />
+              </a>
+            ))}
+            {selectedImage && (
+                    <div className="modal">
+                        <div className="modal-content">
+                            <span className="close" onClick={handleCloseModal}>
+                                &times;
+                            </span>
+                            <img src={selectedImage} alt="" />
+                        </div>
+                    </div>
+                )}
+          </div>
+        </div>
+      ))}
+    </div> */}
 
 
             {/* <Modal title="Filters" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
