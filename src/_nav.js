@@ -72,11 +72,11 @@ const _nav = [
         name: 'Assigned Projects',
         to: '/projectmanagement/assigned',
       },
-      {
-        component: CNavItem,
-        name: 'To-dos',
-        to: '/projectmanagement/todos',
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'To-dos',
+      //   to: '/projectmanagement/todos',
+      // },
       {
         component: CNavItem,
         name: 'Clients',

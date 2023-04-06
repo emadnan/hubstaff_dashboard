@@ -76,6 +76,7 @@ const Permission = () => {
     // Functions for Update Permission Modal
     const [isModalOpen3, setIsModalOpen3] = useState(false);
     const showModal3 = (id) => {
+        getPermissionById(id);
         setIsModalOpen3(id);
     };
 
@@ -215,6 +216,7 @@ const Permission = () => {
     }, [showAlert6]);
 
     const [permission, setPermission] = useState([]);
+    const [bypermission, setPermissionById] = useState([]);
 
     // Get API call
     function getPermission() {
@@ -222,7 +224,18 @@ const Permission = () => {
             .then((response) => response.json())
             .then((data) => setPermission(data.permissions))
             .catch((error) => console.log(error));
-    }
+    };
+
+    function getPermissionById(id) {
+        fetch(`http://10.3.3.80/api/get-permissions-by-id/${id}`)
+            .then((response) => response.json())
+            .then((data) => {
+                setPermissionById(data.permissions);
+                setName(data.permissions[0].name);
+            })
+            .catch((error) => console.log(error));
+    };
+
 
     useEffect(() => {
         getPermission()
@@ -368,16 +381,20 @@ const Permission = () => {
 
                         <br></br>
 
-                        <div className="form-outline mb-3">
-                            <label>Permission</label>
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="form-control form-control-lg"
-                                placeholder="Enter Permission Name"
-                            />
-                        </div>
+                        {bypermission.map((per) => (
+                            <div key={per.id}>
+                                <div className="form-outline mb-3">
+                                    <label>Permission</label>
+                                    <input
+                                        type="text"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        className="form-control form-control-lg"
+                                        placeholder="Enter Permission Name"
+                                    />
+                                </div>
+                            </div>
+                        ))}
 
                     </Modal>
 

@@ -12,7 +12,6 @@ const Roles = () => {
 
     // Variable declarations
     const [name, setName] = useState("");
-    const [selectedUsers, setSelectedUsers] = useState([]);
 
     // CSS Stylings
     const modalStyle = {
@@ -95,6 +94,7 @@ const Roles = () => {
     // Functions for Update Role Modal
     const [isModalOpen3, setIsModalOpen3] = useState(false);
     const showModal3 = (id) => {
+        getRoleById(id)
         setIsModalOpen3(id);
     };
 
@@ -110,6 +110,7 @@ const Roles = () => {
     // Functions for Assign Users Modal
     const [isModalOpen4, setIsModalOpen4] = useState(false);
     const showModal4 = (id) => {
+        // getHasPermissions(id)
         setIsModalOpen4(id);
     };
 
@@ -292,6 +293,9 @@ const Roles = () => {
 
     const [roles, setRoles] = useState([]);
     const [permission, setPermission] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState([]);
+    const [getrole, setRoleById] = useState([]);
+    // const [haspermission, setHasPermission] = useState([]);
 
     // Get API call
     function getRoles() {
@@ -299,18 +303,36 @@ const Roles = () => {
             .then((response) => response.json())
             .then((data) => setRoles(data.roles))
             .catch((error) => console.log(error));
-    }
+    };
 
     function getPermission() {
         fetch("http://10.3.3.80/api/getpermissions")
             .then((response) => response.json())
             .then((data) => setPermission(data.permissions))
             .catch((error) => console.log(error));
-    }
+    };
+
+    function getRoleById(id) {
+        fetch(`http://10.3.3.80/api/get_roles_by_id/${id}`)
+        .then((response) => response.json())
+          .then((data) => {
+            setRoleById(data.roles);
+                setName(data.roles[0].name);
+          })
+          .catch((error) => console.log(error));
+    };
+
+    // function getHasPermissions(id) {
+    //     fetch("http://10.3.3.80/api/getpermissions")
+    //         .then((response) => response.json())
+    //         .then((data) => setPermission(data.permissions))
+    //         .catch((error) => console.log(error));
+    // };
 
     useEffect(() => {
         getRoles()
         getPermission()
+        // getHasPermissions()
     }, []);
 
     // Add API call
@@ -484,15 +506,21 @@ const Roles = () => {
             {/* Modal for Update Role */}
             <Modal title="Update a Role" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3}>
 
-                <div className="form-outline mb-3">
-                    <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="form-control form-control-lg"
-                        placeholder="Enter Role Name"
-                    />
-                </div>
+                <br></br>
+
+                {getrole.map((role) => (
+                    <div key={role.id}>
+                        <div className="form-outline mb-3">
+                            <input
+                                type="text"
+                                defaultValue={role.name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="form-control form-control-lg"
+                                placeholder="Enter Role Name"
+                            />
+                        </div>
+                    </div>
+                ))}
 
             </Modal>
 

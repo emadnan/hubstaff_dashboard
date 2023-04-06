@@ -52,14 +52,14 @@ const Dashboard = () => {
   const [projects, setProjects] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [clients, setClients] = useState([]);
-  const [images, setImages] = useState([]);
+  // const [images, setImages] = useState([]);
 
   useEffect(() => {
     getCompanies()
     getProjects()
     getDepartments()
     getClients()
-    getScreenshots()
+    // getScreenshots()
   }, []);
 
   function getCompanies() {
@@ -90,12 +90,12 @@ const Dashboard = () => {
       .catch((error) => console.log(error));
   };
 
-  function getScreenshots() {
-    fetch("http://10.3.3.80/api/get_Project_Screenshots")
-      .then((response) => response.json())
-      .then((data) => setImages(data.ProjectScreenshot))
-      .catch((error) => console.log(error));
-  };
+  // function getScreenshots() {
+  //   fetch("http://10.3.3.80/api/get_Project_Screenshots")
+  //     .then((response) => response.json())
+  //     .then((data) => setImages(data.ProjectScreenshot))
+  //     .catch((error) => console.log(error));
+  // };
 
   return (
     <>
@@ -147,23 +147,18 @@ const Dashboard = () => {
           {/* Card for Recent Activity Starts */}
           <Card style={cardStyle2}>
             <h5 style={head}>RECENT ACTIVITY</h5>
-            <Divider></Divider>
-            <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-              <CTableHead color="light" ></CTableHead>
-              <CTableBody>
-              {images.slice(0,3).map((image) => (
-                <div key={image.id}>
-                    <img src={image.path_url} width={350} height={250} alt='' />
+            <Divider />
+            {/* <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+              {images.slice(0, 3).map((image) => (
+                <div key={image.id} style={{ margin: '10px' }}>
+                  <img src={image.path_url} width={350} height={250} alt='' />
                 </div>
-            ))}
-              </CTableBody>
-            </CTable>
-
-            <Divider></Divider>
+              ))}
+            </div> */}
+            <Divider />
             <div className='text-center'>
               <Button type="link" href="/activity/screenshots">View recent activity &gt;</Button>
             </div>
-
           </Card>
           {/* Card for Recent Activity Ends */}
 
@@ -254,13 +249,13 @@ const Dashboard = () => {
                 {projects.slice(0, 4).map((proj) => {
                   const start = moment(proj.start_date).format('DD-MM-YYYY');
 
-                  return(
-                  <CTableRow key={proj.id}>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>{proj.project_name}</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>{start}</CTableHeaderCell>
-                  </CTableRow>
+                  return (
+                    <CTableRow key={proj.id}>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>{proj.project_name}</CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>{start}</CTableHeaderCell>
+                    </CTableRow>
                   )
-                  })}
+                })}
 
               </CTableHead>
 

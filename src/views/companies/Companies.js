@@ -5,7 +5,6 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const Companies = () => {
 
@@ -24,14 +23,14 @@ const Companies = () => {
     left: "40%",
   };
 
-  const perStyle = {
-    fontSize: 14,
-  };
+  // const perStyle = {
+  //   fontSize: 14,
+  // };
 
-  const headStyle = {
-    color: "#0070ff",
-    fontWeight: "bold",
-  };
+  // const headStyle = {
+  //   color: "#0070ff",
+  //   fontWeight: "bold",
+  // };
 
   const modalStyle2 = {
     position: "fixed",
@@ -105,19 +104,19 @@ const Companies = () => {
   };
 
   // Functions for Show Details Modal
-  const [isModalOpen4, setIsModalOpen4] = useState(false);
-  const showModal4 = (id) => {
-    getCompanyById(id)
-    setIsModalOpen4(id)
-  };
+  // const [isModalOpen4, setIsModalOpen4] = useState(false);
+  // const showModal4 = (id) => {
+  //   getCompanyById(id)
+  //   setIsModalOpen4(id)
+  // };
 
-  const handleOk4 = () => {
-    setIsModalOpen4(false);
-  };
+  // const handleOk4 = () => {
+  //   setIsModalOpen4(false);
+  // };
 
-  const handleCancel4 = () => {
-    setIsModalOpen4(false);
-  };
+  // const handleCancel4 = () => {
+  //   setIsModalOpen4(false);
+  // };
 
   // Functions for Add Company Success
   const [showAlert1, setShowAlert1] = useState(false);
@@ -413,9 +412,9 @@ const Companies = () => {
               <CTableHeaderCell className="text-center">{company.city}</CTableHeaderCell>
               <CTableHeaderCell className="text-center">{company.country}</CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
-               <IconButton aria-label="description" onClick={() => showModal4(company.id)}>
+                {/* <IconButton aria-label="description" onClick={() => showModal4(company.id)}>
                   <VisibilityIcon htmlColor='#0070ff' />
-                </IconButton>
+                </IconButton> */}
                 <IconButton aria-label="update" onClick={() => showModal3(company.id)}>
                   <EditIcon htmlColor='#28B463' />
                 </IconButton>
@@ -595,7 +594,7 @@ const Companies = () => {
           </Modal>
 
           {/* Modal for View Details */}
-          <Modal title="" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4} style={modalStyle}>
+          {/* <Modal title="" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4} style={modalStyle}>
 
             {bycompany.map((comp) => (
               <div key={comp.id}>
@@ -613,7 +612,7 @@ const Companies = () => {
                 <p>{comp.city}</p>
               </div>
             ))}
-          </Modal>
+          </Modal> */}
 
           {/* Alert for Add Company Success*/}
           {showAlert1 && (

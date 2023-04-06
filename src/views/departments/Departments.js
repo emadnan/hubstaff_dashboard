@@ -5,7 +5,6 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const Departments = () => {
 
@@ -21,14 +20,14 @@ const Departments = () => {
         left: "40%",
     };
 
-    const perStyle = {
-        fontSize: 14,
-    };
+    // const perStyle = {
+    //     fontSize: 14,
+    // };
 
-    const headStyle = {
-        color: "#0070ff",
-        fontWeight: "bold",
-    };
+    // const headStyle = {
+    //     color: "#0070ff",
+    //     fontWeight: "bold",
+    // };
 
     const modalStyle2 = {
         position: "fixed",
@@ -87,6 +86,7 @@ const Departments = () => {
     // Functions for Update Department Modal
     const [isModalOpen3, setIsModalOpen3] = useState(false);
     const showModal3 = (id) => {
+        getDepartmentById(id);
         setIsModalOpen3(id);
     };
 
@@ -100,19 +100,19 @@ const Departments = () => {
     };
 
     // Functions for Show Details Modal
-    const [isModalOpen4, setIsModalOpen4] = useState(false);
-    const showModal4 = (id) => {
-        getDepartmentById(id)
-        setIsModalOpen4(id)
-    };
+    // const [isModalOpen4, setIsModalOpen4] = useState(false);
+    // const showModal4 = (id) => {
+    //     getDepartmentById(id)
+    //     setIsModalOpen4(id)
+    // };
 
-    const handleOk4 = () => {
-        setIsModalOpen4(false);
-    };
+    // const handleOk4 = () => {
+    //     setIsModalOpen4(false);
+    // };
 
-    const handleCancel4 = () => {
-        setIsModalOpen4(false);
-    };
+    // const handleCancel4 = () => {
+    //     setIsModalOpen4(false);
+    // };
 
     // Functions for Add Department Success
     const [showAlert1, setShowAlert1] = useState(false);
@@ -267,10 +267,16 @@ const Departments = () => {
 
     function getDepartmentById(id) {
         fetch(`http://10.3.3.80/api/getdepartment-by-id/${id}`)
-            .then((response) => response.json())
-            .then((data) => setByDepartment(data.Departments))
-            .catch((error) => console.log(error));
-    }
+          .then((response) => response.json())
+          .then((data) => {
+            setByDepartment(data.Departments);
+                setDepartmentName(data.Departments[0].department_name);
+                setDescription(data.Departments[0].description);
+                setCompanyId(data.Departments[0].company_id);
+            
+          })
+          .catch((error) => console.log(error));
+    };
 
     useEffect(() => {
         getList()
@@ -385,9 +391,9 @@ const Departments = () => {
                             <CTableHeaderCell className="text-center">{department.department_name}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center">{department.description}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
-                                <IconButton aria-label="description" onClick={() => showModal4(department.id)}>
+                                {/* <IconButton aria-label="description" onClick={() => showModal4(department.id)}>
                                     <VisibilityIcon htmlColor='#0070ff' />
-                                </IconButton>
+                                </IconButton> */}
                                 <IconButton aria-label="update" onClick={() => showModal3(department.id)}>
                                     <EditIcon htmlColor='#28B463' />
                                 </IconButton>
@@ -495,7 +501,7 @@ const Departments = () => {
                     </Modal>
 
                     {/* Modal for View Details */}
-                    <Modal title="" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4} style={modalStyle}>
+                    {/* <Modal title="" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4} style={modalStyle}>
 
                         {bydepartment.map((dept) => (
                             <div key={dept.id}>
@@ -507,7 +513,7 @@ const Departments = () => {
                                 <p>{dept.description}</p>
                             </div>
                         ))}
-                    </Modal>
+                    </Modal> */}
 
                     {/* Alert for Add Department Success*/}
                     {showAlert1 && (
