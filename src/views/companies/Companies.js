@@ -286,7 +286,16 @@ const Companies = () => {
   function getCompanyById(id) {
     fetch(`http://10.3.3.80/api/get_company_by_id/${id}`)
       .then((response) => response.json())
-      .then((data) => setByCompany(data.company))
+      .then((data) => {
+        setByCompany(data.company);
+        setCompanyName(data.company[0].company_name);
+        setCompanyEmail(data.company[0].company_email);
+        setAddress(data.company[0].address);
+        setContactNo(data.company[0].contact_no);
+        setCountry(data.company[0].country);
+        setCity(data.company[0].city);
+
+      })
       .catch((error) => console.log(error));
   };
 
@@ -521,7 +530,6 @@ const Companies = () => {
                   <input
                     type="text"
                     defaultValue={company.company_name}
-                    // value={company_name}
                     onChange={(e) => setCompanyName(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Company Name"
@@ -533,7 +541,6 @@ const Companies = () => {
                   <input
                     type="text"
                     defaultValue={company.address}
-                    // value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Address"
@@ -545,7 +552,6 @@ const Companies = () => {
                   <input
                     type="text"
                     defaultValue={company.company_email}
-                    // value={company_email}
                     onChange={(e) => setCompanyEmail(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Email"
@@ -557,7 +563,6 @@ const Companies = () => {
                   <input
                     type="text"
                     defaultValue={company.contact_no}
-                    // value={contact_no}
                     onChange={(e) => setContactNo(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Contact No"

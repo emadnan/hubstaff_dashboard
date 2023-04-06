@@ -13,16 +13,12 @@ import moment from 'moment';
 const Projects = () => {
 
   // Variable declarations
-  // const [user_id, setUserId] = useState("");
   const [department_id, setDepartmentId] = useState("");
   const [company_id, setCompanyId] = useState("");
   const [project_name, setProjectName] = useState("");
   const [description, setDescription] = useState("");
   const [start_date, setStartDate] = useState("");
   const [dead_line, setDeadLine] = useState("");
-  // const [team_id, setTeamId] = useState("");
-  // const [to_dos, setTodos] = useState("");
-  // const [budget, setBudget] = useState("");
   const [stream_id, setStreamId] = useState("");
 
   const [project_id, setProjectId] = useState("");
@@ -123,7 +119,7 @@ const Projects = () => {
   // Functions for Update Project Modal
   const [isModalOpen3, setIsModalOpen3] = useState(false);
   const showModal3 = (id) => {
-    getProjectById(id)
+    getProjectById2(id)
     setIsModalOpen3(id);
   };
 
@@ -374,6 +370,7 @@ const Projects = () => {
   const [users, setUsers] = useState([]);
   const [department, setDepartment] = useState([]);
   const [byproject, setByProject] = useState([]);
+  const [byproject2, setByProject2] = useState([]);
   const [stream, setStream] = useState([]);
 
   useEffect(() => {
@@ -395,6 +392,21 @@ const Projects = () => {
     fetch(`http://10.3.3.80/api/get-project-by-project-id/${id}`)
       .then((response) => response.json())
       .then((data) => setByProject(data.projects))
+      .catch((error) => console.log(error));
+  };
+
+  function getProjectById2(id) {
+    fetch(`http://10.3.3.80/api/get-project-by-project-id/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setByProject2(data.projects);
+        setCompanyId(data.projects[0].company_id);
+        setDepartmentId(data.projects[0].department_id);
+        setProjectName(data.projects[0].project_name);
+        setDescription(data.projects[0].description);
+        setStartDate(data.projects[0].startDate);
+        setDeadLine(data.projects[0].dead_line);
+      })
       .catch((error) => console.log(error));
   };
 
@@ -682,7 +694,7 @@ const Projects = () => {
 
             <br></br>
 
-            {byproject.map((pro) => (
+            {byproject2.map((pro) => (
               <div key={pro.id}>
                 <div className="form-outline mb-3">
                   <label>Company</label>
