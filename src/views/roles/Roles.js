@@ -110,7 +110,7 @@ const Roles = () => {
     // Functions for Assign Users Modal
     const [isModalOpen4, setIsModalOpen4] = useState(false);
     const showModal4 = (id) => {
-        // getHasPermissions(id)
+        getHasPermissions(id)
         setIsModalOpen4(id);
     };
 
@@ -295,7 +295,7 @@ const Roles = () => {
     const [permission, setPermission] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [getrole, setRoleById] = useState([]);
-    // const [haspermission, setHasPermission] = useState([]);
+    const [haspermission, setHasPermission] = useState([]);
 
     // Get API call
     function getRoles() {
@@ -314,25 +314,28 @@ const Roles = () => {
 
     function getRoleById(id) {
         fetch(`http://10.3.3.80/api/get_roles_by_id/${id}`)
-        .then((response) => response.json())
-          .then((data) => {
-            setRoleById(data.roles);
+            .then((response) => response.json())
+            .then((data) => {
+                setRoleById(data.roles);
                 setName(data.roles[0].name);
-          })
-          .catch((error) => console.log(error));
+            })
+            .catch((error) => console.log(error));
     };
 
-    // function getHasPermissions(id) {
-    //     fetch("http://10.3.3.80/api/getpermissions")
-    //         .then((response) => response.json())
-    //         .then((data) => setPermission(data.permissions))
-    //         .catch((error) => console.log(error));
-    // };
+    function getHasPermissions(id) {
+        fetch(`http://10.3.3.80/api/get-permission-by-id/${id}`)
+            .then((response) => response.json())
+            .then((data) => {
+                const temp_array = data.Permission.map(element => element.permission_id);
+                setHasPermission(temp_array);
+                console.log(temp_array);
+            })
+            .catch((error) => console.log(error));
+    };
 
     useEffect(() => {
         getRoles()
         getPermission()
-        // getHasPermissions()
     }, []);
 
     // Add API call
@@ -394,7 +397,6 @@ const Roles = () => {
             body: JSON.stringify({
                 id: newid,
                 name: name,
-                // guard_name: guard_name,
             })
         }).then(response => {
             if (response.ok) {
@@ -560,12 +562,16 @@ const Roles = () => {
                         <div className='col md-3'></div>
                         <div className='col md-2 text-center'>
                             <Checkbox
-                                checked={selectedUsers.includes(perm.id)}
+                                // checked={selectedUsers.includes(perm.id)}
+                                checked={
+                                    haspermission.includes(perm.id)
+                                }
                                 onChange={(e) => {
+                                    const checkedId = perm.id;
                                     if (e.target.checked) {
-                                        setSelectedUsers([...selectedUsers, perm.id]);
+                                        setSelectedUsers(prevSelectedUsers => [...prevSelectedUsers, checkedId]);
                                     } else {
-                                        setSelectedUsers(selectedUsers.filter((id) => id !== perm.id));
+                                        setSelectedUsers(prevSelectedUsers => prevSelectedUsers.filter((id) => id !== checkedId));
                                     }
                                 }}
                             />

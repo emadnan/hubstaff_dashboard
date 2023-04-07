@@ -48,6 +48,10 @@ const Companies = () => {
     alignSelf: 'flex-end',
   };
 
+  const mystyle2 = {
+    backgroundColor: "white ",
+  };
+
   const buttonStyle = {
     float: "right",
     padding: "2px",
@@ -413,14 +417,14 @@ const Companies = () => {
           {/* Get API Users */}
           {users.map((company, index) => (
             <CTableRow key={company.id}>
-              <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{company.company_name}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{company.address}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{company.company_email}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{company.contact_no}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{company.city}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center">{company.country}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
+              <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>{company.company_name}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>{company.address}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>{company.company_email}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>{company.contact_no}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>{company.city}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>{company.country}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
                 {/* <IconButton aria-label="description" onClick={() => showModal4(company.id)}>
                   <VisibilityIcon htmlColor='#0070ff' />
                 </IconButton> */}

@@ -46,6 +46,10 @@ const Departments = () => {
         alignSelf: 'flex-end',
     };
 
+    const mystyle2 = {
+        backgroundColor: "white ",
+    };
+
     const buttonStyle = {
         float: "right",
         padding: "2px",
@@ -385,12 +389,11 @@ const Departments = () => {
                     {/* Get API Users */}
                     {users.map((department, index) => (
                         <CTableRow key={department.id}>
-                            <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
-                            {/* <CTableHeaderCell className="text-center">{department.company_id}</CTableHeaderCell> */}
-                            <CTableHeaderCell className="text-center">{department.company_name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">{department.department_name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">{department.description}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{department.company_name}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{department.department_name}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{department.description}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>
                                 {/* <IconButton aria-label="description" onClick={() => showModal4(department.id)}>
                                     <VisibilityIcon htmlColor='#0070ff' />
                                 </IconButton> */}
