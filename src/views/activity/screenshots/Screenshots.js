@@ -182,17 +182,81 @@ const Screenshots = () => {
 
             {/* {images.map((image) => (
                 <div key={image.id}>
-                    <img src={image.path_url} width={350} height={250} alt='' />
+                    {image.get_timings.map((timing) => (
+                        <div key={timing.id}>
+                            {timing.getattechments.map((attach) => (
+                                <div key={attach.id}>
+                                    <img src={attach.path_url} width={350} height={250} alt='' />
+                                </div>
+                            ))}
+                        </div>
+                    ))}
                 </div>
             ))} */}
 
             <div style={imageContainer}>
                 {user_id ? images.filter((image) => image.user_id === user_id).map((image) => {
-                    const start = image.start_time.substr(11, 8);
 
                     return (
                         <div key={image.id} style={imageWrapper}>
-                            <h6 style={projectNameStyle}>{image.project_name}</h6>
+                            <h6 style={projectNameStyle}>{image.stream_name}</h6>
+                            {image.get_timings.map((timing) => (
+                                <div key={timing.id}>
+                                    {timing.getattechments.map((attach) => (
+                                        <div key={attach.id}>
+                                            <a href={attach.path_url}>
+                                                <img src={attach.path_url} width={150} height={100} alt="" onClick={() => handleClick(attach.path_url)} />
+                                            </a>
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    )
+
+                })
+                    : images.map((image) => {
+                        
+
+                        return (
+                            <div key={image.id} style={imageWrapper}>
+                                <h6 style={projectNameStyle}>{image.stream_name}</h6>
+                                {image.get_timings.map((timing) => (
+                                    <div key={timing.id}>
+                                        {timing.getattechments.map((attach) => (
+                                            <div key={attach.id}>
+                                                <a href={attach.path_url}>
+                                                    <img src={attach.path_url} width={150} height={100} alt="" onClick={() => handleClick(attach.path_url)} />
+                                                </a>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ))}
+                            </div>
+                        )
+
+                    })}
+
+                {selectedImage && (
+                    <div className="modal">
+                        <div className="modal-content">
+                            <span className="close" onClick={handleCloseModal}>
+                                &times;
+                            </span>
+                            <img src={selectedImage} alt="" />
+                        </div>
+                    </div>
+                )}
+
+            </div>
+
+            {/* <div style={imageContainer}>
+                {user_id ? images.filter((image) => image.user_id === user_id).map((image) => {
+                    // const start = image.start_time.substr(11, 8);
+
+                    return (
+                        <div key={image.id} style={imageWrapper}>
+                            <h6 style={projectNameStyle}>{image.stream_name}</h6>
                             <a href={image.path_url}>
                                 <img
                                     src={image.path_url}
@@ -207,7 +271,7 @@ const Screenshots = () => {
                     )
                 })
                     : images.map((image) => {
-                        const start = image.start_time.substr(11, 8);
+                        // const start = image.start_time.substr(11, 8);
 
                         return (
                             <div key={image.id} style={imageWrapper}>
@@ -235,45 +299,7 @@ const Screenshots = () => {
                         </div>
                     </div>
                 )}
-            </div>
-
-            {/* <div>
-      {Object.entries(groupedImages).map(([startTime, images]) => (
-        <div key={startTime}>
-          <h2>{startTime}</h2>
-          <div className="image-group">
-            {images.map((image, index) => (
-              <a
-                key={index}
-                href={image.path_url}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleClick(image.path_url);
-                }}
-              >
-                <img
-                  src={image.path_url}
-                  width={150}
-                  height={100}
-                  alt={`Image ${index}`}
-                />
-              </a>
-            ))}
-            {selectedImage && (
-                    <div className="modal">
-                        <div className="modal-content">
-                            <span className="close" onClick={handleCloseModal}>
-                                &times;
-                            </span>
-                            <img src={selectedImage} alt="" />
-                        </div>
-                    </div>
-                )}
-          </div>
-        </div>
-      ))}
-    </div> */}
-
+            </div> */}
 
             {/* <Modal title="Filters" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 

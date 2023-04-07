@@ -436,6 +436,19 @@ const Roles = () => {
 
     };
 
+    //Checkbox functionalities
+    useEffect(() => {
+        setSelectedUsers(haspermission);
+    }, [haspermission]);
+
+    const handleSelectUser = (e, permId) => {
+        if (e.target.checked) {
+            setSelectedUsers([...selectedUsers, permId]);
+        } else {
+            setSelectedUsers(selectedUsers.filter((id) => id !== permId));
+        }
+    };
+
     return (
         <>
             <div className='row'>
@@ -550,7 +563,29 @@ const Roles = () => {
                     <Divider></Divider>
                 </div>
 
-                {permission.map((perm, index) => (
+                <div>
+                    {permission.map((perm, index) => (
+                        <div className='row' key={perm.id}>
+                            <div className='col md-2 text-center'>
+                                <h6>{index + 1}</h6>
+                            </div>
+                            <div className='col md-3'></div>
+                            <div className='col md-2 text-center'>
+                                <h6>{perm.name}</h6>
+                            </div>
+                            <div className='col md-3'></div>
+                            <div className='col md-2 text-center'>
+                                <Checkbox
+                                    checked={selectedUsers.includes(perm.id)}
+                                    onChange={(e) => handleSelectUser(e, perm.id)}
+                                />
+                            </div>
+                            &nbsp;
+                            <Divider />
+                        </div>
+                    ))}
+                </div>
+                {/* {permission.map((perm, index) => (
                     <div className='row' key={perm.id}>
                         <div className='col md-2 text-center'>
                             <h6 style={perStyle}>{index + 1}</h6>
@@ -562,16 +597,12 @@ const Roles = () => {
                         <div className='col md-3'></div>
                         <div className='col md-2 text-center'>
                             <Checkbox
-                                // checked={selectedUsers.includes(perm.id)}
-                                checked={
-                                    haspermission.includes(perm.id)
-                                }
+                                checked={haspermission.includes(perm.id)}
                                 onChange={(e) => {
-                                    const checkedId = perm.id;
                                     if (e.target.checked) {
-                                        setSelectedUsers(prevSelectedUsers => [...prevSelectedUsers, checkedId]);
+                                        setSelectedUsers([...selectedUsers, perm.id]);
                                     } else {
-                                        setSelectedUsers(prevSelectedUsers => prevSelectedUsers.filter((id) => id !== checkedId));
+                                        setSelectedUsers(selectedUsers.filter((id) => id !== perm.id));
                                     }
                                 }}
                             />
@@ -579,7 +610,7 @@ const Roles = () => {
                         &nbsp;
                         <Divider></Divider>
                     </div>
-                ))}
+                ))} */}
             </Modal>
 
             {/* Alert for Add Role Success*/}
