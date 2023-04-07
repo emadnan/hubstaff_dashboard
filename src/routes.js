@@ -1,60 +1,34 @@
 import React from 'react'
 
+//Define routes for views
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
-
-//Activity
 const Screenshots = React.lazy(() => import('./views/activity/screenshots/Screenshots'))
 const Apps = React.lazy(() => import('./views/activity/apps/Apps'))
 const Urls = React.lazy(() => import('./views/activity/urls/Urls'))
-
-//Timesheets
 const Approvals = React.lazy(() => import('./views/timesheets/approvals/Approvals'))
 const Viewedit = React.lazy(() => import('./views/timesheets/viewedit/Viewedit'))
-
-//ProjectManagement
 const Projects = React.lazy(() => import('./views/projectmanagement/projects/Projects'))
 const Client = React.lazy(() => import('./views/projectmanagement/client/Client'))
 const Todos = React.lazy(() => import('./views/projectmanagement/todos/Todos'))
 const AssignedProjects = React.lazy(() => import('./views/projectmanagement/assigned/AssignedProjects'))
-
-//Companies
 const Companies = React.lazy(() => import('./views/companies/Companies'))
-
-//Departments
 const Departments = React.lazy(() => import('./views/departments/Departments'))
-
-//Insights
 const Insights = React.lazy(() => import('./views/insights/Insights'))
-
-//Map
 const Map = React.lazy(() => import('./views/map/Map'))
-
-//Users
 const Users = React.lazy(() => import('./views/users/Users'))
-
-//Roles
 const Roles = React.lazy(() => import('./views/roles/Roles'))
-
-//Permissions
 const Permissions = React.lazy(() => import('./views/permissions/Permission'))
-
-//Calendar
 const Schedules = React.lazy(() => import('./views/calendar/schedules/Schedules'))
 const Timeoffrequests = React.lazy(() => import('./views/calendar/timeoffrequests/Timeoffrequests'))
-
-//Reports
 const Accountsowed = React.lazy(() => import('./views/reports/accountsowed/Accountsowed'))
 const Allreports = React.lazy(() => import('./views/reports/allreports/Allreports'))
 const Payments = React.lazy(() => import('./views/reports/payments/Payments'))
 const Timenactivity = React.lazy(() => import('./views/reports/timenactivity/Timenactivity'))
 const Weekly = React.lazy(() => import('./views/reports/weekly/Weekly'))
-
-//Teams
 const Teams = React.lazy(() => import('./views/teams/Teams'))
-
-//Expenses
 const Expenses = React.lazy(() => import('./views/expenses/Expenses'))
 
+//Path setting for routes
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
