@@ -20,9 +20,8 @@ const Projects = () => {
   const [start_date, setStartDate] = useState("");
   const [dead_line, setDeadLine] = useState("");
   const [stream_id, setStreamId] = useState("");
-
   const [project_id, setProjectId] = useState("");
-  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [proj_id, setProjId] = useState("");
 
   // CSS Styling
   const modalStyle = {
@@ -80,14 +79,6 @@ const Projects = () => {
     color: "#0070ff",
   };
 
-  // const buttonStyle2 = {
-  //   padding: "2px",
-  //   width: "100px",
-  //   backgroundColor: "#0070ff",
-  //   fontWeight: "bold",
-  //   color: "white",
-  // };
-
   // Functions for Add Project Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -136,6 +127,7 @@ const Projects = () => {
   const [isModalOpen4, setIsModalOpen4] = useState(false);
   const showModal4 = (id) => {
     setStreamId(id);
+    getHasRole(proj_id, id);
     setIsModalOpen4(id);
   };
 
@@ -169,6 +161,7 @@ const Projects = () => {
     setProjectId(id)
     getProjectById(id)
     setIsModalOpen6(true)
+    setProjId(id)
   };
 
   const handleOk6 = () => {
@@ -347,24 +340,16 @@ const Projects = () => {
     }
   }, [showAlert8]);
 
-  //Get calls handling
+  //On-change functions
   const handleCompanyChange = (value) => {
     setCompanyId(value);
   };
-
-  // const handleUserChange = (value) => {
-  //   setUserId(value);
-  // };
 
   const handleDepartmentChange = (value) => {
     setDepartmentId(value);
   };
 
-  // const handleTodoChange = (value) => {
-  //   setTodos(value);
-  // }
-
-  // Get API call
+  // Get API call Arrays
   const [projects, setProjects] = useState([]);
   const [company, setCompanies] = useState([]);
   const [users, setUsers] = useState([]);
@@ -372,6 +357,8 @@ const Projects = () => {
   const [byproject, setByProject] = useState([]);
   const [byproject2, setByProject2] = useState([]);
   const [stream, setStream] = useState([]);
+  const [hasrole, setHasRole] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
 
   useEffect(() => {
     getList()
@@ -381,6 +368,11 @@ const Projects = () => {
     getStreams()
   }, []);
 
+  useEffect(() => {
+    setSelectedUsers(hasrole);
+  }, [hasrole]);
+
+  //GET API calls
   function getList() {
     fetch("http://10.3.3.80/api/getproject")
       .then((response) => response.json())
@@ -410,7 +402,6 @@ const Projects = () => {
       .catch((error) => console.log(error));
   };
 
-  // Get Companies API call
   function getCompany() {
     fetch("http://10.3.3.80/api/getcompany")
       .then((response) => response.json())
@@ -418,7 +409,6 @@ const Projects = () => {
       .catch((error) => console.log(error));
   };
 
-  // Get Users API call
   function getUsers() {
     fetch("http://10.3.3.80/api/get_users")
       .then((response) => response.json())
@@ -426,7 +416,6 @@ const Projects = () => {
       .catch((error) => console.log(error));
   }
 
-  // Get Department API call
   function getDepartment() {
     fetch("http://10.3.3.80/api/getdepartment")
       .then((response) => response.json())
@@ -434,13 +423,33 @@ const Projects = () => {
       .catch((error) => console.log(error));
   }
 
-  // Get Streams API call
   function getStreams() {
     fetch("http://10.3.3.80/api/get-streams")
       .then((response) => response.json())
       .then((data) => setStream(data.Streams))
       .catch((error) => console.log(error));
   }
+
+  function getHasRole(proj_id, stream_id) {
+    fetch(`http://10.3.3.80/api/get_assign_project_by_project_id/${proj_id}/${stream_id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        const temp_array = data.Assigns.map(element => element.user_id);
+        setHasRole(temp_array);
+        console.log(temp_array);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  //Checkbox control function
+  const handleSelectUser = (e, userId) => {
+    if (e.target.checked) {
+      setSelectedUsers([...selectedUsers, userId]);
+    } else {
+      setSelectedUsers(selectedUsers.filter((id) => id !== userId));
+    }
+  };
 
   // Add API call
   async function addProject() {
@@ -689,7 +698,7 @@ const Projects = () => {
 
           </Modal>
 
-          {/* Modal for Update User */}
+          {/* Modal for Update Projects */}
           <Modal title="Update a Project" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3}>
 
             <br></br>
@@ -879,13 +888,7 @@ const Projects = () => {
                 <div className='col md-2 text-center'>
                   <Checkbox
                     checked={selectedUsers.includes(user.id)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedUsers([...selectedUsers, user.id]);
-                      } else {
-                        setSelectedUsers(selectedUsers.filter((id) => id !== user.id));
-                      }
-                    }}
+                    onChange={(e) => handleSelectUser(e, user.id)}
                   />
                 </div>
                 &nbsp;

@@ -36,6 +36,10 @@ const Permission = () => {
         alignSelf: 'flex-end',
     };
 
+    const mystyle2 = {
+        backgroundColor: "white ",
+    };
+
     const buttonStyle = {
         float: "right",
         padding: "2px",
@@ -341,9 +345,9 @@ const Permission = () => {
                     {/* Get API Users */}
                     {permission.map((perm, index) => (
                         <CTableRow key={perm.id}>
-                            <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">{perm.name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{perm.name}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>
                                 <IconButton aria-label="update" onClick={() => showModal3(perm.id)}>
                                     <EditIcon htmlColor='#28B463' />
                                 </IconButton>

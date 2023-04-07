@@ -20,10 +20,6 @@ const Roles = () => {
         left: "40%",
     };
 
-    const perStyle = {
-        fontSize: 14,
-    };
-
     const heading = {
         display: 'flex',
         justifyContent: 'flex-end',
@@ -55,13 +51,9 @@ const Roles = () => {
         color: "#0070ff",
     };
 
-    // const buttonStyle2 = {
-    //     padding: "2px",
-    //     width: "100px",
-    //     backgroundColor: "#0070ff",
-    //     fontWeight: "bold",
-    //     color: "white",
-    // };
+    const mystyle2 = {
+        backgroundColor: "white ",
+    };
 
     // Functions for Add Role Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -291,6 +283,16 @@ const Roles = () => {
         }
     }, [showAlert8]);
 
+    //Checkbox Function
+    const handleSelectUser = (e, permId) => {
+        if (e.target.checked) {
+            setSelectedUsers([...selectedUsers, permId]);
+        } else {
+            setSelectedUsers(selectedUsers.filter((id) => id !== permId));
+        }
+    };
+
+    //Array declarations for GET APIs
     const [roles, setRoles] = useState([]);
     const [permission, setPermission] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
@@ -337,6 +339,10 @@ const Roles = () => {
         getRoles()
         getPermission()
     }, []);
+
+    useEffect(() => {
+        setSelectedUsers(haspermission);
+    }, [haspermission]);
 
     // Add API call
     async function addRole() {
@@ -412,6 +418,7 @@ const Roles = () => {
 
     }
 
+    //Assign Permissions API call
     async function assignPermissions(newid) {
         await fetch('http://10.3.3.80/api/role-permissions', {
             method: 'POST',
@@ -434,19 +441,6 @@ const Roles = () => {
                 console.error(error);
             });
 
-    };
-
-    //Checkbox functionalities
-    useEffect(() => {
-        setSelectedUsers(haspermission);
-    }, [haspermission]);
-
-    const handleSelectUser = (e, permId) => {
-        if (e.target.checked) {
-            setSelectedUsers([...selectedUsers, permId]);
-        } else {
-            setSelectedUsers(selectedUsers.filter((id) => id !== permId));
-        }
     };
 
     return (
@@ -475,9 +469,9 @@ const Roles = () => {
                     {/* Get API Users */}
                     {roles.map((role, index) => (
                         <CTableRow key={role.id}>
-                            <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">{role.name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{role.name}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>
                                 <IconButton aria-label="update" title="Update" onClick={() => showModal3(role.id)}>
                                     <EditIcon htmlColor='#28B463' />
                                 </IconButton>
@@ -485,7 +479,7 @@ const Roles = () => {
                                     <DeleteIcon htmlColor='#FF0000' />
                                 </IconButton>
                             </CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">
+                            <CTableHeaderCell className="text-center" style={mystyle2}>
                                 <IconButton aria-label="assign" title="Assign Permission" onClick={() => showModal4(role.id)}>
                                     <PermContactCalendarIcon htmlColor='#0070ff' />
                                 </IconButton>

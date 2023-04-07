@@ -31,9 +31,9 @@ const Screenshots = () => {
         fontWeight: "bold",
     };
 
-    const timeStyle = {
-        fontSize: 14,
-    };
+    // const timeStyle = {
+    //     fontSize: 14,
+    // };
 
     const imageWrapper = {
         margin: "10px",

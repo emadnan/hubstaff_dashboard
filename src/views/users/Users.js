@@ -28,6 +28,10 @@ const Users = () => {
         transform: "translateX(-50%)",
     };
 
+    const mystyle2 = {
+        backgroundColor: "white ",
+    };
+
     const mystyle = {
         color: "white",
         backgroundColor: "#0070FF ",
@@ -349,11 +353,11 @@ const Users = () => {
                     {/* Get API Users */}
                     {users.map((user, index) => (
                         <CTableRow key={user.id}>
-                            <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">{user.name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">{user.email}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">{user.role}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{user.name}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{user.email}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{user.role}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>
                                 <IconButton aria-label="update" onClick={() => showModal3(user.id)}>
                                     <EditIcon htmlColor='#28B463' />
                                 </IconButton>
