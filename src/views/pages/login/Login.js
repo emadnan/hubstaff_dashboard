@@ -47,6 +47,7 @@ const Login = () => {
       },
     });
     if (result.status === 400) {
+      console.log(item);
       handleButtonClick1()
     } else {
       result = await result.json();

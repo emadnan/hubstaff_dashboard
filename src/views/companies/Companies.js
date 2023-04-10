@@ -16,6 +16,20 @@ const Companies = () => {
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
 
+  const local = JSON.parse(localStorage.getItem('user-info'));
+  const permissions = local.permissions;
+
+  const perm = permissions.map(permission => ({
+    name: permission.name,
+  }));
+
+  const isEditButtonEnabled = perm.some(item => item.name === 'Update_Company');
+  const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_Company');
+
+  // const canEdit = perm.includes("Update_Company");
+  // const canView = perm.includes("View_Company");
+  // const canDelete = perm.includes("Delete_Company");
+
   // CSS Styling
   const modalStyle = {
     position: "fixed",
@@ -64,6 +78,7 @@ const Companies = () => {
   // Functions of Add Company Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
+    console.log(perm);
     setIsModalOpen(true);
   };
 
@@ -425,16 +440,14 @@ const Companies = () => {
               <CTableHeaderCell className="text-center" style={mystyle2}>{company.city}</CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>{company.country}</CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>
-                {/* <IconButton aria-label="description" onClick={() => showModal4(company.id)}>
-                  <VisibilityIcon htmlColor='#0070ff' />
-                </IconButton> */}
-                <IconButton aria-label="update" onClick={() => showModal3(company.id)}>
-                  <EditIcon htmlColor='#28B463' />
-                </IconButton>
-                <IconButton aria-label="delete" onClick={() => showModal2(company.id)}>
-                  <DeleteIcon htmlColor='#FF0000' />
-                </IconButton>
-
+                {/* {canEdit && ( */}
+                  <IconButton aria-label="update" onClick={() => showModal3(company.id)} disabled={!isEditButtonEnabled}>
+                    <EditIcon htmlColor='#28B463' />
+                  </IconButton>
+                {/* )} */}
+                  <IconButton aria-label="delete" onClick={() => showModal2(company.id)} disabled={!isDeleteButtonEnabled}>
+                    <DeleteIcon htmlColor='#FF0000' />
+                  </IconButton>
               </CTableHeaderCell>
             </CTableRow>
           ))}

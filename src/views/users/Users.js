@@ -251,6 +251,7 @@ const Users = () => {
     // Add API call
     async function addUser() {
         let adduser = { name, email, password, role }
+        console.log(adduser);
 
         await fetch("http://10.3.3.80/api/add_user",
             {
@@ -415,7 +416,7 @@ const Users = () => {
                             <Form.Item>
                                 <Select placeholder='Select' onChange={handleRoleChange} value={role}>
                                     {roles.map((user) => (
-                                        <Select.Option value={user.name} key={user.id}>
+                                        <Select.Option value={user.id} key={user.id}>
                                             {user.name}
                                         </Select.Option>
                                     ))}
@@ -468,7 +469,7 @@ const Users = () => {
                             <Form.Item>
                                 <Select placeholder="Select Role Id" onChange={handleRoleChange} value={role}>
                                     {roles.map((user) => (
-                                        <Select.Option value={user.name} key={user.id}>
+                                        <Select.Option value={user.id} key={user.id}>
                                             {user.name}
                                         </Select.Option>
                                     ))}
