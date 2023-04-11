@@ -7,7 +7,6 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Alert from '@mui/material/Alert';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme();
@@ -191,17 +190,17 @@ const Login = () => {
 
       {/* Alert for Add Project Success*/}
       {showAlert1 && (
-            <Alert onClose={handleCloseAlert1} severity="error" style={modalStyle2}>
-              Invalid Credentials
-            </Alert>
-          )}
+        <Alert onClose={handleCloseAlert1} severity="error" style={modalStyle2}>
+          Invalid Credentials
+        </Alert>
+      )}
 
-          {/* Alert for Add Project Failure*/}
-          {showAlert2 && (
-            <Alert onClose={handleCloseAlert2} severity="success" style={modalStyle2}>
-              User Successfully Logged In
-            </Alert>
-          )}
+      {/* Alert for Add Project Failure*/}
+      {showAlert2 && (
+        <Alert onClose={handleCloseAlert2} severity="success" style={modalStyle2}>
+          User Successfully Logged In
+        </Alert>
+      )}
     </ThemeProvider>
   );
 }

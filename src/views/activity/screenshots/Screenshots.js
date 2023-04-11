@@ -29,6 +29,7 @@ const Screenshots = () => {
     const projectNameStyle = {
         color: "#0070ff",
         fontWeight: "bold",
+        textAlign: "center",
     };
 
     // const timeStyle = {
@@ -37,6 +38,13 @@ const Screenshots = () => {
 
     const imageWrapper = {
         margin: "10px",
+        display: "flex",
+        flexDirection: "row",
+    };
+
+    const timingStyle = {
+        display: "flex",
+        flexDirection: "row",
     };
 
     // const heading = {
@@ -204,7 +212,7 @@ const Screenshots = () => {
 
                     return (
                         <div key={image.id} style={imageWrapper}>
-                            <h6 style={projectNameStyle}>{image.stream_name}</h6>
+                            <h6 style={projectNameStyle}>{image.project_name}</h6>
                             {image.get_timings.map((timing) => (
                                 <div key={timing.id}>
                                     {timing.getattechments.map((attach) => (
@@ -221,15 +229,13 @@ const Screenshots = () => {
 
                 })
                     : images.map((image) => {
-
-
                         return (
-                            <div key={image.id} style={imageWrapper}>
-                                <h6 style={projectNameStyle}>{image.stream_name}</h6>
+                            <div className='card' key={image.id} style={imageWrapper}>
+                                <h6 style={projectNameStyle}>{image.project_name}</h6>
                                 {image.get_timings.map((timing) => (
-                                    <div key={timing.id}>
+                                    <div key={timing.id} style={timingStyle}>
                                         {timing.getattechments.map((attach) => (
-                                            <div key={attach.id}>
+                                            <div key={attach.id} style={{marginRight: '10px'}}>
                                                 <a href={attach.path_url}>
                                                     <img src={attach.path_url} width={150} height={100} alt="" onClick={() => handleClick(attach.path_url)} />
                                                 </a>

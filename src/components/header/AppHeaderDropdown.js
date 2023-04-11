@@ -16,7 +16,7 @@ import {
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { useNavigate } from 'react-router-dom';
-import black from './../../assets/images/black.png'
+import grey from './../../assets/images/grey.png'
 
 const AppHeaderDropdown = () => {
 
@@ -54,14 +54,14 @@ const AppHeaderDropdown = () => {
       <CDropdown variant="nav-item">
 
         <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
-          <CAvatar src={black} size="col-md-6" />
+          <CAvatar src={grey} size="col-md-6" />
         </CDropdownToggle>
 
         <CDropdownMenu className="pt-0" placement="bottom-end">
 
           <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
 
-          <CDropdownItem href="#">
+          {/* <CDropdownItem href="#">
             <CIcon icon={cilUser} className="me-2" />
             Profile
           </CDropdownItem>
@@ -69,9 +69,9 @@ const AppHeaderDropdown = () => {
           <CDropdownItem href="#">
             <CIcon icon={cilSettings} className="me-2" />
             Change Password
-          </CDropdownItem>
+          </CDropdownItem> */}
 
-          <CDropdownDivider />
+          {/* <CDropdownDivider /> */}
 
           <CDropdownItem href="#" onClick={showModal}>
             <CIcon icon={cilAccountLogout} className="me-2" />

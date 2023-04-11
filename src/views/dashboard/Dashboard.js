@@ -331,7 +331,7 @@ const Dashboard = () => {
           <br></br>
 
           {/* Card for Clients Modal Start */}
-          <Card style={cardStyle2}>
+          {/* <Card style={cardStyle2}>
             <h5 style={head}>CLIENTS</h5>
             <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
               <CTableHead color="light" >
@@ -362,7 +362,7 @@ const Dashboard = () => {
               <Button type="link" href="/projectmanagement/client">View clients &gt;</Button>
             </div>
 
-          </Card>
+          </Card> */}
           {/* Card for Clients Modal Ends */}
 
         </div>
