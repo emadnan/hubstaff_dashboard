@@ -23,6 +23,19 @@ const Projects = () => {
   const [project_id, setProjectId] = useState("");
   const [proj_id, setProjId] = useState("");
 
+  const local = JSON.parse(localStorage.getItem('user-info'));
+  const permissions = local.permissions;
+
+  const perm = permissions.map(permission => ({
+    name: permission.name,
+  }));
+
+  const isCreateButtonEnabled = perm.some(item => item.name === 'Create_Project');
+  const isEditButtonEnabled = perm.some(item => item.name === 'Update_Project');
+  const isViewButtonEnabled = perm.some(item => item.name === 'View_Project');
+  const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_Project');
+  const isAssignProjectEnabled = perm.some(item => item.name === 'Assign_Project');
+
   // CSS Styling
   const modalStyle = {
     position: "fixed",
@@ -566,7 +579,9 @@ const Projects = () => {
         </div>
         <div className='col-md 6'>
           {/* Add Project Button */}
-          <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Project</Button>
+          {isCreateButtonEnabled ? (
+            <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Project</Button>
+          ) : null}
         </div>
       </div>
       <br></br>
@@ -581,8 +596,12 @@ const Projects = () => {
             <CTableHeaderCell className="text-center" style={mystyle}>Department Name</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Start Date</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>End Date</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Streams</CTableHeaderCell>
+            {isEditButtonEnabled || isDeleteButtonEnabled || isViewButtonEnabled ? (
+              <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
+            ) : null}
+            {isAssignProjectEnabled ? (
+              <CTableHeaderCell className="text-center" style={mystyle}>Streams</CTableHeaderCell>
+            ) : null}
           </CTableRow>
 
           {/* Get API Projects */}
@@ -598,22 +617,32 @@ const Projects = () => {
                 <CTableHeaderCell className="text-center" style={mystyle2}>{project.department_name}</CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle2}>{startDate}</CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle2}>{deadline}</CTableHeaderCell>
-                <CTableHeaderCell className="text-center" style={mystyle2}>
-                  <IconButton aria-label="view" onClick={() => showModal5(project.project_id)}>
-                    <VisibilityIcon htmlColor='#0070ff' />
-                  </IconButton>
-                  <IconButton aria-label="update" onClick={() => showModal3(project.project_id)}>
-                    <EditIcon htmlColor='#28B463' />
-                  </IconButton>
-                  <IconButton aria-label="delete" onClick={() => showModal2(project.project_id)}>
-                    <DeleteIcon htmlColor='#FF0000' />
-                  </IconButton>
-                </CTableHeaderCell>
-                <CTableHeaderCell className="text-center" style={mystyle2}>
-                  <IconButton aria-label="assign" title="Assign Permission" onClick={() => showModal6(project.project_id)}>
-                    <PermContactCalendarIcon htmlColor='#0070ff' />
-                  </IconButton>
-                </CTableHeaderCell>
+                {isEditButtonEnabled || isViewButtonEnabled || isDeleteButtonEnabled ? (
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                    {isViewButtonEnabled ? (
+                      <IconButton aria-label="view" onClick={() => showModal5(project.project_id)}>
+                        <VisibilityIcon htmlColor='#0070ff' />
+                      </IconButton>
+                    ) : null}
+                    {isEditButtonEnabled ? (
+                      <IconButton aria-label="update" onClick={() => showModal3(project.project_id)}>
+                        <EditIcon htmlColor='#28B463' />
+                      </IconButton>
+                    ) : null}
+                    {isDeleteButtonEnabled ? (
+                      <IconButton aria-label="delete" onClick={() => showModal2(project.project_id)}>
+                        <DeleteIcon htmlColor='#FF0000' />
+                      </IconButton>
+                    ) : null}
+                  </CTableHeaderCell>
+                ) : null}
+                {isAssignProjectEnabled ? (
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                    <IconButton aria-label="assign" title="Assign Project" onClick={() => showModal6(project.project_id)}>
+                      <PermContactCalendarIcon htmlColor='#0070ff' />
+                    </IconButton>
+                  </CTableHeaderCell>
+                ) : null}
               </CTableRow>
             );
           })}

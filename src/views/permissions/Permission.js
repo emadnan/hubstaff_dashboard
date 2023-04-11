@@ -11,7 +11,16 @@ const Permission = () => {
     // Variable declarations
     const [name, setName] = useState("");
 
-    // const [guard_name, setGuardName] = useState("");
+    const local = JSON.parse(localStorage.getItem('user-info'));
+    const permissions = local.permissions;
+
+    const perm = permissions.map(permission => ({
+        name: permission.name,
+    }));
+
+    const isCreateButtonEnabled = perm.some(item => item.name === 'Create_Permission');
+    const isEditButtonEnabled = perm.some(item => item.name === 'Update_Permission');
+    const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_Permission');
 
     // CSS Stylings
     const modalStyle = {
@@ -328,7 +337,9 @@ const Permission = () => {
                 </div>
                 <div className='col-md 6'>
                     {/* Add Permission Button */}
-                    <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Permission</Button>
+                    {isCreateButtonEnabled ? (
+                        <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Permission</Button>
+                    ) : null}
                 </div>
             </div>
             <br></br>
@@ -339,7 +350,9 @@ const Permission = () => {
                     <CTableRow>
                         <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Permission Name</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
+                        {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                            <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
+                        ) : null}
                     </CTableRow>
 
                     {/* Get API Users */}
@@ -347,15 +360,20 @@ const Permission = () => {
                         <CTableRow key={perm.id}>
                             <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={mystyle2}>{perm.name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center" style={mystyle2}>
-                                <IconButton aria-label="update" onClick={() => showModal3(perm.id)}>
-                                    <EditIcon htmlColor='#28B463' />
-                                </IconButton>
-                                <IconButton aria-label="delete" onClick={() => showModal2(perm.id)}>
-                                    <DeleteIcon htmlColor='#FF0000' />
-                                </IconButton>
-
-                            </CTableHeaderCell>
+                            {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                                <CTableHeaderCell className="text-center" style={mystyle2}>
+                                    {isEditButtonEnabled ? (
+                                        <IconButton aria-label="update" onClick={() => showModal3(perm.id)}>
+                                            <EditIcon htmlColor='#28B463' />
+                                        </IconButton>
+                                    ) : null}
+                                    {isDeleteButtonEnabled ? (
+                                        <IconButton aria-label="delete" onClick={() => showModal2(perm.id)}>
+                                            <DeleteIcon htmlColor='#FF0000' />
+                                        </IconButton>
+                                    ) : null}
+                                </CTableHeaderCell>
+                            ) : null}
                         </CTableRow>
                     ))}
 

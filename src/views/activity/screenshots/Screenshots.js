@@ -135,7 +135,11 @@ const Screenshots = () => {
 
     return (
         <>
-            <h3>Screenshots</h3>
+            {images.slice(0, 1).map((image) => (
+                <div key={image.id}>
+                    <h3>{image.longitude}</h3>
+                </div>
+            ))}
             <h6>{project_id}</h6>
             <h6>{user_id}</h6>
             <div className='row'>
@@ -150,7 +154,8 @@ const Screenshots = () => {
                 <div className='col-md-4'></div>
                 <div className='col-md-4 mt-4'>
                     <div className='row'>
-                        <div className="col-md-6">
+                        <div className="col-md-4"></div>
+                        <div className="col-md-8">
                             <Form.Item name="select" hasFeedback>
                                 <Select placeholder="Members" onChange={handleUserChange} value={user_id}>
                                     {users.map((user) => (
@@ -161,7 +166,7 @@ const Screenshots = () => {
                                 </Select>
                             </Form.Item>
                         </div>
-                        <div className="col-md-6">
+                        {/* <div className="col-md-6">
                             <Form.Item name="select" hasFeedback>
                                 <Select placeholder="Projects" onChange={handleProjectChange} value={project_id}>
                                     {project.map((proj) => (
@@ -171,7 +176,7 @@ const Screenshots = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                        </div>
+                        </div> */}
                         {/* <div className='col-md-4'>
                             <Button type="primary" onClick={showModal}>Filters</Button>
                         </div> */}
@@ -216,7 +221,7 @@ const Screenshots = () => {
 
                 })
                     : images.map((image) => {
-                        
+
 
                         return (
                             <div key={image.id} style={imageWrapper}>

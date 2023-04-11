@@ -25,10 +25,7 @@ const Companies = () => {
 
   const isEditButtonEnabled = perm.some(item => item.name === 'Update_Company');
   const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_Company');
-
-  // const canEdit = perm.includes("Update_Company");
-  // const canView = perm.includes("View_Company");
-  // const canDelete = perm.includes("Delete_Company");
+  const isCreateButtonEnabled = perm.some(item => item.name === 'Create_Company');
 
   // CSS Styling
   const modalStyle = {
@@ -78,7 +75,6 @@ const Companies = () => {
   // Functions of Add Company Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
-    console.log(perm);
     setIsModalOpen(true);
   };
 
@@ -410,7 +406,9 @@ const Companies = () => {
         </div>
         <div className='col-md 6'>
           {/* Add Company Button */}
-          <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Company</Button>
+          {isCreateButtonEnabled ? (
+            <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Company</Button>
+          ) : null}
         </div>
       </div>
       <br></br>
@@ -426,7 +424,9 @@ const Companies = () => {
             <CTableHeaderCell className="text-center" style={mystyle}>Contact No</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>City</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Country</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
+            {isEditButtonEnabled || isDeleteButtonEnabled ? (
+              <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
+            ) : null}
           </CTableRow>
 
           {/* Get API Users */}
@@ -439,16 +439,20 @@ const Companies = () => {
               <CTableHeaderCell className="text-center" style={mystyle2}>{company.contact_no}</CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>{company.city}</CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>{company.country}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle2}>
-                {/* {canEdit && ( */}
-                  <IconButton aria-label="update" onClick={() => showModal3(company.id)} disabled={!isEditButtonEnabled}>
-                    <EditIcon htmlColor='#28B463' />
-                  </IconButton>
-                {/* )} */}
-                  <IconButton aria-label="delete" onClick={() => showModal2(company.id)} disabled={!isDeleteButtonEnabled}>
-                    <DeleteIcon htmlColor='#FF0000' />
-                  </IconButton>
-              </CTableHeaderCell>
+              {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                <CTableHeaderCell className="text-center" style={mystyle2}>
+                  {isEditButtonEnabled ? (
+                    <IconButton aria-label="update" onClick={() => showModal3(company.id)}>
+                      <EditIcon htmlColor='#28B463' />
+                    </IconButton>
+                  ) : null}
+                  {isDeleteButtonEnabled ? (
+                    <IconButton aria-label="delete" onClick={() => showModal2(company.id)}>
+                      <DeleteIcon htmlColor='#FF0000' />
+                    </IconButton>
+                  ) : null}
+                </CTableHeaderCell>
+              ) : null}
             </CTableRow>
           ))}
 

@@ -14,6 +14,17 @@ const Users = () => {
     const [password, setPassword] = useState("");
     const [role, setRole] = useState("");
 
+    const local = JSON.parse(localStorage.getItem('user-info'));
+  const permissions = local.permissions;
+
+  const perm = permissions.map(permission => ({
+    name: permission.name,
+  }));
+
+  const isCreateButtonEnabled = perm.some(item => item.name === 'Create_User');
+  const isEditButtonEnabled = perm.some(item => item.name === 'Update_User');
+  const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_User');
+
     // CSS Stylings
     const modalStyle = {
         position: "fixed",
@@ -335,7 +346,9 @@ const Users = () => {
                 </div>
                 <div className='col-md 6'>
                     {/* Add Users Button */}
-                    <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add User</Button>
+                    {isCreateButtonEnabled ? (
+                        <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add User</Button>
+                    ) : null}
                 </div>
             </div>
             <br></br>
@@ -348,7 +361,9 @@ const Users = () => {
                         <CTableHeaderCell className="text-center" style={mystyle}>User Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Email</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Role</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
+                        {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                            <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
+                        ) : null}
                     </CTableRow>
 
                     {/* Get API Users */}
@@ -358,15 +373,20 @@ const Users = () => {
                             <CTableHeaderCell className="text-center" style={mystyle2}>{user.name}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={mystyle2}>{user.email}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={mystyle2}>{user.role}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center" style={mystyle2}>
-                                <IconButton aria-label="update" onClick={() => showModal3(user.id)}>
+                            {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                                <CTableHeaderCell className="text-center" style={mystyle2}>
+                                {isEditButtonEnabled ? (
+                                    <IconButton aria-label="update" onClick={() => showModal3(user.id)}>
                                     <EditIcon htmlColor='#28B463' />
                                 </IconButton>
-                                <IconButton aria-label="delete" onClick={() => showModal2(user.id)}>
+                                ) : null}
+                                {isDeleteButtonEnabled ? (
+                                    <IconButton aria-label="delete" onClick={() => showModal2(user.id)}>
                                     <DeleteIcon htmlColor='#FF0000' />
                                 </IconButton>
-
+                                ) : null}
                             </CTableHeaderCell>
+                            ) : null}
                         </CTableRow>
                     ))}
 

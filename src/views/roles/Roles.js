@@ -13,6 +13,18 @@ const Roles = () => {
     // Variable declarations
     const [name, setName] = useState("");
 
+    const local = JSON.parse(localStorage.getItem('user-info'));
+    const permissions = local.permissions;
+
+    const perm = permissions.map(permission => ({
+        name: permission.name,
+    }));
+
+    const isCreateButtonEnabled = perm.some(item => item.name === 'Create_Role');
+    const isEditButtonEnabled = perm.some(item => item.name === 'Update_Role');
+    const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_Role');
+    const isAssignPermissionEnabled = perm.some(item => item.name === 'Assign_Permission');
+
     // CSS Stylings
     const modalStyle = {
         position: "fixed",
@@ -451,7 +463,9 @@ const Roles = () => {
                 </div>
                 <div className='col-md 6'>
                     {/* Add Roles Button */}
-                    <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Role</Button>
+                    {isCreateButtonEnabled ? (
+                        <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Role</Button>
+                    ) : null}
                 </div>
             </div>
             <br></br>
@@ -462,8 +476,12 @@ const Roles = () => {
                     <CTableRow>
                         <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Role Name</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Assign</CTableHeaderCell>
+                        {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                            <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
+                        ) : null}
+                        {isAssignPermissionEnabled ? (
+                            <CTableHeaderCell className="text-center" style={mystyle}>Assign</CTableHeaderCell>
+                        ) : null}
                     </CTableRow>
 
                     {/* Get API Users */}
@@ -471,19 +489,27 @@ const Roles = () => {
                         <CTableRow key={role.id}>
                             <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={mystyle2}>{role.name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center" style={mystyle2}>
-                                <IconButton aria-label="update" title="Update" onClick={() => showModal3(role.id)}>
-                                    <EditIcon htmlColor='#28B463' />
-                                </IconButton>
-                                <IconButton aria-label="delete" title="Delete" onClick={() => showModal2(role.id)}>
-                                    <DeleteIcon htmlColor='#FF0000' />
-                                </IconButton>
-                            </CTableHeaderCell>
-                            <CTableHeaderCell className="text-center" style={mystyle2}>
-                                <IconButton aria-label="assign" title="Assign Permission" onClick={() => showModal4(role.id)}>
-                                    <PermContactCalendarIcon htmlColor='#0070ff' />
-                                </IconButton>
-                            </CTableHeaderCell>
+                            {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                                <CTableHeaderCell className="text-center" style={mystyle2}>
+                                    {isEditButtonEnabled ? (
+                                        <IconButton aria-label="update" title="Update" onClick={() => showModal3(role.id)}>
+                                            <EditIcon htmlColor='#28B463' />
+                                        </IconButton>
+                                    ) : null}
+                                    {isDeleteButtonEnabled ? (
+                                        <IconButton aria-label="delete" title="Delete" onClick={() => showModal2(role.id)}>
+                                            <DeleteIcon htmlColor='#FF0000' />
+                                        </IconButton>
+                                    ) : null}
+                                </CTableHeaderCell>
+                            ) : null}
+                            {isAssignPermissionEnabled ? (
+                                <CTableHeaderCell className="text-center" style={mystyle2}>
+                                    <IconButton aria-label="assign" title="Assign Permission" onClick={() => showModal4(role.id)}>
+                                        <PermContactCalendarIcon htmlColor='#0070ff' />
+                                    </IconButton>
+                                </CTableHeaderCell>
+                            ) : null}
                         </CTableRow>
                     ))}
 

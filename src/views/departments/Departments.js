@@ -13,6 +13,17 @@ const Departments = () => {
     const [department_name, setDepartmentName] = useState("");
     const [description, setDescription] = useState("");
 
+    const local = JSON.parse(localStorage.getItem('user-info'));
+    const permissions = local.permissions;
+
+    const perm = permissions.map(permission => ({
+        name: permission.name,
+    }));
+
+    const isCreateButtonEnabled = perm.some(item => item.name === 'Create_Department');
+    const isEditButtonEnabled = perm.some(item => item.name === 'Update_Department');
+    const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_Department');
+
     // CSS Stylings
     const modalStyle = {
         position: "fixed",
@@ -62,6 +73,7 @@ const Departments = () => {
     // Functions for Add Department Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
     const showModal = () => {
+        console.log(perm);
         setIsModalOpen(true);
     };
     const handleOk = () => {
@@ -271,15 +283,15 @@ const Departments = () => {
 
     function getDepartmentById(id) {
         fetch(`http://10.3.3.80/api/getdepartment-by-id/${id}`)
-          .then((response) => response.json())
-          .then((data) => {
-            setByDepartment(data.Departments);
+            .then((response) => response.json())
+            .then((data) => {
+                setByDepartment(data.Departments);
                 setDepartmentName(data.Departments[0].department_name);
                 setDescription(data.Departments[0].description);
                 setCompanyId(data.Departments[0].company_id);
-            
-          })
-          .catch((error) => console.log(error));
+
+            })
+            .catch((error) => console.log(error));
     };
 
     useEffect(() => {
@@ -370,7 +382,9 @@ const Departments = () => {
                 </div>
                 <div className='col-md 6'>
                     {/* Add Department Button */}
-                    <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Department</Button>
+                    {isCreateButtonEnabled ? (
+                        <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Department</Button>
+                    ) : null}
                 </div>
             </div>
             <br></br>
@@ -383,7 +397,9 @@ const Departments = () => {
                         <CTableHeaderCell className="text-center" style={mystyle}>Company Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Department Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
+                        {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                            <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
+                        ) : null}
                     </CTableRow>
 
                     {/* Get API Users */}
@@ -393,18 +409,20 @@ const Departments = () => {
                             <CTableHeaderCell className="text-center" style={mystyle2}>{department.company_name}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={mystyle2}>{department.department_name}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={mystyle2}>{department.description}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center" style={mystyle2}>
-                                {/* <IconButton aria-label="description" onClick={() => showModal4(department.id)}>
-                                    <VisibilityIcon htmlColor='#0070ff' />
-                                </IconButton> */}
-                                <IconButton aria-label="update" onClick={() => showModal3(department.id)}>
-                                    <EditIcon htmlColor='#28B463' />
-                                </IconButton>
-                                <IconButton aria-label="delete" onClick={() => showModal2(department.id)}>
-                                    <DeleteIcon htmlColor='#FF0000' />
-                                </IconButton>
-
-                            </CTableHeaderCell>
+                            {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                                <CTableHeaderCell className="text-center" style={mystyle2}>
+                                    {isEditButtonEnabled ? (
+                                        <IconButton aria-label="update" onClick={() => showModal3(department.id)}>
+                                            <EditIcon htmlColor='#28B463' />
+                                        </IconButton>
+                                    ) : null}
+                                    {isDeleteButtonEnabled ? (
+                                        <IconButton aria-label="delete" onClick={() => showModal2(department.id)}>
+                                            <DeleteIcon htmlColor='#FF0000' />
+                                        </IconButton>
+                                    ) : null}
+                                </CTableHeaderCell>
+                            ) : null}
                         </CTableRow>
                     ))}
 
