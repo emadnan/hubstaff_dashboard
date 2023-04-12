@@ -51,12 +51,12 @@ const Dashboard = () => {
     margin: "10px",
     display: "flex",
     flexDirection: "row",
-};
+  };
 
-const timingStyle = {
+  const timingStyle = {
     display: "flex",
     flexDirection: "row",
-};
+  };
 
   //Get API calls and functions
   const [users, setUsers] = useState([]);
@@ -64,6 +64,9 @@ const timingStyle = {
   const [departments, setDepartments] = useState([]);
   const [clients, setClients] = useState([]);
   const [screenshot, setScreenshot] = useState([]);
+  const [hours, setHours] = useState("");
+  const [minutes, setMinutes] = useState("");
+  const [seconds, setSeconds] = useState("");
   // const [images, setImages] = useState([]);
 
   useEffect(() => {
@@ -71,7 +74,8 @@ const timingStyle = {
     getProjects()
     getDepartments()
     getClients()
-    getScreenshots()
+    getTotalTime()
+    getProjectScreenshots()
   }, []);
 
   function getCompanies() {
@@ -102,19 +106,23 @@ const timingStyle = {
       .catch((error) => console.log(error));
   };
 
-  function getScreenshots() {
+  function getTotalTime() {
     fetch("http://10.3.3.80/api/get_Project_Screenshots")
-        .then((response) => response.json())
-        .then((data) => setScreenshot(data.ProjectScreenshot))
-        .catch((error) => console.log(error));
+      .then((response) => response.json())
+      .then((data) => {
+        setHours(data.TotalHours);
+        setMinutes(data.TotalMinutes);
+        setSeconds(data.TotalSeconds);
+      })
+      .catch((error) => console.log(error));
   };
 
-  // function getScreenshots() {
-  //   fetch("http://10.3.3.80/api/get_Project_Screenshots")
-  //     .then((response) => response.json())
-  //     .then((data) => setImages(data.ProjectScreenshot))
-  //     .catch((error) => console.log(error));
-  // };
+  function getProjectScreenshots() {
+    fetch("http://10.3.3.80/api/get_Project_Screenshots")
+      .then((response) => response.json())
+      .then((data) => setScreenshot(data.projectscreenshot))
+      .catch((error) => console.log(error));
+  };
 
   return (
     <>
@@ -138,12 +146,10 @@ const timingStyle = {
             <h6 style={head}>TODAY ACTIVITY</h6>
             <h3 style={subhead}>82%</h3>
           </div>
-          {/* {screenshot.map((scr) => ( */}
           <div className='col-md-2'>
             <h6 style={head}>TODAY WORKED</h6>
-            <h3 style={subhead}>5:4:3</h3>
+            <h3 style={subhead}>{hours}:{minutes}:{seconds}</h3>
           </div>
-          {/* ))} */}
           <div className='col-md-2'>
             <h6 style={head}>WEEKLY ACTIVITY</h6>
             <h3 style={subhead}>75%</h3>
@@ -169,31 +175,23 @@ const timingStyle = {
           <Card style={cardStyle2}>
             <h5 style={head}>RECENT ACTIVITY</h5>
             <Divider />
-            {/* <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-              {images.slice(0, 3).map((image) => (
-                <div key={image.id} style={{ margin: '10px' }}>
-                  <img src={image.path_url} width={350} height={250} alt='' />
-                </div>
-              ))}
-            </div> */}
             {screenshot.map((image) => {
-                        return(
-                            <div key={image.id} style={imageWrapper}>
-                              {image.get_timings.map((timing) => (
-                                <div key={timing.id} style={timingStyle}>
-                                  {timing.getattechments.slice(0, 1).map((attach) => (
-                                    <div key={attach.id} style={{marginRight: '10px'}}>
-                                      <a href={attach.path_url}>
-                                        <img className='card' src={attach.path_url} width={150} height={100} />
-                                      </a>
-                                    </div>
-                                  ))}
-                                </div>
-                              ))}
-                            </div>
-                        );
-
-                    })}
+              return (
+                <div key={image.id} style={{ display: 'flex', justifyContent: 'center' }}>
+                  {image.get_timings.map((timing) => (
+                    <div key={timing.id} style={timingStyle}>
+                      {timing.getattechments.slice(0, 1).map((attach) => (
+                        <div key={attach.id} style={{ marginRight: '10px' }}>
+                          <a href={attach.path_url}>
+                            <img className='card' src={attach.path_url} width={150} height={100} />
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
             <Divider />
             <div className='text-center'>
               <Button type="link" href="/activity/screenshots">View recent activity &gt;</Button>

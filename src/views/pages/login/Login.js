@@ -191,14 +191,14 @@ const Login = () => {
       {/* Alert for Add Project Success*/}
       {showAlert1 && (
         <Alert onClose={handleCloseAlert1} severity="error" style={modalStyle2}>
-          Invalid Credentials
+          Failed to Login
         </Alert>
       )}
 
       {/* Alert for Add Project Failure*/}
       {showAlert2 && (
         <Alert onClose={handleCloseAlert2} severity="success" style={modalStyle2}>
-          User Successfully Logged In
+          Successfully Logged In
         </Alert>
       )}
     </ThemeProvider>

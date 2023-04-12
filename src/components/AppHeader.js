@@ -16,6 +16,12 @@ const AppHeader = () => {
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
 
+  const nameStyle = {
+    color: "#3c4b64",
+    fontWeight: "bold",
+    fontSize: 25,
+  };
+
   const local = JSON.parse(localStorage.getItem('user-info'));
   const userdata = local.Users;
 
@@ -30,7 +36,7 @@ const AppHeader = () => {
         </CHeaderToggler>
         <CHeaderNav className="d-none d-md-flex me-auto">
           <CNavItem>
-            <h5>{userdata.company_name}</h5>
+            <h5 style={nameStyle}>{userdata.company_name}</h5>
           </CNavItem>
         </CHeaderNav>
         <CHeaderNav className="ms-3">

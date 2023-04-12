@@ -38,10 +38,6 @@ const Screenshots = () => {
         textAlign: "center",
     };
 
-    // const timeStyle = {
-    //     fontSize: 14,
-    // };
-
     const imageWrapper = {
         margin: "10px",
         display: "flex",
@@ -53,45 +49,10 @@ const Screenshots = () => {
         flexDirection: "row",
     };
 
-    // const heading = {
-    //     display: 'flex',
-    //     justifyContent: 'flex-center',
-    //     float: 'center',
-    // };
-
-    // const heading1 = {
-    //     display: 'flex',
-    //     justifyContent: 'flex-center',
-    //     float: 'right',
-    // };
-
-    // const dater = {
-    //     display: 'flex',
-    //     justifyContent: 'flex-start',
-    //     float: 'left',
-    //     color: "blue",
-    //     backgroundColor: "green",
-    // };
-
-    // const modalStyle = {
-    //     position: "fixed",
-    //     top: "25%",
-    //     left: "40%",
-    // };
-
-    // Functions of Add Company Modal
-    // const [isModalOpen, setIsModalOpen] = useState(false);
-    // const showModal = () => {
-    //     setIsModalOpen(true);
-    // };
-
-    // const handleOk = () => {
-    //     setIsModalOpen(false);
-    // };
-
-    // const handleCancel = () => {
-    //     setIsModalOpen(false);
-    // };
+    const userStyle = {
+        color: "black",
+        fontSize: 30,
+    }
 
     const [images, setImages] = useState([]);
     const [users, setUsers] = useState([]);
@@ -99,11 +60,14 @@ const Screenshots = () => {
     const [user_id, setUserId] = useState("");
     const [project_id, setProjectId] = useState("");
 
+    const local = JSON.parse(localStorage.getItem('user-info'));
+    const userdata = local.Users;
+
     // Get API call
     function getScreenshots() {
         fetch("http://10.3.3.80/api/get_Project_Screenshots")
             .then((response) => response.json())
-            .then((data) => setImages(data.ProjectScreenshot))
+            .then((data) => setImages(data.projectscreenshot))
             .catch((error) => console.log(error));
     };
 
@@ -149,13 +113,14 @@ const Screenshots = () => {
 
     return (
         <>
-            {images.slice(0, 1).map((image) => (
+            {/* {images.slice(0, 1).map((image) => (
                 <div key={image.id}>
                     <h3>{image.longitude}</h3>
                 </div>
-            ))}
-            <h6>{project_id}</h6>
-            <h6>{user_id}</h6>
+            ))} */}
+            {/* <h6>{project_id}</h6>
+            <h6>{user_id}</h6> */}
+            <h6 style={userStyle}>{userdata.name}</h6>
             <div className='row'>
                 <div className='col-md-4'>
                     <br></br>

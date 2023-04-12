@@ -139,7 +139,7 @@ const Register = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="form-control form-control-lg"
-                  placeholder="Enter Username"
+                  placeholder="Enter Company Name"
                 />
               </div>
 
@@ -152,7 +152,7 @@ const Register = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="form-control form-control-lg"
-                  placeholder="Enter Email Address"
+                  placeholder="Enter Company Email"
                 />
               </div>
 
@@ -214,14 +214,14 @@ const Register = () => {
       {/* Alert for Add Project Success*/}
       {showAlert1 && (
         <Alert onClose={handleCloseAlert1} severity="error" style={modalStyle2}>
-          Failed to Register
+          Failed to Register Company
         </Alert>
       )}
 
       {/* Alert for Add Project Failure*/}
       {showAlert2 && (
         <Alert onClose={handleCloseAlert2} severity="success" style={modalStyle2}>
-          User Registered Successfully
+          Company Registered Successfully
         </Alert>
       )}
     </ThemeProvider>
