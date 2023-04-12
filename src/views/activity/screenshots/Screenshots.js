@@ -32,6 +32,12 @@ const Screenshots = () => {
         textAlign: "center",
     };
 
+    const projectTimeStyle = {
+        color: "#0070ff",
+        fontWeight: "bold",
+        textAlign: "center",
+    };
+
     // const timeStyle = {
     //     fontSize: 14,
     // };
@@ -214,9 +220,9 @@ const Screenshots = () => {
                         <div key={image.id} style={imageWrapper}>
                             <h6 style={projectNameStyle}>{image.project_name}</h6>
                             {image.get_timings.map((timing) => (
-                                <div key={timing.id}>
+                                <div key={timing.id} style={timingStyle}>
                                     {timing.getattechments.map((attach) => (
-                                        <div key={attach.id}>
+                                        <div key={attach.id} style={{marginRight: '10px'}}>
                                             <a href={attach.path_url}>
                                                 <img src={attach.path_url} width={150} height={100} alt="" onClick={() => handleClick(attach.path_url)} />
                                             </a>
@@ -229,22 +235,25 @@ const Screenshots = () => {
 
                 })
                     : images.map((image) => {
-                        return (
-                            <div className='card' key={image.id} style={imageWrapper}>
-                                <h6 style={projectNameStyle}>{image.project_name}</h6>
-                                {image.get_timings.map((timing) => (
-                                    <div key={timing.id} style={timingStyle}>
-                                        {timing.getattechments.map((attach) => (
-                                            <div key={attach.id} style={{marginRight: '10px'}}>
-                                                <a href={attach.path_url}>
-                                                    <img src={attach.path_url} width={150} height={100} alt="" onClick={() => handleClick(attach.path_url)} />
-                                                </a>
-                                            </div>
-                                        ))}
+                        
+                        return(
+                            <div key={image.id} style={imageWrapper}>
+                              {image.get_timings.map((timing) => (
+                                <div key={timing.id} style={timingStyle}>
+                                  {timing.getattechments.map((attach) => (
+                                    <div key={attach.id} style={{marginRight: '10px'}}>
+                                        <h6 style={projectNameStyle}>{image.project_name}</h6>
+                                      <a href={attach.path_url}>
+                                        <img className='card' src={attach.path_url} width={150} height={100} alt="" onClick={() => handleClick(attach.path_url)} />
+                                      </a>
+                                    <h6 style={projectTimeStyle}>{new Date(timing.start_time).toLocaleTimeString().substring(0, 11)}</h6>
                                     </div>
-                                ))}
+                                  ))}
+                                  <br></br>
+                                </div>
+                              ))}
                             </div>
-                        )
+                        );
 
                     })}
 

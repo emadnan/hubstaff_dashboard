@@ -16,6 +16,9 @@ const AppHeader = () => {
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
 
+  const local = JSON.parse(localStorage.getItem('user-info'));
+  const userdata = local.Users;
+
   return (
     <CHeader position="sticky" className="mb-4">
       <CContainer fluid>
@@ -27,7 +30,7 @@ const AppHeader = () => {
         </CHeaderToggler>
         <CHeaderNav className="d-none d-md-flex me-auto">
           <CNavItem>
-            <h6>Company Name</h6>
+            <h5>{userdata.company_name}</h5>
           </CNavItem>
         </CHeaderNav>
         <CHeaderNav className="ms-3">

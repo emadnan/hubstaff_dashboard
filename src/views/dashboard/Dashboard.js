@@ -47,11 +47,23 @@ const Dashboard = () => {
     fontSize: 30,
   };
 
+  const imageWrapper = {
+    margin: "10px",
+    display: "flex",
+    flexDirection: "row",
+};
+
+const timingStyle = {
+    display: "flex",
+    flexDirection: "row",
+};
+
   //Get API calls and functions
   const [users, setUsers] = useState([]);
   const [projects, setProjects] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [clients, setClients] = useState([]);
+  const [screenshot, setScreenshot] = useState([]);
   // const [images, setImages] = useState([]);
 
   useEffect(() => {
@@ -59,7 +71,7 @@ const Dashboard = () => {
     getProjects()
     getDepartments()
     getClients()
-    // getScreenshots()
+    getScreenshots()
   }, []);
 
   function getCompanies() {
@@ -88,6 +100,13 @@ const Dashboard = () => {
       .then((response) => response.json())
       .then((data) => setClients(data.Departments))
       .catch((error) => console.log(error));
+  };
+
+  function getScreenshots() {
+    fetch("http://10.3.3.80/api/get_Project_Screenshots")
+        .then((response) => response.json())
+        .then((data) => setScreenshot(data.ProjectScreenshot))
+        .catch((error) => console.log(error));
   };
 
   // function getScreenshots() {
@@ -119,10 +138,12 @@ const Dashboard = () => {
             <h6 style={head}>TODAY ACTIVITY</h6>
             <h3 style={subhead}>82%</h3>
           </div>
+          {/* {screenshot.map((scr) => ( */}
           <div className='col-md-2'>
             <h6 style={head}>TODAY WORKED</h6>
-            <h3 style={subhead}>6:35:42</h3>
+            <h3 style={subhead}>5:4:3</h3>
           </div>
+          {/* ))} */}
           <div className='col-md-2'>
             <h6 style={head}>WEEKLY ACTIVITY</h6>
             <h3 style={subhead}>75%</h3>
@@ -155,6 +176,24 @@ const Dashboard = () => {
                 </div>
               ))}
             </div> */}
+            {screenshot.map((image) => {
+                        return(
+                            <div key={image.id} style={imageWrapper}>
+                              {image.get_timings.map((timing) => (
+                                <div key={timing.id} style={timingStyle}>
+                                  {timing.getattechments.slice(0, 1).map((attach) => (
+                                    <div key={attach.id} style={{marginRight: '10px'}}>
+                                      <a href={attach.path_url}>
+                                        <img className='card' src={attach.path_url} width={150} height={100} />
+                                      </a>
+                                    </div>
+                                  ))}
+                                </div>
+                              ))}
+                            </div>
+                        );
+
+                    })}
             <Divider />
             <div className='text-center'>
               <Button type="link" href="/activity/screenshots">View recent activity &gt;</Button>

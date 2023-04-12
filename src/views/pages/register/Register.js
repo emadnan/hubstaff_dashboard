@@ -33,7 +33,7 @@ const Register = () => {
   };
 
   async function signUp() {
-    let item = { name, email, password, confirmpass }
+    let item = { name, email, password, confirmpass, role: 3 }
     let result = await fetch("http://10.3.3.80/api/register", {
       method: "POST",
       body: JSON.stringify(item),
@@ -127,12 +127,12 @@ const Register = () => {
             <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
               <LockOutlinedIcon />
             </Avatar>
-            <h2>Sign Up</h2>
+            <h2>Company Sign Up</h2>
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
 
               <div className="form-outline mb-3">
                 <label className="form-label" htmlFor="form3Example4">
-                  Username
+                  Company Name
                 </label>
                 <input
                   type="text"

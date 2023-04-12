@@ -39,7 +39,7 @@ const Projects = () => {
   // CSS Styling
   const modalStyle = {
     position: "fixed",
-    top: "25%",
+    top: "15%",
     left: "40%",
   };
 
@@ -840,7 +840,7 @@ const Projects = () => {
           </Modal>
 
           {/* Modal for Streams */}
-          <Modal title="" open={isModalOpen6} onOk={handleOk6} onCancel={handleCancel6} style={modalStyle}>
+          <Modal title="" open={isModalOpen6} onOk={handleOk6} onCancel={handleCancel6}>
 
             <h3 style={headStyle2}>Streams</h3>
 
@@ -885,7 +885,7 @@ const Projects = () => {
           </Modal>
 
           {/* Modal for Assign User */}
-          <Modal title="Assign Users" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4} style={modalStyle}>
+          <Modal title="Assign Users" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4}>
 
             <br></br>
             <div className='row'>
