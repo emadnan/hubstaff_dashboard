@@ -140,11 +140,11 @@ const Dashboard = () => {
         <div className='row'>
           <div className='col-md-2'>
             <h6 style={head}>PROJECTS WORKED</h6>
-            <h3 style={subhead}>1</h3>
+            <h3 style={subhead}>0</h3>
           </div>
           <div className='col-md-2'>
             <h6 style={head}>TODAY ACTIVITY</h6>
-            <h3 style={subhead}>82%</h3>
+            <h3 style={subhead}>0%</h3>
           </div>
           <div className='col-md-2'>
             <h6 style={head}>TODAY WORKED</h6>
@@ -152,11 +152,11 @@ const Dashboard = () => {
           </div>
           <div className='col-md-2'>
             <h6 style={head}>WEEKLY ACTIVITY</h6>
-            <h3 style={subhead}>75%</h3>
+            <h3 style={subhead}>0%</h3>
           </div>
           <div className='col-md-2'>
             <h6 style={head}>WEEKLY WORKED</h6>
-            <h3 style={subhead}>48:55:40</h3>
+            <h3 style={subhead}>0:0:0</h3>
           </div>
           <div className='col-md-2'>
             <h6 style={head}>EARNED AMOUNT</h6>

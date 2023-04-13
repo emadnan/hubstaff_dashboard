@@ -264,7 +264,7 @@ const Users = () => {
     useEffect(() => {
         getList();
         getRoles()
-    }, []);
+    }, [getList, getRoles]);
 
     //Get calls handling
     const handleRoleChange = (value) => {
@@ -448,7 +448,7 @@ const Users = () => {
                             <Form.Item>
                                 <Select placeholder='Select' onChange={handleRoleChange} value={role}>
                                     {roles.map((user) => (
-                                        <Select.Option value={user} key={user.id}>
+                                        <Select.Option value={user.id} key={user.id}>
                                             {user.name}
                                         </Select.Option>
                                     ))}

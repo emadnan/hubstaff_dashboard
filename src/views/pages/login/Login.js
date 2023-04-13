@@ -28,7 +28,6 @@ const Login = () => {
     transform: "translateX(-50%)",
   };
 
-
   //Variable Declarations
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,6 +47,8 @@ const Login = () => {
     if (result.status === 400) {
       console.log(item);
       handleButtonClick1()
+    } else if (result.status === 500) {
+      handleButtonClick3();
     } else {
       result = await result.json();
       localStorage.setItem("user-info", JSON.stringify(result));
@@ -97,6 +98,26 @@ const Login = () => {
       return () => clearTimeout(timer);
     }
   }, [showAlert2]);
+
+  const [showAlert3, setShowAlert3] = useState(false);
+
+  function handleButtonClick3() {
+    setShowAlert3(true);
+  }
+
+  function handleCloseAlert3() {
+    setShowAlert3(false);
+  }
+
+  useEffect(() => {
+    if (showAlert3) {
+      const timer = setTimeout(() => {
+        setShowAlert3(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert3]);
 
 
   return (
@@ -199,6 +220,13 @@ const Login = () => {
       {showAlert2 && (
         <Alert onClose={handleCloseAlert2} severity="success" style={modalStyle2}>
           Successfully Logged In
+        </Alert>
+      )}
+
+      {/* Alert for Add Project Failure*/}
+      {showAlert3 && (
+        <Alert onClose={handleCloseAlert3} severity="error" style={modalStyle2}>
+          Invalid User
         </Alert>
       )}
     </ThemeProvider>

@@ -386,24 +386,24 @@ const Projects = () => {
     setSelectedUsers(hasrole);
   }, [hasrole]);
 
-    // Get API call
-    function getList() {
-        fetch("http://10.3.3.80/api/getproject")
-            .then((response) => response.json())
-            .then((data) => {
-                if (local.Users.role === "1") {
-                    filteredUsers = data.projects;
-                }
-                else if (local.Users.role === "3") {
-                    filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
-                }
-                else if (local.Users.role === "5") {
-                    filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
-                }
-                setProjects(filteredUsers);
-            })
-            .catch((error) => console.log(error));
-    };
+  // Get API call
+  function getList() {
+    fetch("http://10.3.3.80/api/getproject")
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === "1") {
+          filteredUsers = data.projects;
+        }
+        else if (local.Users.role === "3") {
+          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
+        }
+        else if (local.Users.role === "5") {
+          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
+        }
+        setProjects(filteredUsers);
+      })
+      .catch((error) => console.log(error));
+  };
 
   function getProjectById(id) {
     fetch(`http://10.3.3.80/api/get-project-by-project-id/${id}`)
@@ -431,13 +431,13 @@ const Projects = () => {
     fetch("http://10.3.3.80/api/getcompany")
       .then((response) => response.json())
       .then((data) => {
-        if(local.Users.role === "1"){
+        if (local.Users.role === "1") {
           filteredUsers = data.companies;
         }
-        else if (local.Users.role === "3"){
+        else if (local.Users.role === "3") {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
         }
-        else if (local.Users.role === "5"){
+        else if (local.Users.role === "5") {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
         }
         setCompanies(filteredUsers);
@@ -445,22 +445,32 @@ const Projects = () => {
       .catch((error) => console.log(error));
   };
 
-
   function getUsers() {
     fetch("http://10.3.3.80/api/get_users")
       .then((response) => response.json())
-      .then((data) => setUsers(data.Users))
+      .then((data) => {
+        if (local.Users.role === "1") {
+          filteredUsers = data.Users;
+        }
+        else if (local.Users.role === "3") {
+          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id);
+        }
+        else if (local.Users.role === "5") {
+          filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id);
+        }
+        setUsers(filteredUsers);
+      })
       .catch((error) => console.log(error));
-  }
+  };
 
   function getDepartment() {
     fetch("http://10.3.3.80/api/getdepartment")
       .then((response) => response.json())
       .then((data) => {
-        if(local.Users.role === "1"){
+        if (local.Users.role === "1") {
           filteredUsers = data.Departments;
         }
-        else if(local.Users.role === "3"){
+        else if (local.Users.role === "3") {
           filteredUsers = data.Departments.filter((user) => user.company_id === local.Users.company_id);
         }
         setDepartment(filteredUsers);

@@ -29,7 +29,7 @@ const AssignedProjects = () => {
                     filteredUsers = data.Project_Assigns.filter((user) => user.company_id === local.Users.company_id);
                 }
                 else if (local.Users.role === "5") {
-                    filteredUsers = data.Project_Assigns.filter((user) => user.user_id === local.Users.user_id);
+                    filteredUsers = data.Project_Assigns.filter((user) => user.assign_projects_user_id === local.Users.user_id);
                 }
                 setAssigns(filteredUsers);
             })
