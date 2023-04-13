@@ -277,12 +277,32 @@ const Companies = () => {
   const [cities, setCities] = useState([]);
   const [bycompany, setByCompany] = useState([]);
 
+  // function getList() {
+  //   fetch("http://10.3.3.80/api/getcompany")
+  //     .then((response) => response.json())
+  //     .then((data) => setUsers(data.companies))
+  //     .catch((error) => console.log(error));
+  // }
+
+  var filteredUsers = [];
+  
   function getList() {
     fetch("http://10.3.3.80/api/getcompany")
       .then((response) => response.json())
-      .then((data) => setUsers(data.companies))
+      .then((data) => {
+        if(local.Users.role === "1"){
+          filteredUsers = data.companies;
+        }
+        else if (local.Users.role === "3"){
+          filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
+        }
+        else if (local.Users.role === "5"){
+          filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
+        }
+        setUsers(filteredUsers);
+      })
       .catch((error) => console.log(error));
-  }
+  };
 
   function getCountry() {
     fetch("http://10.3.3.80/api/get_country")

@@ -262,24 +262,43 @@ const Departments = () => {
     };
 
     // Get API call
-
-    const [users, setUsers] = useState([]);
+    const [department, setDepartment] = useState([]);
     const [company, setCompanies] = useState([]);
     const [bydepartment, setByDepartment] = useState([]);
+    var filteredUsers = [];
 
     function getList() {
         fetch("http://10.3.3.80/api/getdepartment")
-            .then((response) => response.json())
-            .then((data) => setUsers(data.Departments))
-            .catch((error) => console.log(error));
-    }
+          .then((response) => response.json())
+          .then((data) => {
+            if(local.Users.role === "1"){
+              filteredUsers = data.Departments;
+            }
+            else if (local.Users.role === "3"){
+              filteredUsers = data.Departments.filter((user) => user.company_id === local.Users.company_id);
+            }
+            setDepartment(filteredUsers);
+          })
+          .catch((error) => console.log(error));
+      };
 
     function getCompany() {
         fetch("http://10.3.3.80/api/getcompany")
-            .then((response) => response.json())
-            .then((data) => setCompanies(data.companies))
-            .catch((error) => console.log(error));
-    }
+          .then((response) => response.json())
+          .then((data) => {
+            if(local.Users.role === "1"){
+              filteredUsers = data.companies;
+            }
+            else if (local.Users.role === "3"){
+              filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
+            }
+            else if (local.Users.role === "5"){
+              filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
+            }
+            setCompanies(filteredUsers);
+          })
+          .catch((error) => console.log(error));
+      };
 
     function getDepartmentById(id) {
         fetch(`http://10.3.3.80/api/getdepartment-by-id/${id}`)
@@ -403,21 +422,21 @@ const Departments = () => {
                     </CTableRow>
 
                     {/* Get API Users */}
-                    {users.map((department, index) => (
-                        <CTableRow key={department.id}>
+                    {department.map((dept, index) => (
+                        <CTableRow key={dept.id}>
                             <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center" style={mystyle2}>{department.company_name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center" style={mystyle2}>{department.department_name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center" style={mystyle2}>{department.description}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{dept.company_name}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{dept.department_name}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{dept.description}</CTableHeaderCell>
                             {isEditButtonEnabled || isDeleteButtonEnabled ? (
                                 <CTableHeaderCell className="text-center" style={mystyle2}>
                                     {isEditButtonEnabled ? (
-                                        <IconButton aria-label="update" onClick={() => showModal3(department.id)}>
+                                        <IconButton aria-label="update" onClick={() => showModal3(dept.id)}>
                                             <EditIcon htmlColor='#28B463' />
                                         </IconButton>
                                     ) : null}
                                     {isDeleteButtonEnabled ? (
-                                        <IconButton aria-label="delete" onClick={() => showModal2(department.id)}>
+                                        <IconButton aria-label="delete" onClick={() => showModal2(dept.id)}>
                                             <DeleteIcon htmlColor='#FF0000' />
                                         </IconButton>
                                     ) : null}

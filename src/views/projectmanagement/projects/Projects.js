@@ -372,6 +372,7 @@ const Projects = () => {
   const [stream, setStream] = useState([]);
   const [hasrole, setHasRole] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
+  var filteredUsers = [];
 
   useEffect(() => {
     getList()
@@ -385,13 +386,24 @@ const Projects = () => {
     setSelectedUsers(hasrole);
   }, [hasrole]);
 
-  //GET API calls
-  function getList() {
-    fetch("http://10.3.3.80/api/getproject")
-      .then((response) => response.json())
-      .then((data) => setProjects(data.projects))
-      .catch((error) => console.log(error));
-  };
+    // Get API call
+    function getList() {
+        fetch("http://10.3.3.80/api/getproject")
+            .then((response) => response.json())
+            .then((data) => {
+                if (local.Users.role === "1") {
+                    filteredUsers = data.projects;
+                }
+                else if (local.Users.role === "3") {
+                    filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
+                }
+                else if (local.Users.role === "5") {
+                    filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
+                }
+                setProjects(filteredUsers);
+            })
+            .catch((error) => console.log(error));
+    };
 
   function getProjectById(id) {
     fetch(`http://10.3.3.80/api/get-project-by-project-id/${id}`)
@@ -418,9 +430,21 @@ const Projects = () => {
   function getCompany() {
     fetch("http://10.3.3.80/api/getcompany")
       .then((response) => response.json())
-      .then((data) => setCompanies(data.companies))
+      .then((data) => {
+        if(local.Users.role === "1"){
+          filteredUsers = data.companies;
+        }
+        else if (local.Users.role === "3"){
+          filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
+        }
+        else if (local.Users.role === "5"){
+          filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
+        }
+        setCompanies(filteredUsers);
+      })
       .catch((error) => console.log(error));
   };
+
 
   function getUsers() {
     fetch("http://10.3.3.80/api/get_users")
@@ -432,9 +456,17 @@ const Projects = () => {
   function getDepartment() {
     fetch("http://10.3.3.80/api/getdepartment")
       .then((response) => response.json())
-      .then((data) => setDepartment(data.Departments))
+      .then((data) => {
+        if(local.Users.role === "1"){
+          filteredUsers = data.Departments;
+        }
+        else if(local.Users.role === "3"){
+          filteredUsers = data.Departments.filter((user) => user.company_id === local.Users.company_id);
+        }
+        setDepartment(filteredUsers);
+      })
       .catch((error) => console.log(error));
-  }
+  };
 
   function getStreams() {
     fetch("http://10.3.3.80/api/get-streams")

@@ -14,14 +14,28 @@ const AssignedProjects = () => {
     };
 
     const [assigns, setAssigns] = useState([]);
+    var filteredUsers = [];
+    const local = JSON.parse(localStorage.getItem('user-info'));
 
     // Get API call
     function getAssigns() {
         fetch("http://10.3.3.80/api/get_assign_projects")
             .then((response) => response.json())
-            .then((data) => setAssigns(data.Project_Assigns))
+            .then((data) => {
+                if (local.Users.role === "1") {
+                    filteredUsers = data.Project_Assigns;
+                }
+                else if (local.Users.role === "3") {
+                    filteredUsers = data.Project_Assigns.filter((user) => user.company_id === local.Users.company_id);
+                }
+                else if (local.Users.role === "5") {
+                    filteredUsers = data.Project_Assigns.filter((user) => user.user_id === local.Users.user_id);
+                }
+                setAssigns(filteredUsers);
+            })
             .catch((error) => console.log(error));
-    }
+    };
+
 
     useEffect(() => {
         getAssigns()

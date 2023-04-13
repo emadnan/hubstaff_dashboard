@@ -21,6 +21,8 @@ const Screenshots = () => {
     //     fontWeight: "500",
     // };
 
+    const local = JSON.parse(localStorage.getItem('user-info'));
+
     const imageContainer = {
         display: "flex",
         flexWrap: "wrap",
@@ -59,8 +61,6 @@ const Screenshots = () => {
     const [project, setProject] = useState([]);
     const [user_id, setUserId] = useState("");
     const [project_id, setProjectId] = useState("");
-
-    const local = JSON.parse(localStorage.getItem('user-info'));
     const userdata = local.Users;
 
     // Get API call
@@ -73,10 +73,13 @@ const Screenshots = () => {
 
     function getUsers() {
         fetch("http://10.3.3.80/api/get_users")
-            .then((response) => response.json())
-            .then((data) => setUsers(data.Users))
-            .catch((error) => console.log(error));
-    };
+          .then((response) => response.json())
+          .then((data) => {
+            const filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id);
+            setUsers(filteredUsers);
+          })
+          .catch((error) => console.log(error));
+      };
 
     function getProjects() {
         fetch("http://10.3.3.80/api/getproject")
@@ -183,43 +186,44 @@ const Screenshots = () => {
 
                     return (
                         <div key={image.id} style={imageWrapper}>
-                            <h6 style={projectNameStyle}>{image.project_name}</h6>
                             {image.get_timings.map((timing) => (
                                 <div key={timing.id} style={timingStyle}>
                                     {timing.getattechments.map((attach) => (
-                                        <div key={attach.id} style={{marginRight: '10px'}}>
+                                        <div key={attach.id} style={{ marginRight: '10px' }}>
+                                            <h6 style={projectNameStyle}>{image.project_name}</h6>
+                                            <br></br>
                                             <a href={attach.path_url}>
-                                                <img src={attach.path_url} width={150} height={100} alt="" onClick={() => handleClick(attach.path_url)} />
+                                                <img className='card' src={attach.path_url} style={{ width: '100%', height: 'auto' }} alt="" onClick={() => handleClick(attach.path_url)} />
                                             </a>
+                                            <h6 style={projectTimeStyle}>{new Date(timing.start_time).toLocaleTimeString().substring(0, 11)}</h6>
                                         </div>
                                     ))}
+                                    <br></br>
                                 </div>
                             ))}
                         </div>
-                    )
+                    );
 
                 })
                     : images.map((image) => {
-                        
-                        return(
-                            <div key={image.id} style={imageWrapper}>
-                              {image.get_timings.map((timing) => (
-                                <div key={timing.id} style={timingStyle}>
-                                  {timing.getattechments.map((attach) => (
-                                    <div key={attach.id} style={{marginRight: '10px'}}>
-                                        <div className='card'>
-                                        <h6 style={projectNameStyle}>{image.project_name}</h6>
-                                        </div>
+
+                        return (
+                            <div key={image.id}>
+                                {image.get_timings.map((timing) => (
+                                    <div key={timing.id} style={timingStyle}>
+                                        {timing.getattechments.map((attach) => (
+                                            <div key={attach.id} style={{ marginRight: '10px' }}>
+                                                <h6 style={projectNameStyle}>{image.project_name}</h6>
+                                                <br></br>
+                                                <a href={attach.path_url}>
+                                                    <img className='card' src={attach.path_url} style={{ width: '100%', height: 'auto' }} alt="" onClick={() => handleClick(attach.path_url)} />
+                                                </a>
+                                                <h6 style={projectTimeStyle}>{new Date(timing.start_time).toLocaleTimeString().substring(0, 11)}</h6>
+                                            </div>
+                                        ))}
                                         <br></br>
-                                      <a href={attach.path_url}>
-                                        <img className='card' src={attach.path_url} width={150} height={100} alt="" onClick={() => handleClick(attach.path_url)} />
-                                      </a>
-                                    <h6 style={projectTimeStyle}>{new Date(timing.start_time).toLocaleTimeString().substring(0, 11)}</h6>
                                     </div>
-                                  ))}
-                                  <br></br>
-                                </div>
-                              ))}
+                                ))}
                             </div>
                         );
 
@@ -237,57 +241,6 @@ const Screenshots = () => {
                 )}
 
             </div>
-
-            {/* <div style={imageContainer}>
-                {user_id ? images.filter((image) => image.user_id === user_id).map((image) => {
-                    // const start = image.start_time.substr(11, 8);
-
-                    return (
-                        <div key={image.id} style={imageWrapper}>
-                            <h6 style={projectNameStyle}>{image.stream_name}</h6>
-                            <a href={image.path_url}>
-                                <img
-                                    src={image.path_url}
-                                    width={150}
-                                    height={100}
-                                    alt=""
-                                    onClick={() => handleClick(image.path_url)}
-                                />
-                            </a>
-                            <h6 style={timeStyle}>{start}</h6>
-                        </div>
-                    )
-                })
-                    : images.map((image) => {
-                        // const start = image.start_time.substr(11, 8);
-
-                        return (
-                            <div key={image.id} style={imageWrapper}>
-                                <h6 style={projectNameStyle}>{image.project_name}</h6>
-                                <a href={image.path_url}>
-                                    <img
-                                        src={image.path_url}
-                                        width={150}
-                                        height={100}
-                                        alt=""
-                                        onClick={() => handleClick(image.path_url)}
-                                    />
-                                </a>
-                                <h6 style={timeStyle}>{start}</h6>
-                            </div>
-                        )
-                    })}
-                {selectedImage && (
-                    <div className="modal">
-                        <div className="modal-content">
-                            <span className="close" onClick={handleCloseModal}>
-                                &times;
-                            </span>
-                            <img src={selectedImage} alt="" />
-                        </div>
-                    </div>
-                )}
-            </div> */}
 
             {/* <Modal title="Filters" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 

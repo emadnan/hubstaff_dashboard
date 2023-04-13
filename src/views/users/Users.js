@@ -15,15 +15,15 @@ const Users = () => {
     const [role, setRole] = useState("");
 
     const local = JSON.parse(localStorage.getItem('user-info'));
-  const permissions = local.permissions;
+    const permissions = local.permissions;
 
-  const perm = permissions.map(permission => ({
-    name: permission.name,
-  }));
+    const perm = permissions.map(permission => ({
+        name: permission.name,
+    }));
 
-  const isCreateButtonEnabled = perm.some(item => item.name === 'Create_User');
-  const isEditButtonEnabled = perm.some(item => item.name === 'Update_User');
-  const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_User');
+    const isCreateButtonEnabled = perm.some(item => item.name === 'Create_User');
+    const isEditButtonEnabled = perm.some(item => item.name === 'Update_User');
+    const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_User');
 
     // CSS Stylings
     const modalStyle = {
@@ -233,14 +233,26 @@ const Users = () => {
 
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
+    var filteredUsers = [];
 
     // Get API call
     function getList() {
         fetch("http://10.3.3.80/api/get_users")
             .then((response) => response.json())
-            .then((data) => setUsers(data.Users))
+            .then((data) => {
+                if (local.Users.role === "1") {
+                    filteredUsers = data.Users;
+                }
+                else if (local.Users.role === "3") {
+                    filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id);
+                }
+                else if (local.Users.role === "5") {
+                    filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id);
+                }
+                setUsers(filteredUsers);
+            })
             .catch((error) => console.log(error));
-    }
+    };
 
     function getRoles() {
         fetch("http://10.3.3.80/api/getroles")
@@ -250,7 +262,7 @@ const Users = () => {
     }
 
     useEffect(() => {
-        getList()
+        getList();
         getRoles()
     }, []);
 
@@ -261,7 +273,7 @@ const Users = () => {
 
     // Add API call
     async function addUser() {
-        let adduser = { name, email, password, role }
+        let adduser = { name, email, password, role, company_id: local.Users.company_id}
         console.log(adduser);
 
         await fetch("http://10.3.3.80/api/add_user",
@@ -375,17 +387,17 @@ const Users = () => {
                             <CTableHeaderCell className="text-center" style={mystyle2}>{user.role}</CTableHeaderCell>
                             {isEditButtonEnabled || isDeleteButtonEnabled ? (
                                 <CTableHeaderCell className="text-center" style={mystyle2}>
-                                {isEditButtonEnabled ? (
-                                    <IconButton aria-label="update" onClick={() => showModal3(user.id)}>
-                                    <EditIcon htmlColor='#28B463' />
-                                </IconButton>
-                                ) : null}
-                                {isDeleteButtonEnabled ? (
-                                    <IconButton aria-label="delete" onClick={() => showModal2(user.id)}>
-                                    <DeleteIcon htmlColor='#FF0000' />
-                                </IconButton>
-                                ) : null}
-                            </CTableHeaderCell>
+                                    {isEditButtonEnabled ? (
+                                        <IconButton aria-label="update" onClick={() => showModal3(user.id)}>
+                                            <EditIcon htmlColor='#28B463' />
+                                        </IconButton>
+                                    ) : null}
+                                    {isDeleteButtonEnabled ? (
+                                        <IconButton aria-label="delete" onClick={() => showModal2(user.id)}>
+                                            <DeleteIcon htmlColor='#FF0000' />
+                                        </IconButton>
+                                    ) : null}
+                                </CTableHeaderCell>
                             ) : null}
                         </CTableRow>
                     ))}
@@ -436,7 +448,7 @@ const Users = () => {
                             <Form.Item>
                                 <Select placeholder='Select' onChange={handleRoleChange} value={role}>
                                     {roles.map((user) => (
-                                        <Select.Option value={user.id} key={user.id}>
+                                        <Select.Option value={user} key={user.id}>
                                             {user.name}
                                         </Select.Option>
                                     ))}

@@ -49,7 +49,7 @@ const Register = () => {
       localStorage.setItem("user-info", JSON.stringify(result));
       handleButtonClick2()
       setTimeout(async () => {
-        await navigate("/Dashboard");
+        await navigate("/login");
       }, 2000);
     }
   }
