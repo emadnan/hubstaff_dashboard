@@ -207,7 +207,10 @@ const Screenshots = () => {
                                 <div key={timing.id} style={timingStyle}>
                                   {timing.getattechments.map((attach) => (
                                     <div key={attach.id} style={{marginRight: '10px'}}>
+                                        <div className='card'>
                                         <h6 style={projectNameStyle}>{image.project_name}</h6>
+                                        </div>
+                                        <br></br>
                                       <a href={attach.path_url}>
                                         <img className='card' src={attach.path_url} width={150} height={100} alt="" onClick={() => handleClick(attach.path_url)} />
                                       </a>
