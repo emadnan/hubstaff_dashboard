@@ -14,17 +14,14 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 const theme = createTheme();
 
 const Login = () => {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
 
+  //Variable declarations
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
+  //CSS Styling
   const modalStyle2 = {
     position: "fixed",
     top: "85%",
@@ -47,11 +44,15 @@ const Login = () => {
     outline: "none",
   };
 
-  //Variable Declarations
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const navigate = useNavigate();
+  //Form handling
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    console.log({
+      email: data.get('email'),
+      password: data.get('password'),
+    });
+  };
 
   //Login API call
   async function login() {
@@ -64,10 +65,7 @@ const Login = () => {
       },
     });
     if (result.status === 400) {
-      console.log(item);
       handleButtonClick1()
-    } else if (result.status === 500) {
-      handleButtonClick3();
     } else {
       result = await result.json();
       localStorage.setItem("user-info", JSON.stringify(result));
@@ -78,8 +76,8 @@ const Login = () => {
     }
   }
 
+  //Functions for Login Failed
   const [showAlert1, setShowAlert1] = useState(false);
-
   function handleButtonClick1() {
     setShowAlert1(true);
   }
@@ -98,8 +96,8 @@ const Login = () => {
     }
   }, [showAlert1]);
 
+  //Functions for Login Success
   const [showAlert2, setShowAlert2] = useState(false);
-
   function handleButtonClick2() {
     setShowAlert2(true);
   }
@@ -117,27 +115,6 @@ const Login = () => {
       return () => clearTimeout(timer);
     }
   }, [showAlert2]);
-
-  const [showAlert3, setShowAlert3] = useState(false);
-
-  function handleButtonClick3() {
-    setShowAlert3(true);
-  }
-
-  function handleCloseAlert3() {
-    setShowAlert3(false);
-  }
-
-  useEffect(() => {
-    if (showAlert3) {
-      const timer = setTimeout(() => {
-        setShowAlert3(false);
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [showAlert3]);
-
 
   return (
     <ThemeProvider theme={theme}>
@@ -236,24 +213,17 @@ const Login = () => {
         </Grid>
       </Grid>
 
-      {/* Alert for Add Project Success*/}
+      {/* Alert for Login Failure*/}
       {showAlert1 && (
         <Alert onClose={handleCloseAlert1} severity="error" style={modalStyle2}>
           Failed to Login
         </Alert>
       )}
 
-      {/* Alert for Add Project Failure*/}
+      {/* Alert for Login Success*/}
       {showAlert2 && (
         <Alert onClose={handleCloseAlert2} severity="success" style={modalStyle2}>
           Successfully Logged In
-        </Alert>
-      )}
-
-      {/* Alert for Add Project Failure*/}
-      {showAlert3 && (
-        <Alert onClose={handleCloseAlert3} severity="error" style={modalStyle2}>
-          Invalid User
         </Alert>
       )}
     </ThemeProvider>
