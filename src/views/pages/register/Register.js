@@ -8,6 +8,8 @@ import Grid from '@mui/material/Grid';
 import Alert from '@mui/material/Alert';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const Register = () => {
 
@@ -15,6 +17,9 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [confirmpass, setConfirmPass] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
 
   const navigate = useNavigate();
 
@@ -32,6 +37,21 @@ const Register = () => {
     transform: "translateX(-50%)",
   };
 
+  const formStyle = {
+    position: "relative",
+  };
+
+  const eyeButtonStyle = {
+    position: "absolute",
+    top: "50%",
+    right: "5%",
+    transform: "translateY(-50%)",
+    cursor: "pointer",
+    border: "none",
+    background: "transparent",
+    outline: "none",
+  };
+
   async function signUp() {
     let item = { name, email, password, confirmpass, role: 3 }
     let result = await fetch("http://10.3.3.80/api/register", {
@@ -44,6 +64,8 @@ const Register = () => {
     if (result.status === 400) {
       console.log(item);
       handleButtonClick1()
+    } else if (result.status === 404) {
+      handleButtonClick3();
     } else {
       result = await result.json();
       localStorage.setItem("user-info", JSON.stringify(result));
@@ -94,6 +116,26 @@ const Register = () => {
       return () => clearTimeout(timer);
     }
   }, [showAlert2]);
+
+  const [showAlert3, setShowAlert3] = useState(false);
+
+  function handleButtonClick3() {
+    setShowAlert3(true);
+  }
+
+  function handleCloseAlert3() {
+    setShowAlert3(false);
+  }
+
+  useEffect(() => {
+    if (showAlert3) {
+      const timer = setTimeout(() => {
+        setShowAlert3(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert3]);
 
 
   return (
@@ -160,26 +202,42 @@ const Register = () => {
                 <label className="form-label" htmlFor="form3Example4">
                   Password
                 </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="form-control form-control-lg"
-                  placeholder="Enter Password"
-                />
+                <div style={formStyle}>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Password"
+                  />
+                  <span
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={eyeButtonStyle}
+                  >
+                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                  </span>
+                </div>
               </div>
 
-              <div className="form-outline mb-10">
+              <div className="form-outline mb-3">
                 <label className="form-label" htmlFor="form3Example4">
                   Confirm Password
                 </label>
-                <input
-                  type="password"
-                  value={confirmpass}
-                  onChange={(e) => setConfirmPass(e.target.value)}
-                  className="form-control form-control-lg"
-                  placeholder="Confirm Password"
-                />
+                <div style={formStyle}>
+                  <input
+                    type={showPassword2 ? "text" : "password"}
+                    value={confirmpass}
+                    onChange={(e) => setConfirmPass(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Password"
+                  />
+                  <span
+                    onClick={() => setShowPassword2(!showPassword2)}
+                    style={eyeButtonStyle}
+                  >
+                    {showPassword2 ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                  </span>
+                </div>
               </div>
 
               <br></br>
@@ -222,6 +280,13 @@ const Register = () => {
       {showAlert2 && (
         <Alert onClose={handleCloseAlert2} severity="success" style={modalStyle2}>
           Company Registered Successfully
+        </Alert>
+      )}
+
+      {/* Alert for Add Project Failure*/}
+      {showAlert3 && (
+        <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
+          Company Email already exists
         </Alert>
       )}
     </ThemeProvider>

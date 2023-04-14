@@ -276,6 +276,8 @@ const Departments = () => {
             }
             else if (local.Users.role === "3"){
               filteredUsers = data.Departments.filter((user) => user.company_id === local.Users.company_id);
+            }else{
+                return null;
             }
             setDepartment(filteredUsers);
           })

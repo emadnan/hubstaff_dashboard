@@ -8,6 +8,8 @@ import Grid from '@mui/material/Grid';
 import Alert from '@mui/material/Alert';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const theme = createTheme();
 
@@ -21,11 +23,28 @@ const Login = () => {
     });
   };
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const modalStyle2 = {
     position: "fixed",
     top: "85%",
     left: "80%",
     transform: "translateX(-50%)",
+  };
+
+  const formStyle = {
+    position: "relative",
+  };
+
+  const eyeButtonStyle = {
+    position: "absolute",
+    top: "50%",
+    right: "5%",
+    transform: "translateY(-50%)",
+    cursor: "pointer",
+    border: "none",
+    background: "transparent",
+    outline: "none",
   };
 
   //Variable Declarations
@@ -173,13 +192,21 @@ const Login = () => {
                 <label className="form-label" htmlFor="form3Example4">
                   Password
                 </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="form-control form-control-lg"
-                  placeholder="Enter Password"
-                />
+                <div style={formStyle}>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Password"
+                  />
+                  <span
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={eyeButtonStyle}
+                  >
+                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                  </span>
+                </div>
               </div>
 
               <div className="d-flex justify-content-between align-items-center">

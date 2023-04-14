@@ -74,6 +74,7 @@ const Screenshots = () => {
     const [user_id, setUserId] = useState("");
     const [project_id, setProjectId] = useState("");
     const userdata = local.Users;
+    var filteredUsers = [];
 
     // Get API call
     {}
@@ -91,11 +92,29 @@ const Screenshots = () => {
             .catch((error) => console.log(error));
     };
 
+    // function getUsers() {
+    //     fetch("http://10.3.3.80/api/get_users")
+    //         .then((response) => response.json())
+    //         .then((data) => {
+    //             const filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id);
+    //             setUsers(filteredUsers);
+    //         })
+    //         .catch((error) => console.log(error));
+    // };
+
     function getUsers() {
         fetch("http://10.3.3.80/api/get_users")
             .then((response) => response.json())
             .then((data) => {
-                const filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id);
+                if (local.Users.role === "1") {
+                    filteredUsers = data.Users;
+                }
+                else if (local.Users.role === "3") {
+                    filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id);
+                }
+                else if (local.Users.role === "5") {
+                    filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id);
+                }
                 setUsers(filteredUsers);
             })
             .catch((error) => console.log(error));
