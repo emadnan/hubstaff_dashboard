@@ -69,33 +69,88 @@ const Dashboard = () => {
   const [seconds, setSeconds] = useState("");
   // const [images, setImages] = useState([]);
 
+  const local = JSON.parse(localStorage.getItem('user-info'));
+
+  var filteredUsers = [];
+
   useEffect(() => {
     getCompanies()
     getProjects()
-    getDepartments()
+    getDepartment()
     getClients()
     getTotalTime()
     getProjectScreenshots()
   }, []);
 
+  // function getCompanies() {
+  //   fetch("http://10.3.3.80/api/getcompany")
+  //     .then((response) => response.json())
+  //     .then((data) => setUsers(data.companies))
+  //     .catch((error) => console.log(error));
+  // };
+
   function getCompanies() {
     fetch("http://10.3.3.80/api/getcompany")
       .then((response) => response.json())
-      .then((data) => setUsers(data.companies))
+      .then((data) => {
+        if(local.Users.role === "1"){
+          filteredUsers = data.companies;
+        }
+        else if (local.Users.role === "3"){
+          filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
+        }
+        else if (local.Users.role === "5"){
+          filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
+        }
+        setUsers(filteredUsers);
+      })
       .catch((error) => console.log(error));
   };
+
+  // function getProjects() {
+  //   fetch("http://10.3.3.80/api/getproject")
+  //     .then((response) => response.json())
+  //     .then((data) => setProjects(data.projects))
+  //     .catch((error) => console.log(error));
+  // };
 
   function getProjects() {
     fetch("http://10.3.3.80/api/getproject")
       .then((response) => response.json())
-      .then((data) => setProjects(data.projects))
+      .then((data) => {
+        if (local.Users.role === "1") {
+          filteredUsers = data.projects;
+        }
+        else if (local.Users.role === "3") {
+          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
+        }
+        else if (local.Users.role === "5") {
+          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
+        }
+        setProjects(filteredUsers);
+      })
       .catch((error) => console.log(error));
   };
 
-  function getDepartments() {
+  // function getDepartments() {
+  //   fetch("http://10.3.3.80/api/getdepartment")
+  //     .then((response) => response.json())
+  //     .then((data) => setDepartments(data.Departments))
+  //     .catch((error) => console.log(error));
+  // };
+
+  function getDepartment() {
     fetch("http://10.3.3.80/api/getdepartment")
       .then((response) => response.json())
-      .then((data) => setDepartments(data.Departments))
+      .then((data) => {
+        if(local.Users.role === "1"){
+          filteredUsers = data.Departments;
+        }
+        else if (local.Users.role === "3"){
+          filteredUsers = data.Departments.filter((user) => user.company_id === local.Users.company_id);
+        }
+        setDepartments(filteredUsers);
+      })
       .catch((error) => console.log(error));
   };
 

@@ -13,6 +13,10 @@ const AssignedProjects = () => {
         alignSelf: 'flex-end',
     };
 
+    const mystyle2 = {
+        backgroundColor: "white ",
+    };
+
     const [assigns, setAssigns] = useState([]);
     var filteredUsers = [];
     const local = JSON.parse(localStorage.getItem('user-info'));
@@ -63,10 +67,10 @@ const AssignedProjects = () => {
                     {/* Get API Users */}
                     {assigns.map((assign, index) => (
                         <CTableRow key={assign.id}>
-                            <CTableHeaderCell className="text-center">{index + 1}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">{assign.project_name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">{assign.name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center">{assign.stream_name}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{assign.project_name}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{assign.name}</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" style={mystyle2}>{assign.stream_name}</CTableHeaderCell>
                         </CTableRow>
                     ))}
 

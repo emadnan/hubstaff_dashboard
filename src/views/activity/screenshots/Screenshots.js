@@ -1,8 +1,10 @@
 import { React, useState, useEffect } from 'react';
 import { Button, DatePicker, Select, Form, Divider } from 'antd'
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons'
-import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
+import dayjs from 'dayjs';
+
+const { RangePicker } = DatePicker;
 dayjs.extend(customParseFormat)
 // const { Option } = Select;
 // const weekFormat = 'MM/DD'
@@ -54,7 +56,17 @@ const Screenshots = () => {
     const userStyle = {
         color: "black",
         fontSize: 30,
-    }
+    };
+
+    function onRangeChange(dates, dateStrings) {
+        if (dates) {
+            console.log('From: ', dates[0], ', to: ', dates[1]);
+            console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
+            getDateWiseScreenshots(dateStrings[0],dateStrings[1],local.Users.user_id);
+        } else {
+            console.log('Clear');
+        }
+    };
 
     const [images, setImages] = useState([]);
     const [users, setUsers] = useState([]);
@@ -64,6 +76,7 @@ const Screenshots = () => {
     const userdata = local.Users;
 
     // Get API call
+    {}
     function getScreenshots() {
         fetch("http://10.3.3.80/api/get_Project_Screenshots")
             .then((response) => response.json())
@@ -71,15 +84,22 @@ const Screenshots = () => {
             .catch((error) => console.log(error));
     };
 
+    function getDateWiseScreenshots(a,b,c) {
+        fetch(`http://10.3.3.80/api/get_projectscreenshot_by_date/${a}/${b}/${c}`)
+            .then((response) => response.json())
+            .then((data) => setImages(data.projectscreenshot))
+            .catch((error) => console.log(error));
+    };
+
     function getUsers() {
         fetch("http://10.3.3.80/api/get_users")
-          .then((response) => response.json())
-          .then((data) => {
-            const filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id);
-            setUsers(filteredUsers);
-          })
-          .catch((error) => console.log(error));
-      };
+            .then((response) => response.json())
+            .then((data) => {
+                const filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id);
+                setUsers(filteredUsers);
+            })
+            .catch((error) => console.log(error));
+    };
 
     function getProjects() {
         fetch("http://10.3.3.80/api/getproject")
@@ -89,7 +109,7 @@ const Screenshots = () => {
     };
 
     useEffect(() => {
-        getScreenshots()
+        // getScreenshots()
         getUsers()
         getProjects()
     }, []);
@@ -114,6 +134,8 @@ const Screenshots = () => {
         console.log(project_id);
     };
 
+    const currentDate = new Date().toISOString().slice(0,10);
+
     return (
         <>
             {/* {images.slice(0, 1).map((image) => (
@@ -127,11 +149,15 @@ const Screenshots = () => {
             <div className='row'>
                 <div className='col-md-4'>
                     <br></br>
-                    <Button type="default" icon={<ArrowLeftOutlined />} />
+                    <Button type="default" icon={<ArrowLeftOutlined />}/>
                     &nbsp;
                     <Button type="default" icon={<ArrowRightOutlined />} />
                     &nbsp;
-                    <DatePicker defaultValue={dayjs()} format={dateFormatList} />
+                    <RangePicker
+                        format="YYYY-MM-DD"
+                        onChange={onRangeChange}
+                    />
+                    <Button type='default' onClick={getScreenshots}>Today</Button>
                 </div>
                 <div className='col-md-4'></div>
                 <div className='col-md-4 mt-4'>
@@ -167,30 +193,16 @@ const Screenshots = () => {
             </div>
             <Divider></Divider>
 
-            {/* {images.map((image) => (
-                <div key={image.id}>
-                    {image.get_timings.map((timing) => (
-                        <div key={timing.id}>
-                            {timing.getattechments.map((attach) => (
-                                <div key={attach.id}>
-                                    <img src={attach.path_url} width={350} height={250} alt='' />
-                                </div>
-                            ))}
-                        </div>
-                    ))}
-                </div>
-            ))} */}
-
             <div style={imageContainer}>
                 {user_id ? images.filter((image) => image.user_id === user_id).map((image) => {
 
                     return (
-                        <div key={image.id} style={imageWrapper}>
+                        <div key={image.id}>
                             {image.get_timings.map((timing) => (
                                 <div key={timing.id} style={timingStyle}>
                                     {timing.getattechments.map((attach) => (
                                         <div key={attach.id} style={{ marginRight: '10px' }}>
-                                            <h6 style={projectNameStyle}>{image.project_name}</h6>
+                                            <h6 style={projectNameStyle}>{image.project_name}-{image.stream_name}</h6>
                                             <br></br>
                                             <a href={attach.path_url}>
                                                 <img className='card' src={attach.path_url} style={{ width: '100%', height: 'auto' }} alt="" onClick={() => handleClick(attach.path_url)} />
@@ -213,15 +225,13 @@ const Screenshots = () => {
                                     <div key={timing.id} style={timingStyle}>
                                         {timing.getattechments.map((attach) => (
                                             <div key={attach.id} style={{ marginRight: '10px' }}>
-                                                <h6 style={projectNameStyle}>{image.project_name}</h6>
-                                                <br></br>
+                                                <h6 style={projectNameStyle}>{image.project_name}-{image.stream_name}</h6>
                                                 <a href={attach.path_url}>
                                                     <img className='card' src={attach.path_url} style={{ width: '100%', height: 'auto' }} alt="" onClick={() => handleClick(attach.path_url)} />
                                                 </a>
                                                 <h6 style={projectTimeStyle}>{new Date(timing.start_time).toLocaleTimeString().substring(0, 11)}</h6>
                                             </div>
                                         ))}
-                                        <br></br>
                                     </div>
                                 ))}
                             </div>
