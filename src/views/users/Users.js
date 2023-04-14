@@ -264,7 +264,7 @@ const Users = () => {
     useEffect(() => {
         getList();
         getRoles()
-    }, [getList, getRoles]);
+    }, []);
 
     //Get calls handling
     const handleRoleChange = (value) => {
