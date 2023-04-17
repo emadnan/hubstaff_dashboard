@@ -163,12 +163,6 @@ const _nav = [
       },
     ],
   },
-  // {
-  //   component: CNavItem,
-  //   name: 'Teams',
-  //   to: '/teams',
-  //   icon: <CIcon icon={cilChartPie} customClassName="nav-icon" />,
-  // },
   {
     component: CNavItem,
     name: 'Expenses',

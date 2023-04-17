@@ -62,7 +62,7 @@ const Screenshots = () => {
         if (dates) {
             console.log('From: ', dates[0], ', to: ', dates[1]);
             console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
-            getDateWiseScreenshots(dateStrings[0],dateStrings[1],local.Users.user_id);
+            getDateWiseScreenshots(dateStrings[0], dateStrings[1], local.Users.user_id);
         } else {
             console.log('Clear');
         }
@@ -75,32 +75,22 @@ const Screenshots = () => {
     const [project_id, setProjectId] = useState("");
     const userdata = local.Users;
     var filteredUsers = [];
+    var screenfilter = [];
 
     // Get API call
-    {}
     function getScreenshots() {
         fetch("http://10.3.3.80/api/get_Project_Screenshots")
             .then((response) => response.json())
-            .then((data) => setImages(data.projectscreenshot))
+            .then((data) => {
+                if(local.Users.role === "1" || local.Users.role === "3"){
+                    screenfilter = data.projectscreenshot;
+                }else{
+                    screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.user_id === local.Users.user_id);
+                }
+                setImages(screenfilter);
+            })
             .catch((error) => console.log(error));
     };
-
-    function getDateWiseScreenshots(a,b,c) {
-        fetch(`http://10.3.3.80/api/get_projectscreenshot_by_date/${a}/${b}/${c}`)
-            .then((response) => response.json())
-            .then((data) => setImages(data.projectscreenshot))
-            .catch((error) => console.log(error));
-    };
-
-    // function getUsers() {
-    //     fetch("http://10.3.3.80/api/get_users")
-    //         .then((response) => response.json())
-    //         .then((data) => {
-    //             const filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id);
-    //             setUsers(filteredUsers);
-    //         })
-    //         .catch((error) => console.log(error));
-    // };
 
     function getUsers() {
         fetch("http://10.3.3.80/api/get_users")
@@ -120,6 +110,25 @@ const Screenshots = () => {
             .catch((error) => console.log(error));
     };
 
+    // function getScreenshots2() {
+    //     fetch("http://10.3.3.80/api/get_Project_Screenshots")
+    //         .then((response) => response.json())
+    //         .then((data) => {
+    //             filteredScreenshots = data.projectscreenshot.filter(
+    //                 (screenshot) => screenshot.user_id === local.Users.user_id
+    //             );
+    //             setImages(filteredScreenshots);
+    //         })
+    //         .catch((error) => console.log(error));
+    // }
+
+    function getDateWiseScreenshots(a, b, c) {
+        fetch(`http://10.3.3.80/api/get_projectscreenshot_by_date/${a}/${b}/${c}`)
+            .then((response) => response.json())
+            .then((data) => setImages(data.projectscreenshot))
+            .catch((error) => console.log(error));
+    };
+
     function getProjects() {
         fetch("http://10.3.3.80/api/getproject")
             .then((response) => response.json())
@@ -128,9 +137,9 @@ const Screenshots = () => {
     };
 
     useEffect(() => {
-        // getScreenshots()
         getUsers()
         getProjects()
+        getScreenshots()
     }, []);
 
     const [selectedImage, setSelectedImage] = useState(null);
@@ -148,27 +157,15 @@ const Screenshots = () => {
         console.log(user_id);
     };
 
-    const handleProjectChange = (value) => {
-        setProjectId(value);
-        console.log(project_id);
-    };
-
-    const currentDate = new Date().toISOString().slice(0,10);
+    const currentDate = new Date().toISOString().slice(0, 10);
 
     return (
         <>
-            {/* {images.slice(0, 1).map((image) => (
-                <div key={image.id}>
-                    <h3>{image.longitude}</h3>
-                </div>
-            ))} */}
-            {/* <h6>{project_id}</h6>
-            <h6>{user_id}</h6> */}
             <h6 style={userStyle}>{userdata.name}</h6>
             <div className='row'>
                 <div className='col-md-4'>
                     <br></br>
-                    <Button type="default" icon={<ArrowLeftOutlined />}/>
+                    <Button type="default" icon={<ArrowLeftOutlined />} />
                     &nbsp;
                     <Button type="default" icon={<ArrowRightOutlined />} />
                     &nbsp;
@@ -176,39 +173,31 @@ const Screenshots = () => {
                         format="YYYY-MM-DD"
                         onChange={onRangeChange}
                     />
-                    <Button type='default' onClick={getScreenshots}>Today</Button>
+                        <Button type='default' onClick={getScreenshots}>Today</Button>
                 </div>
                 <div className='col-md-4'></div>
-                <div className='col-md-4 mt-4'>
-                    <div className='row'>
-                        <div className="col-md-4"></div>
-                        <div className="col-md-8">
-                            <Form.Item name="select" hasFeedback>
-                                <Select placeholder="Members" onChange={handleUserChange} value={user_id}>
-                                    {users.map((user) => (
-                                        <Select.Option value={user.id} key={user.id}>
-                                            {user.name}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
-                            </Form.Item>
+                {
+                    local.Users.role === "1" || local.Users.role === "3" ? (
+                        <div className='col-md-4 mt-4'>
+                            <div className='row'>
+                                <div className="col-md-4"></div>
+                                <div className="col-md-8">
+                                    <Form.Item name="select" hasFeedback>
+                                        <Select placeholder="Members" onChange={handleUserChange} value={user_id}>
+                                            {users.map((user) => (
+                                                <Select.Option value={user.id} key={user.id}>
+                                                    {user.name}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
+                                </div>
+                            </div>
                         </div>
-                        {/* <div className="col-md-6">
-                            <Form.Item name="select" hasFeedback>
-                                <Select placeholder="Projects" onChange={handleProjectChange} value={project_id}>
-                                    {project.map((proj) => (
-                                        <Select.Option value={proj.project_id} key={proj.id}>
-                                            {proj.project_name}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
-                            </Form.Item>
-                        </div> */}
-                        {/* <div className='col-md-4'>
-                            <Button type="primary" onClick={showModal}>Filters</Button>
-                        </div> */}
-                    </div>
-                </div>
+                    ) : null
+                }
+
+
             </div>
             <Divider></Divider>
 

@@ -350,6 +350,10 @@ const Users = () => {
 
     }
 
+    // const roleHeader = local.Users.role === "1" ? (
+    //     <CTableHeaderCell className="text-center" style={mystyle}>Role</CTableHeaderCell>
+    // ) : null;
+
     return (
         <>
             <div className='row'>
@@ -373,6 +377,7 @@ const Users = () => {
                         <CTableHeaderCell className="text-center" style={mystyle}>User Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Email</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Role</CTableHeaderCell>
+                        {/* {roleHeader} */}
                         {isEditButtonEnabled || isDeleteButtonEnabled ? (
                             <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
                         ) : null}

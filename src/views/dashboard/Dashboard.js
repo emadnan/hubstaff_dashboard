@@ -64,10 +64,10 @@ const Dashboard = () => {
   const [departments, setDepartments] = useState([]);
   const [clients, setClients] = useState([]);
   const [screenshot, setScreenshot] = useState([]);
+  const [assigned, setAssigned] = useState([]);
   const [hours, setHours] = useState("");
   const [minutes, setMinutes] = useState("");
   const [seconds, setSeconds] = useState("");
-  // const [images, setImages] = useState([]);
 
   const local = JSON.parse(localStorage.getItem('user-info'));
 
@@ -80,39 +80,26 @@ const Dashboard = () => {
     getClients()
     getTotalTime()
     getProjectScreenshots()
+    getAssigns()
   }, []);
-
-  // function getCompanies() {
-  //   fetch("http://10.3.3.80/api/getcompany")
-  //     .then((response) => response.json())
-  //     .then((data) => setUsers(data.companies))
-  //     .catch((error) => console.log(error));
-  // };
 
   function getCompanies() {
     fetch("http://10.3.3.80/api/getcompany")
       .then((response) => response.json())
       .then((data) => {
-        if(local.Users.role === "1"){
+        if (local.Users.role === "1") {
           filteredUsers = data.companies;
         }
-        else if (local.Users.role === "3"){
+        else if (local.Users.role === "3") {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
         }
-        else if (local.Users.role === "5"){
+        else if (local.Users.role === "5") {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
         }
         setUsers(filteredUsers);
       })
       .catch((error) => console.log(error));
   };
-
-  // function getProjects() {
-  //   fetch("http://10.3.3.80/api/getproject")
-  //     .then((response) => response.json())
-  //     .then((data) => setProjects(data.projects))
-  //     .catch((error) => console.log(error));
-  // };
 
   function getProjects() {
     fetch("http://10.3.3.80/api/getproject")
@@ -132,24 +119,35 @@ const Dashboard = () => {
       .catch((error) => console.log(error));
   };
 
-  // function getDepartments() {
-  //   fetch("http://10.3.3.80/api/getdepartment")
-  //     .then((response) => response.json())
-  //     .then((data) => setDepartments(data.Departments))
-  //     .catch((error) => console.log(error));
-  // };
-
   function getDepartment() {
     fetch("http://10.3.3.80/api/getdepartment")
       .then((response) => response.json())
       .then((data) => {
-        if(local.Users.role === "1"){
+        if (local.Users.role === "1") {
           filteredUsers = data.Departments;
         }
-        else if (local.Users.role === "3"){
+        else if (local.Users.role === "3") {
           filteredUsers = data.Departments.filter((user) => user.company_id === local.Users.company_id);
         }
         setDepartments(filteredUsers);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  function getAssigns() {
+    fetch("http://10.3.3.80/api/get_assign_projects")
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === "3") {
+          filteredUsers = data.Project_Assigns;
+        }
+        else if (local.Users.role === "1") {
+          filteredUsers = data.Project_Assigns.filter((user) => user.company_id === local.Users.company_id);
+        }
+        else if (local.Users.role === "5") {
+          filteredUsers = data.Project_Assigns.filter((user) => user.user_id === local.Users.user_id);
+        }
+        setAssigned(filteredUsers);
       })
       .catch((error) => console.log(error));
   };
@@ -365,6 +363,43 @@ const Dashboard = () => {
 
           <br></br>
 
+          {/* Card for Assigned Project Modal Starts */}
+          <Card style={cardStyle2}>
+            <h5 style={head}>ASSIGNED PROJECTS</h5>
+            <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
+              <CTableHead color="light" >
+
+
+                <CTableRow>
+                  <CTableHeaderCell className="text-center" style={mystyle}>Project Name</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center" style={mystyle}>Stream Name</CTableHeaderCell>
+                </CTableRow>
+
+                {assigned.slice(0, 4).map((assign) => {
+                  return (
+                    <CTableRow key={assign.id}>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>{assign.project_name}</CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>{assign.stream_name}</CTableHeaderCell>
+                    </CTableRow>
+                  )
+                })}
+
+              </CTableHead>
+
+              <CTableBody>
+              </CTableBody>
+            </CTable>
+
+            <Divider></Divider>
+            <div className='text-center'>
+              <Button type="link" href="/projectmanagement/assigned">View assigned projects &gt;</Button>
+            </div>
+
+          </Card>
+          {/* Card for Assigned Project Modal Ends */}
+
+          <br></br>
+
           {/* Card for Time Sheets Modal Starts */}
           <Card style={cardStyle2}>
             <h5 style={head}>TIME SHEETS</h5>
@@ -419,43 +454,6 @@ const Dashboard = () => {
 
           </Card>
           {/* Card for Apps Modal Ends */}
-
-          <br></br>
-
-          {/* Card for Clients Modal Start */}
-          {/* <Card style={cardStyle2}>
-            <h5 style={head}>CLIENTS</h5>
-            <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-              <CTableHead color="light" >
-
-
-                <CTableRow>
-                  <CTableHeaderCell className="text-center" style={mystyle}>Client Name</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>Project</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>Status</CTableHeaderCell>
-                </CTableRow>
-
-                {clients.slice(0, 3).map((client) => (
-                  <CTableRow key={client.id}>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>{client.client_name}</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>{client.project}</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>{client.project_status}</CTableHeaderCell>
-                  </CTableRow>
-                ))}
-
-              </CTableHead>
-
-              <CTableBody>
-              </CTableBody>
-            </CTable>
-
-            <Divider></Divider>
-            <div className='text-center'>
-              <Button type="link" href="/projectmanagement/client">View clients &gt;</Button>
-            </div>
-
-          </Card> */}
-          {/* Card for Clients Modal Ends */}
 
         </div>
       </div>
