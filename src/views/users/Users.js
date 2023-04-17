@@ -273,7 +273,7 @@ const Users = () => {
 
     // Add API call
     async function addUser() {
-        let adduser = { name, email, password, role, company_id: local.Users.company_id}
+        let adduser = { name, email, password, role, company_id: local.Users.company_id }
         console.log(adduser);
 
         await fetch("http://10.3.3.80/api/add_user",
@@ -376,7 +376,11 @@ const Users = () => {
                         <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>User Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Email</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Role</CTableHeaderCell>
+                        {
+                            local.Users.role === "1" ? (
+                                <CTableHeaderCell className="text-center" style={mystyle}>Role</CTableHeaderCell>
+                            ) : null
+                        }
                         {/* {roleHeader} */}
                         {isEditButtonEnabled || isDeleteButtonEnabled ? (
                             <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
@@ -389,7 +393,11 @@ const Users = () => {
                             <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={mystyle2}>{user.name}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={mystyle2}>{user.email}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center" style={mystyle2}>{user.role}</CTableHeaderCell>
+                            {
+                                local.Users.role === "1" ? (
+                                    <CTableHeaderCell className="text-center" style={mystyle2}>{user.role}</CTableHeaderCell>
+                                ) : null
+                            }
                             {isEditButtonEnabled || isDeleteButtonEnabled ? (
                                 <CTableHeaderCell className="text-center" style={mystyle2}>
                                     {isEditButtonEnabled ? (

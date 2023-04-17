@@ -290,35 +290,40 @@ const Dashboard = () => {
           <br></br>
 
           {/* Card for Departments Modal Starts  */}
-          <Card style={cardStyle2}>
-            <h5 style={head}>DEPARTMENTS</h5>
-            <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-              <CTableHead color="light" >
+          {
+            local.Users.role === "1" || local.Users.role === "3" ? (
+              <Card style={cardStyle2}>
+                <h5 style={head}>DEPARTMENTS</h5>
+                <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
+                  <CTableHead color="light" >
 
-                <CTableRow>
-                  <CTableHeaderCell className="text-center" style={mystyle}>Department Name</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>Company</CTableHeaderCell>
-                </CTableRow>
+                    <CTableRow>
+                      <CTableHeaderCell className="text-center" style={mystyle}>Department Name</CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle}>Company</CTableHeaderCell>
+                    </CTableRow>
 
-                {departments.slice(0, 3).map((dept) => (
-                  <CTableRow key={dept.id}>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>{dept.department_name}</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>{dept.company_name}</CTableHeaderCell>
-                  </CTableRow>
-                ))}
+                    {departments.slice(0, 3).map((dept) => (
+                      <CTableRow key={dept.id}>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>{dept.department_name}</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>{dept.company_name}</CTableHeaderCell>
+                      </CTableRow>
+                    ))}
 
-              </CTableHead>
+                  </CTableHead>
 
-              <CTableBody>
-              </CTableBody>
-            </CTable>
+                  <CTableBody>
+                  </CTableBody>
+                </CTable>
 
-            <Divider></Divider>
-            <div className='text-center'>
-              <Button type="link" href="/departments/Departments">View departments &gt;</Button>
-            </div>
+                <Divider></Divider>
+                <div className='text-center'>
+                  <Button type="link" href="/departments/Departments">View departments &gt;</Button>
+                </div>
 
-          </Card>
+              </Card>
+            ) : null
+          }
+
           {/* Card for Departments Modal Ends */}
         </div>
 
@@ -430,7 +435,7 @@ const Dashboard = () => {
           <br></br>
 
           {/* Card for Apps Modal Starts */}
-          <Card style={cardStyle2}>
+          {/* <Card style={cardStyle2}>
             <h5 style={head}>APPS & URLS</h5>
             <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
               <CTableHead color="light" >
@@ -452,7 +457,7 @@ const Dashboard = () => {
               <Button type="link" href="/activity/apps">View apps activity &gt;</Button>
             </div>
 
-          </Card>
+          </Card> */}
           {/* Card for Apps Modal Ends */}
 
         </div>
