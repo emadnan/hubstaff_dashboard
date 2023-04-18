@@ -459,7 +459,7 @@ const Users = () => {
                         <div className="form-outline mb-3">
                             <label>Role</label>
                             <Form.Item>
-                                <Select placeholder='Select' onChange={handleRoleChange} value={role}>
+                                <Select placeholder="Select Role Id" onChange={handleRoleChange} value={role}>
                                     {roles.map((user) => (
                                         <Select.Option value={user.id} key={user.id}>
                                             {user.name}
@@ -468,7 +468,6 @@ const Users = () => {
                                 </Select>
                             </Form.Item>
                         </div>
-
                     </Modal>
 
                     {/* Modal for Update User */}
@@ -512,7 +511,7 @@ const Users = () => {
                         <div className="form-outline mb-3">
                             <label>Role</label>
                             <Form.Item>
-                                <Select placeholder="Select Role Id" onChange={handleRoleChange} value={role}>
+                                <Select placeholder='Select' onChange={handleRoleChange} value={role}>
                                     {roles.map((user) => (
                                         <Select.Option value={user.id} key={user.id}>
                                             {user.name}
@@ -521,6 +520,7 @@ const Users = () => {
                                 </Select>
                             </Form.Item>
                         </div>
+
                     </Modal>
 
                     {/* Modal for Deletion Confirmation */}

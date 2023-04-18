@@ -269,38 +269,38 @@ const Departments = () => {
 
     function getList() {
         fetch("http://10.3.3.80/api/getdepartment")
-          .then((response) => response.json())
-          .then((data) => {
-            if(local.Users.role === "1"){
-              filteredUsers = data.Departments;
-            }
-            else if (local.Users.role === "3"){
-              filteredUsers = data.Departments.filter((user) => user.company_id === local.Users.company_id);
-            }else{
-                return null;
-            }
-            setDepartment(filteredUsers);
-          })
-          .catch((error) => console.log(error));
-      };
+            .then((response) => response.json())
+            .then((data) => {
+                if (local.Users.role === "1") {
+                    filteredUsers = data.Departments;
+                }
+                else if (local.Users.role === "3") {
+                    filteredUsers = data.Departments.filter((user) => user.company_id === local.Users.company_id);
+                } else {
+                    return null;
+                }
+                setDepartment(filteredUsers);
+            })
+            .catch((error) => console.log(error));
+    };
 
     function getCompany() {
         fetch("http://10.3.3.80/api/getcompany")
-          .then((response) => response.json())
-          .then((data) => {
-            if(local.Users.role === "1"){
-              filteredUsers = data.companies;
-            }
-            else if (local.Users.role === "3"){
-              filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
-            }
-            else if (local.Users.role === "5"){
-              filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
-            }
-            setCompanies(filteredUsers);
-          })
-          .catch((error) => console.log(error));
-      };
+            .then((response) => response.json())
+            .then((data) => {
+                if (local.Users.role === "1") {
+                    filteredUsers = data.companies;
+                }
+                else if (local.Users.role === "3") {
+                    filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
+                }
+                else if (local.Users.role === "5") {
+                    filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
+                }
+                setCompanies(filteredUsers);
+            })
+            .catch((error) => console.log(error));
+    };
 
     function getDepartmentById(id) {
         fetch(`http://10.3.3.80/api/getdepartment-by-id/${id}`)

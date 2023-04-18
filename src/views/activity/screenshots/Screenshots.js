@@ -82,9 +82,13 @@ const Screenshots = () => {
         fetch("http://10.3.3.80/api/get_Project_Screenshots")
             .then((response) => response.json())
             .then((data) => {
-                if(local.Users.role === "1" || local.Users.role === "3"){
+                if(local.Users.role === "1"){
                     screenfilter = data.projectscreenshot;
-                }else{
+                }
+                else if (local.Users.role === "3"){
+                    screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.company_id === local.Users.company_id);
+                }
+                else{
                     screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.user_id === local.Users.user_id);
                 }
                 setImages(screenfilter);
@@ -105,28 +109,23 @@ const Screenshots = () => {
                 else if (local.Users.role === "5") {
                     filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id);
                 }
-                setUsers(filteredUsers);
+                setUsers(filteredUsers.slice(1));
             })
             .catch((error) => console.log(error));
     };
 
-    // function getScreenshots2() {
-    //     fetch("http://10.3.3.80/api/get_Project_Screenshots")
-    //         .then((response) => response.json())
-    //         .then((data) => {
-    //             filteredScreenshots = data.projectscreenshot.filter(
-    //                 (screenshot) => screenshot.user_id === local.Users.user_id
-    //             );
-    //             setImages(filteredScreenshots);
-    //         })
-    //         .catch((error) => console.log(error));
-    // }
-
     function getDateWiseScreenshots(a, b, c) {
         fetch(`http://10.3.3.80/api/get_projectscreenshot_by_date/${a}/${b}/${c}`)
-            .then((response) => response.json())
-            .then((data) => setImages(data.projectscreenshot))
-            .catch((error) => console.log(error));
+        .then((response) => response.json())
+        .then((data) => {
+            if(local.Users.role === "1" || local.Users.role === "3"){
+                screenfilter = data.projectscreenshot;
+            }else{
+                screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.user_id === local.Users.user_id);
+            }
+            setImages(screenfilter);
+        })
+        .catch((error) => console.log(error));
     };
 
     function getProjects() {

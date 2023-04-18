@@ -3,6 +3,9 @@ import CIcon from '@coreui/icons-react'
 import { cilBell, cilSpeedometer, cilClock, cilChartLine, cilSpreadsheet, cilCalendar, cilCash, cilUser, cilLocationPin, cilUserFollow } from '@coreui/icons'
 import { CNavGroup, CNavItem, } from '@coreui/react'
 
+
+const local = JSON.parse(localStorage.getItem('user-info'));
+
 const _nav = [
   {
     component: CNavItem,
@@ -72,11 +75,6 @@ const _nav = [
         name: 'Assigned Projects',
         to: '/projectmanagement/assigned',
       },
-      // {
-      //   component: CNavItem,
-      //   name: 'To-dos',
-      //   to: '/projectmanagement/todos',
-      // },
       {
         component: CNavItem,
         name: 'Clients',

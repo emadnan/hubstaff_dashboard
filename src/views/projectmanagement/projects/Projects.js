@@ -458,7 +458,7 @@ const Projects = () => {
         else if (local.Users.role === "5") {
           filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id);
         }
-        setUsers(filteredUsers);
+        setUsers(filteredUsers.slice(1));
       })
       .catch((error) => console.log(error));
   };

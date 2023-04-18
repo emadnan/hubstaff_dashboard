@@ -68,6 +68,7 @@ const Dashboard = () => {
   const [hours, setHours] = useState("");
   const [minutes, setMinutes] = useState("");
   const [seconds, setSeconds] = useState("");
+  var screenfilter = [];
 
   const local = JSON.parse(localStorage.getItem('user-info'));
 
@@ -138,10 +139,10 @@ const Dashboard = () => {
     fetch("http://10.3.3.80/api/get_assign_projects")
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === "3") {
+        if (local.Users.role === "1") {
           filteredUsers = data.Project_Assigns;
         }
-        else if (local.Users.role === "1") {
+        else if (local.Users.role === "3") {
           filteredUsers = data.Project_Assigns.filter((user) => user.company_id === local.Users.company_id);
         }
         else if (local.Users.role === "5") {
@@ -170,11 +171,27 @@ const Dashboard = () => {
       .catch((error) => console.log(error));
   };
 
+  // function getProjectScreenshots() {
+  //   fetch("http://10.3.3.80/api/get_Project_Screenshots")
+  //     .then((response) => response.json())
+  //     .then((data) => setScreenshot(data.projectscreenshot))
+  //     .catch((error) => console.log(error));
+  // };
+
   function getProjectScreenshots() {
     fetch("http://10.3.3.80/api/get_Project_Screenshots")
-      .then((response) => response.json())
-      .then((data) => setScreenshot(data.projectscreenshot))
-      .catch((error) => console.log(error));
+        .then((response) => response.json())
+        .then((data) => {
+            if(local.Users.role === "1"){
+                screenfilter = data.projectscreenshot;
+            }else if(local.Users.role === "3"){
+              screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.company_id === local.Users.company_id);
+            } else{
+                screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.user_id === local.Users.user_id);
+            }
+            setScreenshot(screenfilter);
+        })
+        .catch((error) => console.log(error));
   };
 
   return (
