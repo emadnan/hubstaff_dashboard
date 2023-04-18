@@ -55,7 +55,12 @@ const Screenshots = () => {
 
     const userStyle = {
         color: "black",
-        fontSize: 30,
+        fontSize: 22,
+    };
+
+    const cardStyle = {
+        color: "#0070ff",
+        display: "flex",
     };
 
     function onRangeChange(dates, dateStrings) {
@@ -82,13 +87,13 @@ const Screenshots = () => {
         fetch("http://10.3.3.80/api/get_Project_Screenshots")
             .then((response) => response.json())
             .then((data) => {
-                if(local.Users.role === "1"){
+                if (local.Users.role === "1") {
                     screenfilter = data.projectscreenshot;
                 }
-                else if (local.Users.role === "3"){
+                else if (local.Users.role === "3") {
                     screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.company_id === local.Users.company_id);
                 }
-                else{
+                else {
                     screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.user_id === local.Users.user_id);
                 }
                 setImages(screenfilter);
@@ -116,16 +121,16 @@ const Screenshots = () => {
 
     function getDateWiseScreenshots(a, b, c) {
         fetch(`http://10.3.3.80/api/get_projectscreenshot_by_date/${a}/${b}/${c}`)
-        .then((response) => response.json())
-        .then((data) => {
-            if(local.Users.role === "1" || local.Users.role === "3"){
-                screenfilter = data.projectscreenshot;
-            }else{
-                screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.user_id === local.Users.user_id);
-            }
-            setImages(screenfilter);
-        })
-        .catch((error) => console.log(error));
+            .then((response) => response.json())
+            .then((data) => {
+                if (local.Users.role === "1" || local.Users.role === "3") {
+                    screenfilter = data.projectscreenshot;
+                } else {
+                    screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.user_id === local.Users.user_id);
+                }
+                setImages(screenfilter);
+            })
+            .catch((error) => console.log(error));
     };
 
     function getProjects() {
@@ -160,7 +165,7 @@ const Screenshots = () => {
 
     return (
         <>
-            <h6 style={userStyle}>{userdata.name}</h6>
+            <h6 style={userStyle}>{userdata.email}</h6>
             <div className='row'>
                 <div className='col-md-4'>
                     <br></br>
@@ -172,7 +177,7 @@ const Screenshots = () => {
                         format="YYYY-MM-DD"
                         onChange={onRangeChange}
                     />
-                        <Button type='default' onClick={getScreenshots}>Today</Button>
+                    <Button type='default' onClick={getScreenshots}>Today</Button>
                 </div>
                 <div className='col-md-4'></div>
                 {
@@ -233,12 +238,14 @@ const Screenshots = () => {
                                         {timing.getattechments.map((attach) => (
                                             <div key={attach.id} style={{ marginRight: '10px' }}>
                                                 <h6 style={projectNameStyle}>{image.project_name}-{image.stream_name}</h6>
+                                                <br></br>
                                                 <a href={attach.path_url}>
                                                     <img className='card' src={attach.path_url} style={{ width: '100%', height: 'auto' }} alt="" onClick={() => handleClick(attach.path_url)} />
                                                 </a>
                                                 <h6 style={projectTimeStyle}>{new Date(timing.start_time).toLocaleTimeString().substring(0, 11)}</h6>
                                             </div>
                                         ))}
+                                        <br></br>
                                     </div>
                                 ))}
                             </div>

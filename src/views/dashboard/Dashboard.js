@@ -47,6 +47,13 @@ const Dashboard = () => {
     fontSize: 30,
   };
 
+  const userStyle = {
+    fontFamily: "Arial",
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#0070FF ",
+  };
+
   const imageWrapper = {
     margin: "10px",
     display: "flex",
@@ -197,12 +204,11 @@ const Dashboard = () => {
   return (
     <>
       <div className='row'>
-        <div className='col-md 6'>
-          <h4 style={headStyle}>Dashboard</h4>
+        <div className='col-md-4'>
+          <h4 style={userStyle}>{local.Users.email}</h4>
         </div>
       </div>
 
-      <br></br>
       <br></br>
 
       {/* Statistics Data Modal Starts */}
@@ -279,15 +285,17 @@ const Dashboard = () => {
 
                 <CTableRow>
                   <CTableHeaderCell className="text-center" style={mystyle}>Company Name</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>Address</CTableHeaderCell>
+                  {/* <CTableHeaderCell className="text-center" style={mystyle}>Address</CTableHeaderCell> */}
                   <CTableHeaderCell className="text-center" style={mystyle}>Company Email</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center" style={mystyle}>City</CTableHeaderCell>
                 </CTableRow>
 
                 {users.slice(0, 3).map((company) => (
                   <CTableRow key={company.id}>
                     <CTableHeaderCell className="text-center" style={mystyle2}>{company.company_name}</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>{company.address}</CTableHeaderCell>
+                    {/* <CTableHeaderCell className="text-center" style={mystyle2}>{company.address}</CTableHeaderCell> */}
                     <CTableHeaderCell className="text-center" style={mystyle2}>{company.company_email}</CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>{company.city}</CTableHeaderCell>
                   </CTableRow>
                 ))}
 
