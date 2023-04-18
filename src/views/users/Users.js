@@ -334,6 +334,7 @@ const Users = () => {
                 email: email,
                 password: password,
                 role: role,
+                company_id: local.Users.company_id,
 
             })
         }).then(response => {
@@ -349,10 +350,6 @@ const Users = () => {
             });
 
     }
-
-    // const roleHeader = local.Users.role === "1" ? (
-    //     <CTableHeaderCell className="text-center" style={mystyle}>Role</CTableHeaderCell>
-    // ) : null;
 
     return (
         <>

@@ -256,7 +256,7 @@ const Dashboard = () => {
                 <div key={image.id} style={{ display: 'flex', justifyContent: 'center' }}>
                   {image.get_timings.map((timing) => (
                     <div key={timing.id} style={timingStyle}>
-                      {timing.getattechments.slice(0, 1).map((attach) => (
+                      {timing.getattechments.slice(0,1).map((attach) => (
                         <div key={attach.id} style={{ marginRight: '10px' }}>
                           <a href={attach.path_url}>
                             <img className='card' src={attach.path_url} width={150} height={100} />

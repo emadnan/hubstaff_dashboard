@@ -60,7 +60,11 @@ const AssignedProjects = () => {
                     <CTableRow>
                         <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Project Name</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Users</CTableHeaderCell>
+                        {
+                            local.Users.role === "1" || local.Users.role === "3" ? (
+                                <CTableHeaderCell className="text-center" style={mystyle}>Users</CTableHeaderCell>
+                            ) : null
+                        }
                         <CTableHeaderCell className="text-center" style={mystyle}>Stream Name</CTableHeaderCell>
                     </CTableRow>
 
@@ -69,7 +73,11 @@ const AssignedProjects = () => {
                         <CTableRow key={assign.id}>
                             <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={mystyle2}>{assign.project_name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center" style={mystyle2}>{assign.name}</CTableHeaderCell>
+                            {
+                                local.Users.role === "1" | local.Users.role === "3" ? (
+                                    <CTableHeaderCell className="text-center" style={mystyle2}>{assign.name}</CTableHeaderCell>
+                                ) : null
+                            }
                             <CTableHeaderCell className="text-center" style={mystyle2}>{assign.stream_name}</CTableHeaderCell>
                         </CTableRow>
                     ))}
