@@ -3,6 +3,7 @@ import { Button, DatePicker, Select, Form, Divider } from 'antd'
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import dayjs from 'dayjs';
+import Geocode from "react-geocode";
 
 const { RangePicker } = DatePicker;
 dayjs.extend(customParseFormat)
@@ -55,7 +56,7 @@ const Screenshots = () => {
 
     const userStyle = {
         color: "black",
-        fontSize: 22,
+        fontSize: 18,
     };
 
     const cardStyle = {
@@ -79,8 +80,10 @@ const Screenshots = () => {
     const [user_id, setUserId] = useState("");
     const [project_id, setProjectId] = useState("");
     const userdata = local.Users;
+    const [address, setAddress] = useState("");
     var filteredUsers = [];
     var screenfilter = [];
+    var addressLocate = "";
 
     // Get API call
     function getScreenshots() {
@@ -163,9 +166,64 @@ const Screenshots = () => {
 
     const currentDate = new Date().toISOString().slice(0, 10);
 
+    Geocode.setApiKey("AIzaSyBSBflGv5OULqd9TPMLKecXIig07YXKW2A");
+    Geocode.setLanguage("en");
+    Geocode.setRegion("pk");
+    Geocode.setLocationType("ROOFTOP");
+    // images.map((locate) => (
+    //     Geocode.fromLatLng(locate.latitude,locate.longitude).then(
+    //         (response) => {
+    //             setAddress(response.results[0].formatted_address);
+    //             console.log(address);
+    //         },
+    //         (error) => {
+    //             console.error(error);
+    //         }
+    //     )
+    // ))
+
+    // images.filter((locate) => 
+    // if(local.Users.role === "3"){
+    //     locate.user_id === user_id;
+    // }else if (local.Users.role === "5"){
+    //     locate.user_id === local.Users.user_id;
+    // } ).map((locate) => {
+    //     return (
+    //         Geocode.fromLatLng(locate.latitude, locate.longitude).then(
+    //             (response) => {
+    //                 setAddress(response.results[0].formatted_address);
+    //                 console.log(address);
+    //             },
+    //             (error) => {
+    //                 console.error(error);
+    //             }
+    //         )
+    //     );
+
+    // });
+
+    images.filter((locate) => {
+        if (local.Users.role === "3") {
+            return locate.user_id === user_id;
+        } else if (local.Users.role === "5") {
+            return locate.user_id === local.Users.user_id;
+        }
+        return false;
+    }).forEach((locate) => {
+        Geocode.fromLatLng(locate.latitude, locate.longitude).then(
+            (response) => {
+                setAddress(response.results[0].formatted_address);
+                console.log(address);
+            },
+            (error) => {
+                console.error(error);
+            }
+        );
+    });
+
     return (
         <>
-            <h6 style={userStyle}>{userdata.email}</h6>
+            <h6 style={userStyle}>{address}</h6>
             <div className='row'>
                 <div className='col-md-4'>
                     <br></br>
@@ -204,7 +262,6 @@ const Screenshots = () => {
 
             </div>
             <Divider></Divider>
-
             <div style={imageContainer}>
                 {user_id ? images.filter((image) => image.user_id === user_id).map((image) => {
 

@@ -205,8 +205,9 @@ const Dashboard = () => {
     <>
       <div className='row'>
         <div className='col-md-4'>
-          <h4 style={userStyle}>{local.Users.email}</h4>
+          <h4 style={userStyle}>{local.Users.name}</h4>
         </div>
+        <div className='col-md-4'></div>
       </div>
 
       <br></br>
