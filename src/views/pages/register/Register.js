@@ -62,7 +62,6 @@ const Register = () => {
       },
     });
     if (result.status === 400) {
-      console.log(item);
       handleButtonClick1()
     } else if (result.status === 404) {
       handleButtonClick3();
@@ -136,7 +135,6 @@ const Register = () => {
       return () => clearTimeout(timer);
     }
   }, [showAlert3]);
-
 
   return (
     <ThemeProvider theme={theme}>
@@ -244,7 +242,8 @@ const Register = () => {
 
               <div className="d-flex justify-content-between align-items-center">
                 <div className="d-grid">
-                  <button type="button" className="btn btn-primary" onClick={signUp}>
+                  <button type="button" className="btn btn-primary"
+                    onClick={signUp}>
                     Sign Up
                   </button>
                 </div>
