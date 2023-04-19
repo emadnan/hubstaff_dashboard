@@ -68,6 +68,8 @@ const Login = () => {
       handleButtonClick1();
     }else if (result.status === 500){
       handleButtonClick3();
+    }else if (result.status === 401){
+      handleButtonClick4();
     }else {
       result = await result.json();
       localStorage.setItem("user-info", JSON.stringify(result));
@@ -138,6 +140,26 @@ const Login = () => {
     }
   }, [showAlert3]);
 
+   //Functions for Failed password or login
+   const [showAlert4, setShowAlert4] = useState(false);
+   function handleButtonClick4() {
+     setShowAlert4(true);
+   }
+ 
+   function handleCloseAlert4() {
+     setShowAlert4(false);
+   }
+ 
+   useEffect(() => {
+     if (showAlert4) {
+       const timer = setTimeout(() => {
+         setShowAlert4(false);
+       }, 3000);
+ 
+       return () => clearTimeout(timer);
+     }
+   }, [showAlert4]);
+ 
   return (
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
@@ -253,6 +275,13 @@ const Login = () => {
       {showAlert3 && (
         <Alert onClose={handleCloseAlert3} severity="error" style={modalStyle2}>
           User not found
+        </Alert>
+      )}
+
+      {/* Alert for Invalid Login*/}
+      {showAlert4 && (
+        <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
+          Invalid email or password
         </Alert>
       )}
     </ThemeProvider>

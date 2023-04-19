@@ -205,9 +205,14 @@ const Dashboard = () => {
     <>
       <div className='row'>
         <div className='col-md-4'>
-          <h4 style={userStyle}>{local.Users.name}</h4>
+          {
+            local.Users.role === "3"
+              ? <h4 style={userStyle}>Dashboard</h4>
+              : local.Users.role === "5"
+                ? <h4 style={userStyle}>{local.Users.name}</h4>
+                : null
+          }
         </div>
-        <div className='col-md-4'></div>
       </div>
 
       <br></br>
