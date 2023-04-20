@@ -66,11 +66,11 @@ const Login = () => {
     });
     if (result.status === 400) {
       handleButtonClick1();
-    }else if (result.status === 500){
+    } else if (result.status === 500) {
       handleButtonClick3();
-    }else if (result.status === 401){
+    } else if (result.status === 401) {
       handleButtonClick4();
-    }else {
+    } else {
       result = await result.json();
       localStorage.setItem("user-info", JSON.stringify(result));
       handleButtonClick2()
@@ -120,7 +120,7 @@ const Login = () => {
     }
   }, [showAlert2]);
 
-  //Functions for Login Success
+  //Functions for User not found
   const [showAlert3, setShowAlert3] = useState(false);
   function handleButtonClick3() {
     setShowAlert3(true);
@@ -140,26 +140,26 @@ const Login = () => {
     }
   }, [showAlert3]);
 
-   //Functions for Failed password or login
-   const [showAlert4, setShowAlert4] = useState(false);
-   function handleButtonClick4() {
-     setShowAlert4(true);
-   }
- 
-   function handleCloseAlert4() {
-     setShowAlert4(false);
-   }
- 
-   useEffect(() => {
-     if (showAlert4) {
-       const timer = setTimeout(() => {
-         setShowAlert4(false);
-       }, 3000);
- 
-       return () => clearTimeout(timer);
-     }
-   }, [showAlert4]);
- 
+  //Functions for Failed password or login
+  const [showAlert4, setShowAlert4] = useState(false);
+  function handleButtonClick4() {
+    setShowAlert4(true);
+  }
+
+  function handleCloseAlert4() {
+    setShowAlert4(false);
+  }
+
+  useEffect(() => {
+    if (showAlert4) {
+      const timer = setTimeout(() => {
+        setShowAlert4(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert4]);
+
   return (
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>

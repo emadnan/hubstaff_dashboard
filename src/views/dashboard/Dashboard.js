@@ -5,6 +5,9 @@ import moment from 'moment';
 
 const Dashboard = () => {
 
+  //Local Storage data
+  const local = JSON.parse(localStorage.getItem('user-info'));
+
   //CSS Stylings
   const mystyle = {
     color: "white",
@@ -65,7 +68,7 @@ const Dashboard = () => {
     flexDirection: "row",
   };
 
-  //Get API calls and functions
+  //Declarations for API calls
   const [users, setUsers] = useState([]);
   const [projects, setProjects] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -76,11 +79,9 @@ const Dashboard = () => {
   const [minutes, setMinutes] = useState("");
   const [seconds, setSeconds] = useState("");
   var screenfilter = [];
-
-  const local = JSON.parse(localStorage.getItem('user-info'));
-
   var filteredUsers = [];
 
+  //Initial rendering through useEffect
   useEffect(() => {
     getCompanies()
     getProjects()
@@ -91,6 +92,7 @@ const Dashboard = () => {
     getAssigns()
   }, []);
 
+  //GET API calls
   function getCompanies() {
     fetch("http://10.3.3.80/api/getcompany")
       .then((response) => response.json())
@@ -178,27 +180,20 @@ const Dashboard = () => {
       .catch((error) => console.log(error));
   };
 
-  // function getProjectScreenshots() {
-  //   fetch("http://10.3.3.80/api/get_Project_Screenshots")
-  //     .then((response) => response.json())
-  //     .then((data) => setScreenshot(data.projectscreenshot))
-  //     .catch((error) => console.log(error));
-  // };
-
   function getProjectScreenshots() {
     fetch("http://10.3.3.80/api/get_Project_Screenshots")
-        .then((response) => response.json())
-        .then((data) => {
-            if(local.Users.role === "1"){
-                screenfilter = data.projectscreenshot;
-            }else if(local.Users.role === "3"){
-              screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.company_id === local.Users.company_id);
-            } else{
-                screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.user_id === local.Users.user_id);
-            }
-            setScreenshot(screenfilter);
-        })
-        .catch((error) => console.log(error));
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === "1") {
+          screenfilter = data.projectscreenshot;
+        } else if (local.Users.role === "3") {
+          screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.company_id === local.Users.company_id);
+        } else {
+          screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.user_id === local.Users.user_id);
+        }
+        setScreenshot(screenfilter);
+      })
+      .catch((error) => console.log(error));
   };
 
   return (
@@ -262,7 +257,7 @@ const Dashboard = () => {
                 <div key={image.id} style={{ display: 'flex', justifyContent: 'center' }}>
                   {image.get_timings.map((timing) => (
                     <div key={timing.id} style={timingStyle}>
-                      {timing.getattechments.slice(0,1).map((attach) => (
+                      {timing.getattechments.slice(0, 1).map((attach) => (
                         <div key={attach.id} style={{ marginRight: '10px' }}>
                           <a href={attach.path_url}>
                             <img className='card' src={attach.path_url} width={150} height={100} />
@@ -291,7 +286,6 @@ const Dashboard = () => {
 
                 <CTableRow>
                   <CTableHeaderCell className="text-center" style={mystyle}>Company Name</CTableHeaderCell>
-                  {/* <CTableHeaderCell className="text-center" style={mystyle}>Address</CTableHeaderCell> */}
                   <CTableHeaderCell className="text-center" style={mystyle}>Company Email</CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>City</CTableHeaderCell>
                 </CTableRow>
@@ -299,7 +293,6 @@ const Dashboard = () => {
                 {users.slice(0, 3).map((company) => (
                   <CTableRow key={company.id}>
                     <CTableHeaderCell className="text-center" style={mystyle2}>{company.company_name}</CTableHeaderCell>
-                    {/* <CTableHeaderCell className="text-center" style={mystyle2}>{company.address}</CTableHeaderCell> */}
                     <CTableHeaderCell className="text-center" style={mystyle2}>{company.company_email}</CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>{company.city}</CTableHeaderCell>
                   </CTableRow>
@@ -464,32 +457,6 @@ const Dashboard = () => {
           {/* Card for Time Sheets Modal Ends */}
 
           <br></br>
-
-          {/* Card for Apps Modal Starts */}
-          {/* <Card style={cardStyle2}>
-            <h5 style={head}>APPS & URLS</h5>
-            <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-              <CTableHead color="light" >
-
-
-                <CTableRow>
-                  <CTableHeaderCell className="text-center" style={mystyle}>App Name</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>Time Spent</CTableHeaderCell>
-                </CTableRow>
-
-              </CTableHead>
-
-              <CTableBody>
-              </CTableBody>
-            </CTable>
-
-            <Divider></Divider>
-            <div className='text-center'>
-              <Button type="link" href="/activity/apps">View apps activity &gt;</Button>
-            </div>
-
-          </Card> */}
-          {/* Card for Apps Modal Ends */}
 
         </div>
       </div>

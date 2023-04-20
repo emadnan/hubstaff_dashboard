@@ -14,13 +14,14 @@ const Users = () => {
     const [password, setPassword] = useState("");
     const [role, setRole] = useState("");
 
+    //Local Storage data
     const local = JSON.parse(localStorage.getItem('user-info'));
     const permissions = local.permissions;
-
     const perm = permissions.map(permission => ({
         name: permission.name,
     }));
 
+    //Role & Permissions check
     const isCreateButtonEnabled = perm.some(item => item.name === 'Create_User');
     const isEditButtonEnabled = perm.some(item => item.name === 'Update_User');
     const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_User');
@@ -231,9 +232,21 @@ const Users = () => {
         }
     }, [showAlert6]);
 
+    //Array declarations for API calls
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
     var filteredUsers = [];
+
+    //Initial rendering through useEffect
+    useEffect(() => {
+        getList();
+        getRoles()
+    }, []);
+
+    //Get calls handling
+    const handleRoleChange = (value) => {
+        setRole(value);
+    };
 
     // Get API call
     function getList() {
@@ -260,16 +273,6 @@ const Users = () => {
             .then((data) => setRoles(data.roles))
             .catch((error) => console.log(error));
     }
-
-    useEffect(() => {
-        getList();
-        getRoles()
-    }, []);
-
-    //Get calls handling
-    const handleRoleChange = (value) => {
-        setRole(value);
-    };
 
     // Add API call
     async function addUser() {

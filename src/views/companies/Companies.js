@@ -16,13 +16,14 @@ const Companies = () => {
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
 
+  //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'));
   const permissions = local.permissions;
-
   const perm = permissions.map(permission => ({
     name: permission.name,
   }));
 
+  //Role & Permissions check
   const isEditButtonEnabled = perm.some(item => item.name === 'Update_Company');
   const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_Company');
   const isCreateButtonEnabled = perm.some(item => item.name === 'Create_Company');
@@ -70,7 +71,7 @@ const Companies = () => {
     backgroundColor: "white",
     fontWeight: "bold",
     color: "#0070ff",
-  }
+  };
 
   // Functions of Add Company Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -271,32 +272,31 @@ const Companies = () => {
   };
 
 
-  // Get API calls
+  // Array declarations for API calls
   const [users, setUsers] = useState([]);
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
   const [bycompany, setByCompany] = useState([]);
-
-  // function getList() {
-  //   fetch("http://10.3.3.80/api/getcompany")
-  //     .then((response) => response.json())
-  //     .then((data) => setUsers(data.companies))
-  //     .catch((error) => console.log(error));
-  // }
-
   var filteredUsers = [];
-  
+
+  //Initial rendering through useEffect
+  useEffect(() => {
+    getList()
+    getCountry()
+  }, []);
+
+  //GET API calls
   function getList() {
     fetch("http://10.3.3.80/api/getcompany")
       .then((response) => response.json())
       .then((data) => {
-        if(local.Users.role === "1"){
+        if (local.Users.role === "1") {
           filteredUsers = data.companies;
         }
-        else if (local.Users.role === "3"){
+        else if (local.Users.role === "3") {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
         }
-        else if (local.Users.role === "5"){
+        else if (local.Users.role === "5") {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
         }
         setUsers(filteredUsers);
@@ -333,11 +333,6 @@ const Companies = () => {
       })
       .catch((error) => console.log(error));
   };
-
-  useEffect(() => {
-    getList()
-    getCountry()
-  }, []);
 
   // Add API call
   async function addCompany() {

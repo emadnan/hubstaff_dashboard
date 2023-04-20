@@ -11,13 +11,14 @@ const Permission = () => {
     // Variable declarations
     const [name, setName] = useState("");
 
+    //Local Storage data
     const local = JSON.parse(localStorage.getItem('user-info'));
     const permissions = local.permissions;
-
     const perm = permissions.map(permission => ({
         name: permission.name,
     }));
 
+    //Role & Permissions check
     const isCreateButtonEnabled = perm.some(item => item.name === 'Create_Permission');
     const isEditButtonEnabled = perm.some(item => item.name === 'Update_Permission');
     const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_Permission');
@@ -228,10 +229,16 @@ const Permission = () => {
         }
     }, [showAlert6]);
 
+    //Array declarations for API calls
     const [permission, setPermission] = useState([]);
     const [bypermission, setPermissionById] = useState([]);
 
-    // Get API call
+    //Initial rendering through useEffect
+    useEffect(() => {
+        getPermission()
+    }, []);
+
+    // Get API calls
     function getPermission() {
         fetch("http://10.3.3.80/api/getpermissions")
             .then((response) => response.json())
@@ -248,11 +255,6 @@ const Permission = () => {
             })
             .catch((error) => console.log(error));
     };
-
-
-    useEffect(() => {
-        getPermission()
-    }, []);
 
     // Add API call
     async function addPermission() {
@@ -313,7 +315,6 @@ const Permission = () => {
             body: JSON.stringify({
                 id: newid,
                 name: name,
-                // guard_name: guard_name,
             })
         }).then(response => {
             if (response.ok) {

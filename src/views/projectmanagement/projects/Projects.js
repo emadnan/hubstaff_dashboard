@@ -23,13 +23,14 @@ const Projects = () => {
   const [project_id, setProjectId] = useState("");
   const [proj_id, setProjId] = useState("");
 
+  //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'));
   const permissions = local.permissions;
-
   const perm = permissions.map(permission => ({
     name: permission.name,
   }));
 
+  //Role & Permissions check
   const isCreateButtonEnabled = perm.some(item => item.name === 'Create_Project');
   const isEditButtonEnabled = perm.some(item => item.name === 'Update_Project');
   const isViewButtonEnabled = perm.some(item => item.name === 'View_Project');
@@ -353,7 +354,7 @@ const Projects = () => {
     }
   }, [showAlert8]);
 
-  //On-change functions
+  //Get calls handling
   const handleCompanyChange = (value) => {
     setCompanyId(value);
   };
@@ -362,7 +363,7 @@ const Projects = () => {
     setDepartmentId(value);
   };
 
-  // Get API call Arrays
+  // Array declaration for API calls
   const [projects, setProjects] = useState([]);
   const [company, setCompanies] = useState([]);
   const [users, setUsers] = useState([]);
@@ -374,6 +375,7 @@ const Projects = () => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   var filteredUsers = [];
 
+  //Initial rendering through useEffect
   useEffect(() => {
     getList()
     getCompany()
@@ -386,7 +388,16 @@ const Projects = () => {
     setSelectedUsers(hasrole);
   }, [hasrole]);
 
-  // Get API call
+  //Checkbox control function
+  const handleSelectUser = (e, userId) => {
+    if (e.target.checked) {
+      setSelectedUsers([...selectedUsers, userId]);
+    } else {
+      setSelectedUsers(selectedUsers.filter((id) => id !== userId));
+    }
+  };
+
+  // Get API calls
   function getList() {
     fetch("http://10.3.3.80/api/getproject")
       .then((response) => response.json())
@@ -497,14 +508,6 @@ const Projects = () => {
       .catch((error) => console.log(error));
   };
 
-  //Checkbox control function
-  const handleSelectUser = (e, userId) => {
-    if (e.target.checked) {
-      setSelectedUsers([...selectedUsers, userId]);
-    } else {
-      setSelectedUsers(selectedUsers.filter((id) => id !== userId));
-    }
-  };
 
   // Add API call
   async function addProject() {

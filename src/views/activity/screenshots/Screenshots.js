@@ -4,28 +4,15 @@ import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import dayjs from 'dayjs';
 import Geocode from "react-geocode";
-
 const { RangePicker } = DatePicker;
 dayjs.extend(customParseFormat)
-// const { Option } = Select;
-// const weekFormat = 'MM/DD'
 
 const Screenshots = () => {
 
-    const dateFormatList = ['DD/MM/YYYY', 'DD/MM/YY', 'DD-MM-YYYY', 'DD-MM-YY']
-    // const customWeekStartEndFormat = (value) =>
-    //     `${dayjs(value).startOf('week').format(weekFormat)} ~ ${dayjs(value)
-    //         .endOf('week')
-    //         .format(weekFormat)}`
-
-    // const timezone = {
-    //     color: "#787878",
-    //     fontSize: "13px",
-    //     fontWeight: "500",
-    // };
-
+    //Local Storage data
     const local = JSON.parse(localStorage.getItem('user-info'));
 
+    //CSS Styling
     const imageContainer = {
         display: "flex",
         flexWrap: "wrap",
@@ -64,6 +51,7 @@ const Screenshots = () => {
         display: "flex",
     };
 
+    //Functions for Date handling
     function onRangeChange(dates, dateStrings) {
         if (dates) {
             console.log('From: ', dates[0], ', to: ', dates[1]);
@@ -74,6 +62,7 @@ const Screenshots = () => {
         }
     };
 
+    //Array declaration for API calls
     const [images, setImages] = useState([]);
     const [users, setUsers] = useState([]);
     const [project, setProject] = useState([]);
@@ -85,7 +74,14 @@ const Screenshots = () => {
     var screenfilter = [];
     var addressLocate = "";
 
-    // Get API call
+    //Initial rendering through useEffect
+    useEffect(() => {
+        getUsers()
+        getProjects()
+        getScreenshots()
+    }, []);
+
+    // Get API calls
     function getScreenshots() {
         fetch("http://10.3.3.80/api/get_Project_Screenshots")
             .then((response) => response.json())
@@ -143,12 +139,7 @@ const Screenshots = () => {
             .catch((error) => console.log(error));
     };
 
-    useEffect(() => {
-        getUsers()
-        getProjects()
-        getScreenshots()
-    }, []);
-
+    //Functions for Selected image
     const [selectedImage, setSelectedImage] = useState(null);
 
     const handleClick = (imageUrl) => {
@@ -164,44 +155,11 @@ const Screenshots = () => {
         console.log(user_id);
     };
 
-    const currentDate = new Date().toISOString().slice(0, 10);
-
+    //Geolocation get using Google
     Geocode.setApiKey("AIzaSyBSBflGv5OULqd9TPMLKecXIig07YXKW2A");
     Geocode.setLanguage("en");
     Geocode.setRegion("pk");
     Geocode.setLocationType("ROOFTOP");
-    // images.map((locate) => (
-    //     Geocode.fromLatLng(locate.latitude,locate.longitude).then(
-    //         (response) => {
-    //             setAddress(response.results[0].formatted_address);
-    //             console.log(address);
-    //         },
-    //         (error) => {
-    //             console.error(error);
-    //         }
-    //     )
-    // ))
-
-    // images.filter((locate) => 
-    // if(local.Users.role === "3"){
-    //     locate.user_id === user_id;
-    // }else if (local.Users.role === "5"){
-    //     locate.user_id === local.Users.user_id;
-    // } ).map((locate) => {
-    //     return (
-    //         Geocode.fromLatLng(locate.latitude, locate.longitude).then(
-    //             (response) => {
-    //                 setAddress(response.results[0].formatted_address);
-    //                 console.log(address);
-    //             },
-    //             (error) => {
-    //                 console.error(error);
-    //             }
-    //         )
-    //     );
-
-    // });
-
     images.filter((locate) => {
         if (local.Users.role === "3") {
             return locate.user_id === user_id;
@@ -322,81 +280,6 @@ const Screenshots = () => {
                 )}
 
             </div>
-
-            {/* <Modal title="Filters" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
-
-                <div className="form-outline mb-3">
-                    <Form.Item name="select" hasFeedback>
-                        <label style={timezone}>TIMEZONE</label>
-                        <Select placeholder="Timezone">
-                            <Option value="Member's Time Zone">Member&apos;s Time Zone</Option>
-                            <Option value="My Time Zone">My Time Zone</Option>
-                            <Option value="Biafotech Time Zone">Biafotech Time Zone</Option>
-                        </Select>
-                    </Form.Item>
-                </div>
-
-                <div className="form-outline mb-3">
-                    <Form.Item name="select" hasFeedback>
-                        <label style={timezone}>ACTIVITY LEVEL</label>
-                        <Select placeholder="All levels">
-                            <Option value="95%">&#62;95%</Option>
-                            <Option value="85%">&#62;85%</Option>
-                            <Option value="75%">&#62;75%</Option>
-                            <Option value="65%">&#62;65%</Option>
-                            <Option value="55%">&#62;55%</Option>
-                            <Option value="45%">&#62;45%</Option>
-                            <Option value="35%">&#62;35%</Option>
-                            <Option value="25%">&#62;25%</Option>
-                            <Option value="15%">&#62;15%</Option>
-                        </Select>
-                    </Form.Item>
-                </div>
-
-                <div className="form-outline mb-3">
-                    <Form.Item name="select" hasFeedback>
-                        <label style={timezone}>SOURCE</label>
-                        <Select placeholder="All types">
-                            <Option value="Desktop">Desktop</Option>
-                            <Option value="Mobile">Mobile</Option>
-                            <Option value="Browser">Browser</Option>
-                            <Option value="Web Timer">Web Timer</Option>
-                        </Select>
-                    </Form.Item>
-                </div>
-
-                <div className="form-outline mb-3">
-                    <Form.Item name="select" hasFeedback>
-                        <label style={timezone}>TIME TYPE</label>
-                        <Select placeholder="All types">
-                            <Option value="Normal">Normal</Option>
-                            <Option value="Idle">Idle</Option>
-                            <Option value="Resumed">Resumed</Option>
-                            <Option value="Manual">Manual</Option>
-                        </Select>
-                    </Form.Item>
-                </div>
-
-                <div className="form-outline mb-3">
-                    <Form.Item name="select" hasFeedback>
-                        <label style={timezone}>PROJECT</label>
-                        <Select placeholder="All projects">
-                            <Option value="Office Work">Office Work</Option>
-                        </Select>
-                    </Form.Item>
-                </div>
-
-                <div className="form-outline mb-3">
-                    <Form.Item name="select" hasFeedback>
-                        <label style={timezone}>MEMBER</label>
-                        <Select placeholder="Members">
-                            <Option value="Demo Member">Demo Member</Option>
-                        </Select>
-                    </Form.Item>
-                </div>
-
-            </Modal> */}
-
         </>
     );
 }

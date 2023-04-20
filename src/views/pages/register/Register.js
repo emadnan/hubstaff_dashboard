@@ -11,24 +11,25 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
+const theme = createTheme();
+
 const Register = () => {
 
+  //Variable declarations
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [confirmpass, setConfirmPass] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
-
   const navigate = useNavigate();
 
-  const theme = createTheme();
-
+  //Form handling
   const handleSubmit = (event) => {
     event.preventDefault();
   };
 
+  //CSS Styling
   const modalStyle2 = {
     position: "fixed",
     top: "85%",
@@ -51,6 +52,7 @@ const Register = () => {
     outline: "none",
   };
 
+  //Register API call
   async function signUp() {
     let item = { name, email, password, confirmpass, role: 3 }
     let result = await fetch("http://10.3.3.80/api/register", {
@@ -74,7 +76,7 @@ const Register = () => {
     }
   }
 
-
+  //Functions for Company register failure
   const [showAlert1, setShowAlert1] = useState(false);
 
   function handleButtonClick1() {
@@ -95,6 +97,7 @@ const Register = () => {
     }
   }, [showAlert1]);
 
+  //Functions for Company register success
   const [showAlert2, setShowAlert2] = useState(false);
 
   function handleButtonClick2() {
@@ -115,6 +118,7 @@ const Register = () => {
     }
   }, [showAlert2]);
 
+  //Functions for company email already exists
   const [showAlert3, setShowAlert3] = useState(false);
 
   function handleButtonClick3() {

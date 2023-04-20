@@ -3,6 +3,9 @@ import { React, useState, useEffect } from 'react';
 
 const AssignedProjects = () => {
 
+    //Local Storage data
+    const local = JSON.parse(localStorage.getItem('user-info'));
+
     // CSS Stylings
     const mystyle = {
         color: "white",
@@ -17,9 +20,14 @@ const AssignedProjects = () => {
         backgroundColor: "white ",
     };
 
+    //Array declarations for API calls
     const [assigns, setAssigns] = useState([]);
     var filteredUsers = [];
-    const local = JSON.parse(localStorage.getItem('user-info'));
+
+    //Initial rendering through useEffect
+    useEffect(() => {
+        getAssigns()
+    }, []);
 
     // Get API call
     function getAssigns() {
@@ -39,11 +47,6 @@ const AssignedProjects = () => {
             })
             .catch((error) => console.log(error));
     };
-
-
-    useEffect(() => {
-        getAssigns()
-    }, []);
 
     return (
         <>
@@ -84,7 +87,6 @@ const AssignedProjects = () => {
 
                 </CTableHead>
                 <CTableBody>
-
                 </CTableBody>
             </CTable>
         </>

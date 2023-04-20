@@ -13,13 +13,14 @@ const Departments = () => {
     const [department_name, setDepartmentName] = useState("");
     const [description, setDescription] = useState("");
 
+    //Local Storage data
     const local = JSON.parse(localStorage.getItem('user-info'));
     const permissions = local.permissions;
-
     const perm = permissions.map(permission => ({
         name: permission.name,
     }));
 
+    //Role & Permissions check
     const isCreateButtonEnabled = perm.some(item => item.name === 'Create_Department');
     const isEditButtonEnabled = perm.some(item => item.name === 'Update_Department');
     const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_Department');
@@ -46,7 +47,6 @@ const Departments = () => {
         left: "55%",
         transform: "translateX(-50%)",
     };
-
 
     const mystyle = {
         color: "white",
@@ -261,12 +261,19 @@ const Departments = () => {
         setCompanyId(value);
     };
 
-    // Get API call
+    // Array declarations for API calls
     const [department, setDepartment] = useState([]);
     const [company, setCompanies] = useState([]);
     const [bydepartment, setByDepartment] = useState([]);
     var filteredUsers = [];
 
+    //Initial rendering through useEffect
+    useEffect(() => {
+        getList()
+        getCompany()
+    }, []);
+
+    //GET API calls
     function getList() {
         fetch("http://10.3.3.80/api/getdepartment")
             .then((response) => response.json())
@@ -315,10 +322,7 @@ const Departments = () => {
             .catch((error) => console.log(error));
     };
 
-    useEffect(() => {
-        getList()
-        getCompany()
-    }, []);
+
 
     // Add API call
     async function addDepartment() {
@@ -393,8 +397,8 @@ const Departments = () => {
             .catch(error => {
                 console.error(error);
             });
-
     }
+
     return (
         <>
             <div className='row'>

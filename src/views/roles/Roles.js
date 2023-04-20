@@ -13,13 +13,14 @@ const Roles = () => {
     // Variable declarations
     const [name, setName] = useState("");
 
+    //Local Storage data
     const local = JSON.parse(localStorage.getItem('user-info'));
     const permissions = local.permissions;
-
     const perm = permissions.map(permission => ({
         name: permission.name,
     }));
 
+    //Role & Permissions check
     const isCreateButtonEnabled = perm.some(item => item.name === 'Create_Role');
     const isEditButtonEnabled = perm.some(item => item.name === 'Update_Role');
     const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_Role');
@@ -295,7 +296,7 @@ const Roles = () => {
         }
     }, [showAlert8]);
 
-    //Checkbox Function
+    //Function for checkbox handling
     const handleSelectUser = (e, permId) => {
         if (e.target.checked) {
             setSelectedUsers([...selectedUsers, permId]);
@@ -304,12 +305,22 @@ const Roles = () => {
         }
     };
 
-    //Array declarations for GET APIs
+    //Array declarations for API calls
     const [roles, setRoles] = useState([]);
     const [permission, setPermission] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [getrole, setRoleById] = useState([]);
     const [haspermission, setHasPermission] = useState([]);
+
+    //Initial rendering through useEffect
+    useEffect(() => {
+        getRoles()
+        getPermission()
+    }, []);
+
+    useEffect(() => {
+        setSelectedUsers(haspermission);
+    }, [haspermission]);
 
     // Get API call
     function getRoles() {
@@ -346,15 +357,6 @@ const Roles = () => {
             })
             .catch((error) => console.log(error));
     };
-
-    useEffect(() => {
-        getRoles()
-        getPermission()
-    }, []);
-
-    useEffect(() => {
-        setSelectedUsers(haspermission);
-    }, [haspermission]);
 
     // Add API call
     async function addRole() {
@@ -515,8 +517,6 @@ const Roles = () => {
 
                 </CTableHead>
                 <CTableBody>
-
-
                 </CTableBody>
             </CTable>
 
@@ -605,32 +605,6 @@ const Roles = () => {
                         </div>
                     ))}
                 </div>
-                {/* {permission.map((perm, index) => (
-                    <div className='row' key={perm.id}>
-                        <div className='col md-2 text-center'>
-                            <h6 style={perStyle}>{index + 1}</h6>
-                        </div>
-                        <div className='col md-3'></div>
-                        <div className='col md-2 text-center'>
-                            <h6 style={perStyle}>{perm.name}</h6>
-                        </div>
-                        <div className='col md-3'></div>
-                        <div className='col md-2 text-center'>
-                            <Checkbox
-                                checked={haspermission.includes(perm.id)}
-                                onChange={(e) => {
-                                    if (e.target.checked) {
-                                        setSelectedUsers([...selectedUsers, perm.id]);
-                                    } else {
-                                        setSelectedUsers(selectedUsers.filter((id) => id !== perm.id));
-                                    }
-                                }}
-                            />
-                        </div>
-                        &nbsp;
-                        <Divider></Divider>
-                    </div>
-                ))} */}
             </Modal>
 
             {/* Alert for Add Role Success*/}
@@ -688,7 +662,6 @@ const Roles = () => {
                     Failed to Assign Permissions
                 </Alert>
             )}
-
         </>
     )
 }
