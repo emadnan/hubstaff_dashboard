@@ -160,28 +160,54 @@ const Screenshots = () => {
     Geocode.setLanguage("en");
     Geocode.setRegion("pk");
     Geocode.setLocationType("ROOFTOP");
-    images.filter((locate) => {
-        if (local.Users.role === "3") {
-            return locate.user_id === user_id;
-        } else if (local.Users.role === "5") {
-            return locate.user_id === local.Users.user_id;
-        }
-        return false;
-    }).forEach((locate) => {
-        Geocode.fromLatLng(locate.latitude, locate.longitude).then(
-            (response) => {
-                setAddress(response.results[0].formatted_address);
-                console.log(address);
-            },
-            (error) => {
-                console.error(error);
+    // images.filter((locate) => {
+    //     if (local.Users.role === "3") {
+    //         return locate.user_id === user_id;
+    //     } else if (local.Users.role === "5") {
+    //         return locate.user_id === local.Users.user_id;
+    //     }
+    //     return false;
+    // }).forEach((locate) => {
+    //     Geocode.fromLatLng(locate.latitude, locate.longitude).then(
+    //         (response) => {
+    //             setAddress(response.results[0].formatted_address);
+    //             console.log(address);
+    //         },
+    //         (error) => {
+    //             console.error(error);
+    //         }
+    //     );
+    // });
+
+    const [addresses, setAddresses] = useState([]);
+
+    useEffect(() => {
+        const locations = images.filter((locate) => {
+            if (local.Users.role === "3") {
+                return locate.user_id === user_id;
+            } else if (local.Users.role === "5") {
+                return locate.user_id === local.Users.user_id;
             }
+            return false;
+        });
+
+        const promises = locations.map((location) =>
+            Geocode.fromLatLng(location.latitude, location.longitude).then(
+                (response) => response.results[0].formatted_address
+            )
         );
-    });
+
+        Promise.all(promises).then((results) => setAddresses(results));
+    }, [images]);
+
 
     return (
         <>
-            <h6 style={userStyle}>{address}</h6>
+            {/* <h6 style={userStyle}>{address}</h6> */}
+            {/* {addresses.map((address, index) => (
+                <p key={index} style={userStyle}>{address}</p>
+            ))} */}
+            {addresses.length > 0 && <p style={userStyle}>{addresses[addresses.length - 1]}</p>}
             <div className='row'>
                 <div className='col-md-4'>
                     <br></br>

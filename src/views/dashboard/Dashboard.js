@@ -231,7 +231,7 @@ const Dashboard = () => {
                   <h3 style={subhead}>{image.hours}:{image.minutes}:{image.seconds}</h3>
                 </div>
               );
-            }) : null};
+            }) : null}
           </div>
           <div className='col-md-2'>
             <h6 style={head}>WEEKLY ACTIVITY</h6>
