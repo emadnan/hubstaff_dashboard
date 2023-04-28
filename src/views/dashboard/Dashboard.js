@@ -225,7 +225,13 @@ const Dashboard = () => {
           </div>
           <div className='col-md-2'>
             <h6 style={head}>TODAY WORKED</h6>
-            <h3 style={subhead}>{hours}:{minutes}:{seconds}</h3>
+            {local.Users.user_id ? screenshot.filter((image) => image.user_id === local.Users.user_id).map((image) => {
+              return (
+                <div key={image.id}>
+                  <h3 style={subhead}>{image.hours}:{image.minutes}:{image.seconds}</h3>
+                </div>
+              );
+            }) : null};
           </div>
           <div className='col-md-2'>
             <h6 style={head}>WEEKLY ACTIVITY</h6>

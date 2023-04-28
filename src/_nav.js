@@ -1,10 +1,7 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
-import { cilBell, cilSpeedometer, cilClock, cilChartLine, cilSpreadsheet, cilCalendar, cilCash, cilUser, cilLocationPin, cilUserFollow } from '@coreui/icons'
+import { cilBell, cilSpeedometer, cilClock, cilChartLine, cilSpreadsheet, cilCalendar, cilCash, cilUser, cilLocationPin, cilUserFollow, cilStream } from '@coreui/icons'
 import { CNavGroup, CNavItem, } from '@coreui/react'
-
-
-const local = JSON.parse(localStorage.getItem('user-info'));
 
 const _nav = [
   {
@@ -160,6 +157,12 @@ const _nav = [
         to: '/reports/allreports',
       },
     ],
+  },
+  {
+    component: CNavItem,
+    name: 'Teams',
+    to: '/teams',
+    icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
