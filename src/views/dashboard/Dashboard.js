@@ -144,7 +144,7 @@ const Dashboard = () => {
           filteredUsers = data.Project_Assigns.filter((user) => user.company_id === local.Users.company_id);
         }
         else if (local.Users.role === "5") {
-          filteredUsers = data.Project_Assigns.filter((user) => user.user_id === local.Users.user_id);
+          filteredUsers = data.Project_Assigns.filter((user) => user.assign_projects_user_id === local.Users.user_id);
         }
         setAssigned(filteredUsers);
       })
@@ -425,7 +425,7 @@ const Dashboard = () => {
           <br></br>
 
           {/* Card for Time Sheets Modal Starts */}
-          <Card style={cardStyle2}>
+          {/* <Card style={cardStyle2}>
             <h5 style={head}>TIME SHEETS</h5>
             <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
               <CTableHead color="light" >
@@ -448,7 +448,7 @@ const Dashboard = () => {
               <Button type="link" href="/timesheets/viewedit">View daily timesheets &gt;</Button>
             </div>
 
-          </Card>
+          </Card> */}
           {/* Card for Time Sheets Modal Ends */}
 
           <br></br>

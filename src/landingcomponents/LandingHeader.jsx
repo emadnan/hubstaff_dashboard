@@ -1,8 +1,11 @@
 import React from 'react'
+import LandingNavbar from './LandingNavbar'
 
 function LandingHeader() {
   return (
-    <div>LandingHeader</div>
+    <div id='main'>
+      <LandingNavbar/>
+    </div>
   )
 }
 

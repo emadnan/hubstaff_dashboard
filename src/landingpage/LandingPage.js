@@ -1,8 +1,12 @@
-import React from 'react'
+import {React, useState} from 'react'
+import LandingHeader from 'src/landingcomponents/LandingHeader'
+import LandingNavbar from 'src/landingcomponents/LandingNavbar'
 
 function LandingPage() {
   return (
-    <div>LandingPage</div>
+    <div className='App'>
+      <LandingHeader/>
+    </div>
   )
 }
 

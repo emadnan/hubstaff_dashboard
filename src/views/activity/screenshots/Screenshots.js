@@ -172,11 +172,25 @@ const Screenshots = () => {
             return false;
         });
 
-        const promises = locations.map((location) =>
-            Geocode.fromLatLng(location.latitude, location.longitude).then(
-                (response) => response.results[0].formatted_address
-            )
-        );
+        // console.log(locations);
+
+        // const promises = locations.map((location) =>
+        //     Geocode.fromLatLng(location.latitude, location.longitude).then(
+        //         (response) => response.results[0].formatted_address
+        //     )
+        // );
+        const promises = locations.map((loc)=>Geocode.fromLatLng(loc.latitude, loc.longitude).then(
+            (response) => {
+              const address = response.results[0].formatted_address;
+              console.log(address);
+            },
+            (error) => {
+              console.error(error);
+            }
+        )
+          );
+
+        console.log(promises);
 
         Promise.all(promises).then((results) => setAddresses(results));
     }, [images]);
@@ -237,7 +251,8 @@ const Screenshots = () => {
                                             <a href={attach.path_url}>
                                                 <img className='card' src={attach.path_url} style={{ width: '100%', height: 'auto' }} alt="" onClick={() => handleClick(attach.path_url)} />
                                             </a>
-                                            <h6 style={projectTimeStyle}>{new Date(timing.start_time).toLocaleTimeString().substring(0, 11)}</h6>
+                                            <h6 style={projectTimeStyle}>{new Date(timing.start_time).toLocaleTimeString().substring(0, 11)}-{new Date(timing.end_time).toLocaleTimeString().substring(0, 11)}</h6>
+                                            <br></br>
                                         </div>
                                     ))}
                                     <br></br>
@@ -260,7 +275,8 @@ const Screenshots = () => {
                                                 <a href={attach.path_url}>
                                                     <img className='card' src={attach.path_url} style={{ width: '100%', height: 'auto' }} alt="" onClick={() => handleClick(attach.path_url)} />
                                                 </a>
-                                                <h6 style={projectTimeStyle}>{new Date(timing.start_time).toLocaleTimeString().substring(0, 11)}</h6>
+                                                <h6 style={projectTimeStyle}>{new Date(timing.start_time).toLocaleTimeString().substring(0, 5)}-{new Date(timing.end_time).toLocaleTimeString().substring(0, 5)}</h6>
+                                                <br></br>
                                             </div>
                                         ))}
                                         <br></br>
