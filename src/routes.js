@@ -27,6 +27,7 @@ const Timenactivity = React.lazy(() => import('./views/reports/timenactivity/Tim
 const Weekly = React.lazy(() => import('./views/reports/weekly/Weekly'))
 const Teams = React.lazy(() => import('./views/teams/Teams'))
 const Expenses = React.lazy(() => import('./views/expenses/Expenses'))
+// const LandingPage = React.lazy(() => import('./landingpage/LandingPage'))
 
 //Path setting for routes
 const routes = [
@@ -57,6 +58,7 @@ const routes = [
   { path: '/reports/weekly', name: 'Weekly', element:Weekly },
   { path: '/teams', name: 'Teams', element: Teams},
   { path: '/expenses', name: 'Expenses', element: Expenses},
+  // { path: '/landingpage', name: 'Landing Page', element: LandingPage},
 ]
 
 export default routes

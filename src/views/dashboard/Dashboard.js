@@ -45,22 +45,11 @@ const Dashboard = () => {
     color: "#28B463",
   };
 
-  const headStyle = {
-    fontFamily: "Arial",
-    fontSize: 30,
-  };
-
   const userStyle = {
     fontFamily: "Arial",
     fontSize: 20,
     fontWeight: "bold",
     color: "#0070FF ",
-  };
-
-  const imageWrapper = {
-    margin: "10px",
-    display: "flex",
-    flexDirection: "row",
   };
 
   const timingStyle = {
