@@ -165,7 +165,7 @@ const Screenshots = () => {
         });
         // console.log(locations[0].longitude);
         getAddresses(locations[0].latitude, locations[0].longitude);
-        console.log(user_id);
+        console.log(value);
     };
 
     //Geolocation get using Google
@@ -191,13 +191,17 @@ const Screenshots = () => {
         const apiKey = "AIzaSyBSBflGv5OULqd9TPMLKecXIig07YXKW2A"; // Replace with your own API key
         const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${apiKey}`;
 
+
         try {
             const response = await fetch(url);
             const data = await response.json();
 
             if (data.status === "OK") {
-                const address = data.results[0].formatted_address;
+                const result = data.results.find(result => result.geometry.location_type === "ROOFTOP");
+                const address = result ? result.formatted_address : data.results[0].formatted_address;
                 console.log(address);
+                console.log(data);
+                // console.log(address);
                 setAddresses(address);
             } else {
                 console.error(data.status);
