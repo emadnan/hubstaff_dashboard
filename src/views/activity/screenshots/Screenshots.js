@@ -97,6 +97,7 @@ const Screenshots = () => {
                     screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.user_id === local.Users.user_id);
                 }
                 setImages(screenfilter);
+
             })
             .catch((error) => console.log(error));
     };
@@ -153,52 +154,95 @@ const Screenshots = () => {
 
     const handleUserChange = (value) => {
         setUserId(value);
+        //get latitude N longitude FROM INMAGE VARIABLE and fiter by user id save in location variable
+        const locations = images.filter((locate) => {
+            if (local.Users.role === "3") {
+                return locate.user_id === value;
+            }
+            else {
+                return locate.user_id === value;
+            }
+        });
+        // console.log(locations[0].longitude);
+        getAddresses(locations[0].latitude, locations[0].longitude);
         console.log(user_id);
     };
 
     //Geolocation get using Google
-    Geocode.setApiKey("AIzaSyBSBflGv5OULqd9TPMLKecXIig07YXKW2A");
-    Geocode.setLanguage("en");
-    Geocode.setRegion("pk");
-    Geocode.setLocationType("ROOFTOP");
-    
-    useEffect(() => {
-        const locations = images.filter((locate) => {
-            if (local.Users.role === "3") {
-                return locate.user_id === user_id;
-            } else if (local.Users.role === "5") {
-                return locate.user_id === local.Users.user_id;
+
+
+    const getAddresses = async (lat, long) => {
+        // Geocode.setApiKey("AIzaSyBSBflGv5OULqd9TPMLKecXIig07YXKW2A");
+        // Geocode.setLanguage("en");
+        // Geocode.setRegion("pk");
+        // Geocode.setLocationType("ROOFTOP");
+        //     console.log(lat);
+        //     console.log(long);
+        //     const promises = Geocode.fromLatLng(lat,long).then(
+        //                 (response) => {
+        //                 //   const address = response.results[0].formatted_address;
+        //                 //   setAddresses(address);
+        //                   console.log(response.results[0].formatted_address);
+        //                 },
+        //                 (error) => {
+        //                   console.error(error);
+        //                 }
+        //             );
+        const apiKey = "AIzaSyBSBflGv5OULqd9TPMLKecXIig07YXKW2A"; // Replace with your own API key
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${apiKey}`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.status === "OK") {
+                const address = data.results[0].formatted_address;
+                console.log(address);
+                setAddresses(address);
+            } else {
+                console.error(data.status);
             }
-            return false;
-        });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    // useEffect(() => {
+    //     const locations = images.filter((locate) => {
+    //         if (local.Users.role === "3") {
+    //             return locate.user_id === user_id;
+    //         } else if (local.Users.role === "5") {
+    //             return locate.user_id === local.Users.user_id;
+    //         }
+    //         return false;
+    //     });
 
-        // console.log(locations);
+    //     // console.log(locations);
 
-        // const promises = locations.map((location) =>
-        //     Geocode.fromLatLng(location.latitude, location.longitude).then(
-        //         (response) => response.results[0].formatted_address
-        //     )
-        // );
-        const promises = locations.map((loc)=>Geocode.fromLatLng(loc.latitude, loc.longitude).then(
-            (response) => {
-              const address = response.results[0].formatted_address;
-              console.log(address);
-            },
-            (error) => {
-              console.error(error);
-            }
-        )
-          );
+    //     // const promises = locations.map((location) =>
+    //     //     Geocode.fromLatLng(location.latitude, location.longitude).then(
+    //     //         (response) => response.results[0].formatted_address
+    //     //     )
+    //     // );
+    //     const promises = locations.map((loc)=>Geocode.fromLatLng(loc.latitude, loc.longitude).then(
+    //         (response) => {
+    //           const address = response.results[0].formatted_address;
+    //           console.log(address);
+    //         },
+    //         (error) => {
+    //           console.error(error);
+    //         }
+    //     )
+    //       );
 
-        console.log(promises);
+    //     console.log(promises);
 
-        Promise.all(promises).then((results) => setAddresses(results));
-    }, [images]);
+    //     Promise.all(promises).then((results) => setAddresses(results));
+    // }, [images]);
 
 
     return (
         <>
-            {addresses.length > 0 && <p style={userStyle}>{addresses[addresses.length - 1]}</p>}
+            {addresses.length > 0 && <p style={userStyle}>{addresses}</p>}
             <div className='row'>
                 <div className='col-md-4'>
                     <br></br>
