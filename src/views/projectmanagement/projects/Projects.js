@@ -101,9 +101,21 @@ const Projects = () => {
   const handleOk = () => {
     addProject();
     setIsModalOpen(false);
+    setDepartmentId('');
+    setCompanyId('');
+    setProjectName('');
+    setDescription('');
+    setStartDate('');
+    setDeadLine('');
   };
   const handleCancel = () => {
     setIsModalOpen(false);
+    setDepartmentId('');
+    setCompanyId('');
+    setProjectName('');
+    setDescription('');
+    setStartDate('');
+    setDeadLine('');
   };
 
   // Functions for Delete Project Modal

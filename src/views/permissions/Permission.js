@@ -67,9 +67,11 @@ const Permission = () => {
     const handleOk = () => {
         addPermission()
         setIsModalOpen(false);
+        setName('');
     };
     const handleCancel = () => {
         setIsModalOpen(false);
+        setName('');
     };
 
     // Functions for Delete Permission Modal

@@ -82,10 +82,22 @@ const Companies = () => {
   const handleOk = () => {
     addCompany()
     setIsModalOpen(false);
+    setCompanyName('');
+    setAddress('');
+    setCompanyEmail('');
+    setContactNo('');
+    setCity('');
+    setCountry('');
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    setCompanyName('');
+    setAddress('');
+    setCompanyEmail('');
+    setContactNo('');
+    setCity('');
+    setCountry('');
   };
 
   // Functions for Delete Company Modal

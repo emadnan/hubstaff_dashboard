@@ -79,9 +79,15 @@ const Departments = () => {
     const handleOk = () => {
         addDepartment()
         setIsModalOpen(false);
+        setCompanyId('');
+        setDepartmentName('');
+        setDescription('');
     };
     const handleCancel = () => {
         setIsModalOpen(false);
+        setCompanyId('');
+        setDepartmentName('');
+        setDescription('');
     };
 
     // Functions for Delete Department Modal
