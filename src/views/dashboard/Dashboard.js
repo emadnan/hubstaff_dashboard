@@ -174,8 +174,6 @@ const Dashboard = () => {
       setTotalHours(data.hours);
       setTotalMinutes(data.minutes);
       setTotalSeconds(data.seconds);
-
-      console.log(totalhours);
     })
     .catch((error) => console.log(error));
   };
