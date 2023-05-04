@@ -65,14 +65,12 @@ const Dashboard = () => {
   const [clients, setClients] = useState([]);
   const [screenshot, setScreenshot] = useState([]);
   const [assigned, setAssigned] = useState([]);
-  const [totaltime, setTotalTime] = useState([]);
   const [hours, setHours] = useState("");
   const [minutes, setMinutes] = useState("");
   const [seconds, setSeconds] = useState("");
   const [totalhours, setTotalHours] = useState("");
   const [totalminutes, setTotalMinutes] = useState("");
   const [totalseconds, setTotalSeconds] = useState("");
-  const [totalprojects, setTotalProjects] = useState("");
   var screenfilter = [];
   var filteredUsers = [];
 
@@ -170,13 +168,13 @@ const Dashboard = () => {
         "Authorization": `Bearer ${token}`
       }
     })
-    .then((response) => response.json())
-    .then((data) => {
-      setTotalHours(data.hours);
-      setTotalMinutes(data.minutes);
-      setTotalSeconds(data.seconds);
-    })
-    .catch((error) => console.log(error));
+      .then((response) => response.json())
+      .then((data) => {
+        setTotalHours(data.hours);
+        setTotalMinutes(data.minutes);
+        setTotalSeconds(data.seconds);
+      })
+      .catch((error) => console.log(error));
   };
 
   function getTotalTime() {
@@ -220,8 +218,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <br></br>
-
       {/* Statistics Data Modal Starts */}
       <Card style={cardStyle}>
         <div className='row'>
@@ -264,6 +260,36 @@ const Dashboard = () => {
 
       <div className='row'>
         <div className='col-md-6'>
+
+          {/* Card for Recent Activity Starts */}
+          <Card style={cardStyle2}>
+            <h5 style={head}>RECENT ACTIVITY</h5>
+            <Divider />
+            {/* {screenshot.map((image) => {
+              return (
+                <div key={image.id} style={{ display: 'flex', justifyContent: 'center' }}>
+                  {image.get_timings.map((timing) => (
+                    <div key={timing.id} style={timingStyle}>
+                      {timing.getattechments.slice(0, 1).map((attach) => (
+                        <div key={attach.id} style={{ marginRight: '10px' }}>
+                          <a href={attach.path_url}>
+                            <img className='card' src={attach.path_url} width={150} height={100} />
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              );
+            })} */}
+            {/* <Divider /> */}
+            <div className='text-center'>
+              <Button type="link" href="/activity/screenshots">View recent activity &gt;</Button>
+            </div>
+          </Card>
+          {/* Card for Recent Activity Ends */}
+
+          <br></br>
 
           {/* Card for Companies Modal Starts */}
           <Card style={cardStyle2}>
@@ -336,36 +362,6 @@ const Dashboard = () => {
           }
 
           {/* Card for Departments Modal Ends */}
-
-          <br></br>
-
-          {/* Card for Recent Activity Starts */}
-        <Card style={cardStyle2}>
-            <h5 style={head}>RECENT ACTIVITY</h5>
-            <Divider />
-            {/* {screenshot.map((image) => {
-              return (
-                <div key={image.id} style={{ display: 'flex', justifyContent: 'center' }}>
-                  {image.get_timings.map((timing) => (
-                    <div key={timing.id} style={timingStyle}>
-                      {timing.getattechments.slice(0, 1).map((attach) => (
-                        <div key={attach.id} style={{ marginRight: '10px' }}>
-                          <a href={attach.path_url}>
-                            <img className='card' src={attach.path_url} width={150} height={100} />
-                          </a>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              );
-            })} */}
-            {/* <Divider /> */}
-            <div className='text-center'>
-              <Button type="link" href="/activity/screenshots">View recent activity &gt;</Button>
-            </div>
-          </Card>
-          {/* Card for Recent Activity Ends */}
 
           <br></br>
 
