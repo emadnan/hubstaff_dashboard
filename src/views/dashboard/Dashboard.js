@@ -7,6 +7,7 @@ const Dashboard = () => {
 
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'));
+  getTotalTimeUser(local.token);
 
   //CSS Stylings
   const mystyle = {
@@ -64,9 +65,13 @@ const Dashboard = () => {
   const [clients, setClients] = useState([]);
   const [screenshot, setScreenshot] = useState([]);
   const [assigned, setAssigned] = useState([]);
+  const [totaltime, setTotalTime] = useState([]);
   const [hours, setHours] = useState("");
   const [minutes, setMinutes] = useState("");
   const [seconds, setSeconds] = useState("");
+  const [totalhours, setTotalHours] = useState("");
+  const [totalminutes, setTotalMinutes] = useState("");
+  const [totalseconds, setTotalSeconds] = useState("");
   var screenfilter = [];
   var filteredUsers = [];
 
@@ -158,6 +163,23 @@ const Dashboard = () => {
       .catch((error) => console.log(error));
   };
 
+  function getTotalTimeUser(token) {
+    fetch("http://10.3.3.80/api/getSum", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      setTotalHours(data.hours);
+      setTotalMinutes(data.minutes);
+      setTotalSeconds(data.seconds);
+
+      console.log(totalhours);
+    })
+    .catch((error) => console.log(error));
+  };
+
   function getTotalTime() {
     fetch("http://10.3.3.80/api/get_Project_Screenshots")
       .then((response) => response.json())
@@ -214,13 +236,14 @@ const Dashboard = () => {
           </div>
           <div className='col-md-2'>
             <h6 style={head}>TODAY WORKED</h6>
-            {local.Users.user_id ? screenshot.filter((image) => image.user_id === local.Users.user_id).map((image) => {
+            {/* {local.Users.user_id ? screenshot.filter((image) => image.user_id === local.Users.user_id).map((image) => {
               return (
                 <div key={image.id}>
                   <h3 style={subhead}>{image.hours}:{image.minutes}:{image.seconds}</h3>
                 </div>
               );
-            }) : null}
+            }) : null} */}
+            <h3 style={subhead}>{totalhours}:{totalminutes}:{totalseconds}</h3>
           </div>
           <div className='col-md-2'>
             <h6 style={head}>WEEKLY ACTIVITY</h6>
