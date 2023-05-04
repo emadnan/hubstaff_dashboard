@@ -323,7 +323,7 @@ const Screenshots = () => {
                                                 <a href={attach.path_url}>
                                                     <img className='card' src={attach.path_url} style={{ width: '100%', height: 'auto' }} alt="" onClick={() => handleClick(attach.path_url)} />
                                                 </a>
-                                                <h6 style={projectTimeStyle}>{new Date(timing.start_time).toLocaleTimeString().substring(0, 5)}-{new Date(timing.end_time).toLocaleTimeString().substring(0, 5)}</h6>
+                                                <h6 style={projectTimeStyle}>{new Date(timing.start_time).toLocaleTimeString().substring(0, 11)}-{new Date(timing.end_time).toLocaleTimeString().substring(0, 11)}</h6>
                                                 <br></br>
                                             </div>
                                         ))}

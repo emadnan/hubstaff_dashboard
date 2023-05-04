@@ -72,6 +72,7 @@ const Dashboard = () => {
   const [totalhours, setTotalHours] = useState("");
   const [totalminutes, setTotalMinutes] = useState("");
   const [totalseconds, setTotalSeconds] = useState("");
+  const [totalprojects, setTotalProjects] = useState("");
   var screenfilter = [];
   var filteredUsers = [];
 
@@ -225,7 +226,7 @@ const Dashboard = () => {
       <Card style={cardStyle}>
         <div className='row'>
           <div className='col-md-2'>
-            <h6 style={head}>PROJECTS WORKED</h6>
+            <h6 style={head}>TOTAL PROJECTS</h6>
             <h3 style={subhead}>0</h3>
           </div>
           <div className='col-md-2'>
