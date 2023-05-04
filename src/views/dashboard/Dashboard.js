@@ -265,36 +265,6 @@ const Dashboard = () => {
       <div className='row'>
         <div className='col-md-6'>
 
-          {/* Card for Recent Activity Starts */}
-          <Card style={cardStyle2}>
-            <h5 style={head}>RECENT ACTIVITY</h5>
-            <Divider />
-            {screenshot.map((image) => {
-              return (
-                <div key={image.id} style={{ display: 'flex', justifyContent: 'center' }}>
-                  {image.get_timings.map((timing) => (
-                    <div key={timing.id} style={timingStyle}>
-                      {timing.getattechments.slice(0, 1).map((attach) => (
-                        <div key={attach.id} style={{ marginRight: '10px' }}>
-                          <a href={attach.path_url}>
-                            <img className='card' src={attach.path_url} width={150} height={100} />
-                          </a>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
-            <Divider />
-            <div className='text-center'>
-              <Button type="link" href="/activity/screenshots">View recent activity &gt;</Button>
-            </div>
-          </Card>
-          {/* Card for Recent Activity Ends */}
-
-          <br></br>
-
           {/* Card for Companies Modal Starts */}
           <Card style={cardStyle2}>
             <h5 style={head}>COMPANIES</h5>
@@ -366,6 +336,39 @@ const Dashboard = () => {
           }
 
           {/* Card for Departments Modal Ends */}
+
+          <br></br>
+
+          {/* Card for Recent Activity Starts */}
+        <Card style={cardStyle2}>
+            <h5 style={head}>RECENT ACTIVITY</h5>
+            <Divider />
+            {/* {screenshot.map((image) => {
+              return (
+                <div key={image.id} style={{ display: 'flex', justifyContent: 'center' }}>
+                  {image.get_timings.map((timing) => (
+                    <div key={timing.id} style={timingStyle}>
+                      {timing.getattechments.slice(0, 1).map((attach) => (
+                        <div key={attach.id} style={{ marginRight: '10px' }}>
+                          <a href={attach.path_url}>
+                            <img className='card' src={attach.path_url} width={150} height={100} />
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              );
+            })} */}
+            {/* <Divider /> */}
+            <div className='text-center'>
+              <Button type="link" href="/activity/screenshots">View recent activity &gt;</Button>
+            </div>
+          </Card>
+          {/* Card for Recent Activity Ends */}
+
+          <br></br>
+
         </div>
 
         <div className='col-md-6'>
