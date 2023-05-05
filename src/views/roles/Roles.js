@@ -76,9 +76,11 @@ const Roles = () => {
     const handleOk = () => {
         addRole()
         setIsModalOpen(false);
+        setName('');
     };
     const handleCancel = () => {
         setIsModalOpen(false);
+        setName('');
     };
 
     // Functions for Delete Role Modal

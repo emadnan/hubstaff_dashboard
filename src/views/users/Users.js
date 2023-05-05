@@ -70,9 +70,17 @@ const Users = () => {
     const handleOk = () => {
         addUser()
         setIsModalOpen(false);
+        setName('');
+        setEmail('');
+        setPassword('');
+        setRole('');
     };
     const handleCancel = () => {
         setIsModalOpen(false);
+        setName('');
+        setEmail('');
+        setPassword('');
+        setRole('');
     };
 
     // Functions for Delete User Modal
