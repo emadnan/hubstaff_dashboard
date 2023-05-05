@@ -1,12 +1,15 @@
 import {React, useState} from 'react'
+import LandingBody from 'src/landingcomponents/LandingBody'
+import LandingFooter from 'src/landingcomponents/LandingFooter'
 import LandingHeader from 'src/landingcomponents/LandingHeader'
-import LandingNavbar from 'src/landingcomponents/LandingNavbar'
 
 function LandingPage() {
   return (
-    <div className='App'>
-      <LandingHeader/>
-    </div>
+    <>
+      <LandingHeader />
+      <LandingBody />
+      <LandingFooter />
+    </>
   )
 }
 

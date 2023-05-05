@@ -1,4 +1,7 @@
 // If you want to override variables do it here
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 @import "variables";
 
 $enable-ltr: true;
