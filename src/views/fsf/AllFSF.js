@@ -1,11 +1,8 @@
-import {React, useState, useEffect} from 'react'
-import { useNavigate } from 'react-router-dom';
+import {React} from 'react'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
-import { Button, Modal } from 'antd';
+import { Button } from 'antd';
 
 function AllFSF() {
-
-    const navigate = useNavigate();
 
     //CSS Stylings
     const buttonStyle = {
@@ -34,7 +31,7 @@ function AllFSF() {
                 </div>
                 <div className='col-md 6'>
                     {/* Add FSF Button */}
-                        <Button className="btn btn-primary" style={buttonStyle} onClick={navigate("/fsflevel1")}>Add FSF</Button>
+                        <Button className="btn btn-primary" style={buttonStyle}>Add FSF</Button>
                 </div>
             </div>
             <br></br>
