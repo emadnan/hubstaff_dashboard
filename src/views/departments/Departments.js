@@ -115,10 +115,16 @@ const Departments = () => {
     const handleOk3 = () => {
         updateDepartment(isModalOpen3);
         setIsModalOpen3(false);
+        setCompanyId('');
+        setDepartmentName('');
+        setDescription('');
     };
 
     const handleCancel3 = () => {
         setIsModalOpen3(false);
+        setCompanyId('');
+        setDepartmentName('');
+        setDescription('');
     };
 
     // Functions for Show Details Modal
