@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react'
-import { Form, Input, Select, Button } from 'antd'
+import { Form, Input, Select, Button, Modal } from 'antd'
 import { CTableBody, CTableHead, CTableHeaderCell, CTableRow, CTable } from '@coreui/react'
 
 function FSFlevel1() {
@@ -13,16 +13,39 @@ function FSFlevel1() {
   };
 
   const mystyle = {
-    color: "white",
-    backgroundColor: "#0070FF ",
+    color: "black",
+    backgroundColor: "white",
     padding: "15px",
-    fontFamily: "Arial",
     textAlign: 'center',
     alignSelf: 'flex-end',
   };
 
+  const buttonStyle = {
+    float: "right",
+    padding: "2px",
+    width: "120px",
+    backgroundColor: "#0070ff",
+    fontWeight: "bold",
+    color: "white",
+  };
+
   const handleModuleChange = (value) => {
     setModuleName(value);
+  };
+
+  // Functions of Add Parameter Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    // addCompany()
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   function getProjects() {
@@ -129,7 +152,7 @@ function FSFlevel1() {
                     <Input />
                   </Form.Item>
 
-                  <Button className="btn btn-primary" onClick={handleClick1}>Next</Button>
+                  <Button style={buttonStyle} onClick={handleClick1}>Next</Button>
                 </div>
               </div>
             </div>
@@ -168,9 +191,8 @@ function FSFlevel1() {
                     <Input style={{ width: '400px' }} />
                   </Form.Item>
 
-                  <Button className="btn btn-primary" onClick={handleClick4}>Back</Button>
-                  &nbsp;
-                  <Button className="btn btn-primary" onClick={handleClick2}>Next</Button>
+                  <Button style={buttonStyle} onClick={handleClick4}>Back</Button>
+                  <Button style={buttonStyle} onClick={handleClick2}>Next</Button>
                 </div>
               </div>
             </div>
@@ -194,81 +216,72 @@ function FSFlevel1() {
             </div>
           </div>
           <br></br>
-          {/* <div className='row justify-content-center'>
-            <div className='col-md-6'>
-              <div className="card w-300">
-                <div className="card-body"> */}
 
-                  <br></br>
+          <div className='row'>
+            <div className='col-md 6'></div>
+            <div className='col-md 6'>
+              <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Parameter</Button>
+            </div>
+          </div>
+          <br></br>
 
-                  <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-                    <CTableHead color="light" >
+          <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
+            <CTableHead color="light" >
 
-                      <CTableRow>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Field Technical Name</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Field Length</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Field Type</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Field Table Name</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Mandatory/Optional</CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle}>Parameter/Selection</CTableHeaderCell>
-                      </CTableRow>
+              <CTableRow>
+                <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Field Technical Name</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Field Length</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Field Type</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Field Table Name</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Mandatory/Optional</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Parameter/Selection</CTableHeaderCell>
+              </CTableRow>
 
-                    </CTableHead>
-                    <CTableBody>
+            </CTableHead>
+            <CTableBody>
 
-                      {/* Modal for Add Department */}
-                      {/* <Modal title="Add a Department" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+              {/* Modal for Add Department */}
+              <Modal title="Add a Parameter" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
 
-                        <br></br>
+                <br></br>
 
-                        <div className="form-outline mb-3">
-                          <label>Company</label>
-                          <Form.Item>
-                            <Select placeholder="Select Company" onChange={handleCompanyChange} value={company_id}>
-                              {company.map((count) => (
-                                <Select.Option value={count.name} key={count.id}>
-                                  {count.company_name}
-                                </Select.Option>
-                              ))}
-                            </Select>
-                          </Form.Item>
-                        </div>
+                <Form.Item label="Description">
+                  <Input style={{ width: '400px' }} />
+                </Form.Item>
 
-                        <div className="form-outline mb-3">
-                          <label>Department</label>
-                          <input
-                            type="text"
-                            value={department_name}
-                            onChange={(e) => setDepartmentName(e.target.value)}
-                            className="form-control form-control-lg"
-                            placeholder="Enter Department Name"
-                          />
-                        </div>
+                <Form.Item label="Field Technical Name">
+                  <Input style={{ width: '400px' }} />
+                </Form.Item>
 
-                        <div className="form-outline mb-3">
-                          <label>Description</label>
-                          <input
-                            type="text"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            className="form-control form-control-lg"
-                            placeholder="Enter Description"
-                          />
-                        </div>
+                <Form.Item label="Field Length">
+                  <Input style={{ width: '400px' }} />
+                </Form.Item>
 
-                      </Modal> */}
+                <Form.Item label="Field Type">
+                  <Input style={{ width: '400px' }} />
+                </Form.Item>
 
-                    </CTableBody>
-                  </CTable>
+                <Form.Item label="Field Table Name">
+                  <Input style={{ width: '400px' }} />
+                </Form.Item>
 
-                  <Button className="btn btn-primary" onClick={handleClick3}>Back</Button>
-                </div>
-        //       </div>
-        //     </div>
-        //   </div>
-        // </div>
+                <Form.Item label="Mandatory/Optional">
+                  <Input style={{ width: '400px' }} />
+                </Form.Item>
+
+                <Form.Item label="Parameter/Selection">
+                  <Input style={{ width: '400px' }} />
+                </Form.Item>
+
+              </Modal>
+
+            </CTableBody>
+          </CTable>
+
+          <Button style={buttonStyle} onClick={handleClick3}>Back</Button>
+        </div>
       }
       {/* FSF Level 3 Form Ends */}
     </>
