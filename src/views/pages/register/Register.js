@@ -54,25 +54,38 @@ const Register = () => {
 
   //Register API call
   async function signUp() {
-    let item = { name, email, password, confirmpass, role: 3 }
-    let result = await fetch("http://10.3.3.80/api/register", {
-      method: "POST",
-      body: JSON.stringify(item),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (result.status === 400) {
-      handleButtonClick1()
-    } else if (result.status === 404) {
+    let item = { name, email, password, confirmpass, role: 3 };
+    let response;
+    try {
+      response = await fetch("http://10.3.3.80/api/register", {
+        method: "POST",
+        body: JSON.stringify(item),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      handleButtonClick4();
+      return;
+    }
+
+    if (response.status === 400) {
+      handleButtonClick1();
+    } else if (response.status === 404) {
       handleButtonClick3();
     } else {
-      result = await result.json();
-      localStorage.setItem("user-info", JSON.stringify(result));
-      handleButtonClick2()
-      setTimeout(async () => {
-        await navigate("/login");
-      }, 2000);
+      try {
+        const result = await response.json();
+        localStorage.setItem("user-info", JSON.stringify(result));
+        handleButtonClick2();
+        setTimeout(async () => {
+          await navigate("/login");
+        }, 2000);
+      } catch (error) {
+        console.error(error);
+        handleButtonClick4();
+      }
     }
   }
 
@@ -138,6 +151,27 @@ const Register = () => {
       return () => clearTimeout(timer);
     }
   }, [showAlert3]);
+
+  //Functions for company email already exists
+  const [showAlert4, setShowAlert4] = useState(false);
+
+  function handleButtonClick4() {
+    setShowAlert4(true);
+  }
+
+  function handleCloseAlert4() {
+    setShowAlert4(false);
+  }
+
+  useEffect(() => {
+    if (showAlert4) {
+      const timer = setTimeout(() => {
+        setShowAlert4(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert4]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -289,6 +323,13 @@ const Register = () => {
       {showAlert3 && (
         <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
           Company Email already exists
+        </Alert>
+      )}
+
+      {/* Alert for Add Project Failure*/}
+      {showAlert4 && (
+        <Alert onClose={handleCloseAlert4} severity="warning" style={modalStyle2}>
+          Company already exists
         </Alert>
       )}
     </ThemeProvider>
