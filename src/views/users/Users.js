@@ -108,10 +108,18 @@ const Users = () => {
     const handleOk3 = () => {
         updateUser(isModalOpen3);
         setIsModalOpen3(false);
+        setName('');
+        setEmail('');
+        setPassword('');
+        setRole('');
     };
 
     const handleCancel3 = () => {
         setIsModalOpen3(false);
+        setName('');
+        setEmail('');
+        setPassword('');
+        setRole('');
     };
 
     // Functions for Add User Success
