@@ -101,7 +101,7 @@ const Users = () => {
     // Functions for Update User Modal
     const [isModalOpen3, setIsModalOpen3] = useState(false);
     const showModal3 = (id) => {
-        // getUserById(id);
+        getUserById(id);
         setIsModalOpen3(id);
     };
 
@@ -243,6 +243,7 @@ const Users = () => {
     //Array declarations for API calls
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
+    const [byuser, setUserById] = useState([]);
     var filteredUsers = [];
 
     //Initial rendering through useEffect
@@ -280,7 +281,19 @@ const Users = () => {
             .then((response) => response.json())
             .then((data) => setRoles(data.roles))
             .catch((error) => console.log(error));
-    }
+    };
+
+    function getUserById(id) {
+        fetch(`http://10.3.3.80/api/get_user/${id}`)
+            .then((response) => response.json())
+            .then((data) => {
+                setUserById(data.User);
+                setName(data.User[0].name);
+                setEmail(data.User[0].email);
+                setRole(data.User[0].role);
+            })
+            .catch((error) => console.log(error));
+    };
 
     // Add API call
     async function addUser() {
@@ -343,7 +356,6 @@ const Users = () => {
                 id: newid,
                 name: name,
                 email: email,
-                password: password,
                 role: role,
                 company_id: local.Users.company_id,
 
@@ -483,51 +495,45 @@ const Users = () => {
 
                         <br></br>
 
-                        <div className="form-outline mb-3">
-                            <label>Username</label>
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="form-control form-control-lg"
-                                placeholder="Enter User Name"
-                            />
-                        </div>
+                        {byuser.map((user) => (
+                            <div key={user.id}>
 
-                        <div className="form-outline mb-3">
-                            <label>Email</label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="form-control form-control-lg"
-                                placeholder="Enter Email"
-                            />
-                        </div>
+                                <div className="form-outline mb-3">
+                                    <label>Username</label>
+                                    <input
+                                        type="text"
+                                        defaultValue={user.name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        className="form-control form-control-lg"
+                                        placeholder="Enter User Name"
+                                    />
+                                </div>
 
-                        <div className="form-outline mb-3">
-                            <label>Password</label>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="form-control form-control-lg"
-                                placeholder="Enter Password"
-                            />
-                        </div>
+                                <div className="form-outline mb-3">
+                                    <label>Email</label>
+                                    <input
+                                        type="email"
+                                        defaultValue={user.email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="form-control form-control-lg"
+                                        placeholder="Enter Email"
+                                    />
+                                </div>
 
-                        <div className="form-outline mb-3">
-                            <label>Role</label>
-                            <Form.Item>
-                                <Select placeholder='Select' onChange={handleRoleChange} value={role}>
-                                    {roles.map((user) => (
-                                        <Select.Option value={user.id} key={user.id}>
-                                            {user.name}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
-                            </Form.Item>
-                        </div>
+                                <div className="form-outline mb-3">
+                                    <label>Role</label>
+                                    <Form.Item>
+                                        <Select placeholder='Select Role' onChange={handleRoleChange} defaultValue={user.role}>
+                                            {roles.map((user) => (
+                                                <Select.Option value={user.id} key={user.id}>
+                                                    {user.name}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
+                                </div>
+                            </div>
+                        ))}
 
                     </Modal>
 

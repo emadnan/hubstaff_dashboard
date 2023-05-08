@@ -207,8 +207,6 @@ const Login = () => {
                 />
               </div>
 
-              <br></br>
-
               <div className="form-outline mb-3">
                 <label className="form-label" htmlFor="form3Example4">
                   Password

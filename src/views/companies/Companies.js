@@ -620,7 +620,7 @@ const Companies = () => {
                 <div className="form-outline mb-3">
                   <label>Country</label>
                   <Form.Item>
-                    <Select placeholder="Select Country" onChange={handleCountryChange} defaultValue={company.country}>
+                    <Select placeholder="Select Country" showSearch={true} onChange={handleCountryChange} defaultValue={company.country}>
                       {countries.map((count) => (
                         <Select.Option value={count.name} key={count.id}>
                           {count.name}
@@ -633,7 +633,7 @@ const Companies = () => {
                 <div className="form-outline mb-3">
                   <label>City</label>
                   <Form.Item>
-                    <Select placeholder="Select City" onChange={handleCityChange} defaultValue={company.city}>
+                    <Select placeholder="Select City" showSearch={true} onChange={handleCityChange} defaultValue={company.city}>
                       {cities.map((citi) => (
                         <Select.Option value={citi.name} key={citi.id}>
                           {citi.name}

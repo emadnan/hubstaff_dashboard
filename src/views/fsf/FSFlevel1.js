@@ -26,9 +26,25 @@ function FSFlevel1() {
     getProjects();
   }, []);
 
+  const [showDiv1, setShowDiv1] = useState(false);
+  const [showDiv2, setShowDiv2] = useState(false);
+  const [showDiv3, setShowDiv3] = useState(false);
+
+  const handleClick1 = () => {
+    setShowDiv1(!showDiv1);
+  };
+
+  const handleClick2 = () => {
+    setShowDiv2(!showDiv2);
+  };
+
+  const handleClick3 = () => {
+    setShowDiv3(!showDiv3);
+  };
+
   return (
     <>
-      <div className='row justify-content-center'>
+      {/* <div className='row justify-content-center'>
         <div className='col-md-6'>
           <h3 id='heading' style={heading}>Functional Specification Form</h3>
         </div>
@@ -64,6 +80,21 @@ function FSFlevel1() {
             </div>
           </div>
         </div>
+      </div> */}
+
+      <div>
+        <button onClick={handleClick1}>Toggle Div</button>
+        {showDiv1 && <div>This is DIV 1</div>}
+      </div>
+
+      <div>
+        <button onClick={handleClick2}>Toggle Div</button>
+        {showDiv2 && <div>This is the DIV 2</div>}
+      </div>
+
+      <div>
+        <button onClick={handleClick3}>Toggle Div</button>
+        {showDiv3 && <div>This is the DIV 3</div>}
       </div>
     </>
   )
