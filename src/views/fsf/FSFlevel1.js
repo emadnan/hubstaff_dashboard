@@ -80,49 +80,46 @@ function FSFlevel1() {
                     </Select>
                   </Form.Item>
 
+                  <Form.Item label="Functional Lead">
+                    <Input style={{ width: '400px' }} />
+                  </Form.Item>
+
+                  <Form.Item label="Type of Development" >
+                    <Select onChange={handleModuleChange} value={modulename} style={{ width: '400px' }}>
+                      {project.map((pro) => (
+                        <Select.Option value={pro.name} key={pro.id}>
+                          {pro.project_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+
+                  <Form.Item label="Priority" >
+                    <Select onChange={handleModuleChange} value={modulename} style={{ width: '400px' }}>
+                      {project.map((pro) => (
+                        <Select.Option value={pro.name} key={pro.id}>
+                          {pro.project_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+
+                  <Form.Item label="Usage Frequency" >
+                    <Select onChange={handleModuleChange} value={modulename} style={{ width: '400px' }}>
+                      {project.map((pro) => (
+                        <Select.Option value={pro.name} key={pro.id}>
+                          {pro.project_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+
                 </div>
               </div>
             </div>
           </div>
         </div>
       }
-      {/* <div className='row justify-content-center'>
-        <div className='col-md-6'>
-          <h3 id='heading' style={heading}>Functional Specification Form</h3>
-        </div>
-      </div>
-      <br></br>
-      <div className='row justify-content-center'>
-        <div className='col-md-6'>
-          <h4 style={heading}>Level 1</h4>
-        </div>
-      </div>
-      <br></br>
-      <div className='row justify-content-center'>
-        <div className='col-md-6'>
-          <div className="card w-150">
-            <div className="card-body">
-
-              <br></br>
-
-              <Form.Item label="WRICEF ID">
-                <Input style={{ width: '400px' }} />
-              </Form.Item>
-              
-              <Form.Item label="Module Name" >
-                <Select onChange={handleModuleChange} value={modulename} style={{ width: '400px' }}>
-                  {project.map((pro) => (
-                    <Select.Option value={pro.name} key={pro.id}>
-                      {pro.project_name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-
-            </div>
-          </div>
-        </div>
-      </div> */}
 
       {/* <div>
         <button onClick={handleClick1}>Toggle Div</button>

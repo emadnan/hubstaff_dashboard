@@ -143,10 +143,22 @@ const Projects = () => {
   const handleOk3 = () => {
     updateProject(isModalOpen3);
     setIsModalOpen3(false);
+    setDepartmentId('');
+    setCompanyId('');
+    setProjectName('');
+    setDescription('');
+    setStartDate('');
+    setDeadLine('');
   };
 
   const handleCancel3 = () => {
     setIsModalOpen3(false);
+    setDepartmentId('');
+    setCompanyId('');
+    setProjectName('');
+    setDescription('');
+    setStartDate('');
+    setDeadLine('');
   };
 
   // Functions for Assign Users Modal
