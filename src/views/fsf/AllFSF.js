@@ -25,7 +25,6 @@ function AllFSF() {
         textAlign: 'center',
         alignSelf: 'flex-end',
     };
-
     return (
         <>
             <div className='row'>
@@ -35,7 +34,7 @@ function AllFSF() {
                 <div className='col-md 6'>
                     {/* Add FSF Button */}
                     <Button className="btn btn-primary" style={buttonStyle} onClick={async () => {
-                        await navigate("/fsflevel1");
+                        await navigate("/fsfform");
                     }}>Add FSF</Button>
                 </div>
             </div>
@@ -49,6 +48,7 @@ function AllFSF() {
                         <CTableHeaderCell className="text-center" style={mystyle}>FSF Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>FSF Report</CTableHeaderCell>
                     </CTableRow>
+                    
                 </CTableHead>
 
                 <CTableBody>

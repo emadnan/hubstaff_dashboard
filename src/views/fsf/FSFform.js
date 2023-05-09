@@ -2,12 +2,14 @@ import { React, useState, useEffect } from 'react'
 import { Form, Input, Select, Button, Modal } from 'antd'
 import { CTableBody, CTableHead, CTableHeaderCell, CTableRow, CTable } from '@coreui/react'
 
-function FSFlevel1() {
+function FSFform() {
 
+  //Variable declarations
   const [ricefId, setRicefId] = useState("");
   const [modulename, setModuleName] = useState("");
   const [project, setProjects] = useState([]);
 
+  //CSS Styling
   const heading = {
     textAlign: 'center',
   };
@@ -29,6 +31,7 @@ function FSFlevel1() {
     color: "white",
   };
 
+  //GET calls handling
   const handleModuleChange = (value) => {
     setModuleName(value);
   };
@@ -48,6 +51,12 @@ function FSFlevel1() {
     setIsModalOpen(false);
   };
 
+  //Initial rendering
+  useEffect(() => {
+    getProjects();
+  }, []);
+
+  //GET API calls
   function getProjects() {
     fetch("http://10.3.3.80/api/getproject")
       .then((response) => response.json())
@@ -55,10 +64,7 @@ function FSFlevel1() {
       .catch((error) => console.log(error));
   };
 
-  useEffect(() => {
-    getProjects();
-  }, []);
-
+  //DIV handlings
   const [showDiv1, setShowDiv1] = useState(true);
   const [showDiv2, setShowDiv2] = useState(false);
   const [showDiv3, setShowDiv3] = useState(false);
@@ -288,4 +294,4 @@ function FSFlevel1() {
   )
 }
 
-export default FSFlevel1
+export default FSFform

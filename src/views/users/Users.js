@@ -13,6 +13,7 @@ const Users = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [role, setRole] = useState("");
+    const [team_id, setTeamId] = useState("");
 
     //Local Storage data
     const local = JSON.parse(localStorage.getItem('user-info'));
@@ -74,6 +75,7 @@ const Users = () => {
         setEmail('');
         setPassword('');
         setRole('');
+        setTeamId('');
     };
     const handleCancel = () => {
         setIsModalOpen(false);
@@ -81,6 +83,7 @@ const Users = () => {
         setEmail('');
         setPassword('');
         setRole('');
+        setTeamId('');
     };
 
     // Functions for Delete User Modal
@@ -112,6 +115,7 @@ const Users = () => {
         setEmail('');
         setPassword('');
         setRole('');
+        setTeamId('');
     };
 
     const handleCancel3 = () => {
@@ -120,6 +124,7 @@ const Users = () => {
         setEmail('');
         setPassword('');
         setRole('');
+        setTeamId('');
     };
 
     // Functions for Add User Success
@@ -252,17 +257,23 @@ const Users = () => {
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
     const [byuser, setUserById] = useState([]);
+    const [team, setTeam] = useState([]);
     var filteredUsers = [];
 
     //Initial rendering through useEffect
     useEffect(() => {
         getList();
-        getRoles()
+        getRoles();
+        getTeams();
     }, []);
 
     //Get calls handling
     const handleRoleChange = (value) => {
         setRole(value);
+    };
+
+    const handleTeamChange = (value) => {
+        setTeamId(value);
     };
 
     // Get API call
@@ -291,6 +302,13 @@ const Users = () => {
             .catch((error) => console.log(error));
     };
 
+    function getTeams() {
+        fetch("http://10.3.3.80/api/get_teams")
+            .then((response) => response.json())
+            .then((data) => setTeam(data.Teams))
+            .catch((error) => console.log(error));
+    };
+
     function getUserById(id) {
         fetch(`http://10.3.3.80/api/get_user/${id}`)
             .then((response) => response.json())
@@ -305,7 +323,7 @@ const Users = () => {
 
     // Add API call
     async function addUser() {
-        let adduser = { name, email, password, role, company_id: local.Users.company_id }
+        let adduser = { name, email, password, role, company_id: local.Users.company_id, team_id }
         console.log(adduser);
 
         await fetch("http://10.3.3.80/api/add_user",
@@ -366,7 +384,7 @@ const Users = () => {
                 email: email,
                 role: role,
                 company_id: local.Users.company_id,
-
+                team_id: team_id,
             })
         }).then(response => {
             if (response.ok) {
@@ -496,6 +514,19 @@ const Users = () => {
                                 </Select>
                             </Form.Item>
                         </div>
+
+                        <div className="form-outline mb-3">
+                            <label>Team</label>
+                            <Form.Item>
+                                <Select placeholder="Select Team" onChange={handleTeamChange} value={team_id}>
+                                    {team.map((tem) => (
+                                        <Select.Option value={tem.id} key={tem.id}>
+                                            {tem.team_name}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </div>
                     </Modal>
 
                     {/* Modal for Update User */}
@@ -535,6 +566,19 @@ const Users = () => {
                                             {roles.map((user) => (
                                                 <Select.Option value={user.id} key={user.id}>
                                                     {user.name}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
+                                </div>
+
+                                <div className="form-outline mb-3">
+                                    <label>Team</label>
+                                    <Form.Item>
+                                        <Select placeholder="Select Team" onChange={handleTeamChange} defaultValue={user.team_id}>
+                                            {team.map((tem) => (
+                                                <Select.Option value={tem.id} key={tem.id}>
+                                                    {tem.team_name}
                                                 </Select.Option>
                                             ))}
                                         </Select>

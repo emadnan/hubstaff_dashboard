@@ -1,12 +1,20 @@
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import { Button, Modal } from 'antd';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import Alert from '@mui/material/Alert';
 
 const Team = () => {
 
   //Variable Declarations
-  const [teamname, setTeamName] = useState("");
+  const [team_name, setTeamName] = useState("");
   const [description, setDescription] = useState("");
+  const [teams, setTeams] = useState([]);
+
+  //Local Storage data
+  const local = JSON.parse(localStorage.getItem('user-info'));
 
   //CSS Styling
   const mystyle = {
@@ -33,6 +41,10 @@ const Team = () => {
     left: "40%",
   };
 
+  const mystyle2 = {
+    backgroundColor: "white ",
+  };
+
   const modalStyle2 = {
     position: "fixed",
     top: "10%",
@@ -46,12 +58,257 @@ const Team = () => {
     setIsModalOpen(true);
   };
   const handleOk = () => {
-    // addUser()
+    addTeam()
     setIsModalOpen(false);
   };
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  // Functions for Delete Team Modal
+  const [isModalOpen2, setIsModalOpen2] = useState(false);
+  const showModal2 = (id) => {
+    setIsModalOpen2(id);
+  };
+
+  const handleOk2 = () => {
+    deleteTeam(isModalOpen2);
+    setIsModalOpen2(false);
+  };
+
+  const handleCancel2 = () => {
+    setIsModalOpen2(false);
+  };
+
+  // Functions for Update Team Modal
+  const [isModalOpen3, setIsModalOpen3] = useState(false);
+  const showModal3 = (id) => {
+    // getUserById(id);
+    setIsModalOpen3(id);
+  };
+
+  const handleOk3 = () => {
+    // updateTeam(isModalOpen3);
+    setIsModalOpen3(false);
+  };
+
+  const handleCancel3 = () => {
+    setIsModalOpen3(false);
+  };
+
+  //Initial rendering through useEffect
+  useEffect(() => {
+    getTeams();
+  }, []);
+
+  function getTeams() {
+    fetch("http://10.3.3.80/api/get_teams")
+      .then((response) => response.json())
+      .then((data) => setTeams(data.Teams))
+      .catch((error) => console.log(error));
+  };
+
+  // Add API call
+  async function addTeam() {
+    let addteam = { team_name, team_company_id: local.Users.company_id, description }
+    await fetch("http://10.3.3.80/api/add_team",
+      {
+        method: 'POST',
+        body: JSON.stringify(addteam),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+      }).then(response => {
+        if (response.ok) {
+          handleButtonClick1();
+          getTeams()
+        } else {
+          handleButtonClick2();
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  // Delete API call
+  async function deleteTeam(newid) {
+    await fetch(`http://127.0.0.1:8000/api/delete_team?${newid}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: newid
+      })
+    }).then(response => {
+      if (response.ok) {
+        handleButtonClick3();
+        getTeams()
+      } else {
+        handleButtonClick4();
+      }
+    })
+      .catch(error => {
+        console.error(error);
+      });
+
+  }
+
+  // Update API call
+  // async function updateUser(newid) {
+  //     await fetch('http://10.3.3.80/api/update_user', {
+  //         method: 'POST',
+  //         headers: {
+  //             'Content-Type': 'application/json'
+  //         },
+  //         body: JSON.stringify({
+  //             id: newid,
+  //             name: name,
+  //             email: email,
+  //             role: role,
+  //             company_id: local.Users.company_id,
+  //             team_id: team_id,
+  //         })
+  //     }).then(response => {
+  //         if (response.ok) {
+  //             handleButtonClick5();
+  //             getList()
+  //         } else {
+  //             handleButtonClick6();
+  //         }
+  //     })
+  //         .catch(error => {
+  //             console.error(error);
+  //         });
+  // }
+
+  // Functions for Add User Success
+  const [showAlert1, setShowAlert1] = useState(false);
+
+  function handleButtonClick1() {
+    setShowAlert1(true);
+  }
+
+  function handleCloseAlert1() {
+    setShowAlert1(false);
+  }
+
+  useEffect(() => {
+    if (showAlert1) {
+      const timer = setTimeout(() => {
+        setShowAlert1(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert1]);
+
+  // Functions for Add User Failure
+  const [showAlert2, setShowAlert2] = useState(false);
+
+  function handleButtonClick2() {
+    setShowAlert2(true);
+  }
+
+  function handleCloseAlert2() {
+    setShowAlert2(false);
+  }
+
+  useEffect(() => {
+    if (showAlert2) {
+      const timer = setTimeout(() => {
+        setShowAlert2(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert2]);
+
+  // Functions for Delete User Success
+  const [showAlert3, setShowAlert3] = useState(false);
+
+  function handleButtonClick3() {
+    setShowAlert3(true);
+  }
+
+  function handleCloseAlert3() {
+    setShowAlert3(false);
+  }
+
+  useEffect(() => {
+    if (showAlert3) {
+      const timer = setTimeout(() => {
+        setShowAlert3(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert3]);
+
+  // Functions for Delete User Failure
+  const [showAlert4, setShowAlert4] = useState(false);
+
+  function handleButtonClick4() {
+    setShowAlert4(true);
+  }
+
+  function handleCloseAlert4() {
+    setShowAlert4(false);
+  }
+
+  useEffect(() => {
+    if (showAlert4) {
+      const timer = setTimeout(() => {
+        setShowAlert4(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert4]);
+
+  // Functions for Update User Success
+  const [showAlert5, setShowAlert5] = useState(false);
+
+  function handleButtonClick5() {
+    setShowAlert5(true);
+  }
+
+  function handleCloseAlert5() {
+    setShowAlert5(false);
+  }
+
+  useEffect(() => {
+    if (showAlert5) {
+      const timer = setTimeout(() => {
+        setShowAlert5(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert5]);
+
+  // Functions for Update User Failure
+  const [showAlert6, setShowAlert6] = useState(false);
+
+  function handleButtonClick6() {
+    setShowAlert6(true);
+  }
+
+  function handleCloseAlert6() {
+    setShowAlert6(false);
+  }
+
+  useEffect(() => {
+    if (showAlert6) {
+      const timer = setTimeout(() => {
+        setShowAlert6(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert6]);
 
   return (
     <>
@@ -75,36 +332,25 @@ const Team = () => {
             <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Team Name</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Assign Members</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
           </CTableRow>
 
           {/* Get API Users */}
-          {/* {users.map((user, index) => (
-                        <CTableRow key={user.id}>
-                            <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center" style={mystyle2}>{user.name}</CTableHeaderCell>
-                            <CTableHeaderCell className="text-center" style={mystyle2}>{user.email}</CTableHeaderCell>
-                            {
-                                local.Users.role === "1" ? (
-                                    <CTableHeaderCell className="text-center" style={mystyle2}>{user.role}</CTableHeaderCell>
-                                ) : null
-                            }
-                            {isEditButtonEnabled || isDeleteButtonEnabled ? (
-                                <CTableHeaderCell className="text-center" style={mystyle2}>
-                                    {isEditButtonEnabled ? (
-                                        <IconButton aria-label="update" onClick={() => showModal3(user.id)}>
-                                            <EditIcon htmlColor='#28B463' />
-                                        </IconButton>
-                                    ) : null}
-                                    {isDeleteButtonEnabled ? (
-                                        <IconButton aria-label="delete" onClick={() => showModal2(user.id)}>
-                                            <DeleteIcon htmlColor='#FF0000' />
-                                        </IconButton>
-                                    ) : null}
-                                </CTableHeaderCell>
-                            ) : null}
-                        </CTableRow>
-                    ))} */}
+          {teams.map((tem, index) => (
+            <CTableRow key={tem.id}>
+              <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>{tem.team_name}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>{tem.description}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+                <IconButton aria-label="update" onClick={() => showModal3(tem.id)}>
+                  <EditIcon htmlColor='#28B463' />
+                </IconButton>
+                <IconButton aria-label="delete" onClick={() => showModal2(tem.id)}>
+                  <DeleteIcon htmlColor='#FF0000' />
+                </IconButton>
+              </CTableHeaderCell>
+            </CTableRow>
+          ))}
         </CTableHead>
         <CTableBody>
 
@@ -117,7 +363,36 @@ const Team = () => {
               <label>Team Name</label>
               <input
                 type="text"
-                value={teamname}
+                value={team_name}
+                onChange={(e) => setTeamName(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Team Name"
+              />
+            </div>
+
+            <div className="form-outline mb-3">
+              <label>Description</label>
+              <input
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Description"
+              />
+            </div>
+
+          </Modal>
+
+          {/* Modal for Update Team */}
+          <Modal title="Update a Team" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle2}>
+
+            <br></br>
+
+            <div className="form-outline mb-3">
+              <label>Team Name</label>
+              <input
+                type="text"
+                value={team_name}
                 onChange={(e) => setTeamName(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Team Name"
@@ -138,8 +413,50 @@ const Team = () => {
           </Modal>
 
           {/* Modal for Deletion Confirmation */}
-          {/* <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
-                    </Modal> */}
+          <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
+          </Modal>
+
+          {/* Alert for Add Team Success*/}
+          {showAlert1 && (
+            <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
+              Team Added Successfully
+            </Alert>
+          )}
+
+          {/* Alert for Add Team Failure*/}
+          {showAlert2 && (
+            <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
+              Failed to Add Team
+            </Alert>
+          )}
+
+          {/* Alert for Delete Team Success*/}
+          {showAlert3 && (
+            <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
+              Team Deleted Successfully
+            </Alert>
+          )}
+
+          {/* Alert for Delete Team Failure*/}
+          {showAlert4 && (
+            <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
+              Failed to Delete Team
+            </Alert>
+          )}
+
+          {/* Alert for Update Team Success*/}
+          {showAlert5 && (
+            <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
+              Team Updated Successfully
+            </Alert>
+          )}
+
+          {/* Alert for Update Team Failure*/}
+          {showAlert6 && (
+            <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
+              Failed to Update Team
+            </Alert>
+          )}
 
         </CTableBody>
       </CTable>

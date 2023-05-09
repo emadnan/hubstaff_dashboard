@@ -28,7 +28,7 @@ const Weekly = React.lazy(() => import('./views/reports/weekly/Weekly'))
 const Teams = React.lazy(() => import('./views/teams/Teams'))
 const Expenses = React.lazy(() => import('./views/expenses/Expenses'))
 const AllFSF = React.lazy(() => import('./views/fsf/AllFSF'))
-const FSFlevel1 = React.lazy(() => import('./views/fsf/FSFlevel1'))
+const FSFform = React.lazy(() => import('./views/fsf/FSFform'))
 const AllCRF = React.lazy(() => import('./views/crf/AllCRF'))
 
 //Path setting for routes
@@ -62,7 +62,7 @@ const routes = [
   { path: '/expenses', name: 'Expenses', element: Expenses },
   { path: '/allfsf', name: 'All FSF', element: AllFSF },
   { path: '/allcrf', name: 'All CRF', element: AllCRF },
-  { path: '/fsflevel1', name: 'FSF Level 1', element: FSFlevel1},
+  { path: '/fsfform', name: 'FSF Form', element: FSFform},
 ]
 
 export default routes
