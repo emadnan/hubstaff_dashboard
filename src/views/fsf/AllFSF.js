@@ -1,8 +1,11 @@
-import {React} from 'react'
+import { React } from 'react'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 function AllFSF() {
+
+    const navigate = useNavigate();
 
     //CSS Stylings
     const buttonStyle = {
@@ -31,7 +34,9 @@ function AllFSF() {
                 </div>
                 <div className='col-md 6'>
                     {/* Add FSF Button */}
-                        <Button className="btn btn-primary" style={buttonStyle}>Add FSF</Button>
+                    <Button className="btn btn-primary" style={buttonStyle} onClick={async () => {
+                        await navigate("/fsflevel1");
+                    }}>Add FSF</Button>
                 </div>
             </div>
             <br></br>
@@ -44,7 +49,6 @@ function AllFSF() {
                         <CTableHeaderCell className="text-center" style={mystyle}>FSF Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>FSF Report</CTableHeaderCell>
                     </CTableRow>
-
                 </CTableHead>
 
                 <CTableBody>
