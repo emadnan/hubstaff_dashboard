@@ -12,6 +12,7 @@ const Team = () => {
   const [team_name, setTeamName] = useState("");
   const [description, setDescription] = useState("");
   const [teams, setTeams] = useState([]);
+  var filteredUsers = [];
 
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'));
@@ -104,7 +105,15 @@ const Team = () => {
   function getTeams() {
     fetch("http://10.3.3.80/api/get_teams")
       .then((response) => response.json())
-      .then((data) => setTeams(data.Teams))
+      .then((data) => {
+        if(local.Users.role === "1") {
+          filteredUsers = data.Teams;
+        }
+        else if (local.Users.role === "3") {
+          filteredUsers = data.Teams.filter((tem) => tem.team_company_id === local.Users.company_id);
+        }
+      setTeams(data.Teams);
+      })
       .catch((error) => console.log(error));
   };
 
@@ -355,7 +364,7 @@ const Team = () => {
         <CTableBody>
 
           {/* Modal for Add Team */}
-          <Modal title="Add a Team" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle2}>
+          <Modal title="Add a Team" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
 
             <br></br>
 
@@ -384,7 +393,7 @@ const Team = () => {
           </Modal>
 
           {/* Modal for Update Team */}
-          <Modal title="Update a Team" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle2}>
+          <Modal title="Update a Team" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
 
             <br></br>
 
