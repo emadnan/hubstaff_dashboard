@@ -1,12 +1,29 @@
 import { React, useState, useEffect } from 'react'
-import { Form, Input, Select, Button, Modal } from 'antd'
+import { Form, Input, Select, Button, Modal, DatePicker } from 'antd'
 import { CTableBody, CTableHead, CTableHeaderCell, CTableRow, CTable } from '@coreui/react'
+import moment from 'moment';
+
+const { RangePicker } = DatePicker;
 
 function FSFform() {
 
   //Variable declarations
-  const [ricefId, setRicefId] = useState("");
-  const [modulename, setModuleName] = useState("");
+  const [wricef_id, setWRicefId] = useState("");
+  const [module_name, setModuleName] = useState("");
+  const [functional_lead, setFuncionalLead] = useState("");
+  const [requested_date, setRequestedDate] = useState(moment());
+  const [type_of_development, setTypeOfDevelopment] = useState("");
+  const [priority, setPriority] = useState("");
+  const [usage_frequency, setUsageFrequency] = useState("");
+  const [transaction_code, setTransactionCode] = useState("");
+  const [authorization_level, setAuthorizationLevel] = useState("");
+  const [description, setDescription] = useState("");
+  const [field_technical_name, setFieldTechnicalName] = useState("");
+  const [field_length, setFieldLength] = useState("");
+  const [field_type, setFieldType] = useState("");
+  const [field_table_name, setFieldTableName] = useState("");
+  const [mandatory_or_optional, setMandatoryOrOptional] = useState("");
+  const [parameter_or_selection, setParameterOrSelection] = useState("");
   const [project, setProjects] = useState([]);
 
   //CSS Styling
@@ -34,6 +51,30 @@ function FSFform() {
   //GET calls handling
   const handleModuleChange = (value) => {
     setModuleName(value);
+  };
+
+  const handleTypeOfDevelopmentChange = (value) => {
+    setTypeOfDevelopment(value);
+  };
+
+  const handlePriorityChange = (value) => {
+    setPriority(value);
+  };
+
+  const handleUsageFrequencyChange = (value) => {
+    setUsageFrequency(value);
+  };
+
+  const handleMandatoryOrOptionalChange = (value) => {
+    setMandatoryOrOptional(value);
+  };
+
+  const handleParameterOrSelection = (value) => {
+    setParameterOrSelection(value);
+  };
+
+  const handleRequestedDateChange = (value) => {
+    setRequestedDate(value);
   };
 
   // Functions of Add Parameter Modal
@@ -114,11 +155,17 @@ function FSFform() {
                   <br></br>
 
                   <Form.Item label="WRICEF ID">
-                    <Input style={{ width: '400px' }} />
+                    <Input
+                      style={{ width: '400px' }}
+                      value={wricef_id}
+                      type="text"
+                      onChange={(e) => setWRicefId(e.target.value)}
+                      className="form-control form-control-lg"
+                    />
                   </Form.Item>
 
                   <Form.Item label="Module Name" >
-                    <Select onChange={handleModuleChange} value={modulename} style={{ width: '400px' }}>
+                    <Select onChange={handleModuleChange} value={module_name} style={{ width: '400px' }}>
                       {project.map((pro) => (
                         <Select.Option value={pro.name} key={pro.id}>
                           {pro.project_name}
@@ -128,18 +175,33 @@ function FSFform() {
                   </Form.Item>
 
                   <Form.Item label="Functional Lead">
-                    <Input style={{ width: '400px' }} />
+                    <Input
+                      style={{ width: '400px' }}
+                      value={functional_lead}
+                      type="text"
+                      onChange={(e) => setFuncionalLead(e.target.value)}
+                      className="form-control form-control-lg"
+                    />
+                  </Form.Item>
+
+                  <Form.Item label="Requested Date">
+                    <DatePicker
+                      style={{ width: '400px' }}
+                      value={requested_date}
+                      onChange={handleRequestedDateChange}
+                      className="form-control form-control-lg"
+                    />
                   </Form.Item>
 
                   <Form.Item label="Type of Development" >
-                    <Select style={{ width: '400px' }}>
+                    <Select onChange={handleTypeOfDevelopmentChange} value={type_of_development} style={{ width: '400px' }}>
                       <Select.Option value="Form">Form</Select.Option>
                       <Select.Option value="Report">Report</Select.Option>
                     </Select>
                   </Form.Item>
 
                   <Form.Item label="Priority" >
-                    <Select style={{ width: '400px' }}>
+                    <Select onChange={handlePriorityChange} value={priority} style={{ width: '400px' }}>
                       <Select.Option value="Low">Low</Select.Option>
                       <Select.Option value="Medium">Medium</Select.Option>
                       <Select.Option value="High">High</Select.Option>
@@ -147,7 +209,7 @@ function FSFform() {
                   </Form.Item>
 
                   <Form.Item label="Usage Frequency" >
-                    <Select style={{ width: '400px' }}>
+                    <Select onChange={handleUsageFrequencyChange} value={usage_frequency} style={{ width: '400px' }}>
                       <Select.Option value="Daily">Daily</Select.Option>
                       <Select.Option value="Weekly">Weekly</Select.Option>
                       <Select.Option value="Daily">Monthly</Select.Option>
@@ -190,11 +252,23 @@ function FSFform() {
                   <br></br>
 
                   <Form.Item label="Transaction Code">
-                    <Input style={{ width: '400px' }} />
+                    <Input
+                      style={{ width: '400px' }}
+                      value={transaction_code}
+                      type="text"
+                      onChange={(e) => setTransactionCode(e.target.value)}
+                      className="form-control form-control-lg"
+                    />
                   </Form.Item>
 
                   <Form.Item label="Authorization Level">
-                    <Input style={{ width: '400px' }} />
+                    <Input
+                      style={{ width: '400px' }}
+                      value={authorization_level}
+                      type="text"
+                      onChange={(e) => setAuthorizationLevel(e.target.value)}
+                      className="form-control form-control-lg"
+                    />
                   </Form.Item>
 
                   <Button style={buttonStyle} onClick={handleClick4}>Back</Button>
@@ -254,31 +328,67 @@ function FSFform() {
                 <br></br>
 
                 <Form.Item label="Description">
-                  <Input style={{ width: '400px' }} />
+                  <Input
+                    style={{ width: '400px' }}
+                    value={description}
+                    type="text"
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="form-control form-control-lg"
+                  />
                 </Form.Item>
 
                 <Form.Item label="Field Technical Name">
-                  <Input style={{ width: '400px' }} />
+                  <Input
+                    style={{ width: '400px' }}
+                    value={field_technical_name}
+                    type="text"
+                    onChange={(e) => setFieldTechnicalName(e.target.value)}
+                    className="form-control form-control-lg"
+                  />
                 </Form.Item>
 
                 <Form.Item label="Field Length">
-                  <Input style={{ width: '400px' }} />
+                  <Input
+                    style={{ width: '400px' }}
+                    value={field_length}
+                    type="text"
+                    onChange={(e) => setFieldLength(e.target.value)}
+                    className="form-control form-control-lg"
+                  />
                 </Form.Item>
 
                 <Form.Item label="Field Type">
-                  <Input style={{ width: '400px' }} />
+                  <Input
+                    style={{ width: '400px' }}
+                    value={field_type}
+                    type="text"
+                    onChange={(e) => setFieldType(e.target.value)}
+                    className="form-control form-control-lg"
+                  />
                 </Form.Item>
 
                 <Form.Item label="Field Table Name">
-                  <Input style={{ width: '400px' }} />
+                  <Input
+                    style={{ width: '400px' }}
+                    value={field_table_name}
+                    type="text"
+                    onChange={(e) => setFieldTableName(e.target.value)}
+                    className="form-control form-control-lg"
+                  />
                 </Form.Item>
 
-                <Form.Item label="Mandatory/Optional">
-                  <Input style={{ width: '400px' }} />
+                <Form.Item label="Mandatory/Optional" >
+                  <Select onChange={handleMandatoryOrOptionalChange} value={mandatory_or_optional} style={{ width: '400px' }}>
+                    <Select.Option value="Mandatory">Mandatory</Select.Option>
+                    <Select.Option value="Optional">Optional</Select.Option>
+                  </Select>
                 </Form.Item>
 
-                <Form.Item label="Parameter/Selection">
-                  <Input style={{ width: '400px' }} />
+                <Form.Item label="Parameter/Selection" >
+                  <Select onChange={handleParameterOrSelection} value={parameter_or_selection} style={{ width: '400px' }}>
+                    <Select.Option value="Parameter">Parameter</Select.Option>
+                    <Select.Option value="Selection">Selection</Select.Option>
+                  </Select>
                 </Form.Item>
 
               </Modal>

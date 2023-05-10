@@ -24,8 +24,6 @@ const Team = () => {
 
   //Role & Permissions check
   const isCreateButtonEnabled = perm.some(item => item.name === 'Create_Team');
-  const isEditButtonEnabled = perm.some(item => item.name === 'Update_Team');
-  const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_Team');
 
   //CSS Styling
   const mystyle = {
@@ -71,9 +69,13 @@ const Team = () => {
   const handleOk = () => {
     addTeam()
     setIsModalOpen(false);
+    setTeamName('');
+    setDescription('');
   };
   const handleCancel = () => {
     setIsModalOpen(false);
+    setTeamName('');
+    setDescription('');
   };
 
   // Functions for Delete Team Modal
@@ -101,10 +103,14 @@ const Team = () => {
   const handleOk3 = () => {
     updateTeam(isModalOpen3);
     setIsModalOpen3(false);
+    setTeamName('');
+    setDescription('');
   };
 
   const handleCancel3 = () => {
     setIsModalOpen3(false);
+    setTeamName('');
+    setDescription('');
   };
 
   //Initial rendering through useEffect
@@ -360,6 +366,7 @@ const Team = () => {
             <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Team Name</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>Assign Team</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
           </CTableRow>
 
@@ -369,6 +376,7 @@ const Team = () => {
               <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>{tem.team_name}</CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>{tem.description}</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}></CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>
                 <IconButton aria-label="update" onClick={() => showModal3(tem.id)}>
                   <EditIcon htmlColor='#28B463' />
