@@ -89,7 +89,7 @@ const Team = () => {
   };
 
   const handleOk3 = () => {
-    // updateTeam(isModalOpen3);
+    updateTeam(isModalOpen3);
     setIsModalOpen3(false);
   };
 
@@ -112,7 +112,7 @@ const Team = () => {
         else if (local.Users.role === "3") {
           filteredUsers = data.Teams.filter((tem) => tem.team_company_id === local.Users.company_id);
         }
-      setTeams(data.Teams);
+      setTeams(filteredUsers);
       })
       .catch((error) => console.log(error));
   };
@@ -143,7 +143,7 @@ const Team = () => {
 
   // Delete API call
   async function deleteTeam(newid) {
-    await fetch(`http://127.0.0.1:8000/api/delete_team?${newid}`, {
+    await fetch(`http://10.3.3.80/api/delete_team`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -166,32 +166,30 @@ const Team = () => {
   }
 
   // Update API call
-  // async function updateUser(newid) {
-  //     await fetch('http://10.3.3.80/api/update_user', {
-  //         method: 'POST',
-  //         headers: {
-  //             'Content-Type': 'application/json'
-  //         },
-  //         body: JSON.stringify({
-  //             id: newid,
-  //             name: name,
-  //             email: email,
-  //             role: role,
-  //             company_id: local.Users.company_id,
-  //             team_id: team_id,
-  //         })
-  //     }).then(response => {
-  //         if (response.ok) {
-  //             handleButtonClick5();
-  //             getList()
-  //         } else {
-  //             handleButtonClick6();
-  //         }
-  //     })
-  //         .catch(error => {
-  //             console.error(error);
-  //         });
-  // }
+  async function updateTeam(newid) {
+      await fetch('http://10.3.3.80/api/updateteam', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              id: newid,
+              team_name: team_name,
+              description: description,
+              team_company_id: local.Users.company_id,
+          })
+      }).then(response => {
+          if (response.ok) {
+              handleButtonClick5();
+              getTeams()
+          } else {
+              handleButtonClick6();
+          }
+      })
+          .catch(error => {
+              console.error(error);
+          });
+  }
 
   // Functions for Add User Success
   const [showAlert1, setShowAlert1] = useState(false);
