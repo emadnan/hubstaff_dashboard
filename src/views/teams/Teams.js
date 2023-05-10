@@ -12,10 +12,20 @@ const Team = () => {
   const [team_name, setTeamName] = useState("");
   const [description, setDescription] = useState("");
   const [teams, setTeams] = useState([]);
+  const [byteam, setTeamById] = useState([]);
   var filteredUsers = [];
 
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'));
+  const permissions = local.permissions;
+  const perm = permissions.map(permission => ({
+    name: permission.name,
+  }));
+
+  //Role & Permissions check
+  const isCreateButtonEnabled = perm.some(item => item.name === 'Create_Team');
+  const isEditButtonEnabled = perm.some(item => item.name === 'Update_Team');
+  const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_Team');
 
   //CSS Styling
   const mystyle = {
@@ -84,7 +94,7 @@ const Team = () => {
   // Functions for Update Team Modal
   const [isModalOpen3, setIsModalOpen3] = useState(false);
   const showModal3 = (id) => {
-    // getUserById(id);
+    getTeamById(id);
     setIsModalOpen3(id);
   };
 
@@ -106,13 +116,24 @@ const Team = () => {
     fetch("http://10.3.3.80/api/get_teams")
       .then((response) => response.json())
       .then((data) => {
-        if(local.Users.role === "1") {
+        if (local.Users.role === "1") {
           filteredUsers = data.Teams;
         }
         else if (local.Users.role === "3") {
           filteredUsers = data.Teams.filter((tem) => tem.team_company_id === local.Users.company_id);
         }
-      setTeams(filteredUsers);
+        setTeams(filteredUsers);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  function getTeamById(id) {
+    fetch(`http://10.3.3.80/api/getTeam/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setTeamById(data.Team);
+        setTeamName(data.Team[0].team_name);
+        setDescription(data.Team[0].description);
       })
       .catch((error) => console.log(error));
   };
@@ -167,31 +188,31 @@ const Team = () => {
 
   // Update API call
   async function updateTeam(newid) {
-      await fetch('http://10.3.3.80/api/updateteam', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-              id: newid,
-              team_name: team_name,
-              description: description,
-              team_company_id: local.Users.company_id,
-          })
-      }).then(response => {
-          if (response.ok) {
-              handleButtonClick5();
-              getTeams()
-          } else {
-              handleButtonClick6();
-          }
+    await fetch('http://10.3.3.80/api/updateteam', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: newid,
+        team_name: team_name,
+        description: description,
+        team_company_id: local.Users.company_id,
       })
-          .catch(error => {
-              console.error(error);
-          });
+    }).then(response => {
+      if (response.ok) {
+        handleButtonClick5();
+        getTeams()
+      } else {
+        handleButtonClick6();
+      }
+    })
+      .catch(error => {
+        console.error(error);
+      });
   }
 
-  // Functions for Add User Success
+  // Functions for Add Team Success
   const [showAlert1, setShowAlert1] = useState(false);
 
   function handleButtonClick1() {
@@ -212,7 +233,7 @@ const Team = () => {
     }
   }, [showAlert1]);
 
-  // Functions for Add User Failure
+  // Functions for Add Team Failure
   const [showAlert2, setShowAlert2] = useState(false);
 
   function handleButtonClick2() {
@@ -233,7 +254,7 @@ const Team = () => {
     }
   }, [showAlert2]);
 
-  // Functions for Delete User Success
+  // Functions for Delete Team Success
   const [showAlert3, setShowAlert3] = useState(false);
 
   function handleButtonClick3() {
@@ -254,7 +275,7 @@ const Team = () => {
     }
   }, [showAlert3]);
 
-  // Functions for Delete User Failure
+  // Functions for Delete Team Failure
   const [showAlert4, setShowAlert4] = useState(false);
 
   function handleButtonClick4() {
@@ -275,7 +296,7 @@ const Team = () => {
     }
   }, [showAlert4]);
 
-  // Functions for Update User Success
+  // Functions for Update Team Success
   const [showAlert5, setShowAlert5] = useState(false);
 
   function handleButtonClick5() {
@@ -296,7 +317,7 @@ const Team = () => {
     }
   }, [showAlert5]);
 
-  // Functions for Update User Failure
+  // Functions for Update Team Failure
   const [showAlert6, setShowAlert6] = useState(false);
 
   function handleButtonClick6() {
@@ -325,9 +346,9 @@ const Team = () => {
         </div>
         <div className='col-md 6'>
           {/* Add Teams Button */}
-          {/* {isCreateButtonEnabled ? ( */}
-          <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Team</Button>
-          {/* ) : null} */}
+          {isCreateButtonEnabled ? (
+            <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Team</Button>
+          ) : null}
         </div>
       </div>
       <br></br>
@@ -392,31 +413,36 @@ const Team = () => {
 
           {/* Modal for Update Team */}
           <Modal title="Update a Team" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
-
             <br></br>
+            {
+              byteam.map((tem) => (
+                <div key={tem.id}>
 
-            <div className="form-outline mb-3">
-              <label>Team Name</label>
-              <input
-                type="text"
-                value={team_name}
-                onChange={(e) => setTeamName(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Team Name"
-              />
-            </div>
+                  <div className="form-outline mb-3">
+                    <label>Team Name</label>
+                    <input
+                      type="text"
+                      defaultValue={tem.team_name}
+                      onChange={(e) => setTeamName(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Team Name"
+                    />
+                  </div>
 
-            <div className="form-outline mb-3">
-              <label>Description</label>
-              <input
-                type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Description"
-              />
-            </div>
+                  <div className="form-outline mb-3">
+                    <label>Description</label>
+                    <input
+                      type="text"
+                      defaultValue={tem.description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Description"
+                    />
+                  </div>
 
+                </div>
+              ))
+            }
           </Modal>
 
           {/* Modal for Deletion Confirmation */}
