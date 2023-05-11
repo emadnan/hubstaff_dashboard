@@ -473,7 +473,7 @@ const Users = () => {
                 <CTableBody>
 
                     {/* Modal for Add User */}
-                    <Modal title="Add a User" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                    <Modal title="Add a User" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} maskClosable={false}>
 
                         <br></br>
 
@@ -538,7 +538,7 @@ const Users = () => {
                     </Modal>
 
                     {/* Modal for Update User */}
-                    <Modal title="Update a User" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3}>
+                    <Modal title="Update a User" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} maskClosable={false}>
 
                         <br></br>
 

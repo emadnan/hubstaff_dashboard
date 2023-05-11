@@ -391,7 +391,7 @@ const Team = () => {
         <CTableBody>
 
           {/* Modal for Add Team */}
-          <Modal title="Add a Team" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+          <Modal title="Add a Team" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle} maskClosable={false}>
 
             <br></br>
 
@@ -420,7 +420,7 @@ const Team = () => {
           </Modal>
 
           {/* Modal for Update Team */}
-          <Modal title="Update a Team" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle}>
+          <Modal title="Update a Team" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle} maskClosable={false}>
             <br></br>
             {
               byteam.map((tem) => (

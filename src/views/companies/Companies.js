@@ -277,6 +277,7 @@ const Companies = () => {
     setCountry(value);
     const selectedCountry = countries.find((country) => country.name === value);
     getCity(selectedCountry.id);
+    setCity('');
   }
 
   const handleCityChange = (value) => {
@@ -487,7 +488,7 @@ const Companies = () => {
         <CTableBody>
 
           {/* Modal for Add Company */}
-          <Modal title="Add a Company" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+          <Modal title="Add a Company" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} maskClosable={false}>
 
             <br></br>
 
@@ -538,7 +539,7 @@ const Companies = () => {
             <div className="form-outline mb-3">
               <label>Country</label>
               <Form.Item>
-                <Select placeholder="Select Country" onChange={handleCountryChange} value={country}>
+                <Select placeholder="Select Country" showSearch={true} onChange={handleCountryChange} value={country}>
                   {countries.map((count) => (
                     <Select.Option value={count.name} key={count.id}>
                       {count.name}
@@ -551,7 +552,7 @@ const Companies = () => {
             <div className="form-outline mb-3">
               <label>City</label>
               <Form.Item>
-                <Select placeholder="Select City" onChange={handleCityChange} value={city}>
+                <Select placeholder="Select City" showSearch={true} onChange={handleCityChange} value={city}>
                   {cities.map((citi) => (
                     <Select.Option value={citi.name} key={citi.id}>
                       {citi.name}
@@ -568,7 +569,7 @@ const Companies = () => {
           </Modal>
 
           {/* Modal for Update Company */}
-          <Modal title="Update a Company" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3}>
+          <Modal title="Update a Company" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} maskClosable={false}>
 
             <br></br>
             {bycompany.map((company) => (

@@ -386,7 +386,7 @@ const Permission = () => {
                 <CTableBody>
 
                     {/* Modal for Add Permission */}
-                    <Modal title="Add a Permission" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                    <Modal title="Add a Permission" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} maskClosable={false}>
 
                         <br></br>
 
@@ -404,7 +404,7 @@ const Permission = () => {
                     </Modal>
 
                     {/* Modal for Update Permission */}
-                    <Modal title="Update a Permission" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3}>
+                    <Modal title="Update a Permission" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} maskClosable={false}>
 
                         <br></br>
 

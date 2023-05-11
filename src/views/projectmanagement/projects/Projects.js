@@ -721,7 +721,7 @@ const Projects = () => {
         <CTableBody>
 
           {/* Modal for Add Projects */}
-          <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+          <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} maskClosable={false}>
 
             <br></br>
 
@@ -798,7 +798,7 @@ const Projects = () => {
           </Modal>
 
           {/* Modal for Update Projects */}
-          <Modal title="Update a Project" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3}>
+          <Modal title="Update a Project" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} maskClosable={false}>
 
             <br></br>
 

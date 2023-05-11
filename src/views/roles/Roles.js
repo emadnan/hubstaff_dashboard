@@ -525,7 +525,7 @@ const Roles = () => {
             </CTable>
 
             {/* Modal for Add Role */}
-            <Modal title="Add a Role" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+            <Modal title="Add a Role" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} maskClosable={false}>
 
                 <br></br>
 
@@ -543,7 +543,7 @@ const Roles = () => {
             </Modal>
 
             {/* Modal for Update Role */}
-            <Modal title="Update a Role" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3}>
+            <Modal title="Update a Role" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} maskClosable={false}>
 
                 <br></br>
 

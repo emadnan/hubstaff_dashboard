@@ -467,7 +467,7 @@ const Departments = () => {
                 <CTableBody>
 
                     {/* Modal for Add Department */}
-                    <Modal title="Add a Department" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                    <Modal title="Add a Department" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} maskClosable={false}>
 
                         <br></br>
 
@@ -509,7 +509,7 @@ const Departments = () => {
                     </Modal>
 
                     {/* Modal for Update Department */}
-                    <Modal title="Update a Department" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3}>
+                    <Modal title="Update a Department" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} maskClosable={false}>
 
                         <br></br>
 
