@@ -536,6 +536,7 @@ const Projects = () => {
   // Add API call
   async function addProject() {
     let user = { department_id, company_id, project_name, description, start_date, dead_line }
+    console.log(user);
 
     await fetch("http://10.3.3.80/api/add_project",
       {

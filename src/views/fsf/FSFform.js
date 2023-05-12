@@ -2,6 +2,7 @@ import { React, useState, useEffect } from 'react'
 import { Form, Input, Select, Button, Modal, DatePicker } from 'antd'
 import { CTableBody, CTableHead, CTableHeaderCell, CTableRow, CTable } from '@coreui/react'
 import moment from 'moment';
+import Alert from '@mui/material/Alert';
 
 const { RangePicker } = DatePicker;
 
@@ -11,7 +12,7 @@ function FSFform() {
   const [wricef_id, setWRicefId] = useState("");
   const [module_name, setModuleName] = useState("");
   const [functional_lead, setFuncionalLead] = useState("");
-  const [requested_date, setRequestedDate] = useState(moment());
+  const [requested_date, setRequestedDate] = useState("");
   const [type_of_development, setTypeOfDevelopment] = useState("");
   const [priority, setPriority] = useState("");
   const [usage_frequency, setUsageFrequency] = useState("");
@@ -25,6 +26,8 @@ function FSFform() {
   const [mandatory_or_optional, setMandatoryOrOptional] = useState("");
   const [parameter_or_selection, setParameterOrSelection] = useState("");
   const [project, setProjects] = useState([]);
+
+  const local = JSON.parse(localStorage.getItem('user-info'));
 
   //CSS Styling
   const heading = {
@@ -46,6 +49,13 @@ function FSFform() {
     backgroundColor: "#0070ff",
     fontWeight: "bold",
     color: "white",
+  };
+
+  const modalStyle2 = {
+    position: "fixed",
+    top: "10%",
+    left: "55%",
+    transform: "translateX(-50%)",
   };
 
   //GET calls handling
@@ -73,8 +83,12 @@ function FSFform() {
     setParameterOrSelection(value);
   };
 
-  const handleRequestedDateChange = (value) => {
-    setRequestedDate(value);
+  // const handleRequestedDateChange = (value) => {
+  //   setRequestedDate(value);
+  // };
+
+  const handleFunctionalLeadChange = (value) => {
+    setFuncionalLead(value);
   };
 
   // Functions of Add Parameter Modal
@@ -84,24 +98,56 @@ function FSFform() {
   };
 
   const handleOk = () => {
-    // addCompany()
+    addFsf()
     setIsModalOpen(false);
+    // submitHandle();
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
 
+  // function submitHandle (){
+  //   addFsf();
+  // };
+
   //Initial rendering
   useEffect(() => {
     getProjects();
+    getUsers();
   }, []);
+
+  var filteredUsers = [];
+  const [users, setUsers] = useState([]);
 
   //GET API calls
   function getProjects() {
     fetch("http://10.3.3.80/api/getproject")
       .then((response) => response.json())
-      .then((data) => setProjects(data.projects))
+      .then((data) => {
+        if (local.Users.role === "1") {
+          filteredUsers = data.projects;
+        }
+        else if (local.Users.role === "3") {
+          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
+        }
+        setProjects(filteredUsers);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  function getUsers() {
+    fetch("http://10.3.3.80/api/get_users")
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === "1") {
+          filteredUsers = data.Users;
+        }
+        else if (local.Users.role === "3") {
+          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id);
+        }
+        setUsers(filteredUsers.slice(1));
+      })
       .catch((error) => console.log(error));
   };
 
@@ -129,6 +175,74 @@ function FSFform() {
     setShowDiv2(false);
     setShowDiv1(true);
   };
+
+  // Functions for Add FSF Success
+  const [showAlert1, setShowAlert1] = useState(false);
+
+  function handleButtonClick1() {
+    setShowAlert1(true);
+  }
+
+  function handleCloseAlert1() {
+    setShowAlert1(false);
+  }
+
+  useEffect(() => {
+    if (showAlert1) {
+      const timer = setTimeout(() => {
+        setShowAlert1(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert1]);
+
+  // Functions for Add FSF Failure
+  const [showAlert2, setShowAlert2] = useState(false);
+
+  function handleButtonClick2() {
+    setShowAlert2(true);
+  }
+
+  function handleCloseAlert2() {
+    setShowAlert2(false);
+  }
+
+  useEffect(() => {
+    if (showAlert2) {
+      const timer = setTimeout(() => {
+        setShowAlert2(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert2]);
+
+  // Add API call
+  async function addFsf() {
+    let data = { wricef_id, module_name, functional_lead, requested_date, type_of_development, priority, usage_frequency, transaction_code, authorization_level, description, field_technical_name, field_length, field_type, field_table_name, mandatory_or_optional, parameter_or_selection}
+    console.log(data);
+
+    await fetch("http://10.3.3.80/api/addFunctionalSpecificationForm",
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+      }).then(response => {
+        if (response.ok) {
+          handleButtonClick1();
+          // getFsf()
+        } else {
+          handleButtonClick2();
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
 
   return (
     <>
@@ -164,7 +278,7 @@ function FSFform() {
                     />
                   </Form.Item>
 
-                  <Form.Item label="Module Name" >
+                  {/* <Form.Item label="Module Name" >
                     <Select onChange={handleModuleChange} value={module_name} style={{ width: '400px' }}>
                       {project.map((pro) => (
                         <Select.Option value={pro.name} key={pro.id}>
@@ -172,26 +286,34 @@ function FSFform() {
                         </Select.Option>
                       ))}
                     </Select>
+                  </Form.Item> */}
+
+                  <Form.Item label="Module Name" >
+                    <Select onChange={handleModuleChange} value={module_name} style={{ width: '400px' }}>
+                      <Select.Option value="Test 1">Test 1</Select.Option>
+                      <Select.Option value="Test 2">Test 2</Select.Option>
+                    </Select>
                   </Form.Item>
 
-                  <Form.Item label="Functional Lead">
-                    <Input
-                      style={{ width: '400px' }}
-                      value={functional_lead}
-                      type="text"
-                      onChange={(e) => setFuncionalLead(e.target.value)}
-                      className="form-control form-control-lg"
-                    />
+                  <Form.Item label="Functional Lead" >
+                    <Select onChange={handleFunctionalLeadChange} value={functional_lead} style={{ width: '400px' }}>
+                      {users.map((user) => (
+                        <Select.Option value={user.name} key={user.id}>
+                          {user.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
                   </Form.Item>
 
-                  <Form.Item label="Requested Date">
-                    <DatePicker
-                      style={{ width: '400px' }}
+                  <div className="form-outline mb-3">
+                    <label>Requested Date</label>
+                    <input
+                      type="date"
                       value={requested_date}
-                      onChange={handleRequestedDateChange}
+                      onChange={(e) => setRequestedDate(e.target.value)}
                       className="form-control form-control-lg"
                     />
-                  </Form.Item>
+                  </div>
 
                   <Form.Item label="Type of Development" >
                     <Select onChange={handleTypeOfDevelopmentChange} value={type_of_development} style={{ width: '400px' }}>
@@ -212,13 +334,13 @@ function FSFform() {
                     <Select onChange={handleUsageFrequencyChange} value={usage_frequency} style={{ width: '400px' }}>
                       <Select.Option value="Daily">Daily</Select.Option>
                       <Select.Option value="Weekly">Weekly</Select.Option>
-                      <Select.Option value="Daily">Monthly</Select.Option>
+                      <Select.Option value="Monthly">Monthly</Select.Option>
                     </Select>
                   </Form.Item>
 
-                  <Form.Item label="Development Logic Detail">
+                  {/* <Form.Item label="Development Logic Detail">
                     <Input />
-                  </Form.Item>
+                  </Form.Item> */}
 
                   <Button style={buttonStyle} onClick={handleClick1}>Next</Button>
                 </div>
@@ -393,10 +515,26 @@ function FSFform() {
 
               </Modal>
 
+              {/* Alert for Add FSF Success*/}
+              {showAlert1 && (
+                <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
+                  FSF Added Successfully
+                </Alert>
+              )}
+
+              {/* Alert for Add FSF Failure*/}
+              {showAlert2 && (
+                <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
+                  Failed to Add FSF
+                </Alert>
+              )}
+
+
             </CTableBody>
           </CTable>
 
           <Button style={buttonStyle} onClick={handleClick3}>Back</Button>
+          {/* <Button style={buttonStyle} onClick={() => submitHandle()}>Submit</Button> */}
         </div>
       }
       {/* FSF Level 3 Form Ends */}

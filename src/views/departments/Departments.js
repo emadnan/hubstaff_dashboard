@@ -340,6 +340,8 @@ const Departments = () => {
     async function addDepartment() {
         let item = { company_id, department_name, description }
 
+        console.log(item);
+
         await fetch("http://10.3.3.80/api/add_department",
             {
                 method: 'POST',
