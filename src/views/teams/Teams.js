@@ -1,9 +1,10 @@
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { React, useState, useEffect } from 'react';
-import { Button, Modal } from 'antd';
+import { Button, Modal, Divider, Checkbox } from 'antd';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import Alert from '@mui/material/Alert';
 
 const Team = () => {
@@ -13,6 +14,7 @@ const Team = () => {
   const [description, setDescription] = useState("");
   const [teams, setTeams] = useState([]);
   const [byteam, setTeamById] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
   var filteredUsers = [];
 
   //Local Storage data
@@ -33,6 +35,12 @@ const Team = () => {
     fontFamily: "Arial",
     textAlign: 'center',
     alignSelf: 'flex-end',
+  };
+
+  const heading = {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    float: 'right',
   };
 
   const buttonStyle = {
@@ -113,110 +121,21 @@ const Team = () => {
     setDescription('');
   };
 
-  //Initial rendering through useEffect
-  useEffect(() => {
-    getTeams();
-  }, []);
-
-  function getTeams() {
-    fetch("http://10.3.3.80/api/get_teams")
-      .then((response) => response.json())
-      .then((data) => {
-        if (local.Users.role === "1") {
-          filteredUsers = data.Teams;
-        }
-        else if (local.Users.role === "3") {
-          filteredUsers = data.Teams.filter((tem) => tem.team_company_id === local.Users.company_id);
-        }
-        setTeams(filteredUsers);
-      })
-      .catch((error) => console.log(error));
+  // Functions for Assign Users to Team
+  const [isModalOpen4, setIsModalOpen4] = useState(false);
+  const showModal4 = (id) => {
+    // getHasUsers(id)
+    setIsModalOpen4(id);
   };
 
-  function getTeamById(id) {
-    fetch(`http://10.3.3.80/api/getTeam/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setTeamById(data.Team);
-        setTeamName(data.Team[0].team_name);
-        setDescription(data.Team[0].description);
-      })
-      .catch((error) => console.log(error));
+  const handleOk4 = () => {
+    assignUsersToTeam(isModalOpen4)
+    setIsModalOpen4(false);
   };
 
-  // Add API call
-  async function addTeam() {
-    let addteam = { team_name, team_company_id: local.Users.company_id, description }
-    await fetch("http://10.3.3.80/api/add_team",
-      {
-        method: 'POST',
-        body: JSON.stringify(addteam),
-        headers: {
-          'Content-Type': 'application/json'
-        },
-
-      }).then(response => {
-        if (response.ok) {
-          handleButtonClick1();
-          getTeams()
-        } else {
-          handleButtonClick2();
-        }
-      })
-      .catch(error => {
-        console.error(error);
-      });
+  const handleCancel4 = () => {
+    setIsModalOpen4(false);
   };
-
-  // Delete API call
-  async function deleteTeam(newid) {
-    await fetch(`http://10.3.3.80/api/delete_team`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        id: newid
-      })
-    }).then(response => {
-      if (response.ok) {
-        handleButtonClick3();
-        getTeams()
-      } else {
-        handleButtonClick4();
-      }
-    })
-      .catch(error => {
-        console.error(error);
-      });
-
-  }
-
-  // Update API call
-  async function updateTeam(newid) {
-    await fetch('http://10.3.3.80/api/updateteam', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        id: newid,
-        team_name: team_name,
-        description: description,
-        team_company_id: local.Users.company_id,
-      })
-    }).then(response => {
-      if (response.ok) {
-        handleButtonClick5();
-        getTeams()
-      } else {
-        handleButtonClick6();
-      }
-    })
-      .catch(error => {
-        console.error(error);
-      });
-  }
 
   // Functions for Add Team Success
   const [showAlert1, setShowAlert1] = useState(false);
@@ -344,6 +263,191 @@ const Team = () => {
     }
   }, [showAlert6]);
 
+  // Functions for Assign Users Success
+  const [showAlert7, setShowAlert7] = useState(false);
+
+  function handleButtonClick7() {
+    setShowAlert7(true);
+  }
+
+  function handleCloseAlert7() {
+    setShowAlert7(false);
+  }
+
+  useEffect(() => {
+    if (showAlert7) {
+      const timer = setTimeout(() => {
+        setShowAlert7(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert7]);
+
+  // Functions for Assign Users Failure
+  const [showAlert8, setShowAlert8] = useState(false);
+
+  function handleButtonClick8() {
+    setShowAlert8(true);
+  }
+
+  function handleCloseAlert8() {
+    setShowAlert8(false);
+  }
+
+  useEffect(() => {
+    if (showAlert8) {
+      const timer = setTimeout(() => {
+        setShowAlert8(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert8]);
+
+  //Initial rendering through useEffect
+  useEffect(() => {
+    getTeams();
+  }, []);
+
+  //Function for checkbox handling
+  const handleSelectUser = (e, permId) => {
+    if (e.target.checked) {
+      setSelectedUsers([...selectedUsers, permId]);
+    } else {
+      setSelectedUsers(selectedUsers.filter((id) => id !== permId));
+    }
+  };
+
+  // useEffect(() => {
+  //   setSelectedUsers(haspermission);
+  // }, [haspermission]);
+
+  function getTeams() {
+    fetch("http://10.3.3.80/api/get_teams")
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === "1") {
+          filteredUsers = data.Teams;
+        }
+        else if (local.Users.role === "3") {
+          filteredUsers = data.Teams.filter((tem) => tem.team_company_id === local.Users.company_id);
+        }
+        setTeams(filteredUsers);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  function getTeamById(id) {
+    fetch(`http://10.3.3.80/api/getTeam/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setTeamById(data.Team);
+        setTeamName(data.Team[0].team_name);
+        setDescription(data.Team[0].description);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  // Add API call
+  async function addTeam() {
+    let addteam = { team_name, team_company_id: local.Users.company_id, description }
+    await fetch("http://10.3.3.80/api/add_team",
+      {
+        method: 'POST',
+        body: JSON.stringify(addteam),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+      }).then(response => {
+        if (response.ok) {
+          handleButtonClick1();
+          getTeams()
+        } else {
+          handleButtonClick2();
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  // Delete API call
+  async function deleteTeam(newid) {
+    await fetch(`http://10.3.3.80/api/delete_team`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: newid
+      })
+    }).then(response => {
+      if (response.ok) {
+        handleButtonClick3();
+        getTeams()
+      } else {
+        handleButtonClick4();
+      }
+    })
+      .catch(error => {
+        console.error(error);
+      });
+
+  }
+
+  // Update API call
+  async function updateTeam(newid) {
+    await fetch('http://10.3.3.80/api/updateteam', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: newid,
+        team_name: team_name,
+        description: description,
+        team_company_id: local.Users.company_id,
+      })
+    }).then(response => {
+      if (response.ok) {
+        handleButtonClick5();
+        getTeams()
+      } else {
+        handleButtonClick6();
+      }
+    })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  //Assign Users to Team API call
+  async function assignUsersToTeam(newid) {
+    await fetch('http://10.3.3.80/api/role-permissions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        role_id: newid,
+        permissions: selectedUsers,
+      })
+    }).then(response => {
+      if (response.ok) {
+        handleButtonClick7();
+        // getAssignUsersToTeam()
+      } else {
+        handleButtonClick8();
+      }
+    })
+      .catch(error => {
+        console.error(error);
+      });
+
+  };
+
   return (
     <>
       <div className='row'>
@@ -365,7 +469,6 @@ const Team = () => {
           <CTableRow>
             <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Team Name</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Assign Team</CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
           </CTableRow>
@@ -375,13 +478,16 @@ const Team = () => {
             <CTableRow key={tem.id}>
               <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>{tem.team_name}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle2}>{tem.description}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle2}></CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>
-                <IconButton aria-label="update" onClick={() => showModal3(tem.id)}>
+                <IconButton aria-label="Assign Team" onClick={() => showModal4(tem.id)}>
+                  <AssignmentIndIcon htmlColor='#28B463' />
+                </IconButton>
+              </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+                <IconButton aria-label="Update" onClick={() => showModal3(tem.id)}>
                   <EditIcon htmlColor='#28B463' />
                 </IconButton>
-                <IconButton aria-label="delete" onClick={() => showModal2(tem.id)}>
+                <IconButton aria-label="Delete" onClick={() => showModal2(tem.id)}>
                   <DeleteIcon htmlColor='#FF0000' />
                 </IconButton>
               </CTableHeaderCell>
@@ -453,6 +559,50 @@ const Team = () => {
             }
           </Modal>
 
+          {/* Modal for Assign Users to Team */}
+          <Modal title="Assign Users" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4}>
+
+            <br></br>
+            <div className='row'>
+              <div className='col md-2 text-center'>
+                <h6>Sr/No</h6>
+              </div>
+              <div className='col md-3'></div>
+              <div className='col md-2 text-center'>
+                <h6>Users</h6>
+              </div>
+              <div className='col md-3'></div>
+              <div className='col md-2 text-center'>
+                <h6 style={heading}>Select</h6>
+              </div>
+              &nbsp;
+              <Divider></Divider>
+            </div>
+
+            {/* <div>
+              {permission.map((perm, index) => (
+                <div className='row' key={perm.id}>
+                  <div className='col md-2 text-center'>
+                    <h6>{index + 1}</h6>
+                  </div>
+                  <div className='col md-3'></div>
+                  <div className='col md-2 text-center'>
+                    <h6>{perm.name}</h6>
+                  </div>
+                  <div className='col md-3'></div>
+                  <div className='col md-2 text-center'>
+                    <Checkbox
+                      checked={selectedUsers.includes(perm.id)}
+                      onChange={(e) => handleSelectUser(e, perm.id)}
+                    />
+                  </div>
+                  &nbsp;
+                  <Divider />
+                </div>
+              ))}
+            </div> */}
+          </Modal>
+
           {/* Modal for Deletion Confirmation */}
           <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
           </Modal>
@@ -496,6 +646,20 @@ const Team = () => {
           {showAlert6 && (
             <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
               Failed to Update Team
+            </Alert>
+          )}
+
+          {/* Alert for Permission User Assign Success*/}
+          {showAlert7 && (
+            <Alert onClose={handleCloseAlert7} severity="success" style={modalStyle2}>
+              Users Assigned Successfully
+            </Alert>
+          )}
+
+          {/* Alert for Permission User Assign Failure*/}
+          {showAlert8 && (
+            <Alert onClose={handleCloseAlert8} severity="error" style={modalStyle2}>
+              Failed to Assign Users
             </Alert>
           )}
 

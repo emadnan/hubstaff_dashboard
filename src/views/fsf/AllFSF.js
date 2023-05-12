@@ -218,7 +218,7 @@ function AllFSF() {
                         {fsfbyid.map((fsf) => {
                             return (
                                 <div key={fsf.id}>
-                                    <h3 style={headStyle}>{fsf.wricef_id}</h3>
+                                    <h3 style={headStyle}>FSF Report</h3>
                                     <br></br>
                                     <h6 style={perStyle}>WRICEF ID</h6>
                                     <p>{fsf.wricef_id

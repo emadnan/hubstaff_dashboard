@@ -93,7 +93,7 @@ const Screenshots = () => {
                 else if (local.Users.role === "3") {
                     screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.company_id === local.Users.company_id);
                 }
-                else {
+                else if (local.Users.role === "5"){
                     screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.user_id === local.Users.user_id);
                 }
                 setImages(screenfilter);
