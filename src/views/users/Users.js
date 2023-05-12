@@ -304,18 +304,18 @@ const Users = () => {
 
     function getTeams() {
         fetch("http://10.3.3.80/api/get_teams")
-          .then((response) => response.json())
-          .then((data) => {
-            if(local.Users.role === "1") {
-              filteredUsers = data.Teams;
-            }
-            else if (local.Users.role === "3") {
-              filteredUsers = data.Teams.filter((tem) => tem.team_company_id === local.Users.company_id);
-            }
-          setTeam(filteredUsers);
-          })
-          .catch((error) => console.log(error));
-      };
+            .then((response) => response.json())
+            .then((data) => {
+                if (local.Users.role === "1") {
+                    filteredUsers = data.Teams;
+                }
+                else if (local.Users.role === "3") {
+                    filteredUsers = data.Teams.filter((tem) => tem.team_company_id === local.Users.company_id);
+                }
+                setTeam(filteredUsers);
+            })
+            .catch((error) => console.log(error));
+    };
 
     function getUserById(id) {
         fetch(`http://10.3.3.80/api/get_user/${id}`)
@@ -553,17 +553,6 @@ const Users = () => {
                                         onChange={(e) => setName(e.target.value)}
                                         className="form-control form-control-lg"
                                         placeholder="Enter User Name"
-                                    />
-                                </div>
-
-                                <div className="form-outline mb-3">
-                                    <label>Email</label>
-                                    <input
-                                        type="email"
-                                        defaultValue={user.email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className="form-control form-control-lg"
-                                        placeholder="Enter Email"
                                     />
                                 </div>
 
