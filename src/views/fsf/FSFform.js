@@ -98,7 +98,7 @@ function FSFform() {
   };
 
   const handleOk = () => {
-    addFsf()
+    // addFsf()
     setIsModalOpen(false);
     // submitHandle();
   };
@@ -107,9 +107,9 @@ function FSFform() {
     setIsModalOpen(false);
   };
 
-  // function submitHandle (){
-  //   addFsf();
-  // };
+  function submitHandle (){
+    addFsf();
+  };
 
   //Initial rendering
   useEffect(() => {
@@ -242,7 +242,7 @@ function FSFform() {
       .catch(error => {
         console.error(error);
       });
-  }
+  };
 
   return (
     <>
@@ -444,7 +444,7 @@ function FSFform() {
             </CTableHead>
             <CTableBody>
 
-              {/* Modal for Add Department */}
+              {/* Modal for Add Parameter */}
               <Modal title="Add a Parameter" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
 
                 <br></br>
@@ -534,7 +534,7 @@ function FSFform() {
           </CTable>
 
           <Button style={buttonStyle} onClick={handleClick3}>Back</Button>
-          {/* <Button style={buttonStyle} onClick={() => submitHandle()}>Submit</Button> */}
+          <Button style={buttonStyle} onClick={() => submitHandle()}>Submit</Button>
         </div>
       }
       {/* FSF Level 3 Form Ends */}
