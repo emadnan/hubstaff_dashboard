@@ -1,177 +1,252 @@
-import { useState, React, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Avatar from '@mui/material/Avatar';
-import CssBaseline from '@mui/material/CssBaseline';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Alert from '@mui/material/Alert';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { useState, React, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import CssBaseline from '@mui/material/CssBaseline'
+import Paper from '@mui/material/Paper'
+import Alert from '@mui/material/Alert'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
+import BusinessIcon from '@mui/icons-material/Business'
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'
+import HttpsIcon from '@mui/icons-material/Https'
+import MailIcon from '@mui/icons-material/Mail'
+import { Box, TextField, Grid, IconButton, InputAdornment, Button, Typography } from '@mui/material'
 
-const theme = createTheme();
+const theme = createTheme()
 
 const Register = () => {
-
   //Variable declarations
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [confirmpass, setConfirmPass] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showPassword2, setShowPassword2] = useState(false);
-  const navigate = useNavigate();
+  const [name, setName] = useState('')
+  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('')
+  const [confirmpass, setConfirmPass] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showPassword2, setShowPassword2] = useState(false)
+  const navigate = useNavigate()
 
   //Form handling
   const handleSubmit = (event) => {
-    event.preventDefault();
-  };
+    event.preventDefault()
+  }
+
+  const [formErrors, setFormErrors] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmpass: '',
+  })
+
+  const handleFocus = (e) => {
+    const { name } = e.target
+
+    setFormErrors((prevFormErrors) => ({
+      ...prevFormErrors,
+      [name]: '',
+    }))
+  }
 
   //CSS Styling
   const modalStyle2 = {
-    position: "fixed",
-    top: "85%",
-    left: "80%",
-    transform: "translateX(-50%)",
-  };
-
-  const formStyle = {
-    position: "relative",
-  };
-
-  const eyeButtonStyle = {
-    position: "absolute",
-    top: "50%",
-    right: "5%",
-    transform: "translateY(-50%)",
-    cursor: "pointer",
-    border: "none",
-    background: "transparent",
-    outline: "none",
-  };
+    position: 'fixed',
+    top: '85%',
+    left: '80%',
+    transform: 'translateX(-50%)',
+  }
 
   //Register API call
   async function signUp() {
-    let item = { name, email, password, confirmpass, role: 3 };
-    let response;
-    try {
-      response = await fetch("http://10.3.3.80/api/register", {
-        method: "POST",
-        body: JSON.stringify(item),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    } catch (error) {
-      console.error(error);
-      handleButtonClick4();
-      return;
+    const errors = {}
+    if (!name) {
+      errors.name = 'Company Name is required'
+    }
+    if (!email) {
+      errors.email = 'Email is required'
+    }
+    if (!password) {
+      errors.password = 'Password is required'
+    }
+    if (!confirmpass) {
+      errors.confirmpass = 'Confirmation of Password is required'
+    }
+    if (password && confirmpass && password !== confirmpass) {
+      errors.confirmpass = 'Passwords do not match'
+    } else if (password && confirmpass && password === confirmpass && password.length < 8) {
+      errors.confirmpass = 'Passwords must be upto 8 digits'
     }
 
-    if (response.status === 400) {
-      handleButtonClick1();
-    } else if (response.status === 404) {
-      handleButtonClick3();
-    } else {
-      try {
-        const result = await response.json();
-        localStorage.setItem("user-info", JSON.stringify(result));
-        handleButtonClick2();
+    setFormErrors(errors)
+
+    const item = { name, email, password, confirmpass, role: 3 }
+    let response
+
+    try {
+      response = await fetch('http://10.3.3.80/api/register', {
+        method: 'POST',
+        body: JSON.stringify(item),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (response.status === 400) {
+        handleButtonClick1()
+      } else if (response.status === 404) {
+        handleButtonClick3()
+      } else {
+        const result = await response.json()
+        localStorage.setItem('user-info', JSON.stringify(result))
+        handleButtonClick2()
         setTimeout(async () => {
-          await navigate("/login");
-        }, 2000);
-      } catch (error) {
-        console.error(error);
-        handleButtonClick4();
+          await navigate('/login')
+        }, 2000)
+      }
+    } catch (error) {
+      console.log('Jahanzaib Baig')
+      console.error(error)
+      if (Object.keys(errors).length === 0) {
+        handleButtonClick4()
       }
     }
   }
 
+  //   // Validate the form
+  //   const errors = {}
+  //   if (!name) {
+  //     errors.name = 'Company Name is required'
+  //   }
+  //   if (!email) {
+  //     errors.email = 'Email is required'
+  //   }
+  //   if (!password) {
+  //     errors.password = 'Password is required'
+  //   }
+  //   if (!confirmpass) {
+  //     errors.confirmpass = 'Confirmation of Password is required'
+  //   }
+  //   if (password && confirmpass && password !== confirmpass) {
+  //     errors.confirmpass = 'Passwords are not matching'
+  //   }
+
+  //   // Update the form errors
+  //   setFormErrors(errors)
+  //   let item = { name, email, password, confirmpass, role: 3 }
+  //   let response
+  //   try {
+  //     response = await fetch('http://10.3.3.80/api/register', {
+  //       method: 'POST',
+  //       body: JSON.stringify(item),
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //     })
+  //   } catch (error) {
+  //     console.error(error)
+  //     handleButtonClick4()
+  //     return
+  //   }
+
+  //   if (response.status === 400) {
+  //     handleButtonClick1()
+  //   } else if (response.status === 404) {
+  //     handleButtonClick3()
+  //   } else {
+  //     try {
+  //       const result = await response.json()
+  //       localStorage.setItem('user-info', JSON.stringify(result))
+  //       handleButtonClick2()
+  //       setTimeout(async () => {
+  //         await navigate('/login')
+  //       }, 2000)
+  //     } catch (error) {
+  //       console.error(error)
+  //       handleButtonClick4()
+  //     }
+  //   }
+  // }
+
   //Functions for Company register failure
-  const [showAlert1, setShowAlert1] = useState(false);
+  const [showAlert1, setShowAlert1] = useState(false)
 
   function handleButtonClick1() {
-    setShowAlert1(true);
+    setShowAlert1(true)
   }
 
   function handleCloseAlert1() {
-    setShowAlert1(false);
+    setShowAlert1(false)
   }
 
   useEffect(() => {
     if (showAlert1) {
       const timer = setTimeout(() => {
-        setShowAlert1(false);
-      }, 3000);
+        setShowAlert1(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert1]);
+  }, [showAlert1])
 
   //Functions for Company register success
-  const [showAlert2, setShowAlert2] = useState(false);
+  const [showAlert2, setShowAlert2] = useState(false)
 
   function handleButtonClick2() {
-    setShowAlert2(true);
+    setShowAlert2(true)
   }
 
   function handleCloseAlert2() {
-    setShowAlert2(false);
+    setShowAlert2(false)
   }
 
   useEffect(() => {
     if (showAlert2) {
       const timer = setTimeout(() => {
-        setShowAlert2(false);
-      }, 3000);
+        setShowAlert2(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert2]);
+  }, [showAlert2])
 
   //Functions for company email already exists
-  const [showAlert3, setShowAlert3] = useState(false);
+  const [showAlert3, setShowAlert3] = useState(false)
 
   function handleButtonClick3() {
-    setShowAlert3(true);
+    setShowAlert3(true)
   }
 
   function handleCloseAlert3() {
-    setShowAlert3(false);
+    setShowAlert3(false)
   }
 
   useEffect(() => {
     if (showAlert3) {
       const timer = setTimeout(() => {
-        setShowAlert3(false);
-      }, 3000);
+        setShowAlert3(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert3]);
+  }, [showAlert3])
 
   //Functions for company email already exists
-  const [showAlert4, setShowAlert4] = useState(false);
+  const [showAlert4, setShowAlert4] = useState(false)
 
   function handleButtonClick4() {
-    setShowAlert4(true);
+    setShowAlert4(true)
   }
 
   function handleCloseAlert4() {
-    setShowAlert4(false);
+    setShowAlert4(false)
   }
 
   useEffect(() => {
     if (showAlert4) {
       const timer = setTimeout(() => {
-        setShowAlert4(false);
-      }, 3000);
+        setShowAlert4(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert4]);
+  }, [showAlert4])
 
   return (
     <ThemeProvider theme={theme}>
@@ -192,112 +267,115 @@ const Register = () => {
           }}
         />
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-          <Box
-            sx={{
-              my: 8,
-              mx: 4,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <h2>Company Sign Up</h2>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 14 }}>
+            <Typography variant="h5" component="h2" sx={{ mt: 2 }}>
+              Register your Company
+            </Typography>
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
-
-              <div className="form-outline mb-3">
-                <label className="form-label" htmlFor="form3Example4">
-                  Company Name
-                </label>
-                <input
+              <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 3 }}>
+                <BusinessIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
+                <TextField
+                  id="input-name"
+                  label="Enter Company Name"
+                  variant="standard"
                   type="text"
+                  name="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="form-control form-control-lg"
+                  onFocus={handleFocus}
                   placeholder="Enter Company Name"
+                  sx={{ width: '100%' }}
                 />
-              </div>
+              </Box>
+              {formErrors.name && <div className="text-danger">{formErrors.name}</div>}
 
-              <div className="form-outline mb-4">
-                <label className="form-label" htmlFor="form3Example3">
-                  Email address
-                </label>
-                <input
+              <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 3 }}>
+                <MailIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
+                <TextField
+                  id="input-email"
+                  label="Enter Company Email"
+                  variant="standard"
                   type="email"
+                  name="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="form-control form-control-lg"
+                  onFocus={handleFocus}
                   placeholder="Enter Company Email"
+                  sx={{ width: '100%' }}
                 />
-              </div>
+              </Box>
+              {formErrors.email && <div className="text-danger">{formErrors.email}</div>}
 
-              <div className="form-outline mb-3">
-                <label className="form-label" htmlFor="form3Example4">
-                  Password
-                </label>
-                <div style={formStyle}>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Password"
-                  />
-                  <span
-                    onClick={() => setShowPassword(!showPassword)}
-                    style={eyeButtonStyle}
-                  >
-                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  </span>
-                </div>
-              </div>
+              <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 3 }}>
+                <HttpsIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
+                <TextField
+                  id="input-password"
+                  label="Enter Password"
+                  variant="standard"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onFocus={handleFocus}
+                  placeholder="Enter Password"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                          {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{ width: '100%' }}
+                />
+              </Box>
+              {formErrors.password && <div className="text-danger">{formErrors.password}</div>}
 
-              <div className="form-outline mb-3">
-                <label className="form-label" htmlFor="form3Example4">
-                  Confirm Password
-                </label>
-                <div style={formStyle}>
-                  <input
-                    type={showPassword2 ? "text" : "password"}
-                    value={confirmpass}
-                    onChange={(e) => setConfirmPass(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Password"
-                  />
-                  <span
-                    onClick={() => setShowPassword2(!showPassword2)}
-                    style={eyeButtonStyle}
-                  >
-                    {showPassword2 ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  </span>
-                </div>
-              </div>
+              <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 3 }}>
+                <VerifiedUserIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
+                <TextField
+                  id="input-confirmPassword"
+                  label="Confirm Password"
+                  variant="standard"
+                  name="confirmpass"
+                  type={showPassword2 ? 'text' : 'password'}
+                  value={confirmpass}
+                  onChange={(e) => setConfirmPass(e.target.value)}
+                  onFocus={handleFocus}
+                  placeholder="Please Confirm Password"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => setShowPassword2(!showPassword2)} edge="end">
+                          {showPassword2 ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{ width: '100%' }}
+                />
+              </Box>
+              {formErrors.confirmpass && (
+                <div className="text-danger">{formErrors.confirmpass}</div>
+              )}
 
-              <br></br>
-
-              <div className="d-flex justify-content-between align-items-center">
-                <div className="d-grid">
-                  <button type="button" className="btn btn-primary"
-                    onClick={signUp}>
-                    Sign Up
-                  </button>
-                </div>
-              </div>
+              <Box sx={{ mt: 2 }}>
+                <Button variant="contained" onClick={signUp} fullWidth>
+                  Sign Up
+                </Button>
+              </Box>
 
               <Grid container>
-
-                <Grid item>
-                  <div className="text-center text-lg-start mt-4 pt-2">
-                    <p className="small fw-bold mt-2 pt-1 mb-0">
-                      Already have an account?
-                      &nbsp;
+                <Grid item xs>
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      Already have an account? &nbsp;
                       <a href="/login" className="link-primary">
                         Login
                       </a>
-                    </p>
-                  </div>
+                    </Typography>
+                  </Box>
                 </Grid>
               </Grid>
             </Box>
