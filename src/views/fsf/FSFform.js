@@ -306,7 +306,6 @@ function FSFform() {
   async function addFsfStage3() {
     let data = { fsf_id: ref_id, description, field_technical_name, field_length, field_type, field_table_name, mandatory_or_optional, parameter_or_selection }
     console.log(data);
-    // setPostData(prevData => [...prevData, data]); 
 
     try {
       const response = await fetch("http://10.3.3.80/api/addFunctionalSpecificationForm/3/", {
