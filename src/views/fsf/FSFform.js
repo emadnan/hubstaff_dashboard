@@ -1,8 +1,13 @@
 import { React, useState, useEffect } from 'react'
 import { Form, Input, Select, Button, Modal, DatePicker } from 'antd'
-import { CTableBody, CTableHead, CTableHeaderCell, CTableRow, CTable } from '@coreui/react'
+import { CTableBody, CTableHead, CTableHeaderCell,CTableDataCell, CTableRow, CTable } from '@coreui/react';
+
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+
 import moment from 'moment';
 import Alert from '@mui/material/Alert';
+import { useNavigate } from 'react-router-dom';
 
 const { RangePicker } = DatePicker;
 
@@ -28,6 +33,10 @@ function FSFform() {
   const [project, setProjects] = useState([]);
 
   const [ref_id, setRef_id] = useState();
+
+  const navigate = useNavigate();
+
+  const [postData, setPostData] = useState([]);
 
   // Define an array to store the parameter objects
   const [parameters, setParameters] = useState([]);
@@ -113,9 +122,7 @@ function FSFform() {
   };
 
   const handleOk = () => {
-    // addFsf()
     setIsModalOpen(false);
-    // submitHandle();
     addFsfStage3();
   };
 
@@ -124,7 +131,9 @@ function FSFform() {
   };
 
   function submitHandle (){
-    // addFsf();
+    // CODE FOR NAVIGATION and ALERT SHOW
+    handleCloseAlert1();
+    navigate("/allfsf")
   };
 
   //Initial rendering
@@ -296,31 +305,27 @@ function FSFform() {
   async function addFsfStage3() {
     let data = { fsf_id: ref_id, description, field_technical_name, field_length, field_type, field_table_name, mandatory_or_optional, parameter_or_selection }
     console.log(data);
+    setPostData(prevData => [...prevData, data]); 
 
-    await fetch("http://10.3.3.80/api/addFunctionalSpecificationForm/3/",
-      {
+    try {
+      const response = await fetch("http://10.3.3.80/api/addFunctionalSpecificationForm/3/", {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
           'Content-Type': 'application/json'
         },
-
-      }).then(response => {
-        if (response.ok) {
-          return response.json(); // Parse the response body as JSON
-        } else {
-          throw new Error('Request failed with status ' + response.status);
-        }
-      })
-      .then(data => {
-        console.log(data);
-      })
-      .catch(error => {
-        console.error(error);
       });
 
-  };
-
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log("responseData: ",responseData); 
+      } else {
+        throw new Error('Request failed with status ' + response.status);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <>
@@ -524,10 +529,27 @@ function FSFform() {
                 <CTableHeaderCell className="text-center" style={mystyle}>Field Table Name</CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle}>Mandatory/Optional</CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle}>Parameter/Selection</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell> {/* Add Actions column */}
               </CTableRow>
 
             </CTableHead>
             <CTableBody>
+            {postData.map((data, index) => (
+            <CTableRow key={index}>
+                <CTableDataCell className="text-center" style={mystyle}>{index + 1}</CTableDataCell >
+                <CTableDataCell className="text-center" style={mystyle}>{data.description}</CTableDataCell >
+                <CTableDataCell className="text-center" style={mystyle}>{data.field_technical_name}</CTableDataCell >
+                <CTableDataCell className="text-center" style={mystyle}>{data.field_length}</CTableDataCell >
+                <CTableDataCell className="text-center" style={mystyle}>{data.field_type}</CTableDataCell >
+                <CTableDataCell className="text-center" style={mystyle}>{data.field_table_name}</CTableDataCell >
+                <CTableDataCell className="text-center" style={mystyle}>{data.mandatory_or_optional}</CTableDataCell >
+                <CTableDataCell className="text-center" style={mystyle}>{data.parameter_or_selection}</CTableDataCell > 
+                <CTableDataCell className="text-center" style={mystyle}>
+                  <EditIcon />
+                  <DeleteIcon />
+                </CTableDataCell> {/* Add Actions column */}             
+            </CTableRow>
+            ))}
 
               {/* Modal for Add Parameter */}
               <Modal title="Add a Parameter" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
