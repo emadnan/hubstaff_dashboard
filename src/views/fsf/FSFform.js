@@ -27,6 +27,11 @@ function FSFform() {
   const [parameter_or_selection, setParameterOrSelection] = useState("");
   const [project, setProjects] = useState([]);
 
+  const [ref_id, setRef_id] = useState();
+
+  // Define an array to store the parameter objects
+  const [parameters, setParameters] = useState([]);
+
   const local = JSON.parse(localStorage.getItem('user-info'));
 
   //CSS Styling
@@ -94,6 +99,16 @@ function FSFform() {
   // Functions of Add Parameter Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
+
+    // Reset the input fields
+    setDescription("");
+    setFieldTechnicalName("");
+    setFieldLength("");
+    setFieldType("");
+    setFieldTableName("");
+    setMandatoryOrOptional("");
+    setParameterOrSelection("");
+
     setIsModalOpen(true);
   };
 
@@ -101,6 +116,7 @@ function FSFform() {
     // addFsf()
     setIsModalOpen(false);
     // submitHandle();
+    addFsfStage3();
   };
 
   const handleCancel = () => {
@@ -108,7 +124,7 @@ function FSFform() {
   };
 
   function submitHandle (){
-    addFsf();
+    // addFsf();
   };
 
   //Initial rendering
@@ -159,11 +175,13 @@ function FSFform() {
   const handleClick1 = () => {
     setShowDiv1(false);
     setShowDiv2(true);
+    addFsfStage1();
   };
 
   const handleClick2 = () => {
     setShowDiv2(false);
     setShowDiv3(true);
+    addFsfStage2();
   };
 
   const handleClick3 = () => {
@@ -219,11 +237,12 @@ function FSFform() {
   }, [showAlert2]);
 
   // Add API call
-  async function addFsf() {
-    let data = { wricef_id, module_name, functional_lead, requested_date, type_of_development, priority, usage_frequency, transaction_code, authorization_level, description, field_technical_name, field_length, field_type, field_table_name, mandatory_or_optional, parameter_or_selection}
+
+  async function addFsfStage1() {
+    let data = { wricef_id, module_name, functional_lead, requested_date, type_of_development, priority, usage_frequency }
     console.log(data);
 
-    await fetch("http://10.3.3.80/api/addFunctionalSpecificationForm",
+    await fetch("http://10.3.3.80/api/addFunctionalSpecificationForm/1/",
       {
         method: 'POST',
         body: JSON.stringify(data),
@@ -233,16 +252,75 @@ function FSFform() {
 
       }).then(response => {
         if (response.ok) {
-          handleButtonClick1();
-          // getFsf()
+          return response.json(); // Parse the response body as JSON
         } else {
-          handleButtonClick2();
+          throw new Error('Request failed with status ' + response.status);
         }
+      })
+      .then(data => {
+        console.log(data);
+        setRef_id(data.id);
       })
       .catch(error => {
         console.error(error);
       });
   };
+
+  async function addFsfStage2() {
+    let data = { id: ref_id, transaction_code, authorization_level }
+    console.log(data);
+
+    await fetch("http://10.3.3.80/api/addFunctionalSpecificationForm/2/",
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+      }).then(response => {
+        if (response.ok) {
+          return response.json(); // Parse the response body as JSON
+        } else {
+          throw new Error('Request failed with status ' + response.status);
+        }
+      })
+      .then(data => {
+        console.log(data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  async function addFsfStage3() {
+    let data = { fsf_id: ref_id, description, field_technical_name, field_length, field_type, field_table_name, mandatory_or_optional, parameter_or_selection }
+    console.log(data);
+
+    await fetch("http://10.3.3.80/api/addFunctionalSpecificationForm/3/",
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+      }).then(response => {
+        if (response.ok) {
+          return response.json(); // Parse the response body as JSON
+        } else {
+          throw new Error('Request failed with status ' + response.status);
+        }
+      })
+      .then(data => {
+        console.log(data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+
+  };
+
 
   return (
     <>
@@ -295,13 +373,20 @@ function FSFform() {
                     </Select>
                   </Form.Item>
 
-                  <Form.Item label="Functional Lead" >
+                  {/* <Form.Item label="Functional Lead" >
                     <Select onChange={handleFunctionalLeadChange} value={functional_lead} style={{ width: '400px' }}>
                       {users.map((user) => (
                         <Select.Option value={user.name} key={user.id}>
                           {user.name}
                         </Select.Option>
                       ))}
+                    </Select>
+                  </Form.Item> */}
+
+                  <Form.Item label="Functional Lead" >
+                    <Select onChange={handleFunctionalLeadChange} value={functional_lead} style={{ width: '400px' }}>
+                      <Select.Option value="Test 1">Test 1</Select.Option>
+                      <Select.Option value="Test 2">Test 2</Select.Option>
                     </Select>
                   </Form.Item>
 
@@ -500,14 +585,18 @@ function FSFform() {
                 </Form.Item>
 
                 <Form.Item label="Mandatory/Optional" >
-                  <Select onChange={handleMandatoryOrOptionalChange} value={mandatory_or_optional} style={{ width: '400px' }}>
+                  <Select onChange={handleMandatoryOrOptionalChange}
+                   value={mandatory_or_optional} 
+                   style={{ width: '400px' }}>
                     <Select.Option value="Mandatory">Mandatory</Select.Option>
                     <Select.Option value="Optional">Optional</Select.Option>
                   </Select>
                 </Form.Item>
 
                 <Form.Item label="Parameter/Selection" >
-                  <Select onChange={handleParameterOrSelection} value={parameter_or_selection} style={{ width: '400px' }}>
+                  <Select onChange={handleParameterOrSelection} 
+                  value={parameter_or_selection} 
+                  style={{ width: '400px' }}>
                     <Select.Option value="Parameter">Parameter</Select.Option>
                     <Select.Option value="Selection">Selection</Select.Option>
                   </Select>
