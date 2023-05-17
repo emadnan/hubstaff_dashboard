@@ -2,6 +2,7 @@ import { React, useState, useEffect } from 'react'
 import { Form, Input, Select, Button, Modal, DatePicker } from 'antd'
 import { CTableBody, CTableHead, CTableHeaderCell,CTableDataCell, CTableRow, CTable } from '@coreui/react';
 
+import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
@@ -305,7 +306,7 @@ function FSFform() {
   async function addFsfStage3() {
     let data = { fsf_id: ref_id, description, field_technical_name, field_length, field_type, field_table_name, mandatory_or_optional, parameter_or_selection }
     console.log(data);
-    setPostData(prevData => [...prevData, data]); 
+    // setPostData(prevData => [...prevData, data]); 
 
     try {
       const response = await fetch("http://10.3.3.80/api/addFunctionalSpecificationForm/3/", {
@@ -319,12 +320,41 @@ function FSFform() {
       if (response.ok) {
         const responseData = await response.json();
         console.log("responseData: ",responseData); 
+        getFSFParameters();
       } else {
         throw new Error('Request failed with status ' + response.status);
       }
+
     } catch (error) {
       console.error(error);
     }
+  }
+
+  function getFSFParameters() {
+    fetch(`http://10.3.3.80/api/getFsfHasParameterByFsfId/${ref_id}`)
+        .then((response) => response.json())
+        .then((data) => setPostData(data.fsf_has_parameter))
+        .catch((error) => console.log(error));
+  };
+
+  async function deleteFSF(id) {
+    await fetch(`http://10.3.3.80/api/DeleteFsfHasParameterByFsfId`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: id
+      })
+    }).then(response => {
+      if (response.ok) {
+       console.log("DELETED SUCCESSFULLY")
+       getFSFParameters();
+      }
+    })
+      .catch(error => {
+        console.error(error);
+      });
   }
 
   return (
@@ -545,8 +575,11 @@ function FSFform() {
                 <CTableDataCell className="text-center" style={mystyle}>{data.mandatory_or_optional}</CTableDataCell >
                 <CTableDataCell className="text-center" style={mystyle}>{data.parameter_or_selection}</CTableDataCell > 
                 <CTableDataCell className="text-center" style={mystyle}>
-                  <EditIcon />
-                  <DeleteIcon />
+                 
+                    <EditIcon />
+                  <IconButton onClick={() => deleteFSF(data.id)}>
+                    <DeleteIcon />
+                  </IconButton>
                 </CTableDataCell> {/* Add Actions column */}             
             </CTableRow>
             ))}

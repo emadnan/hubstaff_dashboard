@@ -201,9 +201,9 @@ function AllFSF() {
                                 </IconButton>
                             </CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={mystyle2}>
-                            <IconButton aria-label="delete" onClick={() => showModal2(fsf.id)}>
-                            <DeleteIcon htmlColor='#FF0000' />
-                          </IconButton>
+                              <IconButton aria-label="delete" onClick={() => showModal2(fsf.id)}>
+                                <DeleteIcon htmlColor='#FF0000' />
+                              </IconButton>
                             </CTableHeaderCell>
                         </CTableRow>
                     ))}
