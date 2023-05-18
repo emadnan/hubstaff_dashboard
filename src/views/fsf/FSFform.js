@@ -38,9 +38,7 @@ function FSFform() {
   const navigate = useNavigate();
 
   const [postData, setPostData] = useState([]);
-
-  // Define an array to store the parameter objects
-  const [parameters, setParameters] = useState([]);
+  const [isUpdate, setIsUpdate] = useState(false)
 
   const local = JSON.parse(localStorage.getItem('user-info'));
 
@@ -109,6 +107,7 @@ function FSFform() {
   // Functions of Add Parameter Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
+    setIsUpdate(false);
 
     // Reset the input fields
     setDescription("");
@@ -123,11 +122,13 @@ function FSFform() {
   };
 
   const handleOk = () => {
+    setIsUpdate(false);
     setIsModalOpen(false);
     addFsfStage3();
   };
 
   const handleCancel = () => {
+    setIsUpdate(false);
     setIsModalOpen(false);
   };
 
@@ -356,6 +357,30 @@ function FSFform() {
       });
   }
 
+  async function editFSF(){
+    setIsUpdate(true);
+    setIsModalOpen(true);
+  }
+
+  async function updateFSF(id) {
+    await fetch(`http://10.3.3.80/api/UpdateFsfHasParameterByFsfId`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({})
+    })
+    .then(response => {
+      if (response.ok) {
+        getFSFParameters();
+        console.log("UPDATED SUCCESSFULLY");
+      }
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  }  
+
   return (
     <>
       {/* FSF Level 1 Form Starts */}
@@ -574,8 +599,9 @@ function FSFform() {
                 <CTableDataCell className="text-center" style={mystyle}>{data.mandatory_or_optional}</CTableDataCell >
                 <CTableDataCell className="text-center" style={mystyle}>{data.parameter_or_selection}</CTableDataCell > 
                 <CTableDataCell className="text-center" style={mystyle}>
-                 
-                    <EditIcon />
+                 <IconButton>
+                    <EditIcon onClick={() => editFSF(data.id)}/>
+                 </IconButton>
                   <IconButton onClick={() => deleteFSF(data.id)}>
                     <DeleteIcon />
                   </IconButton>
@@ -584,7 +610,28 @@ function FSFform() {
             ))}
 
               {/* Modal for Add Parameter */}
-              <Modal title="Add a Parameter" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+              <Modal title="Add a Parameter" open={isModalOpen} 
+                // onOk={handleOk} onCancel={handleCancel}
+                footer={
+                  isUpdate === true
+                    ? [
+                        <Button key="update" type="primary" onClick={updateFSF}>
+                          Update
+                        </Button>,
+                        <Button key="cancel" onClick={handleCancel}>
+                          Cancel
+                        </Button>,
+                      ]
+                    : [
+                        <Button key="ok" type="primary" onClick={handleOk}>
+                          OK
+                        </Button>,
+                        <Button key="cancel" onClick={handleCancel}>
+                          Cancel
+                        </Button>
+                      ]
+                }
+              >
 
                 <br></br>
 
