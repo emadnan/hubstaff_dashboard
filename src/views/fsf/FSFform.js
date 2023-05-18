@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react'
 import { Form, Input, Select, Button, Modal, DatePicker } from 'antd'
-import { CTableBody, CTableHead, CTableHeaderCell,CTableDataCell, CTableRow, CTable } from '@coreui/react';
+import { CTableBody, CTableHead, CTableHeaderCell, CTableDataCell, CTableRow, CTable } from '@coreui/react';
 
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -32,13 +32,14 @@ function FSFform() {
   const [mandatory_or_optional, setMandatoryOrOptional] = useState("");
   const [parameter_or_selection, setParameterOrSelection] = useState("");
   const [project, setProjects] = useState([]);
+  const [fsfHasParameter, setFsfHasParameter] = useState([]);
 
   const [ref_id, setRef_id] = useState();
 
   const navigate = useNavigate();
 
   const [postData, setPostData] = useState([]);
-  const [isUpdate, setIsUpdate] = useState(false)
+  // const [isUpdate, setIsUpdate] = useState(false)
 
   const local = JSON.parse(localStorage.getItem('user-info'));
 
@@ -69,6 +70,12 @@ function FSFform() {
     top: "10%",
     left: "55%",
     transform: "translateX(-50%)",
+  };
+
+  const modalStyle = {
+    position: "fixed",
+    top: "25%",
+    left: "40%",
   };
 
   //GET calls handling
@@ -107,8 +114,6 @@ function FSFform() {
   // Functions of Add Parameter Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
-    setIsUpdate(false);
-
     // Reset the input fields
     setDescription("");
     setFieldTechnicalName("");
@@ -122,17 +127,60 @@ function FSFform() {
   };
 
   const handleOk = () => {
-    setIsUpdate(false);
-    setIsModalOpen(false);
     addFsfStage3();
+    setIsModalOpen(false);
   };
 
   const handleCancel = () => {
-    setIsUpdate(false);
     setIsModalOpen(false);
   };
 
-  function submitHandle (){
+  // Functions for Delete FSF Parameter Modal
+  const [isModalOpen2, setIsModalOpen2] = useState(false);
+  const showModal2 = (id) => {
+    setIsModalOpen2(id);
+  };
+
+  const handleOk2 = () => {
+    deleteFSF(isModalOpen2);
+    setIsModalOpen2(false);
+  };
+
+  const handleCancel2 = () => {
+    setIsModalOpen2(false);
+  };
+
+  // Functions for Update FSF Parameter Modal
+  const [isModalOpen3, setIsModalOpen3] = useState(false);
+  const showModal3 = (id) => {
+    getFsfHasParameterByFsfId(id);
+    setIsModalOpen3(id);
+  };
+
+  const handleOk3 = () => {
+    updateFSF(isModalOpen3);
+    setIsModalOpen3(false);
+    setDescription('');
+    setFieldTechnicalName('');
+    setFieldLength('');
+    setFieldType('');
+    setFieldTableName('');
+    setMandatoryOrOptional('');
+    setParameterOrSelection('');
+  };
+
+  const handleCancel3 = () => {
+    setIsModalOpen3(false);
+    setDescription('');
+    setFieldTechnicalName('');
+    setFieldLength('');
+    setFieldType('');
+    setFieldTableName('');
+    setMandatoryOrOptional('');
+    setParameterOrSelection('');
+  };
+
+  function submitHandle() {
     // CODE FOR NAVIGATION and ALERT SHOW
     handleCloseAlert1();
     navigate("/allfsf")
@@ -319,7 +367,7 @@ function FSFform() {
 
       if (response.ok) {
         const responseData = await response.json();
-        console.log("responseData: ",responseData); 
+        console.log("responseData: ", responseData);
         getFSFParameters();
       } else {
         throw new Error('Request failed with status ' + response.status);
@@ -332,9 +380,25 @@ function FSFform() {
 
   function getFSFParameters() {
     fetch(`http://10.3.3.80/api/getFsfHasParameterByFsfId/${ref_id}`)
-        .then((response) => response.json())
-        .then((data) => setPostData(data.fsf_has_parameter))
-        .catch((error) => console.log(error));
+      .then((response) => response.json())
+      .then((data) => setPostData(data.fsf_has_parameter))
+      .catch((error) => console.log(error));
+  };
+
+  function getFsfHasParameterByFsfId(id) {
+    fetch(`http://10.3.3.80/api/getFsfHasParameterById/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setFsfHasParameter(data.fsf);
+        setDescription(data.fsf[0].description);
+        setFieldTechnicalName(data.fsf[0].field_technical_name);
+        setFieldLength(data.fsf[0].field_length);
+        setFieldType(data.fsf[0].field_type);
+        setFieldTableName(data.fsf[0].field_table_name);
+        setMandatoryOrOptional(data.fsf[0].mandatory_or_optional);
+        setParameterOrSelection(data.fsf[0].parameter_or_selection);
+      })
+      .catch((error) => console.log(error));
   };
 
   async function deleteFSF(id) {
@@ -348,8 +412,8 @@ function FSFform() {
       })
     }).then(response => {
       if (response.ok) {
-       console.log("DELETED SUCCESSFULLY")
-       getFSFParameters();
+        console.log("DELETED SUCCESSFULLY")
+        getFSFParameters();
       }
     })
       .catch(error => {
@@ -357,29 +421,60 @@ function FSFform() {
       });
   }
 
-  async function editFSF(){
-    setIsUpdate(true);
-    setIsModalOpen(true);
-  }
+  // async function editFSF() {
+  //   setIsUpdate(true);
+  //   setIsModalOpen(true);
+  // }
 
-  async function updateFSF(id) {
-    await fetch(`http://10.3.3.80/api/UpdateFsfHasParameterByFsfId`, {
+  // async function updateFSF(id) {
+  //   await fetch(`http://10.3.3.80/api/UpdateFsfHasParameterByFsfId`, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     },
+  //     body: JSON.stringify({})
+  //   })
+  //     .then(response => {
+  //       if (response.ok) {
+  //         getFSFParameters();
+  //         console.log("UPDATED SUCCESSFULLY");
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.error(error);
+  //     });
+  // };
+
+  // Update FSF Parameter API call
+  async function updateFSF(newid) {
+    await fetch('http://10.3.3.80/api/UpdateFsfHasParameterByFsfId', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({})
-    })
-    .then(response => {
+      body: JSON.stringify({
+        id: newid,
+        fsf_id: ref_id,
+        description: description,
+        field_technical_name: field_technical_name,
+        field_length: field_length,
+        field_type: field_type,
+        field_table_name: field_table_name,
+        mandatory_or_optional: mandatory_or_optional,
+        parameter_or_selection: parameter_or_selection,
+      })
+    }).then(response => {
       if (response.ok) {
-        getFSFParameters();
-        console.log("UPDATED SUCCESSFULLY");
+        // handleButtonClick5();
+        getFSFParameters()
+      } else {
+        // handleButtonClick6();
       }
     })
-    .catch(error => {
-      console.error(error);
-    });
-  }  
+      .catch(error => {
+        console.error(error);
+      });
+  };
 
   return (
     <>
@@ -415,32 +510,12 @@ function FSFform() {
                     />
                   </Form.Item>
 
-                  {/* <Form.Item label="Module Name" >
-                    <Select onChange={handleModuleChange} value={module_name} style={{ width: '400px' }}>
-                      {project.map((pro) => (
-                        <Select.Option value={pro.name} key={pro.id}>
-                          {pro.project_name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item> */}
-
                   <Form.Item label="Module Name" >
                     <Select onChange={handleModuleChange} value={module_name} style={{ width: '400px' }}>
                       <Select.Option value="Test 1">Test 1</Select.Option>
                       <Select.Option value="Test 2">Test 2</Select.Option>
                     </Select>
                   </Form.Item>
-
-                  {/* <Form.Item label="Functional Lead" >
-                    <Select onChange={handleFunctionalLeadChange} value={functional_lead} style={{ width: '400px' }}>
-                      {users.map((user) => (
-                        <Select.Option value={user.name} key={user.id}>
-                          {user.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item> */}
 
                   <Form.Item label="Functional Lead" >
                     <Select onChange={handleFunctionalLeadChange} value={functional_lead} style={{ width: '400px' }}>
@@ -481,10 +556,6 @@ function FSFform() {
                       <Select.Option value="Monthly">Monthly</Select.Option>
                     </Select>
                   </Form.Item>
-
-                  {/* <Form.Item label="Development Logic Detail">
-                    <Input />
-                  </Form.Item> */}
 
                   <Button style={buttonStyle} onClick={handleClick1}>Next</Button>
                 </div>
@@ -588,50 +659,29 @@ function FSFform() {
 
             </CTableHead>
             <CTableBody>
-            {postData.map((data, index) => (
-            <CTableRow key={index}>
-                <CTableDataCell className="text-center" style={mystyle}>{index + 1}</CTableDataCell >
-                <CTableDataCell className="text-center" style={mystyle}>{data.description}</CTableDataCell >
-                <CTableDataCell className="text-center" style={mystyle}>{data.field_technical_name}</CTableDataCell >
-                <CTableDataCell className="text-center" style={mystyle}>{data.field_length}</CTableDataCell >
-                <CTableDataCell className="text-center" style={mystyle}>{data.field_type}</CTableDataCell >
-                <CTableDataCell className="text-center" style={mystyle}>{data.field_table_name}</CTableDataCell >
-                <CTableDataCell className="text-center" style={mystyle}>{data.mandatory_or_optional}</CTableDataCell >
-                <CTableDataCell className="text-center" style={mystyle}>{data.parameter_or_selection}</CTableDataCell > 
-                <CTableDataCell className="text-center" style={mystyle}>
-                 <IconButton>
-                    <EditIcon onClick={() => editFSF(data.id)}/>
-                 </IconButton>
-                  <IconButton onClick={() => deleteFSF(data.id)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </CTableDataCell> {/* Add Actions column */}             
-            </CTableRow>
-            ))}
+              {postData.map((data, index) => (
+                <CTableRow key={index}>
+                  <CTableDataCell className="text-center" style={mystyle}>{index + 1}</CTableDataCell >
+                  <CTableDataCell className="text-center" style={mystyle}>{data.description}</CTableDataCell >
+                  <CTableDataCell className="text-center" style={mystyle}>{data.field_technical_name}</CTableDataCell >
+                  <CTableDataCell className="text-center" style={mystyle}>{data.field_length}</CTableDataCell >
+                  <CTableDataCell className="text-center" style={mystyle}>{data.field_type}</CTableDataCell >
+                  <CTableDataCell className="text-center" style={mystyle}>{data.field_table_name}</CTableDataCell >
+                  <CTableDataCell className="text-center" style={mystyle}>{data.mandatory_or_optional}</CTableDataCell >
+                  <CTableDataCell className="text-center" style={mystyle}>{data.parameter_or_selection}</CTableDataCell >
+                  <CTableDataCell className="text-center" style={mystyle}>
+                    <IconButton aria-label="Update" onClick={() => showModal3(data.id)}>
+                      <EditIcon htmlColor='#28B463' />
+                    </IconButton>
+                    <IconButton aria-label="Delete" onClick={() => showModal2(data.id)}>
+                      <DeleteIcon htmlColor='#FF0000' />
+                    </IconButton>
+                  </CTableDataCell> {/* Add Actions column */}
+                </CTableRow>
+              ))}
 
               {/* Modal for Add Parameter */}
-              <Modal title="Add a Parameter" open={isModalOpen} 
-                // onOk={handleOk} onCancel={handleCancel}
-                footer={
-                  isUpdate === true
-                    ? [
-                        <Button key="update" type="primary" onClick={updateFSF}>
-                          Update
-                        </Button>,
-                        <Button key="cancel" onClick={handleCancel}>
-                          Cancel
-                        </Button>,
-                      ]
-                    : [
-                        <Button key="ok" type="primary" onClick={handleOk}>
-                          OK
-                        </Button>,
-                        <Button key="cancel" onClick={handleCancel}>
-                          Cancel
-                        </Button>
-                      ]
-                }
-              >
+              <Modal title="Add a Parameter" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} maskClosable={false}>
 
                 <br></br>
 
@@ -687,22 +737,102 @@ function FSFform() {
 
                 <Form.Item label="Mandatory/Optional" >
                   <Select onChange={handleMandatoryOrOptionalChange}
-                   value={mandatory_or_optional} 
-                   style={{ width: '400px' }}>
+                    value={mandatory_or_optional}
+                    style={{ width: '400px' }}>
                     <Select.Option value="Mandatory">Mandatory</Select.Option>
                     <Select.Option value="Optional">Optional</Select.Option>
                   </Select>
                 </Form.Item>
 
                 <Form.Item label="Parameter/Selection" >
-                  <Select onChange={handleParameterOrSelection} 
-                  value={parameter_or_selection} 
-                  style={{ width: '400px' }}>
+                  <Select onChange={handleParameterOrSelection}
+                    value={parameter_or_selection}
+                    style={{ width: '400px' }}>
                     <Select.Option value="Parameter">Parameter</Select.Option>
                     <Select.Option value="Selection">Selection</Select.Option>
                   </Select>
                 </Form.Item>
 
+              </Modal>
+
+              {/* Modal for Update FSF Parameters */}
+              <Modal title="Update a Parameter" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} maskClosable={false}>
+                <br></br>
+                {
+                  fsfHasParameter.map((fsf) => (
+                    <div key={fsf.id}>
+
+                      <Form.Item label="Description">
+                        <Input
+                          style={{ width: '400px' }}
+                          defaultValue={fsf.description}
+                          type="text"
+                          onChange={(e) => setDescription(e.target.value)}
+                          className="form-control form-control-lg"
+                        />
+                      </Form.Item>
+
+                      <Form.Item label="Field Technical Name">
+                        <Input
+                          style={{ width: '400px' }}
+                          defaultValue={fsf.field_technical_name}
+                          type="text"
+                          onChange={(e) => setFieldTechnicalName(e.target.value)}
+                          className="form-control form-control-lg"
+                        />
+                      </Form.Item>
+
+                      <Form.Item label="Field Length">
+                        <Input
+                          style={{ width: '400px' }}
+                          defaultValue={fsf.field_length}
+                          type="text"
+                          onChange={(e) => setFieldLength(e.target.value)}
+                          className="form-control form-control-lg"
+                        />
+                      </Form.Item>
+
+                      <Form.Item label="Field Type">
+                        <Input
+                          style={{ width: '400px' }}
+                          defaultValue={fsf.field_type}
+                          type="text"
+                          onChange={(e) => setFieldType(e.target.value)}
+                          className="form-control form-control-lg"
+                        />
+                      </Form.Item>
+
+                      <Form.Item label="Field Table Name">
+                        <Input
+                          style={{ width: '400px' }}
+                          defaultValue={fsf.field_table_name}
+                          type="text"
+                          onChange={(e) => setFieldTableName(e.target.value)}
+                          className="form-control form-control-lg"
+                        />
+                      </Form.Item>
+
+                      <Form.Item label="Mandatory/Optional" >
+                        <Select onChange={handleMandatoryOrOptionalChange}
+                          defaultValue={fsf.mandatory_or_optional}
+                          style={{ width: '400px' }}>
+                          <Select.Option value="Mandatory">Mandatory</Select.Option>
+                          <Select.Option value="Optional">Optional</Select.Option>
+                        </Select>
+                      </Form.Item>
+
+                      <Form.Item label="Parameter/Selection" >
+                        <Select onChange={handleParameterOrSelection}
+                          defaultValue={fsf.parameter_or_selection}
+                          style={{ width: '400px' }}>
+                          <Select.Option value="Parameter">Parameter</Select.Option>
+                          <Select.Option value="Selection">Selection</Select.Option>
+                        </Select>
+                      </Form.Item>
+
+                    </div>
+                  ))
+                }
               </Modal>
 
               {/* Alert for Add FSF Success*/}
@@ -718,6 +848,10 @@ function FSFform() {
                   Failed to Add FSF
                 </Alert>
               )}
+
+              {/* Modal for Deletion Confirmation */}
+              <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
+              </Modal>
 
 
             </CTableBody>
