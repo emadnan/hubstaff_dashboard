@@ -1,11 +1,9 @@
 import { React, useState, useEffect } from 'react'
 import { Form, Input, Select, Button, Modal, DatePicker } from 'antd'
 import { CTableBody, CTableHead, CTableHeaderCell, CTableDataCell, CTableRow, CTable } from '@coreui/react';
-
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-
 import moment from 'moment';
 import Alert from '@mui/material/Alert';
 import { useNavigate } from 'react-router-dom';
@@ -33,13 +31,12 @@ function FSFform() {
   const [parameter_or_selection, setParameterOrSelection] = useState("");
   const [project, setProjects] = useState([]);
   const [fsfHasParameter, setFsfHasParameter] = useState([]);
-
   const [ref_id, setRef_id] = useState();
+  const [postData, setPostData] = useState([]);
+  const [users, setUsers] = useState([]);
+  var filteredUsers = [];
 
   const navigate = useNavigate();
-
-  const [postData, setPostData] = useState([]);
-  // const [isUpdate, setIsUpdate] = useState(false)
 
   const local = JSON.parse(localStorage.getItem('user-info'));
 
@@ -103,18 +100,24 @@ function FSFform() {
     setParameterOrSelection(value);
   };
 
-  // const handleRequestedDateChange = (value) => {
-  //   setRequestedDate(value);
-  // };
-
   const handleFunctionalLeadChange = (value) => {
     setFuncionalLead(value);
+  };
+
+  function submitHandle() {
+    handleCloseAlert1();
+    navigate("/allfsf")
   };
 
   // Functions of Add Parameter Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
-    // Reset the input fields
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    addFsfStage3();
+    setIsModalOpen(false);
     setDescription("");
     setFieldTechnicalName("");
     setFieldLength("");
@@ -122,17 +125,17 @@ function FSFform() {
     setFieldTableName("");
     setMandatoryOrOptional("");
     setParameterOrSelection("");
-
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    addFsfStage3();
-    setIsModalOpen(false);
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    setDescription("");
+    setFieldTechnicalName("");
+    setFieldLength("");
+    setFieldType("");
+    setFieldTableName("");
+    setMandatoryOrOptional("");
+    setParameterOrSelection("");
   };
 
   // Functions for Delete FSF Parameter Modal
@@ -178,52 +181,6 @@ function FSFform() {
     setFieldTableName('');
     setMandatoryOrOptional('');
     setParameterOrSelection('');
-  };
-
-  function submitHandle() {
-    // CODE FOR NAVIGATION and ALERT SHOW
-    handleCloseAlert1();
-    navigate("/allfsf")
-  };
-
-  //Initial rendering
-  useEffect(() => {
-    getProjects();
-    getUsers();
-  }, []);
-
-  var filteredUsers = [];
-  const [users, setUsers] = useState([]);
-
-  //GET API calls
-  function getProjects() {
-    fetch("http://10.3.3.80/api/getproject")
-      .then((response) => response.json())
-      .then((data) => {
-        if (local.Users.role === "1") {
-          filteredUsers = data.projects;
-        }
-        else if (local.Users.role === "3") {
-          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
-        }
-        setProjects(filteredUsers);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  function getUsers() {
-    fetch("http://10.3.3.80/api/get_users")
-      .then((response) => response.json())
-      .then((data) => {
-        if (local.Users.role === "1") {
-          filteredUsers = data.Users;
-        }
-        else if (local.Users.role === "3") {
-          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id);
-        }
-        setUsers(filteredUsers.slice(1));
-      })
-      .catch((error) => console.log(error));
   };
 
   //DIV handlings
@@ -295,8 +252,67 @@ function FSFform() {
     }
   }, [showAlert2]);
 
-  // Add API call
+  //Initial rendering
+  useEffect(() => {
+    getProjects();
+    getUsers();
+  }, []);
 
+  //GET API calls
+  function getProjects() {
+    fetch("http://10.3.3.80/api/getproject")
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === "1") {
+          filteredUsers = data.projects;
+        }
+        else if (local.Users.role === "3") {
+          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
+        }
+        setProjects(filteredUsers);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  function getUsers() {
+    fetch("http://10.3.3.80/api/get_users")
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === "1") {
+          filteredUsers = data.Users;
+        }
+        else if (local.Users.role === "3") {
+          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id);
+        }
+        setUsers(filteredUsers.slice(1));
+      })
+      .catch((error) => console.log(error));
+  };
+
+  function getFSFParameters() {
+    fetch(`http://10.3.3.80/api/getFsfHasParameterByFsfId/${ref_id}`)
+      .then((response) => response.json())
+      .then((data) => setPostData(data.fsf_has_parameter))
+      .catch((error) => console.log(error));
+  };
+
+  function getFsfHasParameterByFsfId(id) {
+    fetch(`http://10.3.3.80/api/getFsfHasParameterById/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setFsfHasParameter(data.fsf);
+        setDescription(data.fsf[0].description);
+        setFieldTechnicalName(data.fsf[0].field_technical_name);
+        setFieldLength(data.fsf[0].field_length);
+        setFieldType(data.fsf[0].field_type);
+        setFieldTableName(data.fsf[0].field_table_name);
+        setMandatoryOrOptional(data.fsf[0].mandatory_or_optional);
+        setParameterOrSelection(data.fsf[0].parameter_or_selection);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  // Add API calls
   async function addFsfStage1() {
     let data = { wricef_id, module_name, functional_lead, requested_date, type_of_development, priority, usage_frequency }
     console.log(data);
@@ -376,31 +392,9 @@ function FSFform() {
     } catch (error) {
       console.error(error);
     }
-  }
-
-  function getFSFParameters() {
-    fetch(`http://10.3.3.80/api/getFsfHasParameterByFsfId/${ref_id}`)
-      .then((response) => response.json())
-      .then((data) => setPostData(data.fsf_has_parameter))
-      .catch((error) => console.log(error));
   };
 
-  function getFsfHasParameterByFsfId(id) {
-    fetch(`http://10.3.3.80/api/getFsfHasParameterById/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setFsfHasParameter(data.fsf);
-        setDescription(data.fsf[0].description);
-        setFieldTechnicalName(data.fsf[0].field_technical_name);
-        setFieldLength(data.fsf[0].field_length);
-        setFieldType(data.fsf[0].field_type);
-        setFieldTableName(data.fsf[0].field_table_name);
-        setMandatoryOrOptional(data.fsf[0].mandatory_or_optional);
-        setParameterOrSelection(data.fsf[0].parameter_or_selection);
-      })
-      .catch((error) => console.log(error));
-  };
-
+  // Delete FSF Parameter API call
   async function deleteFSF(id) {
     await fetch(`http://10.3.3.80/api/DeleteFsfHasParameterByFsfId`, {
       method: 'POST',
@@ -420,30 +414,6 @@ function FSFform() {
         console.error(error);
       });
   }
-
-  // async function editFSF() {
-  //   setIsUpdate(true);
-  //   setIsModalOpen(true);
-  // }
-
-  // async function updateFSF(id) {
-  //   await fetch(`http://10.3.3.80/api/UpdateFsfHasParameterByFsfId`, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json'
-  //     },
-  //     body: JSON.stringify({})
-  //   })
-  //     .then(response => {
-  //       if (response.ok) {
-  //         getFSFParameters();
-  //         console.log("UPDATED SUCCESSFULLY");
-  //       }
-  //     })
-  //     .catch(error => {
-  //       console.error(error);
-  //     });
-  // };
 
   // Update FSF Parameter API call
   async function updateFSF(newid) {
@@ -676,7 +646,7 @@ function FSFform() {
                     <IconButton aria-label="Delete" onClick={() => showModal2(data.id)}>
                       <DeleteIcon htmlColor='#FF0000' />
                     </IconButton>
-                  </CTableDataCell> {/* Add Actions column */}
+                  </CTableDataCell>
                 </CTableRow>
               ))}
 
@@ -835,6 +805,10 @@ function FSFform() {
                 }
               </Modal>
 
+              {/* Modal for Deletion Confirmation */}
+              <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
+              </Modal>
+
               {/* Alert for Add FSF Success*/}
               {showAlert1 && (
                 <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
@@ -848,11 +822,6 @@ function FSFform() {
                   Failed to Add FSF
                 </Alert>
               )}
-
-              {/* Modal for Deletion Confirmation */}
-              <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
-              </Modal>
-
 
             </CTableBody>
           </CTable>

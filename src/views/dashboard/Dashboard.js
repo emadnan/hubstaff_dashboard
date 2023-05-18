@@ -114,9 +114,6 @@ const Dashboard = () => {
         else if (local.Users.role === "3") {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
         }
-        else if (local.Users.role === "5") {
-          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
-        }
         setProjects(filteredUsers);
       })
       .catch((error) => console.log(error));
