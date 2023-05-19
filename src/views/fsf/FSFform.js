@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react'
-import { Form, Modal, DatePicker } from 'antd'
+import { Modal } from 'antd'
 import {
   CTableBody,
   CTableHead,
@@ -11,17 +11,14 @@ import {
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
-import moment from 'moment'
 import Alert from '@mui/material/Alert'
 import { useNavigate } from 'react-router-dom'
 
-import { Card, CardContent, Input, Select, MenuItem, Button } from '@mui/material'
+import { Card, CardContent, MenuItem, Button } from '@mui/material'
 import { Box, TextField, Typography } from '@mui/material'
 import Tooltip from '@mui/material/Tooltip'
 import AddIcon from '@mui/icons-material/Add'
 import CloseIcon from '@mui/icons-material/Close'
-
-const { RangePicker } = DatePicker
 
 function FSFform() {
   //Variable declarations
@@ -134,7 +131,7 @@ function FSFform() {
   }
 
   function submitHandle() {
-    handleCloseAlert1()
+    handleButtonClick1()
     navigate('/allfsf')
   }
 
