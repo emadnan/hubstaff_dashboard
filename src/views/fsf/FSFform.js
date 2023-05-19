@@ -52,9 +52,11 @@ function FSFform() {
   const [isFocused, setIsFocused] = useState(false)
 
   //CSS Styling
-  const heading = {
-    textAlign: 'center',
-  }
+  const [isHoveredPrimary, setIsHoveredPrimary] = useState(false)
+
+  const [isHoveredDanger, setIsHoveredDanger] = useState(false)
+
+  const [isHoveredSuccess, setIsHoveredSuccess] = useState(false)
 
   const mystyle = {
     color: 'black',
@@ -80,18 +82,54 @@ function FSFform() {
     transform: 'translateX(-50%)',
   }
 
-  const modalStyle = {
-    position: 'fixed',
-    top: '25%',
-    left: '40%',
-  }
-
   const handleInputFocus = () => {
     setIsFocused(true)
   }
 
   const handleInputBlur = () => {
     setIsFocused(false)
+  }
+
+  const primaryButtonStyle = {
+    backgroundColor: isHoveredPrimary ? '#6699CC' : 'blue',
+    color: 'white',
+    transition: 'background-color 0.3s',
+  }
+
+  const dangerButtonStyle = {
+    backgroundColor: isHoveredDanger ? '#FAA0A0' : 'red',
+    color: 'white',
+    transition: 'background-color 0.3s',
+  }
+
+  const successButtonStyle = {
+    backgroundColor: isHoveredSuccess ? '#90EE90' : 'green',
+    color: 'white',
+    transition: 'background-color 0.3s',
+  }
+
+  const handleMouseEnterPrimary = () => {
+    setIsHoveredPrimary(true)
+  }
+
+  const handleMouseLeavePrimary = () => {
+    setIsHoveredPrimary(false)
+  }
+
+  const handleMouseEnterDanger = () => {
+    setIsHoveredDanger(true)
+  }
+
+  const handleMouseLeaveDanger = () => {
+    setIsHoveredDanger(false)
+  }
+
+  const handleMouseEnterSuccess = () => {
+    setIsHoveredSuccess(true)
+  }
+
+  const handleMouseLeaveSuccess = () => {
+    setIsHoveredSuccess(false)
   }
 
   //GET calls handling
@@ -212,6 +250,8 @@ function FSFform() {
   const handleClick1 = () => {
     setShowDiv1(false)
     setShowDiv2(true)
+    setIsHoveredPrimary(false)
+    setIsHoveredDanger(false)
     addFsfStage1()
   }
 
@@ -219,16 +259,22 @@ function FSFform() {
     setShowDiv2(false)
     setShowDiv3(true)
     addFsfStage2()
+    setIsHoveredPrimary(false)
+    setIsHoveredDanger(false)
   }
 
   const handleClick3 = () => {
     setShowDiv3(false)
     setShowDiv2(true)
+    setIsHoveredPrimary(false)
+    setIsHoveredDanger(false)
   }
 
   const handleClick4 = () => {
     setShowDiv2(false)
     setShowDiv1(true)
+    setIsHoveredPrimary(false)
+    setIsHoveredDanger(false)
   }
 
   // Functions for Add FSF Success
@@ -236,8 +282,11 @@ function FSFform() {
 
   const [showAlert3, setShowAlert3] = useState(false)
 
+  const [showAlert4, setShowAlert4] = useState(false)
+
+  const [showAlert5, setShowAlert5] = useState(false)
+
   function handleButtonClick1() {
-    console.log('handleButtonClick1 called') // Add this line
     setShowAlert1(true)
   }
 
@@ -246,18 +295,17 @@ function FSFform() {
   }
 
   function submitHandle() {
-    console.log('submitHandle called') // Add this line
     handleButtonClick1()
     setTimeout(() => {
       navigate('/allfsf')
-    }, 4000)
+    }, 2000)
   }
 
   useEffect(() => {
     if (showAlert1) {
       const timer = setTimeout(() => {
         setShowAlert1(false)
-      }, 2000)
+      }, 3000)
 
       return () => clearTimeout(timer)
     }
@@ -282,6 +330,22 @@ function FSFform() {
     setShowAlert3(false)
   }
 
+  function handleButtonClick4() {
+    setShowAlert4(true)
+  }
+
+  function handleCloseAlert4() {
+    setShowAlert4(false)
+  }
+
+  function handleButtonClick5() {
+    setShowAlert5(true)
+  }
+
+  function handleCloseAlert5() {
+    setShowAlert5(false)
+  }
+
   useEffect(() => {
     if (showAlert2) {
       const timer = setTimeout(() => {
@@ -301,6 +365,26 @@ function FSFform() {
       return () => clearTimeout(timer)
     }
   }, [showAlert3])
+
+  useEffect(() => {
+    if (showAlert4) {
+      const timer = setTimeout(() => {
+        setShowAlert4(false)
+      }, 2000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert4])
+
+  useEffect(() => {
+    if (showAlert5) {
+      const timer = setTimeout(() => {
+        setShowAlert5(false)
+      }, 2000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert5])
 
   //Initial rendering
   useEffect(() => {
@@ -448,6 +532,7 @@ function FSFform() {
       if (response.ok) {
         const responseData = await response.json()
         console.log('responseData: ', responseData)
+        handleButtonClick4()
         getFSFParameters()
       } else {
         throw new Error('Request failed with status ' + response.status)
@@ -471,7 +556,7 @@ function FSFform() {
     })
       .then((response) => {
         if (response.ok) {
-          console.log('DELETED SUCCESSFULLY')
+          handleButtonClick5()
           getFSFParameters()
         }
       })
@@ -657,7 +742,12 @@ function FSFform() {
                   </TextField>
                 </Box>
 
-                <Button variant="contained" onClick={handleClick1}>
+                <Button
+                  onClick={handleClick1}
+                  style={primaryButtonStyle}
+                  onMouseEnter={handleMouseEnterPrimary}
+                  onMouseLeave={handleMouseLeavePrimary}
+                >
                   Next
                 </Button>
               </CardContent>
@@ -716,11 +806,18 @@ function FSFform() {
                   />
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Button style={{ ...buttonStyle, backgroundColor: 'red' }} onClick={handleClick4}>
+                  <Button
+                    onClick={handleClick4}
+                    style={dangerButtonStyle}
+                    onMouseEnter={handleMouseEnterDanger}
+                    onMouseLeave={handleMouseLeaveDanger}
+                  >
                     Back
                   </Button>
                   <Button
-                    style={{ ...buttonStyle, backgroundColor: 'blue' }}
+                    style={primaryButtonStyle}
+                    onMouseEnter={handleMouseEnterPrimary}
+                    onMouseLeave={handleMouseLeavePrimary}
                     onClick={handleClick2}
                   >
                     Next
@@ -859,11 +956,18 @@ function FSFform() {
                   >
                     <Button
                       onClick={handleCancel}
-                      style={{ backgroundColor: 'red', color: 'white' }}
+                      style={dangerButtonStyle}
+                      onMouseEnter={handleMouseEnterDanger}
+                      onMouseLeave={handleMouseLeaveDanger}
                     >
                       Cancel
                     </Button>
-                    <Button onClick={handleOk} style={{ backgroundColor: 'blue', color: 'white' }}>
+                    <Button
+                      onClick={handleOk}
+                      style={primaryButtonStyle}
+                      onMouseEnter={handleMouseEnterPrimary}
+                      onMouseLeave={handleMouseLeavePrimary}
+                    >
                       OK
                     </Button>
                   </div>
@@ -987,11 +1091,18 @@ function FSFform() {
                   >
                     <Button
                       onClick={handleCancel3}
-                      style={{ backgroundColor: 'red', color: 'white' }}
+                      style={dangerButtonStyle}
+                      onMouseEnter={handleMouseEnterDanger}
+                      onMouseLeave={handleMouseLeaveDanger}
                     >
                       Cancel
                     </Button>
-                    <Button onClick={handleOk3} style={{ backgroundColor: 'blue', color: 'white' }}>
+                    <Button
+                      onClick={handleOk3}
+                      style={primaryButtonStyle}
+                      onMouseEnter={handleMouseEnterPrimary}
+                      onMouseLeave={handleMouseLeavePrimary}
+                    >
                       Update
                     </Button>
                   </div>
@@ -1109,12 +1220,36 @@ function FSFform() {
 
               {/* Modal for Deletion Confirmation */}
               <Modal
-                title="Are you sure you want to delete?"
                 open={isModalOpen2}
-                onOk={handleOk2}
-                onCancel={handleCancel2}
-                style={modalStyle}
-              ></Modal>
+                maskClosable={false}
+                closeIcon={<CloseIcon onClick={handleCancel2} />}
+                footer={
+                  <div
+                    style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}
+                  >
+                    <Button
+                      onClick={handleCancel2}
+                      style={dangerButtonStyle}
+                      onMouseEnter={handleMouseEnterDanger}
+                      onMouseLeave={handleMouseLeaveDanger}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleOk2}
+                      style={primaryButtonStyle}
+                      onMouseEnter={handleMouseEnterPrimary}
+                      onMouseLeave={handleMouseLeavePrimary}
+                    >
+                      OK
+                    </Button>
+                  </div>
+                }
+              >
+                <Typography variant="h5" component="div" sx={{ marginBottom: '10px' }}>
+                  Are you sure you want to delete?
+                </Typography>
+              </Modal>
 
               {/* Alert for Add FSF Success*/}
               {showAlert1 && (
@@ -1136,6 +1271,20 @@ function FSFform() {
                   FSF Update Successfully
                 </Alert>
               )}
+
+              {/* Alert for Add FSF Parameters*/}
+              {showAlert4 && (
+                <Alert onClose={handleCloseAlert4} severity="primary" style={modalStyle2}>
+                  FSF Parameter Added Successfully
+                </Alert>
+              )}
+
+              {/* Alert for Delete FSF Parameters*/}
+              {showAlert5 && (
+                <Alert onClose={handleCloseAlert5} severity="primary" style={modalStyle2}>
+                  FSF Parameter Deleted Successfully
+                </Alert>
+              )}
             </CTableBody>
           </CTable>
           <Box
@@ -1148,12 +1297,19 @@ function FSFform() {
               mb: 2,
             }}
           >
-            <Button style={{ ...buttonStyle, backgroundColor: 'red' }} onClick={handleClick3}>
+            <Button
+              onClick={handleClick3}
+              style={dangerButtonStyle}
+              onMouseEnter={handleMouseEnterDanger}
+              onMouseLeave={handleMouseLeaveDanger}
+            >
               Back
             </Button>
             <Button
-              style={{ ...buttonStyle, backgroundColor: 'green' }}
+              style={successButtonStyle}
               onClick={() => submitHandle()}
+              onMouseEnter={handleMouseEnterSuccess}
+              onMouseLeave={handleMouseLeaveSuccess}
             >
               Submit
             </Button>
