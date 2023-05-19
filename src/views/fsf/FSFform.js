@@ -130,11 +130,6 @@ function FSFform() {
     setFuncionalLead(selectedValue)
   }
 
-  function submitHandle() {
-    handleButtonClick1()
-    navigate('/allfsf')
-  }
-
   // Functions of Add Parameter Modal
   const [isModalOpen, setIsModalOpen] = useState(false)
   const showModal = () => {
@@ -239,7 +234,10 @@ function FSFform() {
   // Functions for Add FSF Success
   const [showAlert1, setShowAlert1] = useState(false)
 
+  const [showAlert3, setShowAlert3] = useState(false)
+
   function handleButtonClick1() {
+    console.log('handleButtonClick1 called') // Add this line
     setShowAlert1(true)
   }
 
@@ -247,11 +245,19 @@ function FSFform() {
     setShowAlert1(false)
   }
 
+  function submitHandle() {
+    console.log('submitHandle called') // Add this line
+    handleButtonClick1()
+    setTimeout(() => {
+      navigate('/allfsf')
+    }, 4000)
+  }
+
   useEffect(() => {
     if (showAlert1) {
       const timer = setTimeout(() => {
         setShowAlert1(false)
-      }, 3000)
+      }, 2000)
 
       return () => clearTimeout(timer)
     }
@@ -268,6 +274,14 @@ function FSFform() {
     setShowAlert2(false)
   }
 
+  function handleButtonClick3() {
+    setShowAlert3(true)
+  }
+
+  function handleCloseAlert3() {
+    setShowAlert3(false)
+  }
+
   useEffect(() => {
     if (showAlert2) {
       const timer = setTimeout(() => {
@@ -277,6 +291,16 @@ function FSFform() {
       return () => clearTimeout(timer)
     }
   }, [showAlert2])
+
+  useEffect(() => {
+    if (showAlert3) {
+      const timer = setTimeout(() => {
+        setShowAlert3(false)
+      }, 2000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert3])
 
   //Initial rendering
   useEffect(() => {
@@ -394,6 +418,7 @@ function FSFform() {
         console.log(data)
       })
       .catch((error) => {
+        handleButtonClick2()
         console.error(error)
       })
   }
@@ -428,6 +453,7 @@ function FSFform() {
         throw new Error('Request failed with status ' + response.status)
       }
     } catch (error) {
+      handleButtonClick2()
       console.error(error)
     }
   }
@@ -450,6 +476,7 @@ function FSFform() {
         }
       })
       .catch((error) => {
+        handleButtonClick2()
         console.error(error)
       })
   }
@@ -475,13 +502,14 @@ function FSFform() {
     })
       .then((response) => {
         if (response.ok) {
-          // handleButtonClick5();
+          handleButtonClick3()
           getFSFParameters()
         } else {
           // handleButtonClick6();
         }
       })
       .catch((error) => {
+        handleButtonClick2()
         console.error(error)
       })
   }
@@ -1099,6 +1127,13 @@ function FSFform() {
               {showAlert2 && (
                 <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
                   Failed to Add FSF
+                </Alert>
+              )}
+
+              {/* Alert for Update FSF Parameters*/}
+              {showAlert3 && (
+                <Alert onClose={handleCloseAlert3} severity="primary" style={modalStyle2}>
+                  FSF Update Successfully
                 </Alert>
               )}
             </CTableBody>
