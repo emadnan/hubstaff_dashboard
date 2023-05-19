@@ -862,7 +862,12 @@ function FSFform() {
             }}
           >
             <Tooltip title="Add Parameters">
-              <Button style={{ ...buttonStyle, backgroundColor: 'blue' }} onClick={showModal}>
+              <Button
+                style={primaryButtonStyle}
+                onClick={showModal}
+                onMouseEnter={handleMouseEnterPrimary}
+                onMouseLeave={handleMouseLeavePrimary}
+              >
                 <AddIcon />
               </Button>
             </Tooltip>
@@ -878,7 +883,7 @@ function FSFform() {
             <CTableHead color="light">
               <CTableRow>
                 <CTableHeaderCell className="text-center" style={mystyle}>
-                  Sr/No
+                  Sr No.
                 </CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle}>
                   Description
@@ -1065,7 +1070,7 @@ function FSFform() {
                 <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
                   <TextField
                     id="select-parameter_or_selection"
-                    label="Mandatory or Optional"
+                    label="Parameter or Selection"
                     variant="standard"
                     select
                     value={parameter_or_selection}
@@ -1202,7 +1207,7 @@ function FSFform() {
                     <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
                       <TextField
                         id="select-parameter_or_selection"
-                        label="Mandatory or Optional"
+                        label="Parameter or Selection"
                         variant="standard"
                         select
                         defaultValue={fsf.parameter_or_selection}
