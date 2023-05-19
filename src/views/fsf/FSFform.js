@@ -967,7 +967,7 @@ function FSFform() {
                       Cancel
                     </Button>
                     <Button onClick={handleOk3} style={{ backgroundColor: 'blue', color: 'white' }}>
-                      OK
+                      Update
                     </Button>
                   </div>
                 }
@@ -1081,91 +1081,6 @@ function FSFform() {
                   </div>
                 ))}
               </Modal>
-
-              {/* <Modal
-                title="Update a Parameter"
-                open={isModalOpen3}
-                onOk={handleOk3}
-                onCancel={handleCancel3}
-                maskClosable={false}
-              >
-                <br></br>
-                {fsfHasParameter.map((fsf) => (
-                  <div key={fsf.id}>
-                    <Form.Item label="Description">
-                      <Input
-                        style={{ width: '400px' }}
-                        defaultValue={fsf.description}
-                        type="text"
-                        onChange={(e) => setDescription(e.target.value)}
-                        className="form-control form-control-lg"
-                      />
-                    </Form.Item>
-
-                    <Form.Item label="Field Technical Name">
-                      <Input
-                        style={{ width: '400px' }}
-                        defaultValue={fsf.field_technical_name}
-                        type="text"
-                        onChange={(e) => setFieldTechnicalName(e.target.value)}
-                        className="form-control form-control-lg"
-                      />
-                    </Form.Item>
-
-                    <Form.Item label="Field Length">
-                      <Input
-                        style={{ width: '400px' }}
-                        defaultValue={fsf.field_length}
-                        type="text"
-                        onChange={(e) => setFieldLength(e.target.value)}
-                        className="form-control form-control-lg"
-                      />
-                    </Form.Item>
-
-                    <Form.Item label="Field Type">
-                      <Input
-                        style={{ width: '400px' }}
-                        defaultValue={fsf.field_type}
-                        type="text"
-                        onChange={(e) => setFieldType(e.target.value)}
-                        className="form-control form-control-lg"
-                      />
-                    </Form.Item>
-
-                    <Form.Item label="Field Table Name">
-                      <Input
-                        style={{ width: '400px' }}
-                        defaultValue={fsf.field_table_name}
-                        type="text"
-                        onChange={(e) => setFieldTableName(e.target.value)}
-                        className="form-control form-control-lg"
-                      />
-                    </Form.Item>
-
-                    <Form.Item label="Mandatory/Optional">
-                      <Select
-                        onChange={handleMandatoryOrOptionalChange}
-                        defaultValue={fsf.mandatory_or_optional}
-                        style={{ width: '400px' }}
-                      >
-                        <Select.Option value="Mandatory">Mandatory</Select.Option>
-                        <Select.Option value="Optional">Optional</Select.Option>
-                      </Select>
-                    </Form.Item>
-
-                    <Form.Item label="Parameter/Selection">
-                      <Select
-                        onChange={handleParameterOrSelection}
-                        defaultValue={fsf.parameter_or_selection}
-                        style={{ width: '400px' }}
-                      >
-                        <Select.Option value="Parameter">Parameter</Select.Option>
-                        <Select.Option value="Selection">Selection</Select.Option>
-                      </Select>
-                    </Form.Item>
-                  </div>
-                ))}
-              </Modal> */}
 
               {/* Modal for Deletion Confirmation */}
               <Modal

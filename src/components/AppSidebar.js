@@ -27,10 +27,14 @@ const AppSidebar = () => {
       }}
     >
       <CSidebarBrand className="d-none d-md-flex" to="/">
-        <img src={worklog} width={150} height={50} alt='' />
+        <img src={worklog} width={150} height={50} alt="" />
       </CSidebarBrand>
       <CSidebarNav>
-        <SimpleBar>
+        <SimpleBar
+          style={{
+            maxHeight: '100%',
+          }}
+        >
           <AppSidebarNav items={navigation} />
         </SimpleBar>
       </CSidebarNav>
