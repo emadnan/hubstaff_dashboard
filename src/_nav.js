@@ -434,13 +434,13 @@ export const _navEmployee = [
   },
   {
     component: CNavItem,
-    name: 'Companies',
+    name: 'Company',
     to: '/companies/Companies',
     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: 'Users',
+    name: 'User',
     to: '/users/Users',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
