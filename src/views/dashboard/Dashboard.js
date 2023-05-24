@@ -259,9 +259,9 @@ const Dashboard = () => {
         <div className='col-md-6'>
 
           {/* Card for Recent Activity Starts */}
-          <Card style={cardStyle2}>
+          {/* <Card style={cardStyle2}>
             <h5 style={head}>RECENT ACTIVITY</h5>
-            <Divider />
+            <Divider /> */}
             {/* {screenshot.map((image) => {
               return (
                 <div key={image.id} style={{ display: 'flex', justifyContent: 'center' }}>
@@ -280,13 +280,11 @@ const Dashboard = () => {
               );
             })} */}
             {/* <Divider /> */}
-            <div className='text-center'>
+            {/* <div className='text-center'>
               <Button type="link" href="/activity/screenshots">View recent activity &gt;</Button>
             </div>
-          </Card>
+          </Card> */}
           {/* Card for Recent Activity Ends */}
-
-          <br></br>
 
           {/* Card for Companies Modal Starts */}
           <Card style={cardStyle2}>
@@ -360,14 +358,14 @@ const Dashboard = () => {
 
           {/* Card for Departments Modal Ends */}
 
-          <br></br>
-
         </div>
 
         <div className='col-md-6'>
 
           {/* Card for Projects Modal Starts */}
-          <Card style={cardStyle2}>
+          {
+            local.Users.role === "1" || local.Users.role === "3" && 
+            <Card style={cardStyle2}>
             <h5 style={head}>PROJECTS</h5>
             <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
               <CTableHead color="light" >
@@ -401,9 +399,8 @@ const Dashboard = () => {
             </div>
 
           </Card>
+          }
           {/* Card for Projects Modal Ends */}
-
-          <br></br>
 
           {/* Card for Assigned Project Modal Starts */}
           <Card style={cardStyle2}>
