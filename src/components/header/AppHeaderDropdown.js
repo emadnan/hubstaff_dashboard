@@ -82,7 +82,7 @@ const AppHeaderDropdown = () => {
 
       </CDropdown>
 
-      <Modal title="Exit" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+      <Modal title="Exit" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} okButtonProps={{ style: { background: 'blue' } }} style={modalStyle}>
         <p>Are you sure you want to exit?</p>
       </Modal>
 

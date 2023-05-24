@@ -34,13 +34,13 @@ const AssignedProjects = () => {
         fetch("http://10.3.3.80/api/get_assign_projects")
             .then((response) => response.json())
             .then((data) => {
-                if (local.Users.role === "1") {
+                if (local.Users.role === 1) {
                     filteredUsers = data.Project_Assigns;
                 }
-                else if (local.Users.role === "3") {
+                else if (local.Users.role === 3) {
                     filteredUsers = data.Project_Assigns.filter((user) => user.company_id === local.Users.company_id);
                 }
-                else if (local.Users.role === "5") {
+                else if (local.Users.role === 5) {
                     filteredUsers = data.Project_Assigns.filter((user) => user.assign_projects_user_id === local.Users.user_id);
                 }
                 setAssigns(filteredUsers);
@@ -64,7 +64,7 @@ const AssignedProjects = () => {
                         <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Project Name</CTableHeaderCell>
                         {
-                            local.Users.role === "1" || local.Users.role === "3" ? (
+                            local.Users.role === 1 || local.Users.role === 3 ? (
                                 <CTableHeaderCell className="text-center" style={mystyle}>Users</CTableHeaderCell>
                             ) : null
                         }
@@ -77,7 +77,7 @@ const AssignedProjects = () => {
                             <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={mystyle2}>{assign.project_name}</CTableHeaderCell>
                             {
-                                local.Users.role === "1" | local.Users.role === "3" ? (
+                                local.Users.role === 1 | local.Users.role === 3 ? (
                                     <CTableHeaderCell className="text-center" style={mystyle2}>{assign.name}</CTableHeaderCell>
                                 ) : null
                             }

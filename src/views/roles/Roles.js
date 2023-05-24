@@ -490,7 +490,7 @@ const Roles = () => {
 
                     {/* Get API Users */}
                     {
-                        local.Users.role === "1" || local.Users.role === "3" ?
+                        local.Users.role === 1 || local.Users.role === 3 ?
                             roles.map((role, index) => (
                                 <CTableRow key={role.id}>
                                     <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
@@ -525,7 +525,7 @@ const Roles = () => {
             </CTable>
 
             {/* Modal for Add Role */}
-            <Modal title="Add a Role" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} maskClosable={false}>
+            <Modal title="Add a Role" open={isModalOpen} onOk={handleOk} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel} maskClosable={false}>
 
                 <br></br>
 
@@ -543,7 +543,7 @@ const Roles = () => {
             </Modal>
 
             {/* Modal for Update Role */}
-            <Modal title="Update a Role" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} maskClosable={false}>
+            <Modal title="Update a Role" open={isModalOpen3} onOk={handleOk3} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel3} maskClosable={false}>
 
                 <br></br>
 
@@ -564,11 +564,11 @@ const Roles = () => {
             </Modal>
 
             {/* Modal for Deletion Confirmation */}
-            <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
+            <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel2} style={modalStyle}>
             </Modal>
 
             {/* Modal for Assign Permissions */}
-            <Modal title="Assign Permissions" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4}>
+            <Modal title="Assign Permissions" open={isModalOpen4} onOk={handleOk4} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel4}>
 
                 <br></br>
                 <div className='row'>

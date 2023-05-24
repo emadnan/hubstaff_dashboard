@@ -87,13 +87,13 @@ const Screenshots = () => {
         fetch("http://10.3.3.80/api/get_Project_Screenshots")
             .then((response) => response.json())
             .then((data) => {
-                if (local.Users.role === "1") {
+                if (local.Users.role === 1) {
                     screenfilter = data.projectscreenshot;
                 }
-                else if (local.Users.role === "3") {
+                else if (local.Users.role === 3) {
                     screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.company_id === local.Users.company_id);
                 }
-                else if (local.Users.role === "5"){
+                else if (local.Users.role === 5){
                     screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.user_id === local.Users.user_id);
                 }
                 setImages(screenfilter);
@@ -106,13 +106,13 @@ const Screenshots = () => {
         fetch("http://10.3.3.80/api/get_users")
             .then((response) => response.json())
             .then((data) => {
-                if (local.Users.role === "1") {
+                if (local.Users.role === 1) {
                     filteredUsers = data.Users;
                 }
-                else if (local.Users.role === "3") {
+                else if (local.Users.role === 3) {
                     filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id);
                 }
-                else if (local.Users.role === "5") {
+                else if (local.Users.role === 5) {
                     filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id);
                 }
                 setUsers(filteredUsers.slice(1));
@@ -124,7 +124,7 @@ const Screenshots = () => {
         fetch(`http://10.3.3.80/api/get_projectscreenshot_by_date/${a}/${b}/${c}`)
             .then((response) => response.json())
             .then((data) => {
-                if (local.Users.role === "1" || local.Users.role === "3") {
+                if (local.Users.role === 1 || local.Users.role === 3) {
                     screenfilter = data.projectscreenshot;
                 } else {
                     screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.user_id === local.Users.user_id);
@@ -156,7 +156,7 @@ const Screenshots = () => {
         setUserId(value);
         //get latitude N longitude FROM INMAGE VARIABLE and fiter by user id save in location variable
         const locations = images.filter((locate) => {
-            if (local.Users.role === "3") {
+            if (local.Users.role === 3) {
                 return locate.user_id === value;
             }
             else {
@@ -262,7 +262,7 @@ const Screenshots = () => {
                 </div>
                 <div className='col-md-4'></div>
                 {
-                    local.Users.role === "1" || local.Users.role === "3" ? (
+                    local.Users.role === 1 || local.Users.role === 3 ? (
                         <div className='col-md-4 mt-4'>
                             <div className='row'>
                                 <div className="col-md-4"></div>

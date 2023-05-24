@@ -303,13 +303,13 @@ const Companies = () => {
     fetch("http://10.3.3.80/api/getcompany")
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === "1") {
+        if (local.Users.role === 1) {
           filteredUsers = data.companies;
         }
-        else if (local.Users.role === "3") {
+        else if (local.Users.role === 3) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
         }
-        else if (local.Users.role === "5") {
+        else if (local.Users.role === 5) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
         }
         setUsers(filteredUsers);
@@ -488,7 +488,7 @@ const Companies = () => {
         <CTableBody>
 
           {/* Modal for Add Company */}
-          <Modal title="Add a Company" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} maskClosable={false}>
+          <Modal title="Add a Company" open={isModalOpen} onOk={handleOk} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel} maskClosable={false}>
 
             <br></br>
 
@@ -565,11 +565,11 @@ const Companies = () => {
           </Modal>
 
           {/* Modal for deletion confirmation */}
-          <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
+          <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel2} style={modalStyle}>
           </Modal>
 
           {/* Modal for Update Company */}
-          <Modal title="Update a Company" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} maskClosable={false}>
+          <Modal title="Update a Company" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} okButtonProps={{ style: { background: 'blue' } }} maskClosable={false}>
 
             <br></br>
             {bycompany.map((company) => (

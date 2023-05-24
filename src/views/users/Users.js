@@ -281,13 +281,13 @@ const Users = () => {
         fetch("http://10.3.3.80/api/get_users")
             .then((response) => response.json())
             .then((data) => {
-                if (local.Users.role === "1") {
+                if (local.Users.role === 1) {
                     filteredUsers = data.Users;
                 }
-                else if (local.Users.role === "3") {
+                else if (local.Users.role === 3) {
                     filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id);
                 }
-                else if (local.Users.role === "5") {
+                else if (local.Users.role === 5) {
                     filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id);
                 }
                 setUsers(filteredUsers);
@@ -306,10 +306,10 @@ const Users = () => {
         fetch("http://10.3.3.80/api/get_teams")
             .then((response) => response.json())
             .then((data) => {
-                if (local.Users.role === "1") {
+                if (local.Users.role === 1) {
                     filteredUsers = data.Teams;
                 }
-                else if (local.Users.role === "3") {
+                else if (local.Users.role === 3) {
                     filteredUsers = data.Teams.filter((tem) => tem.team_company_id === local.Users.company_id);
                 }
                 setTeam(filteredUsers);
@@ -431,7 +431,7 @@ const Users = () => {
                         <CTableHeaderCell className="text-center" style={mystyle}>User Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Email</CTableHeaderCell>
                         {
-                            local.Users.role === "1" ? (
+                            local.Users.role === 1 ? (
                                 <CTableHeaderCell className="text-center" style={mystyle}>Role</CTableHeaderCell>
                             ) : null
                         }
@@ -448,7 +448,7 @@ const Users = () => {
                             <CTableHeaderCell className="text-center" style={mystyle2}>{user.name}</CTableHeaderCell>
                             <CTableHeaderCell className="text-center" style={mystyle2}>{user.email}</CTableHeaderCell>
                             {
-                                local.Users.role === "1" ? (
+                                local.Users.role === 1 ? (
                                     <CTableHeaderCell className="text-center" style={mystyle2}>{user.role}</CTableHeaderCell>
                                 ) : null
                             }
@@ -473,7 +473,7 @@ const Users = () => {
                 <CTableBody>
 
                     {/* Modal for Add User */}
-                    <Modal title="Add a User" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} maskClosable={false}>
+                    <Modal title="Add a User" open={isModalOpen} okButtonProps={{ style: { background: 'blue' } }} onOk={handleOk} onCancel={handleCancel} maskClosable={false}>
 
                         <br></br>
 
@@ -538,7 +538,7 @@ const Users = () => {
                     </Modal>
 
                     {/* Modal for Update User */}
-                    <Modal title="Update a User" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} maskClosable={false}>
+                    <Modal title="Update a User" open={isModalOpen3} onOk={handleOk3} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel3} maskClosable={false}>
 
                         <br></br>
 
@@ -587,7 +587,7 @@ const Users = () => {
                     </Modal>
 
                     {/* Modal for Deletion Confirmation */}
-                    <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
+                    <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel2} style={modalStyle}>
                     </Modal>
 
                     {/* Alert for Add User Success*/}

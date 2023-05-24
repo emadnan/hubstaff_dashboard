@@ -213,7 +213,7 @@ function AllFSF() {
                 <CTableBody>
 
                     {/* Modal for View FSF Report */}
-                    <Modal title="" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle}>
+                    <Modal title="" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} okButtonProps={{ style: { background: 'blue' } }} style={modalStyle}>
 
                         {fsfbyid.map((fsf) => {
                             return (
@@ -245,7 +245,7 @@ function AllFSF() {
                     </Modal>
 
                     {/* Modal for Deletion Confirmation */}
-                    <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
+                    <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel2} style={modalStyle}>
                     </Modal>
 
                 </CTableBody>

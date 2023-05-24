@@ -327,10 +327,10 @@ const Team = () => {
     fetch("http://10.3.3.80/api/get_teams")
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === "1") {
+        if (local.Users.role === 1) {
           filteredUsers = data.Teams;
         }
-        else if (local.Users.role === "3") {
+        else if (local.Users.role === 3) {
           filteredUsers = data.Teams.filter((tem) => tem.team_company_id === local.Users.company_id);
         }
         setTeams(filteredUsers);
@@ -497,7 +497,7 @@ const Team = () => {
         <CTableBody>
 
           {/* Modal for Add Team */}
-          <Modal title="Add a Team" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} style={modalStyle} maskClosable={false}>
+          <Modal title="Add a Team" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} okButtonProps={{ style: { background: 'blue' } }} style={modalStyle} maskClosable={false}>
 
             <br></br>
 
@@ -526,7 +526,7 @@ const Team = () => {
           </Modal>
 
           {/* Modal for Update Team */}
-          <Modal title="Update a Team" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} style={modalStyle} maskClosable={false}>
+          <Modal title="Update a Team" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} okButtonProps={{ style: { background: 'blue' } }} style={modalStyle} maskClosable={false}>
             <br></br>
             {
               byteam.map((tem) => (
@@ -560,7 +560,7 @@ const Team = () => {
           </Modal>
 
           {/* Modal for Assign Users to Team */}
-          <Modal title="Assign Users" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4}>
+          <Modal title="Assign Users" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4} okButtonProps={{ style: { background: 'blue' } }}>
 
             <br></br>
             <div className='row'>
@@ -604,7 +604,7 @@ const Team = () => {
           </Modal>
 
           {/* Modal for Deletion Confirmation */}
-          <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
+          <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} okButtonProps={{ style: { background: 'blue' } }} style={modalStyle}>
           </Modal>
 
           {/* Alert for Add Team Success*/}

@@ -426,13 +426,13 @@ const Projects = () => {
     fetch("http://10.3.3.80/api/getproject")
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === "1") {
+        if (local.Users.role === 1) {
           filteredUsers = data.projects;
         }
-        else if (local.Users.role === "3") {
+        else if (local.Users.role === 3) {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
         }
-        else if (local.Users.role === "5") {
+        else if (local.Users.role === 5) {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
         }
         setProjects(filteredUsers);
@@ -466,13 +466,13 @@ const Projects = () => {
     fetch("http://10.3.3.80/api/getcompany")
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === "1") {
+        if (local.Users.role === 1) {
           filteredUsers = data.companies;
         }
-        else if (local.Users.role === "3") {
+        else if (local.Users.role === 3) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
         }
-        else if (local.Users.role === "5") {
+        else if (local.Users.role === 5) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
         }
         setCompanies(filteredUsers);
@@ -484,13 +484,13 @@ const Projects = () => {
     fetch("http://10.3.3.80/api/get_users")
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === "1") {
+        if (local.Users.role === 1) {
           filteredUsers = data.Users;
         }
-        else if (local.Users.role === "3") {
+        else if (local.Users.role === 3) {
           filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id);
         }
-        else if (local.Users.role === "5") {
+        else if (local.Users.role === 5) {
           filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id);
         }
         setUsers(filteredUsers.slice(1));
@@ -502,10 +502,10 @@ const Projects = () => {
     fetch("http://10.3.3.80/api/getdepartment")
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === "1") {
+        if (local.Users.role === 1) {
           filteredUsers = data.Departments;
         }
-        else if (local.Users.role === "3") {
+        else if (local.Users.role === 3) {
           filteredUsers = data.Departments.filter((user) => user.company_id === local.Users.company_id);
         }
         setDepartment(filteredUsers);
@@ -676,7 +676,7 @@ const Projects = () => {
 
           {/* Get API Projects */}
           {
-            local.Users.role === "1" || local.Users.role === "3" ?
+            local.Users.role === 1 || local.Users.role === 3 ?
               projects.map((project, index) => {
                 const startDate = moment(project.start_date).format('DD-MM-YYYY');
                 const deadline = moment(project.dead_line).format('DD-MM-YYYY');
@@ -722,7 +722,7 @@ const Projects = () => {
         <CTableBody>
 
           {/* Modal for Add Projects */}
-          <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} maskClosable={false}>
+          <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel} maskClosable={false}>
 
             <br></br>
 
@@ -799,7 +799,7 @@ const Projects = () => {
           </Modal>
 
           {/* Modal for Update Projects */}
-          <Modal title="Update a Project" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3} maskClosable={false}>
+          <Modal title="Update a Project" open={isModalOpen3} onOk={handleOk3} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel3} maskClosable={false}>
 
             <br></br>
 
@@ -880,11 +880,11 @@ const Projects = () => {
           </Modal>
 
           {/* Modal for Deletion Confirmation */}
-          <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
+          <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel2} style={modalStyle}>
           </Modal>
 
           {/* Modal for View Details */}
-          <Modal title="" open={isModalOpen5} onOk={handleOk5} onCancel={handleCancel5} style={modalStyle}>
+          <Modal title="" open={isModalOpen5} onOk={handleOk5} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel5} style={modalStyle}>
 
             {byproject.map((proj) => {
               const start = moment(proj.start_date).format('DD-MM-YYYY');
@@ -911,7 +911,7 @@ const Projects = () => {
           </Modal>
 
           {/* Modal for Streams */}
-          <Modal title="" open={isModalOpen6} onOk={handleOk6} onCancel={handleCancel6}>
+          <Modal title="" open={isModalOpen6} onOk={handleOk6} onCancel={handleCancel6} okButtonProps={{ style: { background: 'blue' } }}>
 
             <h3 style={headStyle2}>Streams</h3>
 
@@ -956,7 +956,7 @@ const Projects = () => {
           </Modal>
 
           {/* Modal for Assign User */}
-          <Modal title="Assign Users" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4}>
+          <Modal title="Assign Users" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4} okButtonProps={{ style: { background: 'blue' } }}>
 
             <br></br>
             <div className='row'>

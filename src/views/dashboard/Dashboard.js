@@ -92,13 +92,13 @@ const Dashboard = () => {
     fetch("http://10.3.3.80/api/getcompany")
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === "1") {
+        if (local.Users.role === 1) {
           filteredUsers = data.companies;
         }
-        else if (local.Users.role === "3") {
+        else if (local.Users.role === 3) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
         }
-        else if (local.Users.role === "5") {
+        else if (local.Users.role === 5) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
         }
         setUsers(filteredUsers);
@@ -110,10 +110,10 @@ const Dashboard = () => {
     fetch("http://10.3.3.80/api/getproject")
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === "1") {
+        if (local.Users.role === 1) {
           filteredUsers = data.projects;
         }
-        else if (local.Users.role === "3") {
+        else if (local.Users.role === 3) {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
         }
         setProjects(filteredUsers);
@@ -126,10 +126,10 @@ const Dashboard = () => {
     fetch("http://10.3.3.80/api/getdepartment")
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === "1") {
+        if (local.Users.role === 1) {
           filteredUsers = data.Departments;
         }
-        else if (local.Users.role === "3") {
+        else if (local.Users.role === 3) {
           filteredUsers = data.Departments.filter((user) => user.company_id === local.Users.company_id);
         }
         setDepartments(filteredUsers);
@@ -141,13 +141,13 @@ const Dashboard = () => {
     fetch("http://10.3.3.80/api/get_assign_projects")
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === "1") {
+        if (local.Users.role === 1) {
           filteredUsers = data.Project_Assigns;
         }
-        else if (local.Users.role === "3") {
+        else if (local.Users.role === 3) {
           filteredUsers = data.Project_Assigns.filter((user) => user.company_id === local.Users.company_id);
         }
-        else if (local.Users.role === "5") {
+        else if (local.Users.role === 5) {
           filteredUsers = data.Project_Assigns.filter((user) => user.assign_projects_user_id === local.Users.user_id);
         }
         setAssigned(filteredUsers);
@@ -193,9 +193,9 @@ const Dashboard = () => {
     fetch("http://10.3.3.80/api/get_Project_Screenshots")
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === "1") {
+        if (local.Users.role === 1) {
           screenfilter = data.projectscreenshot;
-        } else if (local.Users.role === "3") {
+        } else if (local.Users.role === 3) {
           screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.company_id === local.Users.company_id);
         } else {
           screenfilter = data.projectscreenshot.filter((screenshot) => screenshot.user_id === local.Users.user_id);
@@ -210,9 +210,9 @@ const Dashboard = () => {
       <div className='row'>
         <div className='col-md-4'>
           {
-            local.Users.role === "3"
+            local.Users.role === 3
               ? <h4 style={userStyle}>Dashboard</h4>
-              : local.Users.role === "5"
+              : local.Users.role === 5
                 ? <h4 style={userStyle}>{local.Users.name}</h4>
                 : null
           }
@@ -225,7 +225,7 @@ const Dashboard = () => {
           <div className='col-md-2'>
             <h6 style={head}>TOTAL PROJECTS</h6>
             <h3 style={subhead}>
-              {local.Users.role === "3" ? totalProjects : local.Users.role === "5" ? totalUserProjects : null}
+              {local.Users.role === 3 ? totalProjects : local.Users.role === 5 ? totalUserProjects : null}
             </h3>
           </div>
           <div className='col-md-2'>
@@ -329,7 +329,7 @@ const Dashboard = () => {
 
           {/* Card for Departments Modal Starts  */}
           {
-            local.Users.role === "1" || local.Users.role === "3" ? (
+            local.Users.role === 1 || local.Users.role === 3 ? (
               <Card style={cardStyle2}>
                 <h5 style={head}>DEPARTMENTS</h5>
                 <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
@@ -370,7 +370,7 @@ const Dashboard = () => {
 
           {/* Card for Projects Modal Starts */}
           {
-            local.Users.role === "1" || local.Users.role === "3" &&
+            local.Users.role === 1 || local.Users.role === 3 &&
             <Card style={cardStyle2}>
               <h5 style={head}>PROJECTS</h5>
               <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>

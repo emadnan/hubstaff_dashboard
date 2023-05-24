@@ -25,11 +25,11 @@ const AppSidebar = () => {
     const userRole = JSON.parse(localStorage.getItem('user-info'))?.Users?.role
 
     let navConfig
-    if (userRole === '1') {
+    if (userRole === 1) {
       navConfig = _navAdmin
-    } else if (userRole === '3') {
+    } else if (userRole === 3) {
       navConfig = _navCompanyAdmin
-    } else if (userRole === '5') {
+    } else if (userRole === 5) {
       navConfig = _navEmployee
     } else {
       return
