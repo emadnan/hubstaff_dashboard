@@ -71,6 +71,8 @@ const Dashboard = () => {
   const [totalhours, setTotalHours] = useState("");
   const [totalminutes, setTotalMinutes] = useState("");
   const [totalseconds, setTotalSeconds] = useState("");
+  const [totalUserProjects, setTotalUserProjects] = useState("");
+  const [totalProjects, setTotalProjects] = useState("");
   var screenfilter = [];
   var filteredUsers = [];
 
@@ -115,6 +117,7 @@ const Dashboard = () => {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
         }
         setProjects(filteredUsers);
+        setTotalProjects(filteredUsers.length);
       })
       .catch((error) => console.log(error));
   };
@@ -148,6 +151,7 @@ const Dashboard = () => {
           filteredUsers = data.Project_Assigns.filter((user) => user.assign_projects_user_id === local.Users.user_id);
         }
         setAssigned(filteredUsers);
+        setTotalUserProjects(filteredUsers.length);
       })
       .catch((error) => console.log(error));
   };
@@ -220,7 +224,9 @@ const Dashboard = () => {
         <div className='row'>
           <div className='col-md-2'>
             <h6 style={head}>TOTAL PROJECTS</h6>
-            <h3 style={subhead}>0</h3>
+            <h3 style={subhead}>
+              {local.Users.role === "3" ? totalProjects : local.Users.role === "5" ? totalUserProjects : null}
+            </h3>
           </div>
           <div className='col-md-2'>
             <h6 style={head}>TODAY ACTIVITY</h6>
@@ -262,7 +268,7 @@ const Dashboard = () => {
           {/* <Card style={cardStyle2}>
             <h5 style={head}>RECENT ACTIVITY</h5>
             <Divider /> */}
-            {/* {screenshot.map((image) => {
+          {/* {screenshot.map((image) => {
               return (
                 <div key={image.id} style={{ display: 'flex', justifyContent: 'center' }}>
                   {image.get_timings.map((timing) => (
@@ -279,8 +285,8 @@ const Dashboard = () => {
                 </div>
               );
             })} */}
-            {/* <Divider /> */}
-            {/* <div className='text-center'>
+          {/* <Divider /> */}
+          {/* <div className='text-center'>
               <Button type="link" href="/activity/screenshots">View recent activity &gt;</Button>
             </div>
           </Card> */}
@@ -364,41 +370,41 @@ const Dashboard = () => {
 
           {/* Card for Projects Modal Starts */}
           {
-            local.Users.role === "1" || local.Users.role === "3" && 
+            local.Users.role === "1" || local.Users.role === "3" &&
             <Card style={cardStyle2}>
-            <h5 style={head}>PROJECTS</h5>
-            <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-              <CTableHead color="light" >
+              <h5 style={head}>PROJECTS</h5>
+              <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
+                <CTableHead color="light" >
 
 
-                <CTableRow>
-                  <CTableHeaderCell className="text-center" style={mystyle}>Project</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>Start Date</CTableHeaderCell>
-                </CTableRow>
+                  <CTableRow>
+                    <CTableHeaderCell className="text-center" style={mystyle}>Project</CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>Start Date</CTableHeaderCell>
+                  </CTableRow>
 
-                {projects.slice(0, 4).map((proj) => {
-                  const start = moment(proj.start_date).format('DD-MM-YYYY');
+                  {projects.slice(0, 4).map((proj) => {
+                    const start = moment(proj.start_date).format('DD-MM-YYYY');
 
-                  return (
-                    <CTableRow key={proj.id}>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>{proj.project_name}</CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>{start}</CTableHeaderCell>
-                    </CTableRow>
-                  )
-                })}
+                    return (
+                      <CTableRow key={proj.id}>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>{proj.project_name}</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>{start}</CTableHeaderCell>
+                      </CTableRow>
+                    )
+                  })}
 
-              </CTableHead>
+                </CTableHead>
 
-              <CTableBody>
-              </CTableBody>
-            </CTable>
+                <CTableBody>
+                </CTableBody>
+              </CTable>
 
-            <Divider></Divider>
-            <div className='text-center'>
-              <Button type="link" href="/projectmanagement/projects">View projects &gt;</Button>
-            </div>
+              <Divider></Divider>
+              <div className='text-center'>
+                <Button type="link" href="/projectmanagement/projects">View projects &gt;</Button>
+              </div>
 
-          </Card>
+            </Card>
           }
           {/* Card for Projects Modal Ends */}
 
