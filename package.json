@@ -36,6 +36,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@mui/icons-material": "^5.11.16",
+    "@mui/joy": "^5.0.0-alpha.81",
     "@mui/material": "^5.11.11",
     "@mui/x-date-pickers": "^6.1.0",
     "antd": "^5.2.2",
@@ -48,9 +49,10 @@
     "react-app-polyfill": "^3.0.0",
     "react-dom": "^18.2.0",
     "react-geocode": "^0.2.3",
-    "react-redux": "^8.0.2",
+    "react-redux": "^8.0.5",
     "react-router-dom": "^6.8.2",
-    "redux": "4.2.0",
+    "react-simple-image-viewer": "^1.2.2",
+    "redux": "^4.2.0",
     "simplebar-react": "^2.4.1"
   },
   "devDependencies": {
