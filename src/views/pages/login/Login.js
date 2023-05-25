@@ -87,7 +87,8 @@ const Login = () => {
     // Update the form errors
     setFormErrors(errors)
 
-    let result = await fetch('http://10.3.3.80/api/login', {
+    try {
+      let result = await fetch('http://10.3.3.80/api/login', {
       method: 'POST',
       body: JSON.stringify(item),
       headers: {
@@ -108,6 +109,12 @@ const Login = () => {
         await navigate('/Dashboard')
       }, 2000)
     }
+    } catch (error) {
+      if (Object.keys(errors).length === 0) {
+        handleButtonClick5()
+      }
+    }
+    
   }
 
   //Functions for Login Failed
@@ -189,6 +196,26 @@ const Login = () => {
       return () => clearTimeout(timer)
     }
   }, [showAlert4])
+
+  //Functions for Failed password or login
+  const [showAlert5, setShowAlert5] = useState(false)
+  function handleButtonClick5() {
+    setShowAlert5(true)
+  }
+
+  function handleCloseAlert5() {
+    setShowAlert5(false)
+  }
+
+  useEffect(() => {
+    if (showAlert5) {
+      const timer = setTimeout(() => {
+        setShowAlert5(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert5])
 
   return (
     <ThemeProvider theme={theme}>
@@ -317,6 +344,13 @@ const Login = () => {
       {showAlert4 && (
         <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
           Invalid email or password
+        </Alert>
+      )}
+
+      {/* Alert for Invalid Login*/}
+      {showAlert5 && (
+        <Alert onClose={handleCloseAlert5} severity="error" style={modalStyle2}>
+          Invalid Login attempt
         </Alert>
       )}
     </ThemeProvider>

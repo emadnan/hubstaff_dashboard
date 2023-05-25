@@ -803,12 +803,13 @@ const Projects = () => {
 
             <br></br>
 
-            {byproject2.map((pro) => (
-              <div key={pro.id}>
+            {byproject2.map((proj) => (
+              console.log(proj.project_name),
+              <div key={proj.id}>
                 <div className="form-outline mb-3">
                   <label>Company</label>
                   <Form.Item>
-                    <Select placeholder="Select Company" onChange={handleCompanyChange} defaultValue={pro.company_name}>
+                    <Select placeholder="Select Company" onChange={handleCompanyChange} defaultValue={proj.company_name}>
                       {company.map((count) => (
                         <Select.Option value={count.name} key={count.id}>
                           {count.company_name}
@@ -821,7 +822,7 @@ const Projects = () => {
                 <div className="form-outline mb-3">
                   <label>Department</label>
                   <Form.Item>
-                    <Select placeholder="Select Departments" onChange={handleDepartmentChange} defaultValue={pro.department_name}>
+                    <Select placeholder="Select Departments" onChange={handleDepartmentChange} defaultValue={proj.department_name}>
                       {department.map((count) => (
                         <Select.Option value={count.name} key={count.id}>
                           {count.department_name}
@@ -835,7 +836,7 @@ const Projects = () => {
                   <label>Project Name</label>
                   <input
                     type="text"
-                    defaultValue={pro.project_name}
+                    defaultValue={proj.project_name}
                     onChange={(e) => setProjectName(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Project Name"
@@ -846,7 +847,7 @@ const Projects = () => {
                   <label>Description</label>
                   <input
                     type="text"
-                    defaultValue={pro.project_description}
+                    defaultValue={proj.project_description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Description"
@@ -857,7 +858,7 @@ const Projects = () => {
                   <label>Start Date</label>
                   <input
                     type="date"
-                    defaultValue={pro.start_date}
+                    defaultValue={proj.start_date}
                     onChange={(e) => setStartDate(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Start Date"
@@ -868,7 +869,7 @@ const Projects = () => {
                   <label>End Date</label>
                   <input
                     type="date"
-                    defaultValue={pro.dead_line}
+                    defaultValue={proj.dead_line}
                     onChange={(e) => setDeadLine(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Dead Line"
