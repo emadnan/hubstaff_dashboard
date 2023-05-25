@@ -309,7 +309,7 @@ const Login = () => {
       {/* Alert for User not found*/}
       {showAlert3 && (
         <Alert onClose={handleCloseAlert3} severity="error" style={modalStyle2}>
-          User not found
+          User does not exists
         </Alert>
       )}
 

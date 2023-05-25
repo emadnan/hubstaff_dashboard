@@ -407,7 +407,7 @@ const Register = () => {
       {/* Alert for Add Project Failure*/}
       {showAlert4 && (
         <Alert onClose={handleCloseAlert4} severity="warning" style={modalStyle2}>
-          Company already exists
+          Invalid Email
         </Alert>
       )}
     </ThemeProvider>
