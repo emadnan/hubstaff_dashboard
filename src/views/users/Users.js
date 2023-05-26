@@ -5,6 +5,8 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const Users = () => {
 
@@ -14,6 +16,15 @@ const Users = () => {
     const [password, setPassword] = useState("");
     const [role, setRole] = useState("");
     const [team_id, setTeamId] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handlePasswordChange = (e) => {
+        setPassword(e.target.value);
+    };
+
+    const toggleShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
 
     //Local Storage data
     const local = JSON.parse(localStorage.getItem('user-info'));
@@ -501,13 +512,23 @@ const Users = () => {
 
                         <div className="form-outline mb-3">
                             <label>Password</label>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="form-control form-control-lg"
-                                placeholder="Enter Password"
-                            />
+                            <div className="position-relative">
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    value={password}
+                                    onChange={handlePasswordChange}
+                                    className="form-control form-control-lg"
+                                    placeholder="Enter Password"
+                                />
+                                <IconButton
+                                    onClick={toggleShowPassword}
+                                    edge="end"
+                                    className="visibility-icon"
+                                    style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)' }}
+                                >
+                                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                                </IconButton>
+                            </div>
                         </div>
 
                         <div className="form-outline mb-3">
