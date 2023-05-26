@@ -32,7 +32,14 @@ const Screenshots = () => {
   const userStyle = {
     color: 'black',
     fontSize: 18,
-  }
+  };
+
+  const userStyle2 = {
+    fontFamily: "Arial",
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#0070FF ",
+  };
 
   //Functions for Date handling
   function onRangeChange(dates, dateStrings) {
@@ -54,6 +61,10 @@ const Screenshots = () => {
   const [project_id, setProjectId] = useState('')
   const userdata = local.Users
   const [address, setAddress] = useState('')
+  const [todayWork, setTodayWork] = useState([])
+  const [totalhours, setTotalHours] = useState("");
+  const [totalminutes, setTotalMinutes] = useState("");
+  const [totalseconds, setTotalSeconds] = useState("");
   var filteredUsers = []
   var screenfilter = []
   var addressLocate = ''
@@ -82,16 +93,6 @@ const Screenshots = () => {
             (screenshot) => screenshot.user_id === local.Users.user_id,
           )
         }
-        // const screenShots = [];
-        // screenfilter.forEach(function (projectScreenshot) {
-        //     projectScreenshot.get_timings.forEach(function (getTiming) {
-        //         getTiming.getattechments.forEach(function (getAttechment) {
-        //         screenShots.push(getAttechment.path_url);
-        //         });
-        //     });
-        // });
-        // console.log("screenShots : ", screenShots)
-        // setImagesUrls(screenShots)
         setImages(screenfilter)
       })
       .catch((error) => console.log(error))
@@ -136,6 +137,24 @@ const Screenshots = () => {
       .catch((error) => console.log(error))
   }
 
+  function getTodayWorkedTime() {
+    setTotalHours('');
+    setTotalMinutes('');
+    setTotalSeconds('');
+    getTodayWorked(user_id);
+  }
+
+  function getTodayWorked(id) {
+    fetch(`http://10.3.3.80/api/getTotalWorkbyUserId/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setTotalHours(data.hours);
+        setTotalMinutes(data.minutes);
+        setTotalSeconds(data.seconds);
+      })
+      .catch((error) => console.log(error));
+  };
+
   //Functions for Selected image
   const [isViewerOpen, setIsViewerOpen] = useState(false)
 
@@ -154,7 +173,7 @@ const Screenshots = () => {
 
   const handleUserChange = (value) => {
     setUserId(value)
-    //get latitude N longitude FROM INMAGE VARIABLE and fiter by user id save in location variable
+    getTodayWorked(value)
     const locations = images.filter((locate) => {
       if (local.Users.role === 3) {
         return locate.user_id === value
@@ -162,30 +181,13 @@ const Screenshots = () => {
         return locate.user_id === value
       }
     })
-    // console.log(locations[0].longitude);
+    // getTodayWorkedTime();
     getAddresses(locations[0].latitude, locations[0].longitude)
-    console.log(value)
   }
 
   //Geolocation get using Google
 
   const getAddresses = async (lat, long) => {
-    // Geocode.setApiKey("AIzaSyBSBflGv5OULqd9TPMLKecXIig07YXKW2A");
-    // Geocode.setLanguage("en");
-    // Geocode.setRegion("pk");
-    // Geocode.setLocationType("ROOFTOP");
-    //     console.log(lat);
-    //     console.log(long);
-    //     const promises = Geocode.fromLatLng(lat,long).then(
-    //                 (response) => {
-    //                 //   const address = response.results[0].formatted_address;
-    //                 //   setAddresses(address);
-    //                   console.log(response.results[0].formatted_address);
-    //                 },
-    //                 (error) => {
-    //                   console.error(error);
-    //                 }
-    //             );
     const apiKey = 'AIzaSyBSBflGv5OULqd9TPMLKecXIig07YXKW2A' // Replace with your own API key
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${apiKey}`
 
@@ -198,7 +200,6 @@ const Screenshots = () => {
         const address = result ? result.formatted_address : data.results[0].formatted_address
         console.log(address)
         console.log(data)
-        // console.log(address);
         setAddresses(address)
       } else {
         console.error(data.status)
@@ -207,42 +208,20 @@ const Screenshots = () => {
       console.error(error)
     }
   }
-  // useEffect(() => {
-  //     const locations = images.filter((locate) => {
-  //         if (local.Users.role === "3") {
-  //             return locate.user_id === user_id;
-  //         } else if (local.Users.role === "5") {
-  //             return locate.user_id === local.Users.user_id;
-  //         }
-  //         return false;
-  //     });
-
-  //     // console.log(locations);
-
-  //     // const promises = locations.map((location) =>
-  //     //     Geocode.fromLatLng(location.latitude, location.longitude).then(
-  //     //         (response) => response.results[0].formatted_address
-  //     //     )
-  //     // );
-  //     const promises = locations.map((loc)=>Geocode.fromLatLng(loc.latitude, loc.longitude).then(
-  //         (response) => {
-  //           const address = response.results[0].formatted_address;
-  //           console.log(address);
-  //         },
-  //         (error) => {
-  //           console.error(error);
-  //         }
-  //     )
-  //       );
-
-  //     console.log(promises);
-
-  //     Promise.all(promises).then((results) => setAddresses(results));
-  // }, [images]);
 
   return (
     <>
-      {addresses.length > 0 && <p style={userStyle}>{addresses}</p>}
+      {
+        local.Users.role === 3 ? (
+          <div>
+            <h3>Location {addresses.length > 0 && <h3 style={userStyle}>{addresses}</h3>}</h3>
+            <br></br>
+            <h3>Today Worked {totalhours}:{totalminutes}:{totalseconds}</h3>
+          </div>
+        ) : local.Users.role === 5 ? (
+          <h3 style={userStyle2}>{local.Users.name}</h3>
+        ) : null
+      }
       <div className="row">
         <div className="col-md-4">
           <br></br>
@@ -279,102 +258,8 @@ const Screenshots = () => {
       <div style={imageContainer}>
         {user_id
           ? images
-              .filter((image) => image.user_id === user_id)
-              .map((image) => {
-                return (
-                  <>
-                    {image.get_timings.map((timing) => (
-                      <div key={timing.id} style={{ cursor: 'pointer' }}>
-                        <Card
-                          variant="outlined"
-                          sx={{ width: 240, my: 1, mx: 1 }}
-                          onClick={() => handleClick(timing.getattechments)}
-                        >
-                          <CardOverflow>
-                            <AspectRatio ratio="2">
-                              {timing.getattechments.map((attach) => (
-                                <div key={attach.id} style={{ position: 'relative' }}>
-                                  <img src={attach.path_url} alt={attach.path_url} />
-                                  <div
-                                    style={{
-                                      position: 'absolute',
-                                      top: '50%',
-                                      left: '50%',
-                                      transform: 'translate(-50%, -50%)',
-                                      backdropFilter: 'blur(10px)',
-                                      padding: '8px',
-                                      borderRadius: '4px',
-                                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                                    }}
-                                  >
-                                    {/* Replace the count with your desired value */}
-                                    <span style={{ fontSize: '18px', fontWeight: 'bold' }}>
-                                      {timing.getattechments.length}
-                                    </span>
-                                  </div>
-                                </div>
-                              ))}
-                            </AspectRatio>
-                          </CardOverflow>
-                          <Typography level="h2" sx={{ fontSize: 'md', mt: 1 }}>
-                            {image.project_name}
-                          </Typography>
-                          <Typography level="body2" sx={{ mt: 0.5, mb: 1 }}>
-                            {image.stream_name}
-                          </Typography>
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 0.5,
-                              mx: 'auto',
-                              my: 0.5,
-                            }}
-                          >
-                            {timing.getattechments.map((_, index) => (
-                              <Box
-                                key={index}
-                                sx={{
-                                  borderRadius: '50%',
-                                  width: `max(${6 - index}px, 3px)`,
-                                  height: `max(${6 - index}px, 3px)`,
-                                  bgcolor: index === 0 ? 'primary.solidBg' : 'background.level3',
-                                }}
-                              />
-                            ))}
-                          </Box>
-                          <Divider />
-                          <CardOverflow
-                            variant="soft"
-                            sx={{
-                              display: 'flex',
-                              flexDirection: 'row',
-                              gap: 1,
-                              py: 1,
-                              px: 'var(--Card-padding)',
-                              bgcolor: 'background.level1',
-                            }}
-                          >
-                            <Typography
-                              level="body3"
-                              sx={{ fontWeight: 'md', color: 'text.secondary' }}
-                            >
-                              {new Date(timing.start_time)
-                                .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                                .substring(0, 11)}{' '}
-                              -
-                              {new Date(timing.end_time)
-                                .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                                .substring(0, 11)}
-                            </Typography>
-                          </CardOverflow>
-                        </Card>
-                      </div>
-                    ))}
-                  </>
-                )
-              })
-          : images.map((image) => {
+            .filter((image) => image.user_id === user_id)
+            .map((image) => {
               return (
                 <>
                   {image.get_timings.map((timing) => (
@@ -461,23 +346,117 @@ const Screenshots = () => {
                               .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                               .substring(0, 11)}
                           </Typography>
-                          <Typography
-                            level="body3"
-                            sx={{ fontWeight: 'md', color: 'text.secondary' }}
-                          >
-                            {new Intl.DateTimeFormat('en-GB', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: '2-digit',
-                            }).format(new Date(timing.created_at))}
-                          </Typography>
                         </CardOverflow>
                       </Card>
                     </div>
                   ))}
                 </>
               )
-            })}
+            })
+          : images.map((image) => {
+            return (
+              <>
+                {image.get_timings.map((timing) => (
+                  <div key={timing.id} style={{ cursor: 'pointer' }}>
+                    <Card
+                      variant="outlined"
+                      sx={{ width: 240, my: 1, mx: 1 }}
+                      onClick={() => handleClick(timing.getattechments)}
+                    >
+                      <CardOverflow>
+                        <AspectRatio ratio="2">
+                          {timing.getattechments.map((attach) => (
+                            <div key={attach.id} style={{ position: 'relative' }}>
+                              <img src={attach.path_url} alt={attach.path_url} />
+                              <div
+                                style={{
+                                  position: 'absolute',
+                                  top: '50%',
+                                  left: '50%',
+                                  transform: 'translate(-50%, -50%)',
+                                  backdropFilter: 'blur(10px)',
+                                  padding: '8px',
+                                  borderRadius: '4px',
+                                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                }}
+                              >
+                                {/* Replace the count with your desired value */}
+                                <span style={{ fontSize: '18px', fontWeight: 'bold' }}>
+                                  {timing.getattechments.length}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </AspectRatio>
+                      </CardOverflow>
+                      <Typography level="h2" sx={{ fontSize: 'md', mt: 1 }}>
+                        {image.project_name}
+                      </Typography>
+                      <Typography level="body2" sx={{ mt: 0.5, mb: 1 }}>
+                        {image.stream_name}
+                      </Typography>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.5,
+                          mx: 'auto',
+                          my: 0.5,
+                        }}
+                      >
+                        {timing.getattechments.map((_, index) => (
+                          <Box
+                            key={index}
+                            sx={{
+                              borderRadius: '50%',
+                              width: `max(${6 - index}px, 3px)`,
+                              height: `max(${6 - index}px, 3px)`,
+                              bgcolor: index === 0 ? 'primary.solidBg' : 'background.level3',
+                            }}
+                          />
+                        ))}
+                      </Box>
+                      <Divider />
+                      <CardOverflow
+                        variant="soft"
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          gap: 1,
+                          py: 1,
+                          px: 'var(--Card-padding)',
+                          bgcolor: 'background.level1',
+                        }}
+                      >
+                        <Typography
+                          level="body3"
+                          sx={{ fontWeight: 'md', color: 'text.secondary' }}
+                        >
+                          {new Date(timing.start_time)
+                            .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                            .substring(0, 11)}{' '}
+                          -
+                          {new Date(timing.end_time)
+                            .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                            .substring(0, 11)}
+                        </Typography>
+                        <Typography
+                          level="body3"
+                          sx={{ fontWeight: 'md', color: 'text.secondary' }}
+                        >
+                          {new Intl.DateTimeFormat('en-GB', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: '2-digit',
+                          }).format(new Date(timing.created_at))}
+                        </Typography>
+                      </CardOverflow>
+                    </Card>
+                  </div>
+                ))}
+              </>
+            )
+          })}
         <div style={imageViewerStyle}>
           {isViewerOpen && imagesUrls && (
             <ImageViewer
