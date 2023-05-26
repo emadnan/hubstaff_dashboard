@@ -1,403 +1,402 @@
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
-import { React, useState, useEffect } from 'react';
-import { Modal, Button, Select, Form, Divider, Checkbox } from 'antd';
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import Alert from '@mui/material/Alert';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
-import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
-import moment from 'moment';
+import { React, useState, useEffect } from 'react'
+import { Modal, Button, Select, Form, Divider, Checkbox } from 'antd'
+import IconButton from '@mui/material/IconButton'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+import Alert from '@mui/material/Alert'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd'
+import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar'
+import moment from 'moment'
 
 const Projects = () => {
-
   // Variable declarations
-  const [department_id, setDepartmentId] = useState("");
-  const [company_id, setCompanyId] = useState("");
-  const [project_name, setProjectName] = useState("");
-  const [description, setDescription] = useState("");
-  const [start_date, setStartDate] = useState("");
-  const [dead_line, setDeadLine] = useState("");
-  const [stream_id, setStreamId] = useState("");
-  const [project_id, setProjectId] = useState("");
-  const [proj_id, setProjId] = useState("");
+  const [department_id, setDepartmentId] = useState('')
+  const [company_id, setCompanyId] = useState('')
+  const [project_name, setProjectName] = useState('')
+  const [description, setDescription] = useState('')
+  const [start_date, setStartDate] = useState('')
+  const [dead_line, setDeadLine] = useState('')
+  const [stream_id, setStreamId] = useState('')
+  const [project_id, setProjectId] = useState('')
+  const [proj_id, setProjId] = useState('')
 
   //Local Storage data
-  const local = JSON.parse(localStorage.getItem('user-info'));
-  const permissions = local.permissions;
-  const perm = permissions.map(permission => ({
+  const local = JSON.parse(localStorage.getItem('user-info'))
+  const permissions = local.permissions
+  const perm = permissions.map((permission) => ({
     name: permission.name,
-  }));
+  }))
 
   //Role & Permissions check
-  const isCreateButtonEnabled = perm.some(item => item.name === 'Create_Project');
-  const isEditButtonEnabled = perm.some(item => item.name === 'Update_Project');
-  const isViewButtonEnabled = perm.some(item => item.name === 'View_Project');
-  const isDeleteButtonEnabled = perm.some(item => item.name === 'Delete_Project');
-  const isAssignProjectEnabled = perm.some(item => item.name === 'Assign_Project');
+  const isCreateButtonEnabled = perm.some((item) => item.name === 'Create_Project')
+  const isEditButtonEnabled = perm.some((item) => item.name === 'Update_Project')
+  const isViewButtonEnabled = perm.some((item) => item.name === 'View_Project')
+  const isDeleteButtonEnabled = perm.some((item) => item.name === 'Delete_Project')
+  const isAssignProjectEnabled = perm.some((item) => item.name === 'Assign_Project')
 
   // CSS Styling
   const modalStyle = {
-    position: "fixed",
-    top: "15%",
-    left: "40%",
-  };
+    position: 'fixed',
+    top: '15%',
+    left: '40%',
+  }
 
   const perStyle = {
     fontSize: 14,
-  };
+  }
 
   const headStyle = {
-    color: "#0070ff",
-    fontWeight: "bold",
-  };
+    color: '#0070ff',
+    fontWeight: 'bold',
+  }
 
   const headStyle2 = {
-    color: "#black",
-    fontWeight: "bold",
-  };
+    color: '#black',
+    fontWeight: 'bold',
+  }
 
   const heading = {
     display: 'flex',
     justifyContent: 'flex-end',
     float: 'right',
-  };
+  }
 
   const modalStyle2 = {
-    position: "fixed",
-    top: "10%",
-    left: "55%",
-    transform: "translateX(-50%)",
-  };
+    position: 'fixed',
+    top: '10%',
+    left: '55%',
+    transform: 'translateX(-50%)',
+  }
 
   const mystyle = {
-    color: "white",
-    backgroundColor: "#0070FF ",
-    padding: "15px",
-    fontFamily: "Arial",
+    color: 'white',
+    backgroundColor: '#0070FF ',
+    padding: '15px',
+    fontFamily: 'Arial',
     textAlign: 'center',
     alignSelf: 'flex-end',
-  };
+  }
 
   const mystyle2 = {
-    backgroundColor: "white ",
-  };
+    backgroundColor: 'white ',
+  }
 
   const buttonStyle = {
-    float: "right",
-    padding: "2px",
-    width: "120px",
-    backgroundColor: "white",
-    fontWeight: "bold",
-    color: "#0070ff",
-  };
+    float: 'right',
+    padding: '2px',
+    width: '120px',
+    backgroundColor: 'white',
+    fontWeight: 'bold',
+    color: '#0070ff',
+  }
 
   // Functions for Add Project Modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const showModal = () => {
-    setIsModalOpen(true);
-  };
+    setIsModalOpen(true)
+  }
   const handleOk = () => {
-    addProject();
-    setIsModalOpen(false);
-    setDepartmentId('');
-    setCompanyId('');
-    setProjectName('');
-    setDescription('');
-    setStartDate('');
-    setDeadLine('');
-  };
+    addProject()
+    setIsModalOpen(false)
+    setDepartmentId('')
+    setCompanyId('')
+    setProjectName('')
+    setDescription('')
+    setStartDate('')
+    setDeadLine('')
+  }
   const handleCancel = () => {
-    setIsModalOpen(false);
-    setDepartmentId('');
-    setCompanyId('');
-    setProjectName('');
-    setDescription('');
-    setStartDate('');
-    setDeadLine('');
-  };
+    setIsModalOpen(false)
+    setDepartmentId('')
+    setCompanyId('')
+    setProjectName('')
+    setDescription('')
+    setStartDate('')
+    setDeadLine('')
+  }
 
   // Functions for Delete Project Modal
-  const [isModalOpen2, setIsModalOpen2] = useState(false);
+  const [isModalOpen2, setIsModalOpen2] = useState(false)
   const showModal2 = (id) => {
-    setIsModalOpen2(id);
-  };
+    setIsModalOpen2(id)
+  }
 
   const handleOk2 = () => {
-    deleteProject(isModalOpen2);
-    setIsModalOpen2(false);
-  };
+    deleteProject(isModalOpen2)
+    setIsModalOpen2(false)
+  }
 
   const handleCancel2 = () => {
-    setIsModalOpen2(false);
-  };
+    setIsModalOpen2(false)
+  }
 
   // Functions for Update Project Modal
-  const [isModalOpen3, setIsModalOpen3] = useState(false);
+  const [isModalOpen3, setIsModalOpen3] = useState(false)
   const showModal3 = (id) => {
     getProjectById2(id)
-    setIsModalOpen3(id);
-  };
+    setIsModalOpen3(id)
+  }
 
   const handleOk3 = () => {
-    updateProject(isModalOpen3);
-    setIsModalOpen3(false);
-    setDepartmentId('');
-    setCompanyId('');
-    setProjectName('');
-    setDescription('');
-    setStartDate('');
-    setDeadLine('');
-  };
+    updateProject(isModalOpen3)
+    setIsModalOpen3(false)
+    setDepartmentId('')
+    setCompanyId('')
+    setProjectName('')
+    setDescription('')
+    setStartDate('')
+    setDeadLine('')
+  }
 
   const handleCancel3 = () => {
-    setIsModalOpen3(false);
-    setDepartmentId('');
-    setCompanyId('');
-    setProjectName('');
-    setDescription('');
-    setStartDate('');
-    setDeadLine('');
-  };
+    setIsModalOpen3(false)
+    setDepartmentId('')
+    setCompanyId('')
+    setProjectName('')
+    setDescription('')
+    setStartDate('')
+    setDeadLine('')
+  }
 
   // Functions for Assign Users Modal
-  const [isModalOpen4, setIsModalOpen4] = useState(false);
+  const [isModalOpen4, setIsModalOpen4] = useState(false)
   const showModal4 = (id) => {
-    setStreamId(id);
-    getHasRole(proj_id, id);
-    setIsModalOpen4(id);
-  };
+    setStreamId(id)
+    getHasRole(proj_id, id)
+    setIsModalOpen4(id)
+  }
 
   const handleOk4 = () => {
     addAssignProject(isModalOpen4)
-    setIsModalOpen4(false);
-  };
+    setIsModalOpen4(false)
+  }
 
   const handleCancel4 = () => {
-    setIsModalOpen4(false);
-  };
+    setIsModalOpen4(false)
+  }
 
   // Functions for Show Description Modal
-  const [isModalOpen5, setIsModalOpen5] = useState(false);
+  const [isModalOpen5, setIsModalOpen5] = useState(false)
   const showModal5 = (id) => {
     getProjectById(id)
     setIsModalOpen5(id)
-  };
+  }
 
   const handleOk5 = () => {
-    setIsModalOpen5(false);
-  };
+    setIsModalOpen5(false)
+  }
 
   const handleCancel5 = () => {
-    setIsModalOpen5(false);
-  };
+    setIsModalOpen5(false)
+  }
 
   // Functions for Streams Modal
-  const [isModalOpen6, setIsModalOpen6] = useState(false);
+  const [isModalOpen6, setIsModalOpen6] = useState(false)
   const showModal6 = (id) => {
     setProjectId(id)
     getProjectById(id)
     setIsModalOpen6(true)
     setProjId(id)
-  };
+  }
 
   const handleOk6 = () => {
-    setIsModalOpen6(false);
-  };
+    setIsModalOpen6(false)
+  }
 
   const handleCancel6 = () => {
-    setIsModalOpen6(false);
-  };
+    setIsModalOpen6(false)
+  }
 
   // Functions for Add Project Success
-  const [showAlert1, setShowAlert1] = useState(false);
+  const [showAlert1, setShowAlert1] = useState(false)
 
   function handleButtonClick1() {
-    setShowAlert1(true);
+    setShowAlert1(true)
   }
 
   function handleCloseAlert1() {
-    setShowAlert1(false);
+    setShowAlert1(false)
   }
 
   useEffect(() => {
     if (showAlert1) {
       const timer = setTimeout(() => {
-        setShowAlert1(false);
-      }, 3000);
+        setShowAlert1(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert1]);
+  }, [showAlert1])
 
   // Functions for Add Project Failure
-  const [showAlert2, setShowAlert2] = useState(false);
+  const [showAlert2, setShowAlert2] = useState(false)
 
   function handleButtonClick2() {
-    setShowAlert2(true);
+    setShowAlert2(true)
   }
 
   function handleCloseAlert2() {
-    setShowAlert2(false);
+    setShowAlert2(false)
   }
 
   useEffect(() => {
     if (showAlert2) {
       const timer = setTimeout(() => {
-        setShowAlert2(false);
-      }, 3000);
+        setShowAlert2(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert2]);
+  }, [showAlert2])
 
   // Functions for Delete Project Success
-  const [showAlert3, setShowAlert3] = useState(false);
+  const [showAlert3, setShowAlert3] = useState(false)
 
   function handleButtonClick3() {
-    setShowAlert3(true);
+    setShowAlert3(true)
   }
 
   function handleCloseAlert3() {
-    setShowAlert3(false);
+    setShowAlert3(false)
   }
 
   useEffect(() => {
     if (showAlert3) {
       const timer = setTimeout(() => {
-        setShowAlert3(false);
-      }, 3000);
+        setShowAlert3(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert3]);
+  }, [showAlert3])
 
   // Functions for Delete Project Failure
-  const [showAlert4, setShowAlert4] = useState(false);
+  const [showAlert4, setShowAlert4] = useState(false)
 
   function handleButtonClick4() {
-    setShowAlert4(true);
+    setShowAlert4(true)
   }
 
   function handleCloseAlert4() {
-    setShowAlert4(false);
+    setShowAlert4(false)
   }
 
   useEffect(() => {
     if (showAlert4) {
       const timer = setTimeout(() => {
-        setShowAlert4(false);
-      }, 3000);
+        setShowAlert4(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert4]);
+  }, [showAlert4])
 
   // Functions for Update Project Success
-  const [showAlert5, setShowAlert5] = useState(false);
+  const [showAlert5, setShowAlert5] = useState(false)
 
   function handleButtonClick5() {
-    setShowAlert5(true);
+    setShowAlert5(true)
   }
 
   function handleCloseAlert5() {
-    setShowAlert5(false);
+    setShowAlert5(false)
   }
 
   useEffect(() => {
     if (showAlert5) {
       const timer = setTimeout(() => {
-        setShowAlert5(false);
-      }, 3000);
+        setShowAlert5(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert5]);
+  }, [showAlert5])
 
   // Functions for Update Project Failure
-  const [showAlert6, setShowAlert6] = useState(false);
+  const [showAlert6, setShowAlert6] = useState(false)
 
   function handleButtonClick6() {
-    setShowAlert6(true);
+    setShowAlert6(true)
   }
 
   function handleCloseAlert6() {
-    setShowAlert6(false);
+    setShowAlert6(false)
   }
 
   useEffect(() => {
     if (showAlert6) {
       const timer = setTimeout(() => {
-        setShowAlert6(false);
-      }, 3000);
+        setShowAlert6(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert6]);
+  }, [showAlert6])
 
   // Functions for Assign User Success
-  const [showAlert7, setShowAlert7] = useState(false);
+  const [showAlert7, setShowAlert7] = useState(false)
 
   function handleButtonClick7() {
-    setShowAlert7(true);
+    setShowAlert7(true)
   }
 
   function handleCloseAlert7() {
-    setShowAlert7(false);
+    setShowAlert7(false)
   }
 
   useEffect(() => {
     if (showAlert7) {
       const timer = setTimeout(() => {
-        setShowAlert7(false);
-      }, 3000);
+        setShowAlert7(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert7]);
+  }, [showAlert7])
 
   // Functions for Assign User Failure
-  const [showAlert8, setShowAlert8] = useState(false);
+  const [showAlert8, setShowAlert8] = useState(false)
 
   function handleButtonClick8() {
-    setShowAlert8(true);
+    setShowAlert8(true)
   }
 
   function handleCloseAlert8() {
-    setShowAlert8(false);
+    setShowAlert8(false)
   }
 
   useEffect(() => {
     if (showAlert8) {
       const timer = setTimeout(() => {
-        setShowAlert8(false);
-      }, 3000);
+        setShowAlert8(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert8]);
+  }, [showAlert8])
 
   //Get calls handling
   const handleCompanyChange = (value) => {
-    setCompanyId(value);
-  };
+    setCompanyId(value)
+  }
 
   const handleDepartmentChange = (value) => {
-    setDepartmentId(value);
-  };
+    setDepartmentId(value)
+  }
 
   // Array declaration for API calls
-  const [projects, setProjects] = useState([]);
-  const [company, setCompanies] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [department, setDepartment] = useState([]);
-  const [byproject, setByProject] = useState([]);
-  const [byproject2, setByProject2] = useState([]);
-  const [stream, setStream] = useState([]);
-  const [hasrole, setHasRole] = useState([]);
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  var filteredUsers = [];
+  const [projects, setProjects] = useState([])
+  const [company, setCompanies] = useState([])
+  const [users, setUsers] = useState([])
+  const [department, setDepartment] = useState([])
+  const [byproject, setByProject] = useState([])
+  const [byproject2, setByProject2] = useState([])
+  const [stream, setStream] = useState([])
+  const [hasrole, setHasRole] = useState([])
+  const [selectedUsers, setSelectedUsers] = useState([])
+  var filteredUsers = []
 
   //Initial rendering through useEffect
   useEffect(() => {
@@ -406,157 +405,152 @@ const Projects = () => {
     getUsers()
     getDepartment()
     getStreams()
-  }, []);
+  }, [])
 
   useEffect(() => {
-    setSelectedUsers(hasrole);
-  }, [hasrole]);
+    setSelectedUsers(hasrole)
+  }, [hasrole])
 
   //Checkbox control function
   const handleSelectUser = (e, userId) => {
     if (e.target.checked) {
-      setSelectedUsers([...selectedUsers, userId]);
+      setSelectedUsers([...selectedUsers, userId])
     } else {
-      setSelectedUsers(selectedUsers.filter((id) => id !== userId));
+      setSelectedUsers(selectedUsers.filter((id) => id !== userId))
     }
-  };
+  }
 
   // Get API calls
   function getList() {
-    fetch("http://10.3.3.80/api/getproject")
+    fetch('http://10.3.3.80/api/getproject')
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
-          filteredUsers = data.projects;
+          filteredUsers = data.projects
+        } else if (local.Users.role === 3) {
+          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
+        } else if (local.Users.role === 5) {
+          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
         }
-        else if (local.Users.role === 3) {
-          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
-        }
-        else if (local.Users.role === 5) {
-          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id);
-        }
-        setProjects(filteredUsers);
+        setProjects(filteredUsers)
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   function getProjectById(id) {
     fetch(`http://10.3.3.80/api/get-project-by-project-id/${id}`)
       .then((response) => response.json())
       .then((data) => setByProject(data.projects))
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   function getProjectById2(id) {
     fetch(`http://10.3.3.80/api/get-project-by-project-id/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        setByProject2(data.projects);
-        setCompanyId(data.projects[0].company_id);
-        setDepartmentId(data.projects[0].department_id);
-        setProjectName(data.projects[0].project_name);
-        setDescription(data.projects[0].description);
-        setStartDate(data.projects[0].startDate);
-        setDeadLine(data.projects[0].dead_line);
+        setByProject2(data.projects)
+        setCompanyId(data.projects[0].company_id)
+        setDepartmentId(data.projects[0].department_id)
+        setProjectName(data.projects[0].project_name)
+        setDescription(data.projects[0].project_description)
+        const formattedStartDate = moment(data.projects[0].start_date).format('YYYY-MM-DD')
+        setStartDate(formattedStartDate)
+        const formattedDeadLine = moment(data.projects[0].dead_line).format('YYYY-MM-DD')
+        setDeadLine(formattedDeadLine)
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   function getCompany() {
-    fetch("http://10.3.3.80/api/getcompany")
+    fetch('http://10.3.3.80/api/getcompany')
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
-          filteredUsers = data.companies;
+          filteredUsers = data.companies
+        } else if (local.Users.role === 3) {
+          filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
+        } else if (local.Users.role === 5) {
+          filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
         }
-        else if (local.Users.role === 3) {
-          filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
-        }
-        else if (local.Users.role === 5) {
-          filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
-        }
-        setCompanies(filteredUsers);
+        setCompanies(filteredUsers)
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   function getUsers() {
-    fetch("http://10.3.3.80/api/get_users")
+    fetch('http://10.3.3.80/api/get_users')
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
-          filteredUsers = data.Users;
+          filteredUsers = data.Users
+        } else if (local.Users.role === 3) {
+          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id)
+        } else if (local.Users.role === 5) {
+          filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
         }
-        else if (local.Users.role === 3) {
-          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id);
-        }
-        else if (local.Users.role === 5) {
-          filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id);
-        }
-        setUsers(filteredUsers.slice(1));
+        setUsers(filteredUsers.slice(1))
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   function getDepartment() {
-    fetch("http://10.3.3.80/api/getdepartment")
+    fetch('http://10.3.3.80/api/getdepartment')
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
-          filteredUsers = data.Departments;
+          filteredUsers = data.Departments
+        } else if (local.Users.role === 3) {
+          filteredUsers = data.Departments.filter(
+            (user) => user.company_id === local.Users.company_id,
+          )
         }
-        else if (local.Users.role === 3) {
-          filteredUsers = data.Departments.filter((user) => user.company_id === local.Users.company_id);
-        }
-        setDepartment(filteredUsers);
+        setDepartment(filteredUsers)
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   function getStreams() {
-    fetch("http://10.3.3.80/api/get-streams")
+    fetch('http://10.3.3.80/api/get-streams')
       .then((response) => response.json())
       .then((data) => setStream(data.Streams))
-      .catch((error) => console.log(error));
+      .catch((error) => console.log(error))
   }
 
   function getHasRole(proj_id, stream_id) {
     fetch(`http://10.3.3.80/api/get_assign_project_by_project_id/${proj_id}/${stream_id}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-        const temp_array = data.Assigns.map(element => element.user_id);
-        setHasRole(temp_array);
-        console.log(temp_array);
+        console.log(data)
+        const temp_array = data.Assigns.map((element) => element.user_id)
+        setHasRole(temp_array)
+        console.log(temp_array)
       })
-      .catch((error) => console.log(error));
-  };
-
+      .catch((error) => console.log(error))
+  }
 
   // Add API call
   async function addProject() {
     let user = { department_id, company_id, project_name, description, start_date, dead_line }
-    console.log(user);
+    console.log(user)
 
-    await fetch("http://10.3.3.80/api/add_project",
-      {
-        method: 'POST',
-        body: JSON.stringify(user),
-        headers: {
-          'Content-Type': 'application/json'
-        },
-
-      }).then(response => {
+    await fetch('http://10.3.3.80/api/add_project', {
+      method: 'POST',
+      body: JSON.stringify(user),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
         if (response.ok) {
-          handleButtonClick1();
+          handleButtonClick1()
           getList()
         } else {
-          handleButtonClick2();
+          handleButtonClick2()
         }
       })
-      .catch(error => {
-        console.error(error);
-      });
+      .catch((error) => {
+        console.error(error)
+      })
   }
 
   //Assign users API call
@@ -564,51 +558,50 @@ const Projects = () => {
     await fetch('http://10.3.3.80/api/assign_projects', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         id: newid,
         project_id: project_id,
         user_ids: selectedUsers,
         stream_id: stream_id,
-      })
-    }).then(response => {
-      if (response.ok) {
-        handleButtonClick7();
-        getList()
-
-      } else {
-        handleButtonClick8();
-      }
+      }),
     })
-      .catch(error => {
-        console.error(error);
-      });
-
-  };
+      .then((response) => {
+        if (response.ok) {
+          handleButtonClick7()
+          getList()
+        } else {
+          handleButtonClick8()
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
 
   // Delete API call
   async function deleteProject(newid) {
     await fetch('http://10.3.3.80/api/delete-project', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        id: newid
-      })
-    }).then(response => {
-      if (response.ok) {
-        handleButtonClick3();
-        getList()
-      } else {
-        handleButtonClick4();
-      }
+        id: newid,
+      }),
     })
-      .catch(error => {
-        console.error(error);
-      });
-
+      .then((response) => {
+        if (response.ok) {
+          handleButtonClick3()
+          getList()
+        } else {
+          handleButtonClick4()
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
   }
 
   // Update API call
@@ -616,7 +609,7 @@ const Projects = () => {
     await fetch('http://10.3.3.80/api/update-project', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         id: newid,
@@ -626,110 +619,161 @@ const Projects = () => {
         description: description,
         start_date: start_date,
         dead_line: dead_line,
-      })
-    }).then(response => {
-      if (response.ok) {
-        handleButtonClick5();
-        getList()
-      } else {
-        handleButtonClick6();
-      }
+      }),
     })
-      .catch(error => {
-        console.error(error);
-      });
-
-  };
+      .then((response) => {
+        if (response.ok) {
+          handleButtonClick5()
+          getList()
+        } else {
+          handleButtonClick6()
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
 
   return (
     <>
-      <div className='row'>
-        <div className='col-md 6'>
+      <div className="row">
+        <div className="col-md 6">
           <h3>Projects</h3>
         </div>
-        <div className='col-md 6'>
+        <div className="col-md 6">
           {/* Add Project Button */}
           {isCreateButtonEnabled ? (
-            <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Project</Button>
+            <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>
+              Add Project
+            </Button>
           ) : null}
         </div>
       </div>
       <br></br>
       <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-        <CTableHead color="light" >
-
+        <CTableHead color="light">
           {/* Projects table heading */}
           <CTableRow>
-            <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Project Name</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Company Name</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Department Name</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Start Date</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>End Date</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Sr/No
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Project Name
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Company Name
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Department Name
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Start Date
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              End Date
+            </CTableHeaderCell>
             {isEditButtonEnabled || isDeleteButtonEnabled || isViewButtonEnabled ? (
-              <CTableHeaderCell className="text-center" style={mystyle}>Action</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle}>
+                Action
+              </CTableHeaderCell>
             ) : null}
             {isAssignProjectEnabled ? (
-              <CTableHeaderCell className="text-center" style={mystyle}>Streams</CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle}>
+                Streams
+              </CTableHeaderCell>
             ) : null}
           </CTableRow>
 
           {/* Get API Projects */}
-          {
-            local.Users.role === 1 || local.Users.role === 3 ?
-              projects.map((project, index) => {
-                const startDate = moment(project.start_date).format('DD-MM-YYYY');
-                const deadline = moment(project.dead_line).format('DD-MM-YYYY');
+          {local.Users.role === 1 || local.Users.role === 3
+            ? projects.map((project, index) => {
+                const startDate = moment(project.start_date).format('DD-MM-YYYY')
+                const deadline = moment(project.dead_line).format('DD-MM-YYYY')
 
                 return (
                   <CTableRow key={project.id}>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>{project.project_name}</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>{project.company_name}</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>{project.department_name}</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>{startDate}</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>{deadline}</CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {index + 1}
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {project.project_name}
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {project.company_name}
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {project.department_name}
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {startDate}
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {deadline}
+                    </CTableHeaderCell>
                     {isEditButtonEnabled || isViewButtonEnabled || isDeleteButtonEnabled ? (
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {isViewButtonEnabled ? (
-                          <IconButton aria-label="view" onClick={() => showModal5(project.project_id)}>
-                            <VisibilityIcon htmlColor='#0070ff' />
+                          <IconButton
+                            aria-label="view"
+                            onClick={() => showModal5(project.project_id)}
+                          >
+                            <VisibilityIcon htmlColor="#0070ff" />
                           </IconButton>
                         ) : null}
                         {isEditButtonEnabled ? (
-                          <IconButton aria-label="update" onClick={() => showModal3(project.project_id)}>
-                            <EditIcon htmlColor='#28B463' />
+                          <IconButton
+                            aria-label="update"
+                            onClick={() => showModal3(project.project_id)}
+                          >
+                            <EditIcon htmlColor="#28B463" />
                           </IconButton>
                         ) : null}
                         {isDeleteButtonEnabled ? (
-                          <IconButton aria-label="delete" onClick={() => showModal2(project.project_id)}>
-                            <DeleteIcon htmlColor='#FF0000' />
+                          <IconButton
+                            aria-label="delete"
+                            onClick={() => showModal2(project.project_id)}
+                          >
+                            <DeleteIcon htmlColor="#FF0000" />
                           </IconButton>
                         ) : null}
                       </CTableHeaderCell>
                     ) : null}
                     {isAssignProjectEnabled ? (
                       <CTableHeaderCell className="text-center" style={mystyle2}>
-                        <IconButton aria-label="assign" title="Assign Project" onClick={() => showModal6(project.project_id)}>
-                          <PermContactCalendarIcon htmlColor='#0070ff' />
+                        <IconButton
+                          aria-label="assign"
+                          title="Assign Project"
+                          onClick={() => showModal6(project.project_id)}
+                        >
+                          <PermContactCalendarIcon htmlColor="#0070ff" />
                         </IconButton>
                       </CTableHeaderCell>
                     ) : null}
                   </CTableRow>
-                );
-              }) : null}
+                )
+              })
+            : null}
         </CTableHead>
         <CTableBody>
-
           {/* Modal for Add Projects */}
-          <Modal title="Add a Project" open={isModalOpen} onOk={handleOk} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel} maskClosable={false}>
-
+          <Modal
+            title="Add a Project"
+            open={isModalOpen}
+            onOk={handleOk}
+            okButtonProps={{ style: { background: 'blue' } }}
+            onCancel={handleCancel}
+            maskClosable={false}
+          >
             <br></br>
 
             <div className="form-outline mb-3">
               <label>Company</label>
               <Form.Item>
-                <Select placeholder="Select Company" onChange={handleCompanyChange} value={company_id}>
+                <Select
+                  placeholder="Select Company"
+                  onChange={handleCompanyChange}
+                  value={company_id}
+                >
                   {company.map((count) => (
                     <Select.Option value={count.name} key={count.id}>
                       {count.company_name}
@@ -742,7 +786,11 @@ const Projects = () => {
             <div className="form-outline mb-3">
               <label>Department</label>
               <Form.Item>
-                <Select placeholder="Select Departments" onChange={handleDepartmentChange} value={department_id}>
+                <Select
+                  placeholder="Select Departments"
+                  onChange={handleDepartmentChange}
+                  value={department_id}
+                >
                   {department.map((count) => (
                     <Select.Option value={count.nnname} key={count.id}>
                       {count.department_name}
@@ -795,21 +843,29 @@ const Projects = () => {
                 placeholder="Enter Dead Line"
               />
             </div>
-
           </Modal>
 
           {/* Modal for Update Projects */}
-          <Modal title="Update a Project" open={isModalOpen3} onOk={handleOk3} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel3} maskClosable={false}>
-
+          <Modal
+            title="Update a Project"
+            open={isModalOpen3}
+            onOk={handleOk3}
+            okButtonProps={{ style: { background: 'blue' } }}
+            onCancel={handleCancel3}
+            maskClosable={false}
+          >
             <br></br>
 
             {byproject2.map((proj) => (
-              console.log(proj.project_name),
               <div key={proj.id}>
                 <div className="form-outline mb-3">
                   <label>Company</label>
                   <Form.Item>
-                    <Select placeholder="Select Company" onChange={handleCompanyChange} defaultValue={proj.company_name}>
+                    <Select
+                      placeholder="Select Company"
+                      onChange={handleCompanyChange}
+                      value={proj.company_name}
+                    >
                       {company.map((count) => (
                         <Select.Option value={count.name} key={count.id}>
                           {count.company_name}
@@ -822,7 +878,11 @@ const Projects = () => {
                 <div className="form-outline mb-3">
                   <label>Department</label>
                   <Form.Item>
-                    <Select placeholder="Select Departments" onChange={handleDepartmentChange} defaultValue={proj.department_name}>
+                    <Select
+                      placeholder="Select Departments"
+                      onChange={handleDepartmentChange}
+                      value={proj.department_name}
+                    >
                       {department.map((count) => (
                         <Select.Option value={count.name} key={count.id}>
                           {count.department_name}
@@ -836,7 +896,7 @@ const Projects = () => {
                   <label>Project Name</label>
                   <input
                     type="text"
-                    defaultValue={proj.project_name}
+                    value={project_name}
                     onChange={(e) => setProjectName(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Project Name"
@@ -847,7 +907,7 @@ const Projects = () => {
                   <label>Description</label>
                   <input
                     type="text"
-                    defaultValue={proj.project_description}
+                    value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Description"
@@ -858,7 +918,7 @@ const Projects = () => {
                   <label>Start Date</label>
                   <input
                     type="date"
-                    defaultValue={proj.start_date}
+                    value={start_date}
                     onChange={(e) => setStartDate(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Start Date"
@@ -869,7 +929,7 @@ const Projects = () => {
                   <label>End Date</label>
                   <input
                     type="date"
-                    defaultValue={proj.dead_line}
+                    value={dead_line}
                     onChange={(e) => setDeadLine(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Dead Line"
@@ -877,19 +937,30 @@ const Projects = () => {
                 </div>
               </div>
             ))}
-
           </Modal>
 
           {/* Modal for Deletion Confirmation */}
-          <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel2} style={modalStyle}>
-          </Modal>
+          <Modal
+            title="Are you sure you want to delete?"
+            open={isModalOpen2}
+            onOk={handleOk2}
+            okButtonProps={{ style: { background: 'blue' } }}
+            onCancel={handleCancel2}
+            style={modalStyle}
+          ></Modal>
 
           {/* Modal for View Details */}
-          <Modal title="" open={isModalOpen5} onOk={handleOk5} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel5} style={modalStyle}>
-
+          <Modal
+            title=""
+            open={isModalOpen5}
+            onOk={handleOk5}
+            okButtonProps={{ style: { background: 'blue' } }}
+            onCancel={handleCancel5}
+            style={modalStyle}
+          >
             {byproject.map((proj) => {
-              const start = moment(proj.start_date).format('DD-MM-YYYY');
-              const dead = moment(proj.dead_line).format('DD-MM-YYYY');
+              const start = moment(proj.start_date).format('DD-MM-YYYY')
+              const dead = moment(proj.dead_line).format('DD-MM-YYYY')
 
               return (
                 <div key={proj.id}>
@@ -906,27 +977,31 @@ const Projects = () => {
                   <h6 style={perStyle}>End Date</h6>
                   <p>{dead}</p>
                 </div>
-              );
+              )
             })}
-
           </Modal>
 
           {/* Modal for Streams */}
-          <Modal title="" open={isModalOpen6} onOk={handleOk6} onCancel={handleCancel6} okButtonProps={{ style: { background: 'blue' } }}>
-
+          <Modal
+            title=""
+            open={isModalOpen6}
+            onOk={handleOk6}
+            onCancel={handleCancel6}
+            okButtonProps={{ style: { background: 'blue' } }}
+          >
             <h3 style={headStyle2}>Streams</h3>
 
             <br></br>
-            <div className='row'>
-              <div className='col md-2 text-center'>
+            <div className="row">
+              <div className="col md-2 text-center">
                 <h6>Sr/No</h6>
               </div>
-              <div className='col md-3'></div>
-              <div className='col md-2 text-center'>
+              <div className="col md-3"></div>
+              <div className="col md-2 text-center">
                 <h6 style={perStyle}>Name</h6>
               </div>
-              <div className='col md-3'></div>
-              <div className='col md-2 text-center'>
+              <div className="col md-3"></div>
+              <div className="col md-2 text-center">
                 <h6 style={perStyle}>Assign</h6>
               </div>
               &nbsp;
@@ -934,18 +1009,18 @@ const Projects = () => {
             </div>
 
             {stream.map((str, index) => (
-              <div className='row' key={str.id}>
-                <div className='col md-2 text-center'>
+              <div className="row" key={str.id}>
+                <div className="col md-2 text-center">
                   <h6 style={perStyle}>{index + 1}</h6>
                 </div>
-                <div className='col md-3'></div>
-                <div className='col md-2 text-center'>
+                <div className="col md-3"></div>
+                <div className="col md-2 text-center">
                   <h6 style={perStyle}>{str.stream_name}</h6>
                 </div>
-                <div className='col md-3'></div>
-                <div className='col md-2 text-center'>
+                <div className="col md-3"></div>
+                <div className="col md-2 text-center">
                   <IconButton aria-label="user" onClick={() => showModal4(str.id)}>
-                    <AssignmentIndIcon htmlColor='#0070ff' />
+                    <AssignmentIndIcon htmlColor="#0070ff" />
                   </IconButton>
                 </div>
                 &nbsp;
@@ -957,19 +1032,24 @@ const Projects = () => {
           </Modal>
 
           {/* Modal for Assign User */}
-          <Modal title="Assign Users" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4} okButtonProps={{ style: { background: 'blue' } }}>
-
+          <Modal
+            title="Assign Users"
+            open={isModalOpen4}
+            onOk={handleOk4}
+            onCancel={handleCancel4}
+            okButtonProps={{ style: { background: 'blue' } }}
+          >
             <br></br>
-            <div className='row'>
-              <div className='col md-2 text-center'>
+            <div className="row">
+              <div className="col md-2 text-center">
                 <h6>Sr/No</h6>
               </div>
-              <div className='col md-3'></div>
-              <div className='col md-2 text-center'>
+              <div className="col md-3"></div>
+              <div className="col md-2 text-center">
                 <h6>Users</h6>
               </div>
-              <div className='col md-3'></div>
-              <div className='col md-2 text-center'>
+              <div className="col md-3"></div>
+              <div className="col md-2 text-center">
                 <h6 style={heading}>Select</h6>
               </div>
               &nbsp;
@@ -977,16 +1057,16 @@ const Projects = () => {
             </div>
 
             {users.map((user, index) => (
-              <div className='row' key={user.id}>
-                <div className='col md-2 text-center'>
+              <div className="row" key={user.id}>
+                <div className="col md-2 text-center">
                   <h6 style={perStyle}>{index + 1}</h6>
                 </div>
-                <div className='col md-3'></div>
-                <div className='col md-2 text-center'>
+                <div className="col md-3"></div>
+                <div className="col md-2 text-center">
                   <h6 style={perStyle}>{user.name}</h6>
                 </div>
-                <div className='col md-3'></div>
-                <div className='col md-2 text-center'>
+                <div className="col md-3"></div>
+                <div className="col md-2 text-center">
                   <Checkbox
                     checked={selectedUsers.includes(user.id)}
                     onChange={(e) => handleSelectUser(e, user.id)}
@@ -1053,11 +1133,10 @@ const Projects = () => {
               Failed to Assign Users
             </Alert>
           )}
-
         </CTableBody>
       </CTable>
     </>
-  );
+  )
 }
 
-export default Projects;
+export default Projects
