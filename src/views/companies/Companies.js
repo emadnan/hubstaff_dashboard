@@ -309,7 +309,7 @@ const Companies = () => {
         else if (local.Users.role === 3) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
         }
-        else if (local.Users.role === 5) {
+        else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
         }
         setUsers(filteredUsers);
@@ -646,27 +646,6 @@ const Companies = () => {
               </div>
             ))}
           </Modal>
-
-          {/* Modal for View Details */}
-          {/* <Modal title="" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4} style={modalStyle}>
-
-            {bycompany.map((comp) => (
-              <div key={comp.id}>
-                <h3 style={headStyle}>{comp.company_name}</h3>
-                <br></br>
-                <h6 style={perStyle}>Address</h6>
-                <p>{comp.address}</p>
-                <h6 style={perStyle}>Email</h6>
-                <p>{comp.company_email}</p>
-                <h6 style={perStyle}>Contact No</h6>
-                <p>{comp.contact_no}</p>
-                <h6 style={perStyle}>Country</h6>
-                <p>{comp.country}</p>
-                <h6 style={perStyle}>City</h6>
-                <p>{comp.city}</p>
-              </div>
-            ))}
-          </Modal> */}
 
           {/* Alert for Add Company Success*/}
           {showAlert1 && (

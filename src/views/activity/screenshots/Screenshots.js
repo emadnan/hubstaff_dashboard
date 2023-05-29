@@ -46,7 +46,7 @@ const Screenshots = () => {
     if (dates) {
       console.log('From: ', dates[0], ', to: ', dates[1])
       console.log('From: ', dateStrings[0], ', to: ', dateStrings[1])
-      if (local.Users.role === 5) {
+      if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
         getDateWiseScreenshots(dateStrings[0], dateStrings[1], local.Users.user_id)
       } else if (local.Users.role === 3) {
         getDateWiseScreenshotsCompany(dateStrings[0], dateStrings[1], local.Users.company_id)
@@ -56,6 +56,10 @@ const Screenshots = () => {
       console.log('Clear')
     }
   }
+
+  const handleClearAction = () => {
+    onRangeChange('');
+  };
 
   //Array declaration for API calls
   const [images, setImages] = useState([])
@@ -84,6 +88,7 @@ const Screenshots = () => {
 
   // Get API calls
   function getScreenshots() {
+    handleClearAction();
     fetch('http://10.3.3.80/api/get_Project_Screenshots')
       .then((response) => response.json())
       .then((data) => {
@@ -93,7 +98,7 @@ const Screenshots = () => {
           screenfilter = data.projectscreenshot.filter(
             (screenshot) => screenshot.company_id === local.Users.company_id,
           )
-        } else if (local.Users.role === 5) {
+        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
           screenfilter = data.projectscreenshot.filter(
             (screenshot) => screenshot.user_id === local.Users.user_id,
           )
@@ -111,7 +116,7 @@ const Screenshots = () => {
           filteredUsers = data.Users
         } else if (local.Users.role === 3) {
           filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id)
-        } else if (local.Users.role === 5) {
+        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
           filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
         }
         setUsers(filteredUsers.slice(1))
@@ -233,9 +238,9 @@ const Screenshots = () => {
             <br></br>
             <h3>Today Worked {totalhours}:{totalminutes}:{totalseconds}</h3>
           </div>
-        ) : local.Users.role === 5 ? (
+        ) : (
           <h3 style={userStyle2}>{local.Users.name}</h3>
-        ) : null
+        ) 
       }
       <div className="row">
         <div className="col-md-4">

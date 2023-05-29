@@ -40,7 +40,7 @@ const AssignedProjects = () => {
                 else if (local.Users.role === 3) {
                     filteredUsers = data.Project_Assigns.filter((user) => user.company_id === local.Users.company_id);
                 }
-                else if (local.Users.role === 5) {
+                else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
                     filteredUsers = data.Project_Assigns.filter((user) => user.assign_projects_user_id === local.Users.user_id);
                 }
                 setAssigns(filteredUsers);
