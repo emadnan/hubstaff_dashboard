@@ -127,21 +127,6 @@ const Departments = () => {
         setDescription('');
     };
 
-    // Functions for Show Details Modal
-    // const [isModalOpen4, setIsModalOpen4] = useState(false);
-    // const showModal4 = (id) => {
-    //     getDepartmentById(id)
-    //     setIsModalOpen4(id)
-    // };
-
-    // const handleOk4 = () => {
-    //     setIsModalOpen4(false);
-    // };
-
-    // const handleCancel4 = () => {
-    //     setIsModalOpen4(false);
-    // };
-
     // Functions for Add Department Success
     const [showAlert1, setShowAlert1] = useState(false);
 
@@ -313,7 +298,7 @@ const Departments = () => {
                 else if (local.Users.role === 3) {
                     filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
                 }
-                else if (local.Users.role === 5) {
+                else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
                     filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
                 }
                 setCompanies(filteredUsers);
@@ -559,21 +544,6 @@ const Departments = () => {
                     {/* Modal for deletion confirmation */}
                     <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel2} style={modalStyle}>
                     </Modal>
-
-                    {/* Modal for View Details */}
-                    {/* <Modal title="" open={isModalOpen4} onOk={handleOk4} onCancel={handleCancel4} style={modalStyle}>
-
-                        {bydepartment.map((dept) => (
-                            <div key={dept.id}>
-                                <h3 style={headStyle}>{dept.department_name}</h3>
-                                <br></br>
-                                <h6 style={perStyle}>Company Name</h6>
-                                <p>{dept.company_name}</p>
-                                <h6 style={perStyle}>Description</h6>
-                                <p>{dept.description}</p>
-                            </div>
-                        ))}
-                    </Modal> */}
 
                     {/* Alert for Add Department Success*/}
                     {showAlert1 && (

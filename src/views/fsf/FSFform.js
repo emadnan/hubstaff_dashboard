@@ -21,6 +21,7 @@ import AddIcon from '@mui/icons-material/Add'
 import CloseIcon from '@mui/icons-material/Close'
 
 function FSFform() {
+
   //Variable declarations
   const [wricef_id, setWRicefId] = useState('')
   const [module_name, setModuleName] = useState('')
@@ -661,15 +662,13 @@ function FSFform() {
                     id="select-functional_lead"
                     label="Functional Lead"
                     variant="standard"
-                    select
-                    value={functional_lead}
-                    onChange={handleFunctionalLeadChange}
-                    placeholder="Select Functional Lead"
+                    type="functional_lead"
+                    name="functional_lead"
+                    value={local.Users.name}
+                    onChange={(e) => setFuncionalLead(e.target.value)}
+                    placeholder="Functional Lead"
                     sx={{ width: '100%' }}
-                  >
-                    <MenuItem value="Test 1">Test 1</MenuItem>
-                    <MenuItem value="Test 2">Test 2</MenuItem>
-                  </TextField>
+                  />
                 </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>

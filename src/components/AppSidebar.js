@@ -10,9 +10,7 @@ import SimpleBar from 'simplebar-react'
 import 'simplebar/dist/simplebar.min.css'
 
 // sidebar nav config
-import { _navAdmin } from '../_nav'
-import { _navCompanyAdmin } from '../_nav'
-import { _navEmployee } from '../_nav'
+import { _navAdmin, _navCompanyAdmin, _navEmployee, _navFunctional, _navTeamLead } from '../_nav'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
@@ -31,6 +29,10 @@ const AppSidebar = () => {
       navConfig = _navCompanyAdmin
     } else if (userRole === 5) {
       navConfig = _navEmployee
+    } else if (userRole === 6) {
+      navConfig = _navFunctional
+    } else if (userRole === 7) {
+      navConfig = _navTeamLead
     } else {
       return
     }

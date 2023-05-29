@@ -429,7 +429,7 @@ const Projects = () => {
           filteredUsers = data.projects
         } else if (local.Users.role === 3) {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
-        } else if (local.Users.role === 5) {
+        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
         }
         setProjects(filteredUsers)
@@ -469,7 +469,7 @@ const Projects = () => {
           filteredUsers = data.companies
         } else if (local.Users.role === 3) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
-        } else if (local.Users.role === 5) {
+        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
         }
         setCompanies(filteredUsers)
@@ -485,7 +485,7 @@ const Projects = () => {
           filteredUsers = data.Users
         } else if (local.Users.role === 3) {
           filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id)
-        } else if (local.Users.role === 5) {
+        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
           filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
         }
         setUsers(filteredUsers.slice(1))

@@ -98,7 +98,7 @@ const Dashboard = () => {
         else if (local.Users.role === 3) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
         }
-        else if (local.Users.role === 5) {
+        else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id);
         }
         setUsers(filteredUsers);
@@ -147,7 +147,7 @@ const Dashboard = () => {
         else if (local.Users.role === 3) {
           filteredUsers = data.Project_Assigns.filter((user) => user.company_id === local.Users.company_id);
         }
-        else if (local.Users.role === 5) {
+        else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
           filteredUsers = data.Project_Assigns.filter((user) => user.assign_projects_user_id === local.Users.user_id);
         }
         setAssigned(filteredUsers);
@@ -212,9 +212,7 @@ const Dashboard = () => {
           {
             local.Users.role === 3
               ? <h4 style={userStyle}>Dashboard</h4>
-              : local.Users.role === 5
-                ? <h4 style={userStyle}>{local.Users.name}</h4>
-                : null
+              : <h4 style={userStyle}>{local.Users.name}</h4>
           }
         </div>
       </div>
@@ -225,7 +223,7 @@ const Dashboard = () => {
           <div className='col-md-2'>
             <h6 style={head}>TOTAL PROJECTS</h6>
             <h3 style={subhead}>
-              {local.Users.role === 3 ? totalProjects : local.Users.role === 5 ? totalUserProjects : null}
+              {local.Users.role === 3 ? totalProjects : totalUserProjects}
             </h3>
           </div>
           <div className='col-md-2'>
@@ -234,13 +232,6 @@ const Dashboard = () => {
           </div>
           <div className='col-md-2'>
             <h6 style={head}>TODAY WORKED</h6>
-            {/* {local.Users.user_id ? screenshot.filter((image) => image.user_id === local.Users.user_id).map((image) => {
-              return (
-                <div key={image.id}>
-                  <h3 style={subhead}>{image.hours}:{image.minutes}:{image.seconds}</h3>
-                </div>
-              );
-            }) : null} */}
             <h3 style={subhead}>{totalhours}:{totalminutes}:{totalseconds}</h3>
           </div>
           <div className='col-md-2'>
@@ -442,36 +433,7 @@ const Dashboard = () => {
 
           </Card>
           {/* Card for Assigned Project Modal Ends */}
-
-          <br></br>
-
-          {/* Card for Time Sheets Modal Starts */}
-          {/* <Card style={cardStyle2}>
-            <h5 style={head}>TIME SHEETS</h5>
-            <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-              <CTableHead color="light" >
-
-                <CTableRow>
-                  <CTableHeaderCell className="text-center" style={mystyle}>Project</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>Activity</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>Duration</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>Time</CTableHeaderCell>
-                </CTableRow>
-
-              </CTableHead>
-
-              <CTableBody>
-              </CTableBody>
-            </CTable>
-
-            <Divider></Divider>
-            <div className='text-center'>
-              <Button type="link" href="/timesheets/viewedit">View daily timesheets &gt;</Button>
-            </div>
-
-          </Card> */}
-          {/* Card for Time Sheets Modal Ends */}
-
+          
           <br></br>
 
         </div>

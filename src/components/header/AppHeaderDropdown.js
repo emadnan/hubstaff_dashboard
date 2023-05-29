@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import {
   CAvatar,
   CDropdown,
@@ -19,6 +19,8 @@ import { useNavigate } from 'react-router-dom';
 import grey from './../../assets/images/grey.png'
 
 const AppHeaderDropdown = () => {
+
+  // const sessionExpirationTime = 5000;
 
   const modalStyle = {
     position: "fixed",
@@ -48,6 +50,19 @@ const AppHeaderDropdown = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  // useEffect(() => {
+  //   const checkSessionExpiration = () => {
+  //     const currentTime = new Date().getTime();
+  //     if (currentTime > sessionExpirationTime) {
+  //       logOut(); // Call the logout function or perform logout actions
+  //     }
+  //   };
+
+  //   const interval = setInterval(checkSessionExpiration, 1000); // Adjust the interval as needed
+
+  //   return () => clearInterval(interval);
+  // }, []);
 
   return (
     <>

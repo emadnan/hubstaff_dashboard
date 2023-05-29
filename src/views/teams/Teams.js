@@ -319,10 +319,6 @@ const Team = () => {
     }
   };
 
-  // useEffect(() => {
-  //   setSelectedUsers(haspermission);
-  // }, [haspermission]);
-
   function getTeams() {
     fetch("http://10.3.3.80/api/get_teams")
       .then((response) => response.json())
@@ -437,7 +433,6 @@ const Team = () => {
     }).then(response => {
       if (response.ok) {
         handleButtonClick7();
-        // getAssignUsersToTeam()
       } else {
         handleButtonClick8();
       }
@@ -578,29 +573,6 @@ const Team = () => {
               &nbsp;
               <Divider></Divider>
             </div>
-
-            {/* <div>
-              {permission.map((perm, index) => (
-                <div className='row' key={perm.id}>
-                  <div className='col md-2 text-center'>
-                    <h6>{index + 1}</h6>
-                  </div>
-                  <div className='col md-3'></div>
-                  <div className='col md-2 text-center'>
-                    <h6>{perm.name}</h6>
-                  </div>
-                  <div className='col md-3'></div>
-                  <div className='col md-2 text-center'>
-                    <Checkbox
-                      checked={selectedUsers.includes(perm.id)}
-                      onChange={(e) => handleSelectUser(e, perm.id)}
-                    />
-                  </div>
-                  &nbsp;
-                  <Divider />
-                </div>
-              ))}
-            </div> */}
           </Modal>
 
           {/* Modal for Deletion Confirmation */}
