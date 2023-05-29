@@ -46,7 +46,12 @@ const Screenshots = () => {
     if (dates) {
       console.log('From: ', dates[0], ', to: ', dates[1])
       console.log('From: ', dateStrings[0], ', to: ', dateStrings[1])
-      getDateWiseScreenshots(dateStrings[0], dateStrings[1], local.Users.user_id)
+      if(local.Users.role === 5){
+        getDateWiseScreenshots(dateStrings[0], dateStrings[1], local.Users.user_id)
+      } else if (local.Users.role === 3){
+        getDateWiseScreenshotsCompany(dateStrings[0], dateStrings[1], local.Users.company_id)
+      }
+      
     } else {
       console.log('Clear')
     }
@@ -128,7 +133,17 @@ const Screenshots = () => {
         setImages(screenfilter)
       })
       .catch((error) => console.log(error))
-  }
+  };
+
+  function getDateWiseScreenshotsCompany(a, b, c) {
+    fetch(`http://10.3.3.80/api/get_projectscreenshot_by_compny_id/${a}/${b}/${c}`)
+      .then((response) => response.json())
+      .then((data) => {
+        screenfilter = data;
+        setImages(screenfilter)
+      })
+      .catch((error) => console.log(error))
+  };
 
   function getProjects() {
     fetch('http://10.3.3.80/api/getproject')
