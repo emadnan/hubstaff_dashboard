@@ -46,12 +46,12 @@ const Screenshots = () => {
     if (dates) {
       console.log('From: ', dates[0], ', to: ', dates[1])
       console.log('From: ', dateStrings[0], ', to: ', dateStrings[1])
-      if(local.Users.role === 5){
+      if (local.Users.role === 5) {
         getDateWiseScreenshots(dateStrings[0], dateStrings[1], local.Users.user_id)
-      } else if (local.Users.role === 3){
+      } else if (local.Users.role === 3) {
         getDateWiseScreenshotsCompany(dateStrings[0], dateStrings[1], local.Users.company_id)
       }
-      
+
     } else {
       console.log('Clear')
     }
@@ -240,10 +240,6 @@ const Screenshots = () => {
       <div className="row">
         <div className="col-md-4">
           <br></br>
-          <Button type="default" icon={<ArrowLeftOutlined />} />
-          &nbsp;
-          <Button type="default" icon={<ArrowRightOutlined />} />
-          &nbsp;
           <RangePicker format="YYYY-MM-DD" onChange={onRangeChange} />
           <Button type="default" onClick={getScreenshots}>
             Today
@@ -360,6 +356,16 @@ const Screenshots = () => {
                             {new Date(timing.end_time)
                               .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                               .substring(0, 11)}
+                          </Typography>
+                          <Typography
+                            level="body3"
+                            sx={{ fontWeight: 'md', color: 'text.secondary' }}
+                          >
+                            {new Intl.DateTimeFormat('en-GB', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: '2-digit',
+                            }).format(new Date(timing.created_at))}
                           </Typography>
                         </CardOverflow>
                       </Card>
