@@ -10,6 +10,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/react/20/solid'
 import logo_workLog from '../assets/images/workLogBlack.png'
+import { useNavigate } from 'react-router-dom'
 
 const products = [
   {
@@ -48,9 +49,18 @@ function classNames(...classes) {
 
 export default function Example() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const navigate = useNavigate()
+
+  const gotoSignIn = () => {
+    navigate('/login')
+  }
+
+  const gotoSignUp = () => {
+    navigate('/register')
+  }
 
   return (
-    <header className="bg-white">
+    <header className="bg-white" style={{ position: 'sticky', top: 0, zIndex: 999 }}>
       <nav
         className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
         aria-label="Global"
@@ -194,10 +204,16 @@ export default function Example() {
           </a>
         </Popover.Group>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <button className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium rounded-md">
+          <button
+            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium rounded-md"
+            onClick={gotoSignUp}
+          >
             Sign Up
           </button>
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-4">
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-4"
+            onClick={gotoSignIn}
+          >
             Sign In
           </button>
         </div>
