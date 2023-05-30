@@ -22,10 +22,13 @@ import CloseIcon from '@mui/icons-material/Close'
 
 function FSFform() {
 
+  const local = JSON.parse(localStorage.getItem('user-info'))
+
   //Variable declarations
   const [wricef_id, setWRicefId] = useState('')
   const [module_name, setModuleName] = useState('')
-  const [functional_lead, setFuncionalLead] = useState('')
+  const [functional_lead_id, setFuncionalLeadId] = useState(local.Users.id)
+  const [team_lead_id, setTeamLeadId] = useState('')
   const [requested_date, setRequestedDate] = useState('')
   const [type_of_development, setTypeOfDevelopment] = useState('')
   const [priority, setPriority] = useState('')
@@ -44,11 +47,10 @@ function FSFform() {
   const [ref_id, setRef_id] = useState()
   const [postData, setPostData] = useState([])
   const [users, setUsers] = useState([])
+  const [teamlead, setTeamLeads] = useState([])
   var filteredUsers = []
 
   const navigate = useNavigate()
-
-  const local = JSON.parse(localStorage.getItem('user-info'))
 
   const [isFocused, setIsFocused] = useState(false)
 
@@ -149,6 +151,16 @@ function FSFform() {
     setPriority(selectedValue)
   }
 
+  const handleTeamLeadChange = (event) => {
+    const selectedValue = event.target.value
+    setTeamLeadId(selectedValue)
+  }
+
+  const handleFunctionalLeadChange = (event) => {
+    const selectedValue = event.target.value
+    setFuncionalLeadId(selectedValue)
+  }
+
   const handleUsageFrequencyChange = (event) => {
     const selectedValue = event.target.value
     setUsageFrequency(selectedValue)
@@ -162,11 +174,6 @@ function FSFform() {
   const handleParameterOrSelection = (event) => {
     const selectedValue = event.target.value
     setParameterOrSelection(selectedValue)
-  }
-
-  const handleFunctionalLeadChange = (event) => {
-    const selectedValue = event.target.value
-    setFuncionalLead(selectedValue)
   }
 
   // Functions of Add Parameter Modal
@@ -391,6 +398,7 @@ function FSFform() {
   useEffect(() => {
     getProjects()
     getUsers()
+    getTeamLeads(local.Users.company_id);
   }, [])
 
   //GET API calls
@@ -422,6 +430,13 @@ function FSFform() {
       .catch((error) => console.log(error))
   }
 
+  function getTeamLeads(id) {
+    fetch(`http://10.3.3.80/api/getTeamLeadByCompanyId/${id}`)
+      .then((response) => response.json())
+      .then((data) => setTeamLeads(data.Team_Leads))
+      .catch((error) => console.log(error))
+  }
+
   function getFSFParameters() {
     fetch(`http://10.3.3.80/api/getFsfHasParameterByFsfId/${ref_id}`)
       .then((response) => response.json())
@@ -450,7 +465,8 @@ function FSFform() {
     let data = {
       wricef_id,
       module_name,
-      functional_lead,
+      functional_lead_id,
+      team_lead_id,
       requested_date,
       type_of_development,
       priority,
@@ -659,16 +675,39 @@ function FSFform() {
 
                 <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
                   <TextField
-                    id="select-functional_lead"
+                    id="input-functional_lead"
                     label="Functional Lead"
                     variant="standard"
                     type="functional_lead"
                     name="functional_lead"
                     value={local.Users.name}
-                    onChange={(e) => setFuncionalLead(e.target.value)}
+                    onChange={handleFunctionalLeadChange}
                     placeholder="Functional Lead"
                     sx={{ width: '100%' }}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
+                  <TextField
+                    id="select-team_lead"
+                    label="Team Lead"
+                    variant="standard"
+                    select
+                    value={team_lead_id}
+                    onChange={handleTeamLeadChange}
+                    placeholder="Select Team Lead"
+                    sx={{ width: '100%' }}
+                  >
+                    {teamlead.map((team) => (
+                      <MenuItem value={team.id} key={team.id}>{team.name}</MenuItem>
+                    ))}
+                  </TextField>
                 </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>

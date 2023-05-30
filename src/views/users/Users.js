@@ -313,6 +313,19 @@ const Users = () => {
             .catch((error) => console.log(error));
     };
 
+    function getRoles() {
+        fetch("http://10.3.3.80/api/getroles")
+          .then((response) => response.json())
+          .then((data) => {
+            // Filter the roles based on the condition
+            const filteredRoles = data.roles.filter(
+              (role) => role.id !== 1 && role.id !== 3
+            );
+            setRoles(filteredRoles);
+          })
+          .catch((error) => console.log(error));
+      }
+
     function getTeams() {
         fetch("http://10.3.3.80/api/get_teams")
             .then((response) => response.json())
