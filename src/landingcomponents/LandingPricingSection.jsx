@@ -10,6 +10,7 @@ import CardHeader from '@material-ui/core/CardHeader'
 import Button from '@material-ui/core/Button'
 import Link from '@material-ui/core/Link'
 import { Divider } from '@material-ui/core'
+import { useNavigate } from 'react-router'
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -31,9 +32,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function Pricing(props) {
+export default function Pricing() {
   const classes = useStyles()
 
+  const navigate = useNavigate()
+  const gotoPlanSelection = () => {
+    navigate('/selectedPlan')
+  }
   return (
     <Container maxWidth="lg">
       <Box py={8} textAlign="center">
@@ -56,8 +61,8 @@ export default function Pricing(props) {
             </Typography>
           </Container>
         </Box>
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={3}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
             <Card variant="outlined" className={classes.card}>
               <CardHeader title="Desk Free"></CardHeader>
               <CardContent>
@@ -70,30 +75,91 @@ export default function Pricing(props) {
                     </Typography>
                   </Typography>
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Time tracking
+                    &#10004; Time tracking
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Timesheets
+                    &#10004; Timesheets
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Activity levels
+                    &#10004; Activity levels
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Limited screenshots
+                    &#10004; Limited screenshots
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Limited reports
+                    &#10004; Limited Reports
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Limited payments
+                    &#10060; Track apps & URLs
+                  </Typography>
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Custom idle timeout
+                  </Typography>
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Auto discard idle time
+                  </Typography>
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Unlimited teams
+                  </Typography>
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Payments & payroll
+                  </Typography>
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Unlimited integration
+                  </Typography>
+
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Limited public API
+                  </Typography>
+
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Time off & holidays
+                  </Typography>
+
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Scheduling & attendance
+                  </Typography>
+
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Invoices
+                  </Typography>
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Client & project budgets
+                  </Typography>
+
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Timesheet approvals
+                  </Typography>
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Daily & weekly limits
+                  </Typography>
+
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Expense tracking
                   </Typography>
                 </Box>
-                <Button variant="contained" color="primary" className={classes.primaryAction}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.primaryAction}
+                  onClick={gotoPlanSelection}
+                >
                   Select plan
                 </Button>
                 <Box mt={2}>
@@ -104,7 +170,7 @@ export default function Pricing(props) {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={4}>
             <Card variant="outlined" className={classes.card}>
               <CardHeader title="Desk Starter"></CardHeader>
               <CardContent>
@@ -117,34 +183,91 @@ export default function Pricing(props) {
                     </Typography>
                   </Typography>
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Everything in Free, plus:
+                    &#10004; Time tracking
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Unlimited screenshots
+                    &#10004; Timesheets
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Reports
+                    &#10004; Activity levels
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    1 integration
+                    &#10004; Unlimited screenshots
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    24 hour support
+                    &#10004; Reports
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Per user settings
+                    &#10004; Track apps & URLs
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Idle timeout
+                    &#10060; Custom idle timeout
+                  </Typography>
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10004; Auto discard idle time
+                  </Typography>
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Unlimited teams
+                  </Typography>
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Payments & payroll
+                  </Typography>
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Unlimited integration
+                  </Typography>
+
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Limited public API
+                  </Typography>
+
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10004; Time off & holidays
+                  </Typography>
+
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    Scheduling & attendance
+                  </Typography>
+
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10004; Invoices
+                  </Typography>
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10004; Client & project budgets
+                  </Typography>
+
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Timesheet approvals
+                  </Typography>
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10060; Daily & weekly limits
+                  </Typography>
+
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10004; Expense tracking
                   </Typography>
                 </Box>
-                <Button variant="contained" color="primary" className={classes.primaryAction}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.primaryAction}
+                  onClick={gotoPlanSelection}
+                >
                   Select plan
                 </Button>
                 <Box mt={2}>
@@ -155,7 +278,7 @@ export default function Pricing(props) {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={4}>
             <Card variant="outlined" className={classes.card}>
               <CardHeader title="Desk Pro"></CardHeader>
               <CardContent>
@@ -168,127 +291,91 @@ export default function Pricing(props) {
                     </Typography>
                   </Typography>
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Everything in Free, plus:
+                    &#10004; Time tracking
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Track apps & URLs
+                    &#10004; Timesheets
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Custom idle timeout
+                    &#10004; Activity levels
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Auto discard idle time
+                    &#10004; Unlimited screenshots
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Unlimited teams
+                    &#10004; Reports
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Payments & payroll
+                    &#10004; Track apps & URLs
                   </Typography>
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Unlimited integration
+                    &#10004; Custom idle timeout
+                  </Typography>
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10004; Auto discard idle time
+                  </Typography>
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10004; Unlimited teams
+                  </Typography>
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10004; Payments & payroll
+                  </Typography>
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10004; Unlimited integration
                   </Typography>
 
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Limited public API
+                    &#10004; Limited public API
                   </Typography>
 
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Time off & holidays
+                    &#10004; Time off & holidays
                   </Typography>
 
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Scheduling & attendance
+                    &#10004; Scheduling & attendance
                   </Typography>
 
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Invoices
+                    &#10004; Invoices
                   </Typography>
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Client & project budgets
-                  </Typography>
-
-                  <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Timesheet approvals
-                  </Typography>
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Daily & weekly limits
+                    &#10004; Client & project budgets
                   </Typography>
 
                   <Divider />
                   <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Expense tracking
+                    &#10004; Timesheet approvals
+                  </Typography>
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10004; Daily & weekly limits
+                  </Typography>
+
+                  <Divider />
+                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                    &#10004; Expense tracking
                   </Typography>
                 </Box>
-                <Button variant="contained" color="primary" className={classes.primaryAction}>
-                  Select plan
-                </Button>
-                <Box mt={2}>
-                  <Link href="#" color="primary">
-                    Learn more
-                  </Link>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Card variant="outlined" className={classes.card}>
-              <CardHeader title="Enterprise"></CardHeader>
-              <CardContent>
-                <Box px={1}>
-                  <Typography variant="h4" color="textSecondary" component="span">
-                    Get a Customized Plan
-                  </Typography>
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Everything in Pro, plus:
-                  </Typography>
-                  <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
-                    VIP Support
-                  </Typography>
-                  <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Concierge set up
-                  </Typography>
-                  <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Higher limits on public API
-                  </Typography>
-                  <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Unlimited Job sites
-                  </Typography>
-                  <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Pay by bank debit (ACH)
-                  </Typography>
-                  <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
-                    HIPAA compliance
-                  </Typography>
-
-                  <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
-                    SOC-2 Type II Compliance
-                  </Typography>
-
-                  <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
-                    Single sign-on
-                  </Typography>
-                </Box>
-                <Button variant="contained" color="primary" className={classes.primaryAction}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.primaryAction}
+                  onClick={gotoPlanSelection}
+                >
                   Select plan
                 </Button>
                 <Box mt={2}>
