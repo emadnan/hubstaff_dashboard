@@ -59,9 +59,11 @@ function AllFSF() {
   };
 
   const modalStyle = {
-    position: "fixed",
-    top: "15%",
-    left: "40%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    width: "100%",
   };
 
   const mystyle2 = {
@@ -102,7 +104,7 @@ function AllFSF() {
   };
 
   function getFsfById(id) {
-    fetch(`${BASE_URL}/api/getFunctionalSpecificationFormById?id=${id}`)
+    fetch(`${BASE_URL}/api/getFunctionalSpecificationFormById?fsf=${id}`)
       .then((response) => response.json())
       .then((data) => setFsfById(data.Functional))
       .catch((error) => console.log(error));
@@ -135,14 +137,14 @@ function AllFSF() {
 
   function getHasMembers(id) {
     fetch(`${BASE_URL}/api/getFsfAssignToUsersByFsfId/${id}`)
-        .then((response) => response.json())
-        .then((data) => {
-            const temp_array = data.fsf_Assign_to_users.map(element => element.user_id);
-            setHasMembers(temp_array);
-            console.log(temp_array);
-        })
-        .catch((error) => console.log(error));
-};
+      .then((response) => response.json())
+      .then((data) => {
+        const temp_array = data.fsf_Assign_to_users.map(element => element.user_id);
+        setHasMembers(temp_array);
+        console.log(temp_array);
+      })
+      .catch((error) => console.log(error));
+  };
 
   //Initial rendering through useEffect
   useEffect(() => {
@@ -237,6 +239,22 @@ function AllFSF() {
       return () => clearTimeout(timer);
     }
   }, [showAlert4]);
+
+  // Functions for View FSF Modal
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const showModal = (id) => {
+    getFsfById(id)
+    setIsModalOpen(id)
+  }
+
+  const handleOk = () => {
+    setIsModalOpen(false)
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
+
 
   // Functions for Delete FSF Modal
   const [isModalOpen3, setIsModalOpen3] = useState(false);
@@ -374,7 +392,7 @@ function AllFSF() {
               {
                 local.Users.role === 7 ? (
                   <CTableHeaderCell className="text-center" style={mystyle2}>
-                    <IconButton aria-label="view" title='View FSF'>
+                    <IconButton aria-label="view" title='View FSF' onClick={() => showModal(fsf.id)}>
                       <VisibilityIcon htmlColor="#28B463" />
                     </IconButton>
                   </CTableHeaderCell>
@@ -441,6 +459,76 @@ function AllFSF() {
                 </div>
               ))}
             </div>
+          </Modal>
+
+          {/* Modal for View FSF Details */}
+          <Modal
+            title={<div style={{ textAlign: 'center' }}>FSF Details</div>}
+            open={isModalOpen}
+            onOk={handleOk}
+            okButtonProps={{ style: { background: 'blue' } }}
+            onCancel={handleCancel}
+            style={modalStyle}
+            width={800}
+          >
+            {fsfbyid.map((fsf) => {
+              return (
+                <div key={fsf.id}>
+                  <br></br>
+                  <h6 style={perStyle}>WRICEF ID</h6>
+                  <p>{fsf.wricef_id}</p>
+                  <h6 style={perStyle}>Module Name</h6>
+                  <p>{fsf.module_name}</p>
+                  <h6 style={perStyle}>Team Lead</h6>
+                  <p>{fsf.team_lead_details.name}</p>
+                  <h6 style={perStyle}>Requested Date</h6>
+                  <p>{fsf.requested_date}</p>
+                  <h6 style={perStyle}>Type of Development</h6>
+                  <p>{fsf.type_of_development}</p>
+                  <h6 style={perStyle}>Priority</h6>
+                  <p>{fsf.priority}</p>
+                  <h6 style={perStyle}>Usage Frequency</h6>
+                  <p>{fsf.usage_frequency}</p>
+                  <h6 style={perStyle}>Transaction Code</h6>
+                  <p>{fsf.transaction_code}</p>
+                  <h6 style={perStyle}>Authorization Level</h6>
+                  <p>{fsf.authorization_level}</p>
+
+                  <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
+                    <CTableHead color="light" >
+
+                      {/* FSF table heading */}
+                      <CTableRow>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Field Technical Name</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Field Length</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Field Type</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Field Table Name</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>M/O</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>P/S</CTableHeaderCell>
+                      </CTableRow>
+
+                      {fsf.get_fsf_parameter.map((param, index) => (
+                        <CTableRow key={param.id}>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{param.description}</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{param.field_technical_name}</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{param.field_length}</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{param.field_type}</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{param.field_table_name}</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{param.mandatory_or_optional}</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{param.parameter_or_selection}</CTableHeaderCell>
+                        </CTableRow>
+                      ))}
+
+                    </CTableHead>
+                    <CTableBody>
+                    </CTableBody>
+                  </CTable>
+                </div>
+              );
+            })}
           </Modal>
 
           {/* Modal for Deletion Confirmation */}
