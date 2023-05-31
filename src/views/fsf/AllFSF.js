@@ -7,6 +7,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar'
+const BASE_URL = process.env.REACT_APP_BASE_URL
 
 function AllFSF() {
 
@@ -94,28 +95,28 @@ function AllFSF() {
 
   //GET API calls
   function getFsf() {
-    fetch("http://10.3.3.80/api/getFunctionalSpecificationForm")
+    fetch(`${BASE_URL}/api/getFunctionalSpecificationForm`)
       .then((response) => response.json())
       .then((data) => setFsf(data.Functional))
       .catch((error) => console.log(error));
   };
 
   function getFsfById(id) {
-    fetch(`http://10.3.3.80/api/getFunctionalSpecificationFormById?id=${id}`)
+    fetch(`${BASE_URL}/api/getFunctionalSpecificationFormById?id=${id}`)
       .then((response) => response.json())
       .then((data) => setFsfById(data.Functional))
       .catch((error) => console.log(error));
   };
 
   function getMembers() {
-    fetch(`http://10.3.3.80/api/getUsersByRoleId/5`)
+    fetch(`${BASE_URL}/api/getUsersByRoleId/5`)
       .then((response) => response.json())
       .then((data) => setMembers(data.User))
       .catch((error) => console.log(error));
   };
 
   function getFsfonTeamLeadId(token) {
-    fetch("http://10.3.3.80/api/getFunctionalSpecificationFormByTeamLeadId", {
+    fetch(`${BASE_URL}/api/getFunctionalSpecificationFormByTeamLeadId`, {
       headers: {
         "Authorization": `Bearer ${token}`
       }
@@ -133,7 +134,7 @@ function AllFSF() {
   };
 
   function getHasMembers(id) {
-    fetch(`http://10.3.3.80/api/getFsfAssignToUsersByFsfId/${id}`)
+    fetch(`${BASE_URL}/api/getFsfAssignToUsersByFsfId/${id}`)
         .then((response) => response.json())
         .then((data) => {
             const temp_array = data.fsf_Assign_to_users.map(element => element.user_id);
@@ -270,7 +271,7 @@ function AllFSF() {
 
   // API Calls through Fetch
   async function deleteFsf(newid) {
-    await fetch('http://10.3.3.80/api/deleteFunctionalSpecificationForm', {
+    await fetch(`${BASE_URL}/api/deleteFunctionalSpecificationForm`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -292,7 +293,7 @@ function AllFSF() {
   };
 
   async function assignMembers(newid) {
-    await fetch('http://10.3.3.80/api/fsfAssignToUsers', {
+    await fetch(`${BASE_URL}/api/fsfAssignToUsers`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
