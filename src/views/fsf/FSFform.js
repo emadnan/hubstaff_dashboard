@@ -458,7 +458,7 @@ function FSFform() {
         setParameterOrSelection(data.fsf[0].parameter_or_selection)
       })
       .catch((error) => console.log(error))
-  }
+  };
 
   // Add API calls
   async function addFsfStage1() {
