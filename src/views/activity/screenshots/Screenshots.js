@@ -11,6 +11,7 @@ import Divider from '@mui/joy/Divider'
 import Typography from '@mui/joy/Typography'
 import dayjs from 'dayjs'
 import Geocode from 'react-geocode'
+const BASE_URL = process.env.REACT_APP_BASE_URL
 const { RangePicker } = DatePicker
 dayjs.extend(customParseFormat)
 
@@ -32,14 +33,14 @@ const Screenshots = () => {
   const userStyle = {
     color: 'black',
     fontSize: 18,
-  };
+  }
 
   const userStyle2 = {
-    fontFamily: "Arial",
+    fontFamily: 'Arial',
     fontSize: 20,
-    fontWeight: "bold",
-    color: "#0070FF ",
-  };
+    fontWeight: 'bold',
+    color: '#0070FF ',
+  }
 
   //Functions for Date handling
   function onRangeChange(dates, dateStrings) {
@@ -51,15 +52,14 @@ const Screenshots = () => {
       } else if (local.Users.role === 3) {
         getDateWiseScreenshotsCompany(dateStrings[0], dateStrings[1], local.Users.company_id)
       }
-
     } else {
       console.log('Clear')
     }
   }
 
   const handleClearAction = () => {
-    onRangeChange('');
-  };
+    onRangeChange('')
+  }
 
   //Array declaration for API calls
   const [images, setImages] = useState([])
@@ -71,9 +71,9 @@ const Screenshots = () => {
   const userdata = local.Users
   const [address, setAddress] = useState('')
   const [todayWork, setTodayWork] = useState([])
-  const [totalhours, setTotalHours] = useState("");
-  const [totalminutes, setTotalMinutes] = useState("");
-  const [totalseconds, setTotalSeconds] = useState("");
+  const [totalhours, setTotalHours] = useState('')
+  const [totalminutes, setTotalMinutes] = useState('')
+  const [totalseconds, setTotalSeconds] = useState('')
   var filteredUsers = []
   var screenfilter = []
   var addressLocate = ''
@@ -88,8 +88,8 @@ const Screenshots = () => {
 
   // Get API calls
   function getScreenshots() {
-    handleClearAction();
-    fetch('http://10.3.3.80/api/get_Project_Screenshots')
+    handleClearAction()
+    fetch(`${BASE_URL}/api/get_Project_Screenshots`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
@@ -109,7 +109,7 @@ const Screenshots = () => {
   }
 
   function getUsers() {
-    fetch('http://10.3.3.80/api/get_users')
+    fetch(`${BASE_URL}/api/get_users`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
@@ -125,7 +125,7 @@ const Screenshots = () => {
   }
 
   function getDateWiseScreenshots(a, b, c) {
-    fetch(`http://10.3.3.80/api/get_projectscreenshot_by_date/${a}/${b}/${c}`)
+    fetch(`${BASE_URL}/api/get_projectscreenshot_by_date/${a}/${b}/${c}`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1 || local.Users.role === 3) {
@@ -138,42 +138,42 @@ const Screenshots = () => {
         setImages(screenfilter)
       })
       .catch((error) => console.log(error))
-  };
+  }
 
   function getDateWiseScreenshotsCompany(a, b, c) {
-    fetch(`http://10.3.3.80/api/get_projectscreenshot_by_compny_id/${a}/${b}/${c}`)
+    fetch(`${BASE_URL}/api/get_projectscreenshot_by_compny_id/${a}/${b}/${c}`)
       .then((response) => response.json())
       .then((data) => {
-        screenfilter = data;
+        screenfilter = data
         setImages(screenfilter)
       })
       .catch((error) => console.log(error))
-  };
+  }
 
   function getProjects() {
-    fetch('http://10.3.3.80/api/getproject')
+    fetch(`${BASE_URL}/api/getproject`)
       .then((response) => response.json())
       .then((data) => setProject(data.projects))
       .catch((error) => console.log(error))
   }
 
   function getTodayWorkedTime() {
-    setTotalHours('');
-    setTotalMinutes('');
-    setTotalSeconds('');
-    getTodayWorked(user_id);
+    setTotalHours('')
+    setTotalMinutes('')
+    setTotalSeconds('')
+    getTodayWorked(user_id)
   }
 
   function getTodayWorked(id) {
-    fetch(`http://10.3.3.80/api/getTotalWorkbyUserId/${id}`)
+    fetch(`${BASE_URL}/api/getTotalWorkbyUserId/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        setTotalHours(data.hours);
-        setTotalMinutes(data.minutes);
-        setTotalSeconds(data.seconds);
+        setTotalHours(data.hours)
+        setTotalMinutes(data.minutes)
+        setTotalSeconds(data.seconds)
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   //Functions for Selected image
   const [isViewerOpen, setIsViewerOpen] = useState(false)
@@ -231,17 +231,17 @@ const Screenshots = () => {
 
   return (
     <>
-      {
-        local.Users.role === 3 ? (
-          <div>
-            <h3>Location {addresses.length > 0 && <h3 style={userStyle}>{addresses}</h3>}</h3>
-            <br></br>
-            <h3>Today Worked {totalhours}:{totalminutes}:{totalseconds}</h3>
-          </div>
-        ) : (
-          <h3 style={userStyle2}>{local.Users.name}</h3>
-        ) 
-      }
+      {local.Users.role === 3 ? (
+        <div>
+          <h3>Location {addresses.length > 0 && <h3 style={userStyle}>{addresses}</h3>}</h3>
+          <br></br>
+          <h3>
+            Today Worked {totalhours}:{totalminutes}:{totalseconds}
+          </h3>
+        </div>
+      ) : (
+        <h3 style={userStyle2}>{local.Users.name}</h3>
+      )}
       <div className="row">
         <div className="col-md-4">
           <br></br>
@@ -274,8 +274,112 @@ const Screenshots = () => {
       <div style={imageContainer}>
         {user_id
           ? images
-            .filter((image) => image.user_id === user_id)
-            .map((image) => {
+              .filter((image) => image.user_id === user_id)
+              .map((image) => {
+                return (
+                  <>
+                    {image.get_timings.map((timing) => (
+                      <div key={timing.id} style={{ cursor: 'pointer' }}>
+                        <Card
+                          variant="outlined"
+                          sx={{ width: 240, my: 1, mx: 1 }}
+                          onClick={() => handleClick(timing.getattechments)}
+                        >
+                          <CardOverflow>
+                            <AspectRatio ratio="2">
+                              {timing.getattechments.map((attach) => (
+                                <div key={attach.id} style={{ position: 'relative' }}>
+                                  <img src={attach.path_url} alt={attach.path_url} />
+                                  <div
+                                    style={{
+                                      position: 'absolute',
+                                      top: '50%',
+                                      left: '50%',
+                                      transform: 'translate(-50%, -50%)',
+                                      backdropFilter: 'blur(10px)',
+                                      padding: '8px',
+                                      borderRadius: '4px',
+                                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    }}
+                                  >
+                                    {/* Replace the count with your desired value */}
+                                    <span style={{ fontSize: '18px', fontWeight: 'bold' }}>
+                                      {timing.getattechments.length}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </AspectRatio>
+                          </CardOverflow>
+                          <Typography level="h2" sx={{ fontSize: 'md', mt: 1 }}>
+                            {image.project_name}
+                          </Typography>
+                          <Typography level="body2" sx={{ mt: 0.5, mb: 1 }}>
+                            {image.stream_name}
+                          </Typography>
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 0.5,
+                              mx: 'auto',
+                              my: 0.5,
+                            }}
+                          >
+                            {timing.getattechments.map((_, index) => (
+                              <Box
+                                key={index}
+                                sx={{
+                                  borderRadius: '50%',
+                                  width: `max(${6 - index}px, 3px)`,
+                                  height: `max(${6 - index}px, 3px)`,
+                                  bgcolor: index === 0 ? 'primary.solidBg' : 'background.level3',
+                                }}
+                              />
+                            ))}
+                          </Box>
+                          <Divider />
+                          <CardOverflow
+                            variant="soft"
+                            sx={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              gap: 1,
+                              py: 1,
+                              px: 'var(--Card-padding)',
+                              bgcolor: 'background.level1',
+                            }}
+                          >
+                            <Typography
+                              level="body3"
+                              sx={{ fontWeight: 'md', color: 'text.secondary' }}
+                            >
+                              {new Date(timing.start_time)
+                                .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                                .substring(0, 11)}{' '}
+                              -
+                              {new Date(timing.end_time)
+                                .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                                .substring(0, 11)}
+                            </Typography>
+                            <Typography
+                              level="body3"
+                              sx={{ fontWeight: 'md', color: 'text.secondary' }}
+                            >
+                              {new Intl.DateTimeFormat('en-GB', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: '2-digit',
+                              }).format(new Date(timing.created_at))}
+                            </Typography>
+                          </CardOverflow>
+                        </Card>
+                      </div>
+                    ))}
+                  </>
+                )
+              })
+          : images.map((image) => {
               return (
                 <>
                   {image.get_timings.map((timing) => (
@@ -378,111 +482,7 @@ const Screenshots = () => {
                   ))}
                 </>
               )
-            })
-          : images.map((image) => {
-            return (
-              <>
-                {image.get_timings.map((timing) => (
-                  <div key={timing.id} style={{ cursor: 'pointer' }}>
-                    <Card
-                      variant="outlined"
-                      sx={{ width: 240, my: 1, mx: 1 }}
-                      onClick={() => handleClick(timing.getattechments)}
-                    >
-                      <CardOverflow>
-                        <AspectRatio ratio="2">
-                          {timing.getattechments.map((attach) => (
-                            <div key={attach.id} style={{ position: 'relative' }}>
-                              <img src={attach.path_url} alt={attach.path_url} />
-                              <div
-                                style={{
-                                  position: 'absolute',
-                                  top: '50%',
-                                  left: '50%',
-                                  transform: 'translate(-50%, -50%)',
-                                  backdropFilter: 'blur(10px)',
-                                  padding: '8px',
-                                  borderRadius: '4px',
-                                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                                }}
-                              >
-                                {/* Replace the count with your desired value */}
-                                <span style={{ fontSize: '18px', fontWeight: 'bold' }}>
-                                  {timing.getattechments.length}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                        </AspectRatio>
-                      </CardOverflow>
-                      <Typography level="h2" sx={{ fontSize: 'md', mt: 1 }}>
-                        {image.project_name}
-                      </Typography>
-                      <Typography level="body2" sx={{ mt: 0.5, mb: 1 }}>
-                        {image.stream_name}
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 0.5,
-                          mx: 'auto',
-                          my: 0.5,
-                        }}
-                      >
-                        {timing.getattechments.map((_, index) => (
-                          <Box
-                            key={index}
-                            sx={{
-                              borderRadius: '50%',
-                              width: `max(${6 - index}px, 3px)`,
-                              height: `max(${6 - index}px, 3px)`,
-                              bgcolor: index === 0 ? 'primary.solidBg' : 'background.level3',
-                            }}
-                          />
-                        ))}
-                      </Box>
-                      <Divider />
-                      <CardOverflow
-                        variant="soft"
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          gap: 1,
-                          py: 1,
-                          px: 'var(--Card-padding)',
-                          bgcolor: 'background.level1',
-                        }}
-                      >
-                        <Typography
-                          level="body3"
-                          sx={{ fontWeight: 'md', color: 'text.secondary' }}
-                        >
-                          {new Date(timing.start_time)
-                            .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                            .substring(0, 11)}{' '}
-                          -
-                          {new Date(timing.end_time)
-                            .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                            .substring(0, 11)}
-                        </Typography>
-                        <Typography
-                          level="body3"
-                          sx={{ fontWeight: 'md', color: 'text.secondary' }}
-                        >
-                          {new Intl.DateTimeFormat('en-GB', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: '2-digit',
-                          }).format(new Date(timing.created_at))}
-                        </Typography>
-                      </CardOverflow>
-                    </Card>
-                  </div>
-                ))}
-              </>
-            )
-          })}
+            })}
         <div style={imageViewerStyle}>
           {isViewerOpen && imagesUrls && (
             <ImageViewer

@@ -21,7 +21,7 @@ import {
   Checkbox,
   Typography,
 } from '@mui/material'
-
+const BASE_URL = process.env.REACT_APP_BASE_URL
 const theme = createTheme()
 
 const Login = () => {
@@ -88,33 +88,32 @@ const Login = () => {
     setFormErrors(errors)
 
     try {
-      let result = await fetch('http://10.3.3.80/api/login', {
-      method: 'POST',
-      body: JSON.stringify(item),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    if (result.status === 400) {
-      handleButtonClick1()
-    } else if (result.status === 500) {
-      handleButtonClick3()
-    } else if (result.status === 401) {
-      handleButtonClick4()
-    } else {
-      result = await result.json()
-      localStorage.setItem('user-info', JSON.stringify(result))
-      handleButtonClick2()
-      setTimeout(async () => {
-        await navigate('/Dashboard')
-      }, 2000)
-    }
+      let result = await fetch(`${BASE_URL}/api/login`, {
+        method: 'POST',
+        body: JSON.stringify(item),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      if (result.status === 400) {
+        handleButtonClick1()
+      } else if (result.status === 500) {
+        handleButtonClick3()
+      } else if (result.status === 401) {
+        handleButtonClick4()
+      } else {
+        result = await result.json()
+        localStorage.setItem('user-info', JSON.stringify(result))
+        handleButtonClick2()
+        setTimeout(async () => {
+          await navigate('/Dashboard')
+        }, 2000)
+      }
     } catch (error) {
       if (Object.keys(errors).length === 0) {
         handleButtonClick5()
       }
     }
-    
   }
 
   //Functions for Login Failed

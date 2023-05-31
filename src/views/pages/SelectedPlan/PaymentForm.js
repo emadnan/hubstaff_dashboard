@@ -2,6 +2,7 @@ import { React, useState } from 'react'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
 import TextField from '@mui/material/TextField'
+import PropTypes from 'prop-types'
 
 export default function PaymentForm({ handlePaymentFormChange }) {
   const [nameOnCard, setNameOnCard] = useState()
@@ -83,4 +84,8 @@ export default function PaymentForm({ handlePaymentFormChange }) {
       </Grid>
     </>
   )
+}
+
+PaymentForm.propTypes = {
+  handlePaymentFormChange: PropTypes.func.isRequired,
 }

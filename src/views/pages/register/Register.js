@@ -11,6 +11,7 @@ import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'
 import HttpsIcon from '@mui/icons-material/Https'
 import MailIcon from '@mui/icons-material/Mail'
 import { Box, TextField, Grid, IconButton, InputAdornment, Button, Typography } from '@mui/material'
+const BASE_URL = process.env.REACT_APP_BASE_URL
 
 const theme = createTheme()
 
@@ -80,7 +81,7 @@ const Register = () => {
     let response
 
     try {
-      response = await fetch('http://10.3.3.80/api/register', {
+      response = await fetch(`${BASE_URL}/api/register`, {
         method: 'POST',
         body: JSON.stringify(item),
         headers: {
@@ -132,7 +133,7 @@ const Register = () => {
   //   let item = { name, email, password, confirmpass, role: 3 }
   //   let response
   //   try {
-  //     response = await fetch('http://10.3.3.80/api/register', {
+  //     response = await fetch(`${BASE_URL}/api/register`, {
   //       method: 'POST',
   //       body: JSON.stringify(item),
   //       headers: {

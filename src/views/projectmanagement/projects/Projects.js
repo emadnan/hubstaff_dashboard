@@ -9,7 +9,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd'
 import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar'
 import moment from 'moment'
-
+const BASE_URL = process.env.REACT_APP_BASE_URL
 const Projects = () => {
   // Variable declarations
   const [department_id, setDepartmentId] = useState('')
@@ -422,7 +422,7 @@ const Projects = () => {
 
   // Get API calls
   function getList() {
-    fetch('http://10.3.3.80/api/getproject')
+    fetch(`${BASE_URL}/api/getproject`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
@@ -438,14 +438,14 @@ const Projects = () => {
   }
 
   function getProjectById(id) {
-    fetch(`http://10.3.3.80/api/get-project-by-project-id/${id}`)
+    fetch(`${BASE_URL}/api/get-project-by-project-id/${id}`)
       .then((response) => response.json())
       .then((data) => setByProject(data.projects))
       .catch((error) => console.log(error))
   }
 
   function getProjectById2(id) {
-    fetch(`http://10.3.3.80/api/get-project-by-project-id/${id}`)
+    fetch(`${BASE_URL}/api/get-project-by-project-id/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setByProject2(data.projects)
@@ -462,7 +462,7 @@ const Projects = () => {
   }
 
   function getCompany() {
-    fetch('http://10.3.3.80/api/getcompany')
+    fetch(`${BASE_URL}/api/getcompany`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
@@ -478,7 +478,7 @@ const Projects = () => {
   }
 
   function getUsers() {
-    fetch('http://10.3.3.80/api/get_users')
+    fetch(`${BASE_URL}/api/get_users`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
@@ -494,7 +494,7 @@ const Projects = () => {
   }
 
   function getDepartment() {
-    fetch('http://10.3.3.80/api/getdepartment')
+    fetch(`${BASE_URL}/api/getdepartment`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
@@ -510,14 +510,14 @@ const Projects = () => {
   }
 
   function getStreams() {
-    fetch('http://10.3.3.80/api/get-streams')
+    fetch(`${BASE_URL}/api/get-streams`)
       .then((response) => response.json())
       .then((data) => setStream(data.Streams))
       .catch((error) => console.log(error))
   }
 
   function getHasRole(proj_id, stream_id) {
-    fetch(`http://10.3.3.80/api/get_assign_project_by_project_id/${proj_id}/${stream_id}`)
+    fetch(`${BASE_URL}/api/get_assign_project_by_project_id/${proj_id}/${stream_id}`)
       .then((response) => response.json())
       .then((data) => {
         console.log(data)
@@ -533,7 +533,7 @@ const Projects = () => {
     let user = { department_id, company_id, project_name, description, start_date, dead_line }
     console.log(user)
 
-    await fetch('http://10.3.3.80/api/add_project', {
+    await fetch(`${BASE_URL}/api/add_project`, {
       method: 'POST',
       body: JSON.stringify(user),
       headers: {
@@ -555,7 +555,7 @@ const Projects = () => {
 
   //Assign users API call
   async function addAssignProject(newid) {
-    await fetch('http://10.3.3.80/api/assign_projects', {
+    await fetch(`${BASE_URL}/api/assign_projects`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -582,7 +582,7 @@ const Projects = () => {
 
   // Delete API call
   async function deleteProject(newid) {
-    await fetch('http://10.3.3.80/api/delete-project', {
+    await fetch(`${BASE_URL}/api/delete-project`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -606,7 +606,7 @@ const Projects = () => {
 
   // Update API call
   async function updateProject(newid) {
-    await fetch('http://10.3.3.80/api/update-project', {
+    await fetch(`${BASE_URL}/api/update-project`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

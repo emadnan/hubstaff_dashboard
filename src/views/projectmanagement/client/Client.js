@@ -1,297 +1,296 @@
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
-import { Button, Modal, Select, Form } from 'antd';
-import { React, useEffect, useState } from 'react';
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import Alert from '@mui/material/Alert';
+import { Button, Modal, Select, Form } from 'antd'
+import { React, useEffect, useState } from 'react'
+import IconButton from '@mui/material/IconButton'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
+import Alert from '@mui/material/Alert'
+const BASE_URL = process.env.REACT_APP_BASE_URL
 
-const { Option } = Select;
+const { Option } = Select
 
 const Client = () => {
-
   // Variable declarations
-  const [client_name, setClientName] = useState("");
-  const [project, setProject] = useState("");
-  const [invoicing, setInvoicing] = useState("");
-  const [project_status, setProjectStatus] = useState("");
+  const [client_name, setClientName] = useState('')
+  const [project, setProject] = useState('')
+  const [invoicing, setInvoicing] = useState('')
+  const [project_status, setProjectStatus] = useState('')
 
   // CSS Styling
   const modalStyle = {
-    position: "fixed",
-    top: "25%",
-    left: "40%",
-  };
+    position: 'fixed',
+    top: '25%',
+    left: '40%',
+  }
 
   const modalStyle2 = {
-    position: "fixed",
-    top: "10%",
-    left: "55%",
-    transform: "translateX(-50%)",
-  };
+    position: 'fixed',
+    top: '10%',
+    left: '55%',
+    transform: 'translateX(-50%)',
+  }
 
   const mystyle = {
-    color: "white",
-    backgroundColor: "#0070FF ",
-    padding: "15px",
-    fontFamily: "Arial",
+    color: 'white',
+    backgroundColor: '#0070FF ',
+    padding: '15px',
+    fontFamily: 'Arial',
     textAlign: 'center',
     alignSelf: 'flex-end',
-  };
+  }
 
   const buttonStyle = {
-    float: "right",
-    padding: "2px",
-    width: "120px",
-    backgroundColor: "#0070ff",
-    fontWeight: "bold",
-    color: "white",
+    float: 'right',
+    padding: '2px',
+    width: '120px',
+    backgroundColor: '#0070ff',
+    fontWeight: 'bold',
+    color: 'white',
   }
 
   // Functions of Add Client Modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const showModal = () => {
-    setIsModalOpen(true);
-  };
+    setIsModalOpen(true)
+  }
 
   const handleOk = () => {
     addClient()
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
   const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
   // Functions for Delete Client Modal
-  const [isModalOpen2, setIsModalOpen2] = useState(false);
+  const [isModalOpen2, setIsModalOpen2] = useState(false)
   const showModal2 = (id) => {
-    setIsModalOpen2(id);
-  };
+    setIsModalOpen2(id)
+  }
 
   const handleOk2 = () => {
-    deleteClient(isModalOpen2);
-    setIsModalOpen2(false);
-  };
+    deleteClient(isModalOpen2)
+    setIsModalOpen2(false)
+  }
 
   const handleCancel2 = () => {
-    setIsModalOpen2(false);
-  };
+    setIsModalOpen2(false)
+  }
 
   // Functions for Update Client Modal
-  const [isModalOpen3, setIsModalOpen3] = useState(false);
+  const [isModalOpen3, setIsModalOpen3] = useState(false)
   const showModal3 = (id) => {
-    setIsModalOpen3(id);
-  };
+    setIsModalOpen3(id)
+  }
 
   const handleOk3 = () => {
-    updateClient(isModalOpen3);
-    setIsModalOpen3(false);
-  };
+    updateClient(isModalOpen3)
+    setIsModalOpen3(false)
+  }
 
   const handleCancel3 = () => {
-    setIsModalOpen3(false);
-  };
+    setIsModalOpen3(false)
+  }
 
   // Functions for Add Client Success
-  const [showAlert1, setShowAlert1] = useState(false);
+  const [showAlert1, setShowAlert1] = useState(false)
 
   function handleButtonClick1() {
-    setShowAlert1(true);
+    setShowAlert1(true)
   }
 
   function handleCloseAlert1() {
-    setShowAlert1(false);
+    setShowAlert1(false)
   }
 
   useEffect(() => {
     if (showAlert1) {
       const timer = setTimeout(() => {
-        setShowAlert1(false);
-      }, 3000);
+        setShowAlert1(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert1]);
+  }, [showAlert1])
 
   // Functions for Add Client Failure
-  const [showAlert2, setShowAlert2] = useState(false);
+  const [showAlert2, setShowAlert2] = useState(false)
 
   function handleButtonClick2() {
-    setShowAlert2(true);
+    setShowAlert2(true)
   }
 
   function handleCloseAlert2() {
-    setShowAlert2(false);
+    setShowAlert2(false)
   }
 
   useEffect(() => {
     if (showAlert2) {
       const timer = setTimeout(() => {
-        setShowAlert2(false);
-      }, 3000);
+        setShowAlert2(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert2]);
+  }, [showAlert2])
 
   // Functions for Delete Client Success
-  const [showAlert3, setShowAlert3] = useState(false);
+  const [showAlert3, setShowAlert3] = useState(false)
 
   function handleButtonClick3() {
-    setShowAlert3(true);
+    setShowAlert3(true)
   }
 
   function handleCloseAlert3() {
-    setShowAlert3(false);
+    setShowAlert3(false)
   }
 
   useEffect(() => {
     if (showAlert3) {
       const timer = setTimeout(() => {
-        setShowAlert3(false);
-      }, 3000);
+        setShowAlert3(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert3]);
+  }, [showAlert3])
 
   // Functions for Delete Client Failure
-  const [showAlert4, setShowAlert4] = useState(false);
+  const [showAlert4, setShowAlert4] = useState(false)
 
   function handleButtonClick4() {
-    setShowAlert4(true);
+    setShowAlert4(true)
   }
 
   function handleCloseAlert4() {
-    setShowAlert4(false);
+    setShowAlert4(false)
   }
 
   useEffect(() => {
     if (showAlert4) {
       const timer = setTimeout(() => {
-        setShowAlert4(false);
-      }, 3000);
+        setShowAlert4(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert4]);
+  }, [showAlert4])
 
   // Functions for Update Client Success
-  const [showAlert5, setShowAlert5] = useState(false);
+  const [showAlert5, setShowAlert5] = useState(false)
 
   function handleButtonClick5() {
-    setShowAlert5(true);
+    setShowAlert5(true)
   }
 
   function handleCloseAlert5() {
-    setShowAlert5(false);
+    setShowAlert5(false)
   }
 
   useEffect(() => {
     if (showAlert5) {
       const timer = setTimeout(() => {
-        setShowAlert5(false);
-      }, 3000);
+        setShowAlert5(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert5]);
+  }, [showAlert5])
 
   // Functions for Update Client Failure
-  const [showAlert6, setShowAlert6] = useState(false);
+  const [showAlert6, setShowAlert6] = useState(false)
 
   function handleButtonClick6() {
-    setShowAlert6(true);
+    setShowAlert6(true)
   }
 
   function handleCloseAlert6() {
-    setShowAlert6(false);
+    setShowAlert6(false)
   }
 
   useEffect(() => {
     if (showAlert6) {
       const timer = setTimeout(() => {
-        setShowAlert6(false);
-      }, 3000);
+        setShowAlert6(false)
+      }, 3000)
 
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer)
     }
-  }, [showAlert6]);
+  }, [showAlert6])
 
   const handleProjectStatus = (value) => {
-    setProjectStatus(value);
-  };
+    setProjectStatus(value)
+  }
 
   // Get API calls
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([])
 
   function getClients() {
-    fetch("http://10.3.3.80/api/get_client")
+    fetch('http://10.3.3.80/api/get_client')
       .then((response) => response.json())
       .then((data) => setUsers(data.Departments))
-      .catch((error) => console.log(error));
+      .catch((error) => console.log(error))
   }
 
   useEffect(() => {
     getClients()
-  }, []);
+  }, [])
 
   // Add API call
   async function addClient() {
     let item = { client_name, project, invoicing, project_status }
 
-    await fetch("http://10.3.3.80/api/add_client",
-      {
-        method: 'POST',
-        body: JSON.stringify(item),
-        headers: {
-          'Content-Type': 'application/json'
-        },
-
-      }).then(response => {
+    await fetch('http://10.3.3.80/api/add_client', {
+      method: 'POST',
+      body: JSON.stringify(item),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
         if (response.ok) {
-          handleButtonClick1();
+          handleButtonClick1()
           getClients()
         } else {
-          handleButtonClick2();
+          handleButtonClick2()
         }
       })
-      .catch(error => {
-        console.error(error);
-      });
+      .catch((error) => {
+        console.error(error)
+      })
   }
 
   // Delete API call
   async function deleteClient(newid) {
-    await fetch('http://10.3.3.80/api/delete_client', {
+    await fetch(`${BASE_URL}/api/delete_client`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        id: newid
-      })
-    }).then(response => {
-      if (response.ok) {
-        handleButtonClick3();
-        getClients()
-      } else {
-        handleButtonClick4();
-      }
+        id: newid,
+      }),
     })
-      .catch(error => {
-        console.error(error);
-      });
-
+      .then((response) => {
+        if (response.ok) {
+          handleButtonClick3()
+          getClients()
+        } else {
+          handleButtonClick4()
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
   }
 
   // Update API call
   async function updateClient(newid) {
-    await fetch('http://10.3.3.80/api/update_client', {
+    await fetch(`${BASE_URL}/api/update_client`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         id: newid,
@@ -299,44 +298,57 @@ const Client = () => {
         project: project,
         invoicing: invoicing,
         project_status: project_status,
-      })
-    }).then(response => {
-      if (response.ok) {
-        handleButtonClick5();
-        getClients()
-      } else {
-        handleButtonClick6();
-      }
+      }),
     })
-      .catch(error => {
-        console.error(error);
-      });
-
+      .then((response) => {
+        if (response.ok) {
+          handleButtonClick5()
+          getClients()
+        } else {
+          handleButtonClick6()
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
   }
 
   return (
     <>
-      <div className='row'>
-        <div className='col-md 6'>
+      <div className="row">
+        <div className="col-md 6">
           <h3>Clients</h3>
         </div>
-        <div className='col-md 6'>
+        <div className="col-md 6">
           {/* Add Client Button */}
-          <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>Add Client</Button>
+          <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>
+            Add Client
+          </Button>
         </div>
       </div>
       <br></br>
       <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-        <CTableHead color="light" >
-
+        <CTableHead color="light">
           {/* Clients table heading */}
           <CTableRow>
-            <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Client Name</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Project</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Invoicing</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Project Status</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Sr/No
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Client Name
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Project
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Invoicing
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Project Status
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Actions
+            </CTableHeaderCell>
           </CTableRow>
 
           {/* Get API Users */}
@@ -349,22 +361,18 @@ const Client = () => {
               <CTableHeaderCell className="text-center">{client.project_status}</CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={{ marginLeft: '85%' }}>
                 <IconButton aria-label="update" onClick={() => showModal3(client.id)}>
-                  <EditIcon htmlColor='#28B463' />
+                  <EditIcon htmlColor="#28B463" />
                 </IconButton>
                 <IconButton aria-label="delete" onClick={() => showModal2(client.id)}>
-                  <DeleteIcon htmlColor='#FF0000' />
+                  <DeleteIcon htmlColor="#FF0000" />
                 </IconButton>
-
               </CTableHeaderCell>
             </CTableRow>
           ))}
-
         </CTableHead>
         <CTableBody>
-
           {/* Modal for Add Client */}
           <Modal title="Add a Client" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-
             <br></br>
 
             <div className="form-outline mb-3">
@@ -410,16 +418,24 @@ const Client = () => {
                 </Select>
               </Form.Item>
             </div>
-
           </Modal>
 
           {/* Modal for deletion confirmation */}
-          <Modal title="Are you sure you want to delete?" open={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2} style={modalStyle}>
-          </Modal>
+          <Modal
+            title="Are you sure you want to delete?"
+            open={isModalOpen2}
+            onOk={handleOk2}
+            onCancel={handleCancel2}
+            style={modalStyle}
+          ></Modal>
 
           {/* Modal for Update Client */}
-          <Modal title="Update a Client" open={isModalOpen3} onOk={handleOk3} onCancel={handleCancel3}>
-
+          <Modal
+            title="Update a Client"
+            open={isModalOpen3}
+            onOk={handleOk3}
+            onCancel={handleCancel3}
+          >
             <br></br>
 
             <div className="form-outline mb-3">
@@ -465,7 +481,6 @@ const Client = () => {
                 </Select>
               </Form.Item>
             </div>
-
           </Modal>
 
           {/* Alert for Add Client Success*/}
@@ -509,12 +524,10 @@ const Client = () => {
               Failed to Update Client
             </Alert>
           )}
-
-
         </CTableBody>
       </CTable>
     </>
-  );
+  )
 }
 
-export default Client;
+export default Client

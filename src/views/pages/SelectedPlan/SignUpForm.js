@@ -5,6 +5,7 @@ import TextField from '@mui/material/TextField'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { InputAdornment, IconButton } from '@mui/material'
+import PropTypes from 'prop-types'
 
 export default function SignUpForm({ handleSignUpFormChange }) {
   const [name, setName] = useState('')
@@ -116,4 +117,8 @@ export default function SignUpForm({ handleSignUpFormChange }) {
       </Grid>
     </>
   )
+}
+
+SignUpForm.propTypes = {
+  handleSignUpFormChange: PropTypes.func.isRequired,
 }
