@@ -19,9 +19,9 @@ import { Box, TextField, Typography } from '@mui/material'
 import Tooltip from '@mui/material/Tooltip'
 import AddIcon from '@mui/icons-material/Add'
 import CloseIcon from '@mui/icons-material/Close'
-const BASE_URL = process.env.REACT_APP_BASE_URL
 
 function FSFform() {
+
   const local = JSON.parse(localStorage.getItem('user-info'))
 
   //Variable declarations
@@ -398,12 +398,12 @@ function FSFform() {
   useEffect(() => {
     getProjects()
     getUsers()
-    getTeamLeads(local.Users.company_id)
+    getTeamLeads(local.Users.company_id);
   }, [])
 
   //GET API calls
   function getProjects() {
-    fetch(`${BASE_URL}/api/getproject`)
+    fetch('http://10.3.3.80/api/getproject')
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === '1') {
@@ -417,7 +417,7 @@ function FSFform() {
   }
 
   function getUsers() {
-    fetch(`${BASE_URL}/api/get_users`)
+    fetch('http://10.3.3.80/api/get_users')
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === '1') {
@@ -431,21 +431,21 @@ function FSFform() {
   }
 
   function getTeamLeads(id) {
-    fetch(`${BASE_URL}/api/getTeamLeadByCompanyId/${id}`)
+    fetch(`http://10.3.3.80/api/getTeamLeadByCompanyId/${id}`)
       .then((response) => response.json())
       .then((data) => setTeamLeads(data.Team_Leads))
       .catch((error) => console.log(error))
   }
 
   function getFSFParameters() {
-    fetch(`${BASE_URL}/api/getFsfHasParameterByFsfId/${ref_id}`)
+    fetch(`http://10.3.3.80/api/getFsfHasParameterByFsfId/${ref_id}`)
       .then((response) => response.json())
       .then((data) => setPostData(data.fsf_has_parameter))
       .catch((error) => console.log(error))
   }
 
   function getFsfHasParameterByFsfId(id) {
-    fetch(`${BASE_URL}/api/getFsfHasParameterById/${id}`)
+    fetch(`http://10.3.3.80/api/getFsfHasParameterById/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setFsfHasParameter(data.fsf)
@@ -458,7 +458,7 @@ function FSFform() {
         setParameterOrSelection(data.fsf[0].parameter_or_selection)
       })
       .catch((error) => console.log(error))
-  }
+  };
 
   // Add API calls
   async function addFsfStage1() {
@@ -474,7 +474,7 @@ function FSFform() {
     }
     console.log(data)
 
-    await fetch(`${BASE_URL}/api/addFunctionalSpecificationForm/1/`, {
+    await fetch('http://10.3.3.80/api/addFunctionalSpecificationForm/1/', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -501,7 +501,7 @@ function FSFform() {
     let data = { id: ref_id, transaction_code, authorization_level }
     console.log(data)
 
-    await fetch(`${BASE_URL}/api/addFunctionalSpecificationForm/2/`, {
+    await fetch('http://10.3.3.80/api/addFunctionalSpecificationForm/2/', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -538,7 +538,7 @@ function FSFform() {
     console.log(data)
 
     try {
-      const response = await fetch(`${BASE_URL}/api/addFunctionalSpecificationForm/3/`, {
+      const response = await fetch('http://10.3.3.80/api/addFunctionalSpecificationForm/3/', {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
@@ -562,7 +562,7 @@ function FSFform() {
 
   // Delete FSF Parameter API call
   async function deleteFSF(id) {
-    await fetch(`${BASE_URL}/api/DeleteFsfHasParameterByFsfId`, {
+    await fetch(`http://10.3.3.80/api/DeleteFsfHasParameterByFsfId`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -585,7 +585,7 @@ function FSFform() {
 
   // Update FSF Parameter API call
   async function updateFSF(newid) {
-    await fetch(`${BASE_URL}/api/UpdateFsfHasParameterByFsfId`, {
+    await fetch('http://10.3.3.80/api/UpdateFsfHasParameterByFsfId', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -705,9 +705,7 @@ function FSFform() {
                     sx={{ width: '100%' }}
                   >
                     {teamlead.map((team) => (
-                      <MenuItem value={team.id} key={team.id}>
-                        {team.name}
-                      </MenuItem>
+                      <MenuItem value={team.id} key={team.id}>{team.name}</MenuItem>
                     ))}
                   </TextField>
                 </Box>
