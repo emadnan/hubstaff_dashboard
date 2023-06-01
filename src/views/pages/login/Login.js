@@ -61,6 +61,14 @@ const Login = () => {
     })
   }
 
+  useEffect(() => {
+    const sessionToken = JSON.parse(sessionStorage.getItem('user-info'))?.token;
+
+    if (sessionToken) {
+      navigate("/Dashboard")
+    }
+  },);
+
   const handleFocus = (e) => {
     const { name } = e.target
 
@@ -104,6 +112,7 @@ const Login = () => {
       } else {
         result = await result.json()
         localStorage.setItem('user-info', JSON.stringify(result))
+        sessionStorage.setItem('user-info', JSON.stringify(result))
         handleButtonClick2()
         setTimeout(async () => {
           await navigate('/Dashboard')

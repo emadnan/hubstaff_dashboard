@@ -475,6 +475,20 @@ export const _navEmployee = [
     to: '/expenses',
     icon: <CIcon icon={cilCash} customClassName="nav-icon" />,
   },
+  {
+    component: CNavGroup,
+    name: 'FSF',
+    to: '/activity',
+    icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'FSF',
+        to: '/allfsf',
+        icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
+      },
+    ],
+  },
 ]
 
 export const _navFunctional = [

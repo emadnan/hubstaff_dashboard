@@ -49,8 +49,10 @@ const Screenshots = () => {
       console.log('From: ', dateStrings[0], ', to: ', dateStrings[1])
       if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
         getDateWiseScreenshots(dateStrings[0], dateStrings[1], local.Users.user_id)
+        getAllWorkedTimeByInterval(dateStrings[0],dateStrings[1],local.Users.user_id)
       } else if (local.Users.role === 3) {
         getDateWiseScreenshotsCompany(dateStrings[0], dateStrings[1], local.Users.company_id)
+        getAllWorkedTimeByInterval(dateStrings[0],dateStrings[1],user_id)
       }
     } else {
       console.log('Clear')
@@ -74,6 +76,9 @@ const Screenshots = () => {
   const [totalhours, setTotalHours] = useState('')
   const [totalminutes, setTotalMinutes] = useState('')
   const [totalseconds, setTotalSeconds] = useState('')
+  const [alltotalhours, setAllTotalHours] = useState('')
+  const [alltotalminutes, setAllTotalMinutes] = useState('')
+  const [alltotalseconds, setAllTotalSeconds] = useState('') 
   var filteredUsers = []
   var screenfilter = []
   var addressLocate = ''
@@ -117,7 +122,7 @@ const Screenshots = () => {
         } else if (local.Users.role === 3) {
           filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id)
         } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
-          filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
+          filteredUsers = data.Users.filter((user) => user.id === user_id)
         }
         setUsers(filteredUsers.slice(1))
       })
@@ -171,6 +176,17 @@ const Screenshots = () => {
         setTotalHours(data.hours)
         setTotalMinutes(data.minutes)
         setTotalSeconds(data.seconds)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  function getAllWorkedTimeByInterval(a, b, c) {
+    fetch(`${BASE_URL}/api/getSumByDateWithUserId/${a}/${b}/${c}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setAllTotalHours(data.hours)
+        setAllTotalMinutes(data.minutes)
+        setAllTotalSeconds(data.seconds)
       })
       .catch((error) => console.log(error))
   }
@@ -235,13 +251,15 @@ const Screenshots = () => {
         <div>
           <h3>Location {addresses.length > 0 && <h3 style={userStyle}>{addresses}</h3>}</h3>
           <br></br>
-          <h3>
-            Today Worked {totalhours}:{totalminutes}:{totalseconds}
-          </h3>
+          <h3>Today Worked  {totalhours}:{totalminutes}:{totalseconds}</h3>
+          <h3>Total Worked  {alltotalhours}:{alltotalminutes}:{alltotalseconds}</h3>
         </div>
-      ) : (
-        <h3 style={userStyle2}>{local.Users.name}</h3>
-      )}
+      ) : null}
+      {local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7 ? (
+        <div>
+          <h3>Total Worked  {alltotalhours}:{alltotalminutes}:{alltotalseconds}</h3>
+        </div>
+      ) : null}
       <div className="row">
         <div className="col-md-4">
           <br></br>
