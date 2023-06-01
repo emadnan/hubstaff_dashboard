@@ -65,7 +65,7 @@ const Login = () => {
     const sessionToken = JSON.parse(sessionStorage.getItem('user-info'))?.token;
 
     if (sessionToken) {
-      navigate("/Dashboard")
+      navigate('/Dashboard')
     }
   },);
 

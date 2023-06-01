@@ -10,6 +10,7 @@ const DefaultLayout = () => {
 
     if (!sessionToken) {
       localStorage.clear();
+      sessionStorage.clear();
       navigate("/Login")
     }
   },);

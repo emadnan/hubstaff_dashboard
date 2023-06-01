@@ -34,6 +34,7 @@ const AppHeaderDropdown = () => {
 
   function logOut() {
     localStorage.clear();
+    sessionStorage.clear();
     navigate("/Login")
   }
 
