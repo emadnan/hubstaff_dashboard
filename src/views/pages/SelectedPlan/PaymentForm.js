@@ -1,84 +1,77 @@
-import { React, useState } from 'react'
+import { React } from 'react'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
-import TextField from '@mui/material/TextField'
 import PropTypes from 'prop-types'
+import { CardNumberElement, CardExpiryElement, CardCvcElement } from '@stripe/react-stripe-js'
 
 export default function PaymentForm({ handlePaymentFormChange }) {
-  const [nameOnCard, setNameOnCard] = useState()
-  const [cardNumber, setCardNumber] = useState()
-  const [expiryDate, setExpiryDate] = useState()
-  const [cVV, setCVV] = useState()
-
   return (
     <>
       <Typography variant="h6" gutterBottom>
         Payment method
       </Typography>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <TextField
-            required
-            id="nameOnCard"
-            label="Name on card"
-            name="nameOnCard"
-            value={nameOnCard}
-            onChange={(e) => {
-              setNameOnCard(e.target.value)
-              handlePaymentFormChange('nameOnCard', e.target.value)
+        <Grid item xs={12} md={5}>
+          <label htmlFor="card-number">Enter Card Number:</label>
+          <CardNumberElement
+            id="card-number"
+            options={{
+              style: {
+                base: {
+                  fontSize: '16px',
+                  color: '#424770',
+                  '::placeholder': {
+                    color: '#aab7c4',
+                  },
+                },
+                invalid: {
+                  color: '#9e2146',
+                },
+              },
             }}
-            fullWidth
-            autoComplete="cc-name"
-            variant="standard"
+            onChange={handlePaymentFormChange}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            required
-            id="cardNumber"
-            label="Card number"
-            name="cardNumber"
-            value={cardNumber}
-            onChange={(e) => {
-              setCardNumber(e.target.value)
-              handlePaymentFormChange('cardNumber', e.target.value)
+        <Grid item xs={12} md={4}>
+          <label htmlFor="card-expiry">Enter Expiry Date:</label>
+          <CardExpiryElement
+            id="card-expiry"
+            options={{
+              style: {
+                base: {
+                  fontSize: '16px',
+                  color: '#424770',
+                  '::placeholder': {
+                    color: '#aab7c4',
+                  },
+                },
+                invalid: {
+                  color: '#9e2146',
+                },
+              },
             }}
-            fullWidth
-            autoComplete="cc-number"
-            variant="standard"
+            onChange={handlePaymentFormChange}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            required
-            id="expDate"
-            label="Expiry date"
-            name="expiryDate"
-            value={expiryDate}
-            onChange={(e) => {
-              setExpiryDate(e.target.value)
-              handlePaymentFormChange('expiryDate', e.target.value)
+        <Grid item xs={12} md={3}>
+          <label htmlFor="card-cvc">Enter CVC:</label>
+          <CardCvcElement
+            id="card-cvc"
+            options={{
+              style: {
+                base: {
+                  fontSize: '16px',
+                  color: '#424770',
+                  '::placeholder': {
+                    color: '#aab7c4',
+                  },
+                },
+                invalid: {
+                  color: '#9e2146',
+                },
+              },
             }}
-            fullWidth
-            autoComplete="cc-exp"
-            variant="standard"
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            required
-            id="cvv"
-            label="CVV"
-            name="cVV"
-            value={cVV}
-            onChange={(e) => {
-              setCVV(e.target.value)
-              handlePaymentFormChange('cVV', e.target.value)
-            }}
-            helperText="Last three digits on signature strip"
-            fullWidth
-            autoComplete="cc-csc"
-            variant="standard"
+            onChange={handlePaymentFormChange}
           />
         </Grid>
       </Grid>

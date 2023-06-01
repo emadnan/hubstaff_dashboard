@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { React, useState } from 'react'
 import CssBaseline from '@mui/material/CssBaseline'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
@@ -12,17 +12,25 @@ import { createTheme, ThemeProvider } from '@mui/material/styles'
 import SignUpForm from './SignUpForm'
 import PaymentForm from './PaymentForm'
 import Review from './Review'
+import {
+  CardNumberElement,
+  CardExpiryElement,
+  CardCvcElement,
+  useStripe,
+  useElements,
+} from '@stripe/react-stripe-js'
+import axios from 'axios'
 
 const steps = ['Sign Up', 'Payment Details', 'Review']
 
-function getStepContent(step, handleSignUpFormChange, handlePaymentFormChange) {
+function getStepContent(step, handleSignUpFormChange, handlePaymentFormChange, paymentDetails) {
   switch (step) {
     case 0:
       return <SignUpForm handleSignUpFormChange={handleSignUpFormChange} />
     case 1:
       return <PaymentForm handlePaymentFormChange={handlePaymentFormChange} />
     case 2:
-      return <Review />
+      return <Review paymentDetails={paymentDetails} />
     default:
       throw new Error('Unknown step')
   }
@@ -32,23 +40,19 @@ function getStepContent(step, handleSignUpFormChange, handlePaymentFormChange) {
 const defaultTheme = createTheme()
 
 export default function Checkout() {
-  const [activeStep, setActiveStep] = React.useState(0)
+  const [paymentDetails, setPaymentDetails] = useState()
+  const stripe = useStripe()
+  const elements = useElements()
 
+  const [activeStep, setActiveStep] = useState(0)
   //-----------------
   // SIGN UP COMPANY
   //-----------------
-  const [signUpFormData, setSignUpFormData] = React.useState({
+  const [signUpFormData, setSignUpFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
-  })
-
-  const [paymentFormData, setPaymentFormData] = React.useState({
-    nameOnCard: '',
-    cardNumber: '',
-    expiryDate: '',
-    cVV: '',
   })
 
   const handleBack = () => {
@@ -61,12 +65,10 @@ export default function Checkout() {
       [fieldName]: value,
     }))
   }
-
-  const handlePaymentFormChange = (fieldName, value) => {
-    setPaymentFormData((prevData) => ({
-      ...prevData,
-      [fieldName]: value,
-    }))
+  const [paymentFormData, setPaymentFormData] = useState()
+  const handlePaymentFormChange = () => {
+    const card = elements.getElement(CardCvcElement, CardExpiryElement, CardNumberElement)
+    setPaymentFormData(card)
   }
 
   const handleNext = async () => {
@@ -80,15 +82,32 @@ export default function Checkout() {
       console.log('signUpFormValues : ', signUpFormValues)
       setActiveStep(activeStep + 1)
     } else if (activeStep === 1) {
-      const paymentFormValues = {
-        nameOnCard: paymentFormData.nameOnCard,
-        cardNumber: paymentFormData.cardNumber,
-        expiryDate: paymentFormData.expiryDate,
-        cVV: paymentFormData.cVV,
+      const { error, paymentMethod } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: paymentFormData,
+      })
+
+      setPaymentDetails(paymentMethod)
+      if (error) {
+        console.log('[error]', error)
+      } else {
+        console.log('[PaymentMethod]', paymentMethod)
       }
-      console.log('paymentFormValues : ', paymentFormValues)
+
       setActiveStep(activeStep + 1)
     } else if (activeStep === 2) {
+      try {
+        const { id } = paymentDetails
+        const response = await axios.post('URL', {
+          ammout: 'will be fetch when we SELECT the plan',
+          id,
+        }) // http://localhost:4000/payment
+        if (response.data.success) {
+          console.log('Successfull Payment')
+        }
+      } catch (error) {
+        console.log(error)
+      }
       setActiveStep(activeStep + 1)
     }
   }
@@ -110,15 +129,20 @@ export default function Checkout() {
             ))}
           </Stepper>
           {activeStep === steps.length ? (
-            <React.Fragment>
+            <>
               <Typography variant="h5" gutterBottom>
                 Thank you Messege for Subscribing Plan
               </Typography>
               <Typography variant="subtitle1">Thank you Messege for Subscribing Plan</Typography>
-            </React.Fragment>
+            </>
           ) : (
-            <React.Fragment>
-              {getStepContent(activeStep, handleSignUpFormChange, handlePaymentFormChange)}
+            <>
+              {getStepContent(
+                activeStep,
+                handleSignUpFormChange,
+                handlePaymentFormChange,
+                paymentDetails,
+              )}
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 {activeStep !== 0 && (
                   <Button onClick={handleBack} sx={{ mt: 3, ml: 1 }}>
@@ -130,7 +154,7 @@ export default function Checkout() {
                   {activeStep === steps.length - 1 ? 'Done' : 'Next'}
                 </Button>
               </Box>
-            </React.Fragment>
+            </>
           )}
         </Paper>
       </Container>

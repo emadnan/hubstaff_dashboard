@@ -2,6 +2,12 @@ import React, { Component, Suspense } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './scss/style.scss'
 
+import { Elements } from '@stripe/react-stripe-js'
+import { loadStripe } from '@stripe/stripe-js'
+
+const PUBLIC_KEY = process.env.REACT_APP_STRIPE_PUBLIC_KEY
+const stripePromise = loadStripe(PUBLIC_KEY)
+
 const loading = (
   <div className="pt-3 text-center">
     <div className="sk-spinner sk-spinner-pulse"></div>
@@ -27,7 +33,16 @@ class App extends Component {
             <Route exact path="/" name="Login Page" element={<LandingPage />} />
             <Route exact path="/login" name="Login Page" element={<Login />} />
             <Route exact path="/register" name="Register Page" element={<Register />} />
-            <Route exact path="/selectedPlan" name="Login Page" element={<SelectedPlan />} />
+            <Route
+              exact
+              path="/selectedPlan"
+              name="Login Page"
+              element={
+                <Elements stripe={stripePromise}>
+                  <SelectedPlan />
+                </Elements>
+              }
+            />
             <Route
               exact
               path="/changepassword"
