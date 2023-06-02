@@ -7,7 +7,10 @@ const Dashboard = () => {
 
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'));
-  getTotalTimeUser(local.token);
+  const session_time = JSON.parse(sessionStorage.getItem('user-info'));
+  useEffect(() => {
+    getTotalTimeUser(session_time.token);
+  }, []);
 
   //CSS Stylings
   const mystyle = {

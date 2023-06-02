@@ -476,18 +476,10 @@ export const _navEmployee = [
     icon: <CIcon icon={cilCash} customClassName="nav-icon" />,
   },
   {
-    component: CNavGroup,
+    component: CNavItem,
     name: 'FSF',
-    to: '/activity',
-    icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'FSF',
-        to: '/allfsf',
-        icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
-      },
-    ],
+    to: '/allfsf',
+    icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
   },
 ]
 

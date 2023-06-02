@@ -6,7 +6,9 @@ import IconButton from '@mui/material/IconButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import DehazeIcon from '@mui/icons-material/Dehaze';
 import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar'
+import { Box, TextField, MenuItem } from '@mui/material'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 function AllFSF() {
@@ -18,7 +20,8 @@ function AllFSF() {
   }));
 
   useEffect(() => {
-    getFsfonTeamLeadId(local.token);
+    getFsfonTeamLeadId(local.token)
+    getAssignedFsfToUser(local.token)
   }, []);
 
   //Role & Permissions check
@@ -31,6 +34,9 @@ function AllFSF() {
   const [members, setMembers] = useState([]);
   const [hasmembers, setHasMembers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [assignedfsf, setAssignedFsf] = useState([]);
+  const [comment, setComment] = useState([]);
+  const [status, setStatus] = useState([]);
   var filteredUsers = [];
 
   //CSS Stylings
@@ -95,6 +101,11 @@ function AllFSF() {
     }
   };
 
+  const handleStatusChange = (event) => {
+    const selectedValue = event.target.value
+    setStatus(selectedValue)
+  }
+
   //GET API calls
   function getFsf() {
     fetch(`${BASE_URL}/api/getFunctionalSpecificationForm`)
@@ -132,6 +143,17 @@ function AllFSF() {
         }
         setFsfOnTeamId(filteredUsers)
       })
+      .catch((error) => console.log(error));
+  };
+
+  function getAssignedFsfToUser(token) {
+    fetch(`${BASE_URL}/api/getFunctionalSpecificationFormBylogin`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => setAssignedFsf(data.Functional))
       .catch((error) => console.log(error));
   };
 
@@ -255,6 +277,23 @@ function AllFSF() {
     setIsModalOpen(false)
   }
 
+  // Functions for Assign Status to FSF Modal
+  const [isModalOpen2, setIsModalOpen2] = useState(false)
+  const showModal2 = (id) => {
+    setIsModalOpen2(id)
+  }
+
+  const handleOk2 = () => {
+    setIsModalOpen2(false)
+    setComment('')
+    setStatus('')
+  }
+
+  const handleCancel2 = () => {
+    setIsModalOpen2(false)
+    setComment('')
+    setStatus('')
+  }
 
   // Functions for Delete FSF Modal
   const [isModalOpen3, setIsModalOpen3] = useState(false);
@@ -350,70 +389,100 @@ function AllFSF() {
       </div>
       <br></br>
       <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-        <CTableHead color="light" >
+        {
+          local.Users.role === 6 || local.Users.role === 7 ? (
+            <CTableHead color="light" >
+              <CTableRow>
+                <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>WRICEF ID</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Functional</CTableHeaderCell>
+                {
+                  local.Users.role === 7 ? (
+                    <CTableHeaderCell className="text-center" style={mystyle}>Assign</CTableHeaderCell>
+                  ) : null
+                }
+                {
+                  local.Users.role === 7 ? (
+                    <CTableHeaderCell className="text-center" style={mystyle}>View</CTableHeaderCell>
+                  ) : null
+                }
+                {
+                  local.Users.role === 6 ? (
+                    <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
+                  ) : null
+                }
+              </CTableRow>
 
-          {/* FSF table heading */}
-          <CTableRow>
-            <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>WRICEF ID</CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>Functional</CTableHeaderCell>
-            {
-              local.Users.role === 7 ? (
-                <CTableHeaderCell className="text-center" style={mystyle}>Assign</CTableHeaderCell>
-              ) : null
-            }
-            {
-              local.Users.role === 7 ? (
-                <CTableHeaderCell className="text-center" style={mystyle}>View</CTableHeaderCell>
-              ) : null
-            }
-            {
-              local.Users.role === 6 ? (
-                <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
-              ) : null
-            }
-          </CTableRow>
+              {fsfonTeamId.map((fsf, index) => (
+                <CTableRow key={fsf.id}>
+                  <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center" style={mystyle2}>{fsf.wricef_id}</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center" style={mystyle2}>{fsf.name}</CTableHeaderCell>
+                  {
+                    local.Users.role === 7 ? (
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        <IconButton aria-label="assign" title="Assign Members" onClick={() => showModal4(fsf.id)}>
+                          <PermContactCalendarIcon htmlColor="#0070ff" />
+                        </IconButton>
+                      </CTableHeaderCell>
 
-          {fsfonTeamId.map((fsf, index) => (
-            <CTableRow key={fsf.id}>
-              <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle2}>{fsf.wricef_id}</CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle2}>{fsf.name}</CTableHeaderCell>
-              {
-                local.Users.role === 7 ? (
+                    ) : null
+                  }
+                  {
+                    local.Users.role === 7 ? (
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        <IconButton aria-label="view" title='View FSF' onClick={() => showModal(fsf.id)}>
+                          <VisibilityIcon htmlColor="#28B463" />
+                        </IconButton>
+                      </CTableHeaderCell>
+                    ) : null
+                  }
+                  {
+                    local.Users.role === 6 ? (
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        <IconButton aria-label="update">
+                          <EditIcon htmlColor='#28B463' />
+                        </IconButton>
+                        <IconButton aria-label="delete" onClick={() => showModal3(fsf.id)}>
+                          <DeleteIcon htmlColor='#FF0000' />
+                        </IconButton>
+                      </CTableHeaderCell>
+                    ) : null
+                  }
+                </CTableRow>
+              ))}
+
+            </CTableHead>
+          ) : local.Users.role === 5 ? (
+            <CTableHead color="light" >
+              <CTableRow>
+                <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>WRICEF ID</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>View FSF</CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>Status</CTableHeaderCell>
+              </CTableRow>
+
+              {assignedfsf.map((assigned, index) => (
+                <CTableRow key={assigned.id}>
+                  <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center" style={mystyle2}>{assigned.wricef_id}</CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle2}>
-                    <IconButton aria-label="assign" title="Assign Members" onClick={() => showModal4(fsf.id)}>
-                      <PermContactCalendarIcon htmlColor="#0070ff" />
-                    </IconButton>
-                  </CTableHeaderCell>
-
-                ) : null
-              }
-              {
-                local.Users.role === 7 ? (
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                    <IconButton aria-label="view" title='View FSF' onClick={() => showModal(fsf.id)}>
+                    <IconButton aria-label="view" title='View FSF' onClick={() => showModal(assigned.id)}>
                       <VisibilityIcon htmlColor="#28B463" />
                     </IconButton>
                   </CTableHeaderCell>
-                ) : null
-              }
-              {
-                local.Users.role === 6 ? (
                   <CTableHeaderCell className="text-center" style={mystyle2}>
-                    <IconButton aria-label="update">
-                      <EditIcon htmlColor='#28B463' />
-                    </IconButton>
-                    <IconButton aria-label="delete" onClick={() => showModal3(fsf.id)}>
-                      <DeleteIcon htmlColor='#FF0000' />
+                    <IconButton aria-label="status" title='Status' onClick={() => showModal2(assigned.id)}>
+                      <DehazeIcon htmlColor="#0070ff" />
                     </IconButton>
                   </CTableHeaderCell>
-                ) : null
-              }
-            </CTableRow>
-          ))}
+                </CTableRow>
+              ))}
 
-        </CTableHead>
+            </CTableHead>
+          ) : null
+        }
+
 
         <CTableBody>
 
@@ -529,6 +598,48 @@ function AllFSF() {
                 </div>
               );
             })}
+          </Modal>
+
+          {/* Modal for Assign Status to FSF */}
+          <Modal
+            title="Assign Status"
+            open={isModalOpen2}
+            onOk={handleOk2}
+            okButtonProps={{ style: { background: 'blue' } }}
+            onCancel={handleCancel2}
+          >
+
+            <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
+              <TextField
+                id="select-status"
+                label="FSF Status"
+                variant="standard"
+                select
+                value={status}
+                onChange={handleStatusChange}
+                placeholder="Select Status"
+                sx={{ width: '100%' }}
+              >
+                <MenuItem value="Completed">Completed</MenuItem>
+                <MenuItem value="InProgress">InProgress</MenuItem>
+                <MenuItem value="Pending">Pending</MenuItem>
+              </TextField>
+            </Box>
+
+            <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
+              <TextField
+                id="input-comment"
+                label="Comment"
+                variant="standard"
+                type="comment"
+                name="comment"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Enter Any Comment"
+                sx={{ width: '100%' }}
+              />
+            </Box>
+
           </Modal>
 
           {/* Modal for Deletion Confirmation */}
