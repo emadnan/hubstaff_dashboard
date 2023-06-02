@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
-import { Button, Modal, Checkbox, Divider, Alert } from 'antd';
+import { Button, Modal, Checkbox, Divider, Alert, Select, Form } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -14,10 +14,13 @@ const BASE_URL = process.env.REACT_APP_BASE_URL
 function AllFSF() {
 
   const local = JSON.parse(localStorage.getItem('user-info'))
+  const session = JSON.parse(sessionStorage.getItem('user-info'))
   const permissions = local.permissions;
   const perm = permissions.map(permission => ({
     name: permission.name,
   }));
+  const local_token = local.token;
+  const session_token = session.token;
 
   useEffect(() => {
     getFsfonTeamLeadId(local.token)
@@ -37,6 +40,7 @@ function AllFSF() {
   const [assignedfsf, setAssignedFsf] = useState([]);
   const [comment, setComment] = useState([]);
   const [status, setStatus] = useState([]);
+  const [assignedstatus, setAssignedStatus] = useState([]);
   var filteredUsers = [];
 
   //CSS Stylings
@@ -101,10 +105,9 @@ function AllFSF() {
     }
   };
 
-  const handleStatusChange = (event) => {
-    const selectedValue = event.target.value
-    setStatus(selectedValue)
-  }
+  const handleStatusChange = (value) => {
+    setStatus(value);
+  };
 
   //GET API calls
   function getFsf() {
@@ -156,6 +159,21 @@ function AllFSF() {
       .then((data) => setAssignedFsf(data.Functional))
       .catch((error) => console.log(error));
   };
+
+  function getAssignedFsfToUserStatus(id) {
+    fetch(`${BASE_URL}/api/getFsfAssignToUserByFsfIdAndLogin/${id}`,{
+      headers: {
+        "Authorization": `Bearer ${local_token}`
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setAssignedStatus(data.fsf_Assign_to_users)
+        setStatus(data.fsf_Assign_to_users[0].status)
+        setComment(data.fsf_Assign_to_users[0].comment)
+      })
+      .catch((error) => console.log(error))
+  }
 
   function getHasMembers(id) {
     fetch(`${BASE_URL}/api/getFsfAssignToUsersByFsfId/${id}`)
@@ -262,6 +280,48 @@ function AllFSF() {
     }
   }, [showAlert4]);
 
+  // Functions for Update Status Success
+  const [showAlert5, setShowAlert5] = useState(false);
+
+  function handleButtonClick5() {
+    setShowAlert5(true);
+  }
+
+  function handleCloseAlert5() {
+    setShowAlert5(false);
+  }
+
+  useEffect(() => {
+    if (showAlert5) {
+      const timer = setTimeout(() => {
+        setShowAlert5(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert5]);
+
+  // Functions for Update Status Failure
+  const [showAlert6, setShowAlert6] = useState(false);
+
+  function handleButtonClick6() {
+    setShowAlert6(true);
+  }
+
+  function handleCloseAlert6() {
+    setShowAlert6(false);
+  }
+
+  useEffect(() => {
+    if (showAlert6) {
+      const timer = setTimeout(() => {
+        setShowAlert6(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert6]);
+
   // Functions for View FSF Modal
   const [isModalOpen, setIsModalOpen] = useState(false)
   const showModal = (id) => {
@@ -280,10 +340,12 @@ function AllFSF() {
   // Functions for Assign Status to FSF Modal
   const [isModalOpen2, setIsModalOpen2] = useState(false)
   const showModal2 = (id) => {
+    getAssignedFsfToUserStatus(id)
     setIsModalOpen2(id)
   }
 
   const handleOk2 = () => {
+    updateAssignedFsf(isModalOpen2)
     setIsModalOpen2(false)
     setComment('')
     setStatus('')
@@ -372,6 +434,34 @@ function AllFSF() {
       });
   };
 
+  async function updateAssignedFsf(newid) {
+    var formData = new FormData();
+    formData.append('status', status);
+    formData.append('fsf_id',newid);
+    formData.append('comment',comment);
+    // JSON.stringify({
+    //   fsf_id: newid,
+    //   status: status,
+    //   comment: comment,
+    // })
+    await fetch(`${BASE_URL}/api/updateStatusByLogin`, {
+      method: 'POST',
+      headers: {
+        "Authorization": `Bearer ${session_token}`
+      },
+      body: formData,
+    }).then(response => {
+      if (response.ok) {
+        handleButtonClick5();
+      } else {
+        handleButtonClick6();
+      }
+    })
+      .catch(error => {
+        console.error(error);
+      }); 
+  };
+
   return (
     <>
       <div className='row'>
@@ -407,6 +497,11 @@ function AllFSF() {
                   ) : null
                 }
                 {
+                  local.Users.role === 7 ? (
+                    <CTableHeaderCell className="text-center" style={mystyle}>Status</CTableHeaderCell>
+                  ) : null
+                }
+                {
                   local.Users.role === 6 ? (
                     <CTableHeaderCell className="text-center" style={mystyle}>Actions</CTableHeaderCell>
                   ) : null
@@ -433,6 +528,15 @@ function AllFSF() {
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         <IconButton aria-label="view" title='View FSF' onClick={() => showModal(fsf.id)}>
                           <VisibilityIcon htmlColor="#28B463" />
+                        </IconButton>
+                      </CTableHeaderCell>
+                    ) : null
+                  }
+                  {
+                    local.Users.role === 7 ? (
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        <IconButton aria-label="status" title='Status' onClick={() => showModal(fsf.fsf_id)}>
+                          <DehazeIcon htmlColor="#0070ff" />
                         </IconButton>
                       </CTableHeaderCell>
                     ) : null
@@ -472,7 +576,7 @@ function AllFSF() {
                     </IconButton>
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle2}>
-                    <IconButton aria-label="status" title='Status' onClick={() => showModal2(assigned.id)}>
+                    <IconButton aria-label="status" title='Status' onClick={() => showModal2(assigned.fsf_id)}>
                       <DehazeIcon htmlColor="#0070ff" />
                     </IconButton>
                   </CTableHeaderCell>
@@ -608,38 +712,36 @@ function AllFSF() {
             okButtonProps={{ style: { background: 'blue' } }}
             onCancel={handleCancel2}
           >
+            {assignedstatus.map((assigned) => (
+              <div key={assigned.id}>
+                <div className="form-outline mb-3">
+                  <label>Status</label>
+                  <Form.Item>
+                    <Select
+                      placeholder="Select Status"
+                      onChange={handleStatusChange}
+                      defaultValue={assigned.status}
+                    >
+                      <Select.Option value="Completed">Completed</Select.Option>
+                      <Select.Option value="InProgress">InProgress</Select.Option>
+                      <Select.Option value="Pending">Pending</Select.Option>
+                    </Select>
+                  </Form.Item>
+                </div>
 
-            <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-              <TextField
-                id="select-status"
-                label="FSF Status"
-                variant="standard"
-                select
-                value={status}
-                onChange={handleStatusChange}
-                placeholder="Select Status"
-                sx={{ width: '100%' }}
-              >
-                <MenuItem value="Completed">Completed</MenuItem>
-                <MenuItem value="InProgress">InProgress</MenuItem>
-                <MenuItem value="Pending">Pending</MenuItem>
-              </TextField>
-            </Box>
+                <div className="form-outline mb-3">
+                  <label>Comment</label>
+                  <input
+                    type="text"
+                    defaultValue={assigned.comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Comment"
+                  />
+                </div>
 
-            <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-              <TextField
-                id="input-comment"
-                label="Comment"
-                variant="standard"
-                type="comment"
-                name="comment"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Enter Any Comment"
-                sx={{ width: '100%' }}
-              />
-            </Box>
-
+              </div>
+            ))}
           </Modal>
 
           {/* Modal for Deletion Confirmation */}
@@ -671,6 +773,20 @@ function AllFSF() {
           {showAlert4 && (
             <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
               Failed to Assign Members
+            </Alert>
+          )}
+
+          {/* Alert for Update StatusSuccess*/}
+          {showAlert5 && (
+            <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
+              Status Updated Successfully
+            </Alert>
+          )}
+
+          {/* Alert for Update Status Failure*/}
+          {showAlert6 && (
+            <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
+              Failed to Update Status
             </Alert>
           )}
 

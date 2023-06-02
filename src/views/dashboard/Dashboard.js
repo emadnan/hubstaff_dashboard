@@ -235,7 +235,7 @@ const Dashboard = () => {
           </div>
           <div className='col-md-2'>
             <h6 style={head}>TODAY WORKED</h6>
-            <h3 style={subhead}>{totalhours}:{totalminutes}:{totalseconds}</h3>
+            <h3 style={subhead}>{totalhours}:{totalminutes}</h3>
           </div>
           <div className='col-md-2'>
             <h6 style={head}>WEEKLY ACTIVITY</h6>
