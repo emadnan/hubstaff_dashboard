@@ -4,6 +4,7 @@ import { Button, Modal, Checkbox, Divider, Alert, Select, Form } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import DehazeIcon from '@mui/icons-material/Dehaze';
@@ -40,7 +41,10 @@ function AllFSF() {
   const [assignedfsf, setAssignedFsf] = useState([]);
   const [comment, setComment] = useState([]);
   const [status, setStatus] = useState([]);
+  const [teamstatus, setTeamStatus] = useState([]);
   const [assignedstatus, setAssignedStatus] = useState([]);
+  const [teamassignedstatus, setTeamAssignedStatus] = useState([]);
+  const [assignedstatusteam, setAssignedStatusTeam] = useState([]);
   var filteredUsers = [];
 
   //CSS Stylings
@@ -109,6 +113,10 @@ function AllFSF() {
     setStatus(value);
   };
 
+  const handleTeamStatusChange = (value) => {
+    setTeamStatus(value);
+  };
+
   //GET API calls
   function getFsf() {
     fetch(`${BASE_URL}/api/getFunctionalSpecificationForm`)
@@ -128,6 +136,13 @@ function AllFSF() {
     fetch(`${BASE_URL}/api/getUsersByRoleId/5`)
       .then((response) => response.json())
       .then((data) => setMembers(data.User))
+      .catch((error) => console.log(error));
+  };
+
+  function getAssignedFsfToUserStatusTeamLead(id) {
+    fetch(`${BASE_URL}/api/getFsfFromAssignToteamleadByFsfIdAndLogin/${id}`)
+      .then((response) => response.json())
+      .then((data) => setAssignedStatusTeam(data.fsf_Assign_to_users))
       .catch((error) => console.log(error));
   };
 
@@ -161,7 +176,7 @@ function AllFSF() {
   };
 
   function getAssignedFsfToUserStatus(id) {
-    fetch(`${BASE_URL}/api/getFsfAssignToUserByFsfIdAndLogin/${id}`,{
+    fetch(`${BASE_URL}/api/getFsfAssignToUserByFsfIdAndLogin/${id}`, {
       headers: {
         "Authorization": `Bearer ${local_token}`
       }
@@ -171,6 +186,20 @@ function AllFSF() {
         setAssignedStatus(data.fsf_Assign_to_users)
         setStatus(data.fsf_Assign_to_users[0].status)
         setComment(data.fsf_Assign_to_users[0].comment)
+      })
+      .catch((error) => console.log(error))
+  };
+
+  function getAssignedFsfToTeamLeadStatus(id) {
+    fetch(`${BASE_URL}/api/getFsfAssignToteamleadByFsfIdAndLogin/${id}`, {
+      headers: {
+        "Authorization": `Bearer ${local_token}`
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setTeamAssignedStatus(data.fsf_Assign_to_users)
+        setTeamStatus(data.fsf_Assign_to_users[0].status)
       })
       .catch((error) => console.log(error))
   }
@@ -388,6 +417,41 @@ function AllFSF() {
     setIsModalOpen4(false);
   };
 
+  // Functions for Change Status Modal
+  const [isModalOpen5, setIsModalOpen5] = useState(false);
+  const showModal5 = (id) => {
+    getAssignedFsfToTeamLeadStatus(id)
+    setIsModalOpen5(id);
+  };
+
+  const handleOk5 = () => {
+    updateFsfStatus(isModalOpen5)
+    setIsModalOpen5(false);
+    setTeamStatus('')
+  };
+
+  const handleCancel5 = () => {
+    setIsModalOpen5(false);
+    setTeamStatus('')
+  };
+
+  // Functions for Assigned Status Modal
+  const [isModalOpen6, setIsModalOpen6] = useState(false);
+  const showModal6 = (id) => {
+    getAssignedFsfToUserStatusTeamLead(id)
+    setIsModalOpen6(id);
+  };
+
+  const handleOk6 = () => {
+    setIsModalOpen6(false);
+    setTeamStatus('')
+  };
+
+  const handleCancel6 = () => {
+    setIsModalOpen6(false);
+    setTeamStatus('')
+  };
+
   // API Calls through Fetch
   async function deleteFsf(newid) {
     await fetch(`${BASE_URL}/api/deleteFunctionalSpecificationForm`, {
@@ -437,8 +501,8 @@ function AllFSF() {
   async function updateAssignedFsf(newid) {
     var formData = new FormData();
     formData.append('status', status);
-    formData.append('fsf_id',newid);
-    formData.append('comment',comment);
+    formData.append('fsf_id', newid);
+    formData.append('comment', comment);
     // JSON.stringify({
     //   fsf_id: newid,
     //   status: status,
@@ -459,7 +523,29 @@ function AllFSF() {
     })
       .catch(error => {
         console.error(error);
-      }); 
+      });
+  };
+
+  async function updateFsfStatus(newid) {
+    var formData = new FormData();
+    formData.append('status', teamstatus);
+    formData.append('fsf_id', newid);
+    await fetch(`${BASE_URL}/api/updateStatusByTeamLogin`, {
+      method: 'POST',
+      headers: {
+        "Authorization": `Bearer ${session_token}`
+      },
+      body: formData,
+    }).then(response => {
+      if (response.ok) {
+        // handleButtonClick5();
+      } else {
+        // handleButtonClick6();
+      }
+    })
+      .catch(error => {
+        console.error(error);
+      });
   };
 
   return (
@@ -487,6 +573,11 @@ function AllFSF() {
                 <CTableHeaderCell className="text-center" style={mystyle}>WRICEF ID</CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle}>Functional</CTableHeaderCell>
                 {
+                  local.Users.role === 6 ? (
+                    <CTableHeaderCell className="text-center" style={mystyle}>Status</CTableHeaderCell>
+                  ) : null
+                }
+                {
                   local.Users.role === 7 ? (
                     <CTableHeaderCell className="text-center" style={mystyle}>Assign</CTableHeaderCell>
                   ) : null
@@ -494,6 +585,11 @@ function AllFSF() {
                 {
                   local.Users.role === 7 ? (
                     <CTableHeaderCell className="text-center" style={mystyle}>View</CTableHeaderCell>
+                  ) : null
+                }
+                {
+                  local.Users.role === 7 ? (
+                    <CTableHeaderCell className="text-center" style={mystyle}>Assigned Status</CTableHeaderCell>
                   ) : null
                 }
                 {
@@ -513,6 +609,12 @@ function AllFSF() {
                   <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle2}>{fsf.wricef_id}</CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle2}>{fsf.name}</CTableHeaderCell>
+                  {
+                    local.Users.role === 6 ? (
+                      <CTableHeaderCell className="text-center" style={mystyle2}>{fsf.status}</CTableHeaderCell>
+
+                    ) : null
+                  }
                   {
                     local.Users.role === 7 ? (
                       <CTableHeaderCell className="text-center" style={mystyle2}>
@@ -535,7 +637,16 @@ function AllFSF() {
                   {
                     local.Users.role === 7 ? (
                       <CTableHeaderCell className="text-center" style={mystyle2}>
-                        <IconButton aria-label="status" title='Status' onClick={() => showModal(fsf.fsf_id)}>
+                        <IconButton aria-label="assigned-status" title='Assigned Status' onClick={() => showModal6(fsf.id)}>
+                          <AlignHorizontalLeftIcon htmlColor="#0070ff" />
+                        </IconButton>
+                      </CTableHeaderCell>
+                    ) : null
+                  }
+                  {
+                    local.Users.role === 7 ? (
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        <IconButton aria-label="status" title='Status' onClick={() => showModal5(fsf.id)}>
                           <DehazeIcon htmlColor="#0070ff" />
                         </IconButton>
                       </CTableHeaderCell>
@@ -742,6 +853,84 @@ function AllFSF() {
 
               </div>
             ))}
+          </Modal>
+
+          {/* Modal for Change FSF Status to FSF */}
+          <Modal
+            title="Assign Status"
+            open={isModalOpen5}
+            onOk={handleOk5}
+            okButtonProps={{ style: { background: 'blue' } }}
+            onCancel={handleCancel5}
+          >
+            {teamassignedstatus.map((assign) => (
+              <div key={assign.id}>
+                <div className="form-outline mb-3">
+                  <label>Status</label>
+                  <Form.Item>
+                    <Select
+                      placeholder="Select Status"
+                      onChange={handleTeamStatusChange}
+                      defaultValue={assign.status}
+                    >
+                      <Select.Option value="Completed">Completed</Select.Option>
+                      <Select.Option value="InProgress">InProgress</Select.Option>
+                      <Select.Option value="Pending">Pending</Select.Option>
+                    </Select>
+                  </Form.Item>
+                </div>
+
+              </div>
+            ))}
+          </Modal>
+
+          {/* Modal for Check Assigned Status Permissions */}
+          <Modal title="Members Status" open={isModalOpen6} onOk={handleOk6} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel6}>
+
+            <br></br>
+            <div className='row'>
+              <div className='col md-2 text-center'>
+                <h6 style={heading}>Sr/No</h6>
+              </div>
+              <div className='col md-3'></div>
+              <div className='col md-2 text-center'>
+                <h6 style={heading}>Member Name</h6>
+              </div>
+              <div className='col md-3'></div>
+              <div className='col md-2 text-center'>
+                <h6 style={heading}>Status</h6>
+              </div>
+              {/* <div className='col md-3'></div>
+              <div className='col md-2 text-center'>
+                <h6 style={heading}>Comment</h6>
+              </div> */}
+              &nbsp;
+              <Divider></Divider>
+            </div>
+
+            <div>
+              {assignedstatusteam.map((stat, index) => (
+                <div className='row' key={stat.id}>
+                  <div className='col md-2 text-center'>
+                    <h6>{index + 1}</h6>
+                  </div>
+                  <div className='col md-3'></div>
+                  <div className='col md-2 text-center'>
+                    <h6>{stat.name}</h6>
+                  </div>
+                  <div className='col md-3'></div>
+                  <div className='col md-2 text-center'>
+                    <h6>{stat.status}</h6>
+                  </div>
+                  {/* <div className='col md-3'></div>
+                  <div className='col md-2 text-center'>
+                    <h6>{stat.comment}</h6>
+                  </div> */}
+                  &nbsp;
+                  <Divider />
+                </div>
+              ))}
+            </div>
           </Modal>
 
           {/* Modal for Deletion Confirmation */}
