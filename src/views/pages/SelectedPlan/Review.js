@@ -5,7 +5,7 @@ import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import PropTypes from 'prop-types'
 
-export default function Review({ paymentDetails }) {
+export default function Review({ paymentDetails, selectedPlanTitle, selectedPlanAmount }) {
   const { card } = paymentDetails
   const capitalizedCardBrand = card.brand.charAt(0).toUpperCase() + card.brand.slice(1)
 
@@ -16,16 +16,16 @@ export default function Review({ paymentDetails }) {
       </Typography>
       <List disablePadding>
         <ListItem sx={{ py: 1, px: 0 }}>
-          <ListItemText primary="Your Selected Plan" />
+          <ListItemText primary="Your Selected Plan: " />
           <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            Desk Pro
+            {selectedPlanTitle}
           </Typography>
         </ListItem>
 
         <ListItem sx={{ py: 1, px: 0 }}>
-          <ListItemText primary="Total" />
+          <ListItemText primary="Total Ammount: " />
           <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            $34.06
+            $ {selectedPlanAmount}
           </Typography>
         </ListItem>
       </List>
@@ -68,4 +68,6 @@ Review.propTypes = {
       exp_year: PropTypes.number,
     }),
   }).isRequired,
+  selectedPlanAmount: PropTypes.number.isRequired,
+  selectedPlanTitle: PropTypes.string.isRequired,
 }

@@ -1,5 +1,5 @@
-import React, { Component, Suspense } from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import React, { Suspense } from 'react'
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import './scss/style.scss'
 
 import { Elements } from '@stripe/react-stripe-js'
@@ -24,37 +24,33 @@ const Changepassword = React.lazy(() => import('./views/pages/changepassword/Cha
 const LandingPage = React.lazy(() => import('./landingpage/LandingPage'))
 const SelectedPlan = React.lazy(() => import('./views/pages/SelectedPlan/SelectedPlan'))
 
-class App extends Component {
-  render() {
-    return (
-      <BrowserRouter>
-        <Suspense fallback={loading}>
-          <Routes>
-            <Route exact path="/" name="Login Page" element={<LandingPage />} />
-            <Route exact path="/login" name="Login Page" element={<Login />} />
-            <Route exact path="/register" name="Register Page" element={<Register />} />
-            <Route
-              exact
-              path="/selectedPlan"
-              name="Login Page"
-              element={
-                <Elements stripe={stripePromise}>
-                  <SelectedPlan />
-                </Elements>
-              }
-            />
-            <Route
-              exact
-              path="/changepassword"
-              name="Change Password"
-              element={<Changepassword />}
-            />
-            <Route path="*" name="Home" element={<DefaultLayout />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    )
-  }
+const SelectedPlanWrapper = () => {
+  const location = useLocation()
+  const selectedPlanAmount = location.state?.selectedPlanAmount || 0
+  const selectedPlanTitle = location.state?.selectedPlanTitle || ''
+
+  return (
+    <Elements stripe={stripePromise}>
+      <SelectedPlan selectedPlanTitle={selectedPlanTitle} selectedPlanAmount={selectedPlanAmount} />
+    </Elements>
+  )
+}
+
+const App = () => {
+  return (
+    <BrowserRouter>
+      <Suspense fallback={loading}>
+        <Routes>
+          <Route exact path="/" name="Login Page" element={<LandingPage />} />
+          <Route exact path="/login" name="Login Page" element={<Login />} />
+          <Route exact path="/register" name="Register Page" element={<Register />} />
+          <Route exact path="/selectedPlan" name="Login Page" element={<SelectedPlanWrapper />} />
+          <Route exact path="/changepassword" name="Change Password" element={<Changepassword />} />
+          <Route path="*" name="Home" element={<DefaultLayout />} />
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
+  )
 }
 
 export default App

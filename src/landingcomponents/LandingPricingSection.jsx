@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid'
@@ -30,14 +30,17 @@ const useStyles = makeStyles((theme) => ({
   primaryAction: {
     marginTop: theme.spacing(2),
   },
+  typography: {
+    textAlign: 'left',
+  },
 }))
 
 export default function Pricing() {
   const classes = useStyles()
 
   const navigate = useNavigate()
-  const gotoPlanSelection = () => {
-    navigate('/selectedPlan')
+  const gotoPlanSelection = (title, amount) => {
+    navigate('/selectedPlan', { state: { selectedPlanTitle: title, selectedPlanAmount: amount } })
   }
   return (
     <Container maxWidth="lg">
@@ -74,83 +77,180 @@ export default function Pricing() {
                       / For one user only
                     </Typography>
                   </Typography>
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Time tracking
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Timesheets
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Activity levels
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Limited screenshots
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Limited Reports
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Track apps & URLs
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Custom idle timeout
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Auto discard idle time
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Unlimited teams
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Payments & payroll
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Unlimited integration
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Limited public API
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Time off & holidays
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Scheduling & attendance
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Invoices
                   </Typography>
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Client & project budgets
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Timesheet approvals
                   </Typography>
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Daily & weekly limits
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Expense tracking
                   </Typography>
                 </Box>
@@ -158,7 +258,7 @@ export default function Pricing() {
                   variant="contained"
                   color="primary"
                   className={classes.primaryAction}
-                  onClick={gotoPlanSelection}
+                  onClick={() => gotoPlanSelection('Desk Free', 0)}
                 >
                   Select plan
                 </Button>
@@ -182,83 +282,180 @@ export default function Pricing() {
                       / user / month
                     </Typography>
                   </Typography>
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Time tracking
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Timesheets
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Activity levels
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Unlimited screenshots
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Reports
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Track apps & URLs
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Custom idle timeout
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Auto discard idle time
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Unlimited teams
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Payments & payroll
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Unlimited integration
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Limited public API
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Time off & holidays
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     Scheduling & attendance
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Invoices
                   </Typography>
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Client & project budgets
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Timesheet approvals
                   </Typography>
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10060; Daily & weekly limits
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Expense tracking
                   </Typography>
                 </Box>
@@ -266,7 +463,7 @@ export default function Pricing() {
                   variant="contained"
                   color="primary"
                   className={classes.primaryAction}
-                  onClick={gotoPlanSelection}
+                  onClick={() => gotoPlanSelection('Desk Starter', 5)}
                 >
                   Select plan
                 </Button>
@@ -290,83 +487,180 @@ export default function Pricing() {
                       / user / month
                     </Typography>
                   </Typography>
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Time tracking
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Timesheets
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Activity levels
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Unlimited screenshots
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Reports
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Track apps & URLs
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Custom idle timeout
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Auto discard idle time
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Unlimited teams
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Payments & payroll
                   </Typography>
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Unlimited integration
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Limited public API
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Time off & holidays
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Scheduling & attendance
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Invoices
                   </Typography>
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Client & project budgets
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Timesheet approvals
                   </Typography>
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Daily & weekly limits
                   </Typography>
 
                   <Divider />
-                  <Typography color="textSecondary" variant="subtitle1" component="p">
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
                     &#10004; Expense tracking
                   </Typography>
                 </Box>
@@ -374,7 +668,7 @@ export default function Pricing() {
                   variant="contained"
                   color="primary"
                   className={classes.primaryAction}
-                  onClick={gotoPlanSelection}
+                  onClick={() => gotoPlanSelection('Desk Pro', 8)}
                 >
                   Select plan
                 </Button>

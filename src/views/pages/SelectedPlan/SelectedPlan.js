@@ -1,4 +1,5 @@
-import { React, useState } from 'react'
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 import CssBaseline from '@mui/material/CssBaseline'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
@@ -23,14 +24,27 @@ import axios from 'axios'
 
 const steps = ['Sign Up', 'Payment Details', 'Review']
 
-function getStepContent(step, handleSignUpFormChange, handlePaymentFormChange, paymentDetails) {
+function getStepContent(
+  step,
+  handleSignUpFormChange,
+  handlePaymentFormChange,
+  paymentDetails,
+  selectedPlanTitle,
+  selectedPlanAmount,
+) {
   switch (step) {
     case 0:
       return <SignUpForm handleSignUpFormChange={handleSignUpFormChange} />
     case 1:
       return <PaymentForm handlePaymentFormChange={handlePaymentFormChange} />
     case 2:
-      return <Review paymentDetails={paymentDetails} />
+      return (
+        <Review
+          paymentDetails={paymentDetails}
+          selectedPlanTitle={selectedPlanTitle}
+          selectedPlanAmount={selectedPlanAmount}
+        />
+      )
     default:
       throw new Error('Unknown step')
   }
@@ -39,7 +53,7 @@ function getStepContent(step, handleSignUpFormChange, handlePaymentFormChange, p
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme()
 
-export default function Checkout() {
+function SelectedPlan({ selectedPlanTitle, selectedPlanAmount }) {
   const [paymentDetails, setPaymentDetails] = useState()
   const stripe = useStripe()
   const elements = useElements()
@@ -99,11 +113,11 @@ export default function Checkout() {
       try {
         const { id } = paymentDetails
         const response = await axios.post('URL', {
-          ammout: 'will be fetch when we SELECT the plan',
+          amount: selectedPlanAmount,
           id,
-        }) // http://localhost:4000/payment
+        }) // Replace 'URL' with the actual endpoint URL
         if (response.data.success) {
-          console.log('Successfull Payment')
+          console.log('Successful Payment')
         }
       } catch (error) {
         console.log(error)
@@ -142,6 +156,8 @@ export default function Checkout() {
                 handleSignUpFormChange,
                 handlePaymentFormChange,
                 paymentDetails,
+                selectedPlanTitle,
+                selectedPlanAmount,
               )}
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 {activeStep !== 0 && (
@@ -161,3 +177,10 @@ export default function Checkout() {
     </ThemeProvider>
   )
 }
+
+SelectedPlan.propTypes = {
+  selectedPlanAmount: PropTypes.number.isRequired,
+  selectedPlanTitle: PropTypes.string.isRequired,
+}
+
+export default SelectedPlan
