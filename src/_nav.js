@@ -9,6 +9,7 @@ import {
   cilCalendar,
   cilCash,
   cilUser,
+  cilTask,
   // cilLocationPin,
   cilUserFollow,
   cilStream,
@@ -762,5 +763,11 @@ export const _navTeamLead = [
     name: 'FSF',
     to: '/allfsf',
     icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Task Management',
+    to: '/taskassignment',
+    icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
   },
 ]

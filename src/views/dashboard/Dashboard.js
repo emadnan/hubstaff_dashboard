@@ -7,9 +7,10 @@ const Dashboard = () => {
 
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'));
-  const session_time = JSON.parse(sessionStorage.getItem('user-info'));
+  const session = JSON.parse(sessionStorage.getItem('user-info'));
+  const session_token = session.token;
   useEffect(() => {
-    getTotalTimeUser(session_time.token);
+    getTotalTimeUser(session_token);
   }, []);
 
   //CSS Stylings
@@ -76,6 +77,9 @@ const Dashboard = () => {
   const [totalseconds, setTotalSeconds] = useState("");
   const [totalUserProjects, setTotalUserProjects] = useState("");
   const [totalProjects, setTotalProjects] = useState("");
+  const [totalweeklyhours, setTotalWeeklyHours] = useState("");
+  const [totalweeklyminutes, setTotalWeeklyMinutes] = useState("");
+  const [totalweeklyseconds, setTotalWeeklySeconds] = useState("");
   var screenfilter = [];
   var filteredUsers = [];
 
@@ -88,6 +92,7 @@ const Dashboard = () => {
     getTotalTime()
     getProjectScreenshots()
     getAssigns()
+    getWeeklyWorked()
   }, []);
 
   //GET API calls
@@ -166,6 +171,21 @@ const Dashboard = () => {
       .catch((error) => console.log(error));
   };
 
+  function getWeeklyWorked() {
+    fetch("http://10.3.3.80/api/calculateWeeklyWork", {
+      headers: {
+        "Authorization": `Bearer ${session_token}`
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setTotalWeeklyHours(data.hours);
+        setTotalWeeklyMinutes(data.minutes);
+        setTotalWeeklySeconds(data.seconds);
+      })
+      .catch((error) => console.log(error));
+  };
+
   function getTotalTimeUser(token) {
     fetch("http://10.3.3.80/api/getSum", {
       headers: {
@@ -235,15 +255,15 @@ const Dashboard = () => {
           </div>
           <div className='col-md-2'>
             <h6 style={head}>TODAY WORKED</h6>
-            <h3 style={subhead}>{totalhours}:{totalminutes}</h3>
+            <h3 style={subhead}>{totalhours}:{totalminutes}:{totalseconds}</h3>
           </div>
           <div className='col-md-2'>
             <h6 style={head}>WEEKLY ACTIVITY</h6>
             <h3 style={subhead}>0%</h3>
           </div>
           <div className='col-md-2'>
-            <h6 style={head}>WEEKLY WORKED</h6>
-            <h3 style={subhead}>0:0:0</h3>
+            <h6 style={head}>WORKED THIS WEEK</h6>
+            <h3 style={subhead}>{totalweeklyhours}:{totalweeklyminutes}:{totalweeklyseconds}</h3>
           </div>
           <div className='col-md-2'>
             <h6 style={head}>EARNED AMOUNT</h6>

@@ -30,6 +30,7 @@ const Expenses = React.lazy(() => import('./views/expenses/Expenses'))
 const AllFSF = React.lazy(() => import('./views/fsf/AllFSF'))
 const FSFform = React.lazy(() => import('./views/fsf/FSFform'))
 const AllCRF = React.lazy(() => import('./views/crf/AllCRF'))
+const TaskAssignment = React.lazy(() => import('./views/taskmanagement/TaskAssignment'))
 
 //Path setting for routes
 const routes = [
@@ -63,6 +64,7 @@ const routes = [
   { path: '/allfsf', name: 'All FSF', element: AllFSF },
   { path: '/allcrf', name: 'All CRF', element: AllCRF },
   { path: '/fsfform', name: 'FSF Form', element: FSFform},
+  { path: '/taskassignment', name: 'Task Assignment', element: TaskAssignment},
 ]
 
 export default routes
