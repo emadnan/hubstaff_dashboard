@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react'
+import { React, useState, useEffect, useRef } from 'react'
 import { Modal } from 'antd'
 import {
   CTableBody,
@@ -13,6 +13,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import Alert from '@mui/material/Alert'
 import { useNavigate } from 'react-router-dom'
+import { Editor } from "@tinymce/tinymce-react";
 
 import { Card, CardContent, MenuItem, Button } from '@mui/material'
 import { Box, TextField, Typography } from '@mui/material'
@@ -53,6 +54,12 @@ function FSFform() {
   const navigate = useNavigate()
 
   const [isFocused, setIsFocused] = useState(false)
+
+  const editorRef = useRef();
+
+  function onClickHandler() {
+    console.log(editorRef.current.getContent());
+  }
 
   //CSS Styling
   const [isHoveredPrimary, setIsHoveredPrimary] = useState(false)
@@ -641,7 +648,7 @@ function FSFform() {
 
           <br />
           <div className="row justify-content-center">
-            <Card sx={{ maxWidth: 600, justifyContent: 'center', padding: '20px' }}>
+            <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
                   <TextField
@@ -741,8 +748,14 @@ function FSFform() {
                     placeholder="Select Type of Development"
                     sx={{ width: '100%' }}
                   >
-                    <MenuItem value="Form">Form</MenuItem>
+                    <MenuItem value="Workflow">Workflow</MenuItem>
                     <MenuItem value="Report">Report</MenuItem>
+                    <MenuItem value="Enhancement">Enhancement</MenuItem>
+                    <MenuItem value="Interface">Interface</MenuItem>
+                    <MenuItem value="Customization">Customization</MenuItem>
+                    <MenuItem value="Form">Form</MenuItem>
+                    <MenuItem value="Upload">Upload</MenuItem>
+                    <MenuItem value="Integration">Integration</MenuItem>
                   </TextField>
                 </Box>
 
@@ -760,6 +773,8 @@ function FSFform() {
                     <MenuItem value="Low">Low</MenuItem>
                     <MenuItem value="Medium">Medium</MenuItem>
                     <MenuItem value="High">High</MenuItem>
+                    <MenuItem value="Go-Live Critical">Go-Live Critical</MenuItem>
+                    <MenuItem value="After Go-Live">After Go-Live</MenuItem>
                   </TextField>
                 </Box>
 
@@ -789,6 +804,7 @@ function FSFform() {
                   Next
                 </Button>
               </CardContent>
+              
             </Card>
           </div>
         </div>
@@ -818,7 +834,7 @@ function FSFform() {
 
           <br />
           <div className="row justify-content-center">
-            <Card sx={{ maxWidth: 600, justifyContent: 'center', padding: '20px' }}>
+            <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
                   <TextField
@@ -843,6 +859,15 @@ function FSFform() {
                     sx={{ width: '100%' }}
                   />
                 </Box>
+
+                <Editor
+                onInit={(evt, editor) => editorRef.current = editor}
+                apiKey='46tu7q2m7kbsfpbdoc5mwnyn5hs97kdpefj8dnpuvz65aknl'
+                cloudChannel='dev'
+                />
+
+                <br></br>
+
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <Button
                     onClick={handleClick4}
