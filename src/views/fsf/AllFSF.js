@@ -155,7 +155,7 @@ function AllFSF() {
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 6) {
-          filteredUsers = data.Functional
+          filteredUsers = data.Functional.filter((user) => user.functional_lead_id === local.Users.user_id);
         } else if (local.Users.role === 7) {
           filteredUsers = data.Functional.filter((user) => user.team_lead_id === local.Users.user_id);
         }
@@ -503,11 +503,6 @@ function AllFSF() {
     formData.append('status', status);
     formData.append('fsf_id', newid);
     formData.append('comment', comment);
-    // JSON.stringify({
-    //   fsf_id: newid,
-    //   status: status,
-    //   comment: comment,
-    // })
     await fetch(`${BASE_URL}/api/updateStatusByLogin`, {
       method: 'POST',
       headers: {
@@ -571,7 +566,6 @@ function AllFSF() {
               <CTableRow>
                 <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle}>WRICEF ID</CTableHeaderCell>
-                <CTableHeaderCell className="text-center" style={mystyle}>Functional</CTableHeaderCell>
                 {
                   local.Users.role === 6 ? (
                     <CTableHeaderCell className="text-center" style={mystyle}>Status</CTableHeaderCell>
@@ -608,7 +602,6 @@ function AllFSF() {
                 <CTableRow key={fsf.id}>
                   <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle2}>{fsf.wricef_id}</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle2}>{fsf.name}</CTableHeaderCell>
                   {
                     local.Users.role === 6 ? (
                       <CTableHeaderCell className="text-center" style={mystyle2}>{fsf.status}</CTableHeaderCell>

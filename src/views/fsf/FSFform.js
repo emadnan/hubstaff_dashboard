@@ -696,12 +696,12 @@ function FSFform() {
                 <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
                   <TextField
                     id="select-team_lead"
-                    label="Team Lead"
+                    label="ABAP Team Lead"
                     variant="standard"
                     select
                     value={team_lead_id}
                     onChange={handleTeamLeadChange}
-                    placeholder="Select Team Lead"
+                    placeholder="Select ABAP Team Lead"
                     sx={{ width: '100%' }}
                   >
                     {teamlead.map((team) => (
@@ -835,7 +835,7 @@ function FSFform() {
                 <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
                   <TextField
                     id="input-authorization-level"
-                    label="Authorization Level"
+                    label="Authorization Role"
                     variant="standard"
                     type="text"
                     value={authorization_level}
