@@ -13,7 +13,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import Alert from '@mui/material/Alert'
 import { useNavigate } from 'react-router-dom'
-import { Editor } from "@tinymce/tinymce-react";
+import { Editor } from '@tinymce/tinymce-react'
 
 import { Card, CardContent, MenuItem, Button } from '@mui/material'
 import { Box, TextField, Typography } from '@mui/material'
@@ -22,7 +22,6 @@ import AddIcon from '@mui/icons-material/Add'
 import CloseIcon from '@mui/icons-material/Close'
 
 function FSFform() {
-
   const local = JSON.parse(localStorage.getItem('user-info'))
 
   //Variable declarations
@@ -55,10 +54,39 @@ function FSFform() {
 
   const [isFocused, setIsFocused] = useState(false)
 
-  const editorRef = useRef();
+  // const editorRef = useRef()
 
-  function onClickHandler() {
-    console.log(editorRef.current.getContent());
+  const editorConfig = {
+    height: 200,
+    menubar: 'file edit view insert format',
+    plugins: [
+      'advlist autolink lists link image charmap print preview anchor',
+      'searchreplace visualblocks code fullscreen',
+      'insertdatetime media table paste code help wordcount',
+    ],
+    toolbar: `undo redo | formatselect | bold italic backcolor |
+      alignleft aligncenter alignright alignjustify |
+      bullist numlist outdent indent | removeformat | help`,
+    file_picker_types: 'file image media',
+    file_picker_callback: function (callback, value, meta) {
+      const input = document.createElement('input')
+      input.setAttribute('type', 'file')
+      input.setAttribute('accept', 'image/*')
+      input.onchange = function () {
+        const file = this.files[0]
+        const reader = new FileReader()
+        reader.onload = function () {
+          // Pass the image URL to the callback function
+          callback(reader.result)
+        }
+        reader.readAsDataURL(file)
+      }
+      input.click()
+    },
+  }
+
+  const handleEditorChange = (content, editor) => {
+    console.log('content: ', content)
   }
 
   //CSS Styling
@@ -405,7 +433,7 @@ function FSFform() {
   useEffect(() => {
     getProjects()
     getUsers()
-    getTeamLeads(local.Users.company_id);
+    getTeamLeads(local.Users.company_id)
   }, [])
 
   //GET API calls
@@ -465,7 +493,7 @@ function FSFform() {
         setParameterOrSelection(data.fsf[0].parameter_or_selection)
       })
       .catch((error) => console.log(error))
-  };
+  }
 
   // Add API calls
   async function addFsfStage1() {
@@ -712,7 +740,9 @@ function FSFform() {
                     sx={{ width: '100%' }}
                   >
                     {teamlead.map((team) => (
-                      <MenuItem value={team.id} key={team.id}>{team.name}</MenuItem>
+                      <MenuItem value={team.id} key={team.id}>
+                        {team.name}
+                      </MenuItem>
                     ))}
                   </TextField>
                 </Box>
@@ -804,7 +834,6 @@ function FSFform() {
                   Next
                 </Button>
               </CardContent>
-              
             </Card>
           </div>
         </div>
@@ -861,9 +890,10 @@ function FSFform() {
                 </Box>
 
                 <Editor
-                onInit={(evt, editor) => editorRef.current = editor}
-                apiKey='46tu7q2m7kbsfpbdoc5mwnyn5hs97kdpefj8dnpuvz65aknl'
-                cloudChannel='dev'
+                  apiKey="46tu7q2m7kbsfpbdoc5mwnyn5hs97kdpefj8dnpuvz65aknl"
+                  cloudChannel="dev"
+                  init={editorConfig}
+                  onEditorChange={handleEditorChange}
                 />
 
                 <br></br>
