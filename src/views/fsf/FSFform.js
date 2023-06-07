@@ -747,7 +747,7 @@ function FSFform() {
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Box sx={{ maxWidth: 'md' }}>
               <Typography variant="h4" component="h4" align="center">
-                Level 0
+                Level 1
               </Typography>
             </Box>
           </Box>
@@ -848,7 +848,7 @@ function FSFform() {
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Box sx={{ maxWidth: 'md' }}>
               <Typography variant="h4" component="h4" align="center">
-                Level 1
+                Level 2
               </Typography>
             </Box>
           </Box>
@@ -1010,7 +1010,7 @@ function FSFform() {
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Box sx={{ maxWidth: 'md' }}>
               <Typography variant="h4" component="h4" align="center">
-                Level 2
+                Level 3
               </Typography>
             </Box>
           </Box>
@@ -1088,6 +1088,16 @@ function FSFform() {
             </Box>
           </Box>
 
+          <br />
+
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ maxWidth: 'md' }}>
+              <Typography variant="h4" component="h4" align="center">
+                Level 4
+              </Typography>
+            </Box>
+          </Box>
+
           <Box
             sx={{
               display: 'flex',
@@ -1135,7 +1145,7 @@ function FSFform() {
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Box sx={{ maxWidth: 'md' }}>
               <Typography variant="h4" component="h4" align="center">
-                Level 3
+                Level 5
               </Typography>
             </Box>
           </Box>
@@ -1623,6 +1633,16 @@ function FSFform() {
             </Box>
           </Box>
 
+          <br />
+
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ maxWidth: 'md' }}>
+              <Typography variant="h4" component="h4" align="center">
+                Level 6
+              </Typography>
+            </Box>
+          </Box>
+
           <Box
             sx={{
               display: 'flex',
@@ -1661,6 +1681,16 @@ function FSFform() {
             <Box sx={{ maxWidth: 'md' }}>
               <Typography variant="h3" component="h3" align="center">
                 Output Screen Parameters
+              </Typography>
+            </Box>
+          </Box>
+
+          <br />
+
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ maxWidth: 'md' }}>
+              <Typography variant="h4" component="h4" align="center">
+                Level 7
               </Typography>
             </Box>
           </Box>
