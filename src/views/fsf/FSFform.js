@@ -20,6 +20,7 @@ import { Box, TextField, Typography } from '@mui/material'
 import Tooltip from '@mui/material/Tooltip'
 import AddIcon from '@mui/icons-material/Add'
 import CloseIcon from '@mui/icons-material/Close'
+const BASE_URL = process.env.REACT_APP_BASE_URL
 
 function FSFform() {
   const local = JSON.parse(localStorage.getItem('user-info'))
@@ -27,6 +28,7 @@ function FSFform() {
   //Variable declarations
   const [wricef_id, setWRicefId] = useState('')
   const [module_name, setModuleName] = useState('')
+  const [project_name, setProjectName] = useState('')
   const [functional_lead_id, setFuncionalLeadId] = useState(local.Users.id)
   const [team_lead_id, setTeamLeadId] = useState('')
   const [requested_date, setRequestedDate] = useState('')
@@ -48,6 +50,7 @@ function FSFform() {
   const [postData, setPostData] = useState([])
   const [users, setUsers] = useState([])
   const [teamlead, setTeamLeads] = useState([])
+  const [projectmodule, setProjectModule] = useState([])
   var filteredUsers = []
 
   const navigate = useNavigate()
@@ -176,6 +179,11 @@ function FSFform() {
     setModuleName(selectedValue)
   }
 
+  const handleProjectNameChange = (event) => {
+    const selectedValue = event.target.value
+    setProjectName(selectedValue)
+  }
+
   const handleTypeOfDevelopmentChange = (event) => {
     const selectedValue = event.target.value
     setTypeOfDevelopment(selectedValue)
@@ -286,36 +294,96 @@ function FSFform() {
   }
 
   //DIV handlings
-  const [showDiv1, setShowDiv1] = useState(true)
-  const [showDiv2, setShowDiv2] = useState(false)
-  const [showDiv3, setShowDiv3] = useState(false)
+  const [showLevel1, setShowLevel1] = useState(true)
+  const [showLevel2, setShowLevel2] = useState(false)
+  const [showLevel3, setShowLevel3] = useState(false)
+  const [showLevel4, setShowLevel4] = useState(false)
+  const [showLevel5, setShowLevel5] = useState(false)
+  const [showLevel6, setShowLevel6] = useState(false)
+  const [showLevel7, setShowLevel7] = useState(false)
 
-  const handleClick1 = () => {
-    setShowDiv1(false)
-    setShowDiv2(true)
+  const handleNext1 = () => {
+    setShowLevel1(false)
+    setShowLevel2(true)
+    setIsHoveredPrimary(false)
+    setIsHoveredDanger(false)
+  }
+
+  const handleBack2 = () => {
+    setShowLevel2(false)
+    setShowLevel1(true)
     setIsHoveredPrimary(false)
     setIsHoveredDanger(false)
     addFsfStage1()
   }
 
-  const handleClick2 = () => {
-    setShowDiv2(false)
-    setShowDiv3(true)
+  const handleNext2 = () => {
+    setShowLevel2(false)
+    setShowLevel3(true)
     addFsfStage2()
     setIsHoveredPrimary(false)
     setIsHoveredDanger(false)
   }
 
-  const handleClick3 = () => {
-    setShowDiv3(false)
-    setShowDiv2(true)
+  const handleBack3 = () => {
+    setShowLevel3(false)
+    setShowLevel2(true)
     setIsHoveredPrimary(false)
     setIsHoveredDanger(false)
   }
 
-  const handleClick4 = () => {
-    setShowDiv2(false)
-    setShowDiv1(true)
+  const handleNext3 = () => {
+    setShowLevel3(false)
+    setShowLevel4(true)
+    setIsHoveredPrimary(false)
+    setIsHoveredDanger(false)
+  }
+
+  const handleBack4 = () => {
+    setShowLevel4(false)
+    setShowLevel3(true)
+    setIsHoveredPrimary(false)
+    setIsHoveredDanger(false)
+  }
+
+  const handleNext4 = () => {
+    setShowLevel4(false)
+    setShowLevel5(true)
+    setIsHoveredPrimary(false)
+    setIsHoveredDanger(false)
+  }
+
+  const handleBack5 = () => {
+    setShowLevel5(false)
+    setShowLevel4(true)
+    setIsHoveredPrimary(false)
+    setIsHoveredDanger(false)
+  }
+
+  const handleNext5 = () => {
+    setShowLevel5(false)
+    setShowLevel6(true)
+    setIsHoveredPrimary(false)
+    setIsHoveredDanger(false)
+  }
+
+  const handleBack6 = () => {
+    setShowLevel6(false)
+    setShowLevel5(true)
+    setIsHoveredPrimary(false)
+    setIsHoveredDanger(false)
+  }
+
+  const handleNext6 = () => {
+    setShowLevel6(false)
+    setShowLevel7(true)
+    setIsHoveredPrimary(false)
+    setIsHoveredDanger(false)
+  }
+
+  const handleBack7 = () => {
+    setShowLevel7(false)
+    setShowLevel6(true)
     setIsHoveredPrimary(false)
     setIsHoveredDanger(false)
   }
@@ -434,16 +502,19 @@ function FSFform() {
     getProjects()
     getUsers()
     getTeamLeads(local.Users.company_id)
+    getProjectModules()
   }, [])
 
   //GET API calls
   function getProjects() {
-    fetch('http://10.3.3.80/api/getproject')
+    fetch(`${BASE_URL}/api/getproject`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === '1') {
+        if (local.Users.role === 1) {
           filteredUsers = data.projects
-        } else if (local.Users.role === '3') {
+        } else if (local.Users.role === 3) {
+          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
+        } else if (local.Users.role === 6) {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
         }
         setProjects(filteredUsers)
@@ -452,12 +523,12 @@ function FSFform() {
   }
 
   function getUsers() {
-    fetch('http://10.3.3.80/api/get_users')
+    fetch(`${BASE_URL}/api/get_users`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === '1') {
+        if (local.Users.role === 1) {
           filteredUsers = data.Users
-        } else if (local.Users.role === '3') {
+        } else if (local.Users.role === 3) {
           filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id)
         }
         setUsers(filteredUsers.slice(1))
@@ -466,21 +537,28 @@ function FSFform() {
   }
 
   function getTeamLeads(id) {
-    fetch(`http://10.3.3.80/api/getTeamLeadByCompanyId/${id}`)
+    fetch(`${BASE_URL}/api/getTeamLeadByCompanyId/${id}`)
       .then((response) => response.json())
       .then((data) => setTeamLeads(data.Team_Leads))
       .catch((error) => console.log(error))
   }
 
+  function getProjectModules() {
+    fetch(`${BASE_URL}/api/getModules`)
+      .then((response) => response.json())
+      .then((data) => setProjectModule(data.Module))
+      .catch((error) => console.log(error))
+  }
+
   function getFSFParameters() {
-    fetch(`http://10.3.3.80/api/getFsfHasParameterByFsfId/${ref_id}`)
+    fetch(`${BASE_URL}/api/getFsfHasParameterByFsfId/${ref_id}`)
       .then((response) => response.json())
       .then((data) => setPostData(data.fsf_has_parameter))
       .catch((error) => console.log(error))
   }
 
   function getFsfHasParameterByFsfId(id) {
-    fetch(`http://10.3.3.80/api/getFsfHasParameterById/${id}`)
+    fetch(`${BASE_URL}/api/getFsfHasParameterById/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setFsfHasParameter(data.fsf)
@@ -509,7 +587,7 @@ function FSFform() {
     }
     console.log(data)
 
-    await fetch('http://10.3.3.80/api/addFunctionalSpecificationForm/1/', {
+    await fetch(`${BASE_URL}/api/addFunctionalSpecificationForm/1/`, {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -536,7 +614,7 @@ function FSFform() {
     let data = { id: ref_id, transaction_code, authorization_level }
     console.log(data)
 
-    await fetch('http://10.3.3.80/api/addFunctionalSpecificationForm/2/', {
+    await fetch(`${BASE_URL}/api/addFunctionalSpecificationForm/2/`, {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -573,7 +651,7 @@ function FSFform() {
     console.log(data)
 
     try {
-      const response = await fetch('http://10.3.3.80/api/addFunctionalSpecificationForm/3/', {
+      const response = await fetch(`${BASE_URL}/api/addFunctionalSpecificationForm/3/`, {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
@@ -597,7 +675,7 @@ function FSFform() {
 
   // Delete FSF Parameter API call
   async function deleteFSF(id) {
-    await fetch(`http://10.3.3.80/api/DeleteFsfHasParameterByFsfId`, {
+    await fetch(`${BASE_URL}/api/DeleteFsfHasParameterByFsfId`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -620,7 +698,7 @@ function FSFform() {
 
   // Update FSF Parameter API call
   async function updateFSF(newid) {
-    await fetch('http://10.3.3.80/api/UpdateFsfHasParameterByFsfId', {
+    await fetch(`${BASE_URL}/api/UpdateFsfHasParameterByFsfId`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -654,7 +732,108 @@ function FSFform() {
   return (
     <>
       {/* FSF Level 1 Form Starts */}
-      {showDiv1 && (
+      {showLevel1 && (
+        <div>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ maxWidth: 'md' }}>
+              <Typography variant="h3" component="h3" align="center">
+                Development Request Data
+              </Typography>
+            </Box>
+          </Box>
+
+          <br />
+
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ maxWidth: 'md' }}>
+              <Typography variant="h4" component="h4" align="center">
+                Level 0
+              </Typography>
+            </Box>
+          </Box>
+
+          <br />
+          <div className="row justify-content-center">
+            <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
+              <CardContent>
+
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
+                  <TextField
+                    id="select-module_name"
+                    label="Module"
+                    variant="standard"
+                    select
+                    value={module_name}
+                    onChange={handleModuleChange}
+                    placeholder="Select Module Name"
+                    sx={{ width: '100%' }}
+                  >
+                    {projectmodule.map((proj) => (
+                      <MenuItem value={proj.name} key={proj.id}>
+                        {proj.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
+                  <TextField
+                    id="select-module_name"
+                    label="Project"
+                    variant="standard"
+                    select
+                    value={project_name}
+                    onChange={handleProjectNameChange}
+                    placeholder="Select Project Name"
+                    sx={{ width: '100%' }}
+                  >
+                    {project.map((pro) => (
+                      <MenuItem value={pro.project_name} key={pro.id}>
+                        {pro.project_name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
+                  <TextField
+                    id="select-type_of_development"
+                    label="Type of Development"
+                    variant="standard"
+                    select
+                    value={type_of_development}
+                    onChange={handleTypeOfDevelopmentChange}
+                    placeholder="Select Type of Development"
+                    sx={{ width: '100%' }}
+                  >
+                    <MenuItem value="Workflow">Workflow</MenuItem>
+                    <MenuItem value="Report">Report</MenuItem>
+                    <MenuItem value="Enhancement">Enhancement</MenuItem>
+                    <MenuItem value="Interface">Interface</MenuItem>
+                    <MenuItem value="Customization">Customization</MenuItem>
+                    <MenuItem value="Form">Form</MenuItem>
+                    <MenuItem value="Upload">Upload</MenuItem>
+                    <MenuItem value="Integration">Integration</MenuItem>
+                  </TextField>
+                </Box>
+
+                <Button
+                  onClick={handleNext1}
+                  style={primaryButtonStyle}
+                  onMouseEnter={handleMouseEnterPrimary}
+                  onMouseLeave={handleMouseLeavePrimary}
+                >
+                  Next
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
+      {/* FSF Level 1 Form Ends */}
+
+      {/* FSF Level 2 Form Starts */}
+      {showLevel2 && (
         <div>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Box sx={{ maxWidth: 'md' }}>
@@ -678,6 +857,7 @@ function FSFform() {
           <div className="row justify-content-center">
             <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
               <CardContent>
+
                 <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
                   <TextField
                     id="input-wricef-id"
@@ -690,22 +870,6 @@ function FSFform() {
                     placeholder="Enter WRICEF ID"
                     sx={{ width: '100%' }}
                   />
-                </Box>
-
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                  <TextField
-                    id="select-module_name"
-                    label="Module Name"
-                    variant="standard"
-                    select
-                    value={module_name}
-                    onChange={handleModuleChange}
-                    placeholder="Select Module Name"
-                    sx={{ width: '100%' }}
-                  >
-                    <MenuItem value="Test 1">Test 1</MenuItem>
-                    <MenuItem value="Test 2">Test 2</MenuItem>
-                  </TextField>
                 </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
@@ -769,28 +933,6 @@ function FSFform() {
 
                 <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
                   <TextField
-                    id="select-type_of_development"
-                    label="Type of Development"
-                    variant="standard"
-                    select
-                    value={type_of_development}
-                    onChange={handleTypeOfDevelopmentChange}
-                    placeholder="Select Type of Development"
-                    sx={{ width: '100%' }}
-                  >
-                    <MenuItem value="Workflow">Workflow</MenuItem>
-                    <MenuItem value="Report">Report</MenuItem>
-                    <MenuItem value="Enhancement">Enhancement</MenuItem>
-                    <MenuItem value="Interface">Interface</MenuItem>
-                    <MenuItem value="Customization">Customization</MenuItem>
-                    <MenuItem value="Form">Form</MenuItem>
-                    <MenuItem value="Upload">Upload</MenuItem>
-                    <MenuItem value="Integration">Integration</MenuItem>
-                  </TextField>
-                </Box>
-
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                  <TextField
                     id="select-priority"
                     label="Priority"
                     variant="standard"
@@ -825,28 +967,40 @@ function FSFform() {
                   </TextField>
                 </Box>
 
-                <Button
-                  onClick={handleClick1}
-                  style={primaryButtonStyle}
-                  onMouseEnter={handleMouseEnterPrimary}
-                  onMouseLeave={handleMouseLeavePrimary}
-                >
-                  Next
-                </Button>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Button
+                    onClick={handleBack2}
+                    style={dangerButtonStyle}
+                    onMouseEnter={handleMouseEnterDanger}
+                    onMouseLeave={handleMouseLeaveDanger}
+                  >
+                    Back
+                  </Button>
+
+                  <Button
+                    onClick={handleNext2}
+                    style={primaryButtonStyle}
+                    onMouseEnter={handleMouseEnterPrimary}
+                    onMouseLeave={handleMouseLeavePrimary}
+                  >
+                    Next
+                  </Button>
+                </Box>
               </CardContent>
             </Card>
           </div>
         </div>
       )}
-      {/* FSF Level 1 Form Ends */}
+      {/* FSF Level 2 Form Ends */}
 
-      {/* FSF Level 2 Form Starts */}
-      {showDiv2 && (
+      {/* FSF Level 3 Form Starts */}
+      {showLevel3 && (
         <div>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Box sx={{ maxWidth: 'md' }}>
               <Typography variant="h3" component="h3" align="center">
-                Development Screen Data
+                Development Logic
               </Typography>
             </Box>
           </Box>
@@ -900,7 +1054,7 @@ function FSFform() {
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <Button
-                    onClick={handleClick4}
+                    onClick={handleBack3}
                     style={dangerButtonStyle}
                     onMouseEnter={handleMouseEnterDanger}
                     onMouseLeave={handleMouseLeaveDanger}
@@ -908,10 +1062,10 @@ function FSFform() {
                     Back
                   </Button>
                   <Button
+                    onClick={handleNext3}
                     style={primaryButtonStyle}
                     onMouseEnter={handleMouseEnterPrimary}
                     onMouseLeave={handleMouseLeavePrimary}
-                    onClick={handleClick2}
                   >
                     Next
                   </Button>
@@ -921,15 +1075,57 @@ function FSFform() {
           </div>
         </div>
       )}
-      {/* FSF Level 2 Form Ends */}
+      {/* FSF Level 3 Form Ends */}
 
-      {/* FSF Level 3 Form Starts */}
-      {showDiv3 && (
+      {/* FSF Level 4 Form Starts */}
+      {showLevel4 && (
         <div>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Box sx={{ maxWidth: 'md' }}>
               <Typography variant="h3" component="h3" align="center">
-                Add Parameter
+                Input Screen
+              </Typography>
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              gap: '10px',
+              mt: 2,
+              mb: 2,
+            }}
+          >
+            <Button
+              onClick={handleBack4}
+              style={dangerButtonStyle}
+              onMouseEnter={handleMouseEnterDanger}
+              onMouseLeave={handleMouseLeaveDanger}
+            >
+              Back
+            </Button>
+            <Button
+              onClick={handleNext4}
+              style={primaryButtonStyle}
+              onMouseEnter={handleMouseEnterSuccess}
+              onMouseLeave={handleMouseLeaveSuccess}
+            >
+              Next
+            </Button>
+          </Box>
+        </div>
+      )}
+      {/* FSF Level 4 Form Ends */}
+
+      {/* FSF Level 5 Form Starts */}
+      {showLevel5 && (
+        <div>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ maxWidth: 'md' }}>
+              <Typography variant="h3" component="h3" align="center">
+                Input Screen Parameters
               </Typography>
             </Box>
           </Box>
@@ -1396,7 +1592,7 @@ function FSFform() {
             }}
           >
             <Button
-              onClick={handleClick3}
+              onClick={handleBack5}
               style={dangerButtonStyle}
               onMouseEnter={handleMouseEnterDanger}
               onMouseLeave={handleMouseLeaveDanger}
@@ -1404,8 +1600,92 @@ function FSFform() {
               Back
             </Button>
             <Button
+              onClick={handleNext5}
+              style={primaryButtonStyle}
+              onMouseEnter={handleMouseEnterSuccess}
+              onMouseLeave={handleMouseLeaveSuccess}
+            >
+              Next
+            </Button>
+          </Box>
+        </div>
+      )}
+      {/* FSF Level 5 Form Ends */}
+
+      {/* FSF Level 6 Form Starts */}
+      {showLevel6 && (
+        <div>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ maxWidth: 'md' }}>
+              <Typography variant="h3" component="h3" align="center">
+                Output Screen
+              </Typography>
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              gap: '10px',
+              mt: 2,
+              mb: 2,
+            }}
+          >
+            <Button
+              onClick={handleBack6}
+              style={dangerButtonStyle}
+              onMouseEnter={handleMouseEnterDanger}
+              onMouseLeave={handleMouseLeaveDanger}
+            >
+              Back
+            </Button>
+            <Button
+              onClick={handleNext6}
+              style={primaryButtonStyle}
+              onMouseEnter={handleMouseEnterSuccess}
+              onMouseLeave={handleMouseLeaveSuccess}
+            >
+              Next
+            </Button>
+          </Box>
+        </div>
+      )}
+      {/* FSF Level 6 Form Ends */}
+
+      {/* FSF Level 7 Form Starts */}
+      {showLevel7 && (
+        <div>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ maxWidth: 'md' }}>
+              <Typography variant="h3" component="h3" align="center">
+                Output Screen Parameters
+              </Typography>
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              gap: '10px',
+              mt: 2,
+              mb: 2,
+            }}
+          >
+            <Button
+              onClick={handleBack7}
+              style={dangerButtonStyle}
+              onMouseEnter={handleMouseEnterDanger}
+              onMouseLeave={handleMouseLeaveDanger}
+            >
+              Back
+            </Button>
+            <Button
+              onClick={submitHandle}
               style={successButtonStyle}
-              onClick={() => submitHandle()}
               onMouseEnter={handleMouseEnterSuccess}
               onMouseLeave={handleMouseLeaveSuccess}
             >
@@ -1414,7 +1694,7 @@ function FSFform() {
           </Box>
         </div>
       )}
-      {/* FSF Level 3 Form Ends */}
+      {/* FSF Level 7 Form Ends */}
     </>
   )
 }
