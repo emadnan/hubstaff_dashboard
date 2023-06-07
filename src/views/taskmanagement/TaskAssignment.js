@@ -87,20 +87,16 @@ function TaskAssignment() {
     { value: 'MEDIUM', color: 'green' },
     { value: 'HIGH', color: 'red' },
   ]
-  const [radioValue, setRadioValue] = useState('LOW')
-  const onChangeRadio = (e) => {
-    console.log('Selected Radio Button:', e.target.value)
-    setRadioValue(e.target.value)
-  }
+  const [priorities, setPriorities] = useState('LOW')
 
   // Get & Set Selected Task ID :
   const [editedTaskId, setEditedTaskId] = useState()
   // Functions for Assign Tasks Modal
   const [isModalOpenUpdate, setIsModalOpenUpdate] = useState(false)
-  const showUpdateModal = (id) => {
-    console.log('id: ', id)
-    setEditedTaskId(id)
-    getTaskById(id)
+  const showUpdateModal = (task_managements_id) => {
+    console.log('task_managements_id: ', task_managements_id)
+    setEditedTaskId(task_managements_id)
+    getTaskById(task_managements_id)
     setIsModalOpenUpdate(true)
   }
   const handleUpdate = () => {
@@ -120,6 +116,7 @@ function TaskAssignment() {
     fetch(`${BASE_URL}/api/getTasks`)
       .then((response) => response.json())
       .then((data) => {
+        console.log('data in getTasks: ', data)
         if (local.Users.role === 7) {
           filteredUsers = data.task.filter((user) => user.team_lead_id === local.Users.id)
         }
@@ -155,19 +152,22 @@ function TaskAssignment() {
   }
 
   async function addTask() {
-    var formData = new FormData()
-    formData.append('user_id', user_id)
-    formData.append('team_lead_id', local.Users.id)
-    formData.append('project_id', project_id)
-    formData.append('task_description', task_description)
-    formData.append('start_date', start_date)
-    formData.append('dead_line', dead_line)
+    const taskData = {
+      user_id,
+      team_lead_id: local.Users.id,
+      project_id,
+      priorities,
+      task_description,
+      start_date,
+      dead_line,
+    }
     await fetch(`${BASE_URL}/api/addTasks`, {
       method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${session_token}`,
       },
-      body: formData,
+      body: JSON.stringify(taskData),
     })
       .then((response) => {
         if (response.ok) {
@@ -192,32 +192,38 @@ function TaskAssignment() {
     fetch(`${BASE_URL}/api/getTaskById/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        setUserId(data.task[0].user_id)
-        setProjectId(data.task[0].project_id)
-        setTaskDescription(data.task[0].task_description)
-        const formattedStartDate = moment(data.task[0].start_date).format('YYYY-MM-DD')
+        console.log('data: ', data)
+        setUserId(data.task.name)
+        setProjectId(data.task.project_name)
+        setTaskDescription(data.task.task_description)
+        setPriorities(data.task.priorites)
+        const formattedStartDate = moment(data.task.start_date).format('YYYY-MM-DD')
         setStartDate(formattedStartDate)
-        const formattedDeadLine = moment(data.task[0].dead_line).format('YYYY-MM-DD')
+        const formattedDeadLine = moment(data.task.dead_line).format('YYYY-MM-DD')
         setDeadLine(formattedDeadLine)
       })
       .catch((error) => console.log(error))
   }
 
   const updateTask = async (newid) => {
-    let formData = new FormData()
-    formData.append('id', newid)
-    formData.append('user_id', user_id)
-    formData.append('team_lead_id', local.Users.id)
-    formData.append('project_id', project_id)
-    formData.append('task_description', task_description)
-    formData.append('start_date', start_date)
-    formData.append('dead_line', dead_line)
+    const taskData = {
+      id: newid,
+      user_id: user_id,
+      team_lead_id: local.Users.id,
+      project_id: project_id,
+      priorities: priorities,
+      task_description: task_description,
+      start_date: start_date,
+      dead_line: dead_line,
+    }
+
     await fetch(`${BASE_URL}/api/updateTasks`, {
       method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${session_token}`,
       },
-      body: formData,
+      body: JSON.stringify(taskData),
     })
       .then((response) => {
         if (response.ok) {
@@ -270,7 +276,7 @@ function TaskAssignment() {
           {/* Task Assignment table heading */}
           <CTableRow>
             <CTableHeaderCell className="text-center" style={mystyle}>
-              Sr/No
+              Sr No.
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
               Name
@@ -279,54 +285,61 @@ function TaskAssignment() {
               Project
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
+              Task Details
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Task Priority
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
               Start Date
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
               Dead Line
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
-              Task Details
-            </CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>
               Actions
             </CTableHeaderCell>
           </CTableRow>
 
-          {tasks.map(
-            (task, index) => (
-              console.log('tasks: ', task),
-              (
-                <CTableRow key={task.id}>
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                    {index + 1}
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                    {task.user_id}
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                    {task.project_id}
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                    {new Date(task.start_date).toLocaleDateString()}
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                    {new Date(task.dead_line).toLocaleDateString()}
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                    {task.task_description}
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                    <IconButton aria-label="Update">
-                      <EditIcon htmlColor="#28B463" onClick={() => showUpdateModal(task.id)} />
-                    </IconButton>
-                    <IconButton aria-label="Delete">
-                      <DeleteIcon htmlColor="#FF0000" onClick={() => deleteTask(task.id)} />
-                    </IconButton>
-                  </CTableHeaderCell>
-                </CTableRow>
-              )
-            ),
-          )}
+          {tasks.map((task, index) => (
+            <CTableRow key={task.id}>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+                {index + 1}
+              </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+                {task.name}
+              </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+                {task.project_name}
+              </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+                {task.task_description}
+              </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+                {task.priorites}
+              </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+                {task.start_date}
+              </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+                {task.dead_line}
+              </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+                <IconButton aria-label="Update">
+                  <EditIcon
+                    htmlColor="#28B463"
+                    onClick={() => showUpdateModal(task.task_managements_id)}
+                  />
+                </IconButton>
+                <IconButton aria-label="Delete">
+                  <DeleteIcon
+                    htmlColor="#FF0000"
+                    onClick={() => deleteTask(task.task_managements_id)}
+                  />
+                </IconButton>
+              </CTableHeaderCell>
+            </CTableRow>
+          ))}
         </CTableHead>
         <CTableBody>
           {/* Modal for Assign Task */}
@@ -411,7 +424,7 @@ function TaskAssignment() {
               <div>
                 <b>Select Priority of Task</b>
               </div>
-              <Radio.Group onChange={onChangeRadio} value={radioValue}>
+              <Radio.Group value={priorities} onChange={(e) => setPriorities(e.target.value)}>
                 {radioOptions.map((option) => (
                   <Radio key={option.value} value={option.value} style={{ color: option.color }}>
                     {option.value}
@@ -430,7 +443,7 @@ function TaskAssignment() {
             onCancel={updateCancel}
             maskClosable={false}
           >
-            <br></br>
+            <br />
 
             <div className="form-outline mb-3">
               <label>User</label>
@@ -497,6 +510,23 @@ function TaskAssignment() {
                 className="form-control form-control-lg"
                 placeholder="Enter Dead Line"
               />
+            </div>
+
+            <div className="form-outline mb-3">
+              <div>
+                <b>Select Priority of Task</b>
+              </div>
+              <Radio.Group
+                onChange={(e) => setPriorities(e.target.value)}
+                value={priorities}
+                placeholder="Select Priority of Task"
+              >
+                {radioOptions.map((option) => (
+                  <Radio key={option.value} value={option.value} style={{ color: option.color }}>
+                    {option.value}
+                  </Radio>
+                ))}
+              </Radio.Group>
             </div>
           </Modal>
         </CTableBody>

@@ -10,7 +10,9 @@ const Viewedit = React.lazy(() => import('./views/timesheets/viewedit/Viewedit')
 const Projects = React.lazy(() => import('./views/projectmanagement/projects/Projects'))
 const Client = React.lazy(() => import('./views/projectmanagement/client/Client'))
 const Todos = React.lazy(() => import('./views/projectmanagement/todos/Todos'))
-const AssignedProjects = React.lazy(() => import('./views/projectmanagement/assigned/AssignedProjects'))
+const AssignedProjects = React.lazy(() =>
+  import('./views/projectmanagement/assigned/AssignedProjects'),
+)
 const Companies = React.lazy(() => import('./views/companies/Companies'))
 const Departments = React.lazy(() => import('./views/departments/Departments'))
 const Insights = React.lazy(() => import('./views/insights/Insights'))
@@ -31,6 +33,9 @@ const AllFSF = React.lazy(() => import('./views/fsf/AllFSF'))
 const FSFform = React.lazy(() => import('./views/fsf/FSFform'))
 const AllCRF = React.lazy(() => import('./views/crf/AllCRF'))
 const TaskAssignment = React.lazy(() => import('./views/taskmanagement/TaskAssignment'))
+const TaskAssignmentUserSide = React.lazy(() =>
+  import('./views/taskmanagement/TaskAssignmentUserSide'),
+)
 
 //Path setting for routes
 const routes = [
@@ -63,8 +68,13 @@ const routes = [
   { path: '/expenses', name: 'Expenses', element: Expenses },
   { path: '/allfsf', name: 'All FSF', element: AllFSF },
   { path: '/allcrf', name: 'All CRF', element: AllCRF },
-  { path: '/fsfform', name: 'FSF Form', element: FSFform},
-  { path: '/taskassignment', name: 'Task Assignment', element: TaskAssignment},
+  { path: '/fsfform', name: 'FSF Form', element: FSFform },
+  { path: '/taskmanagement/createnewtask', name: 'Task Assignment', element: TaskAssignment },
+  {
+    path: '/taskmanagement/assignedtask',
+    name: 'Task Assignment',
+    element: TaskAssignmentUserSide,
+  },
 ]
 
 export default routes

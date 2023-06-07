@@ -404,6 +404,18 @@ export const _navEmployee = [
     ],
   },
   {
+    component: CNavGroup,
+    name: 'Task Management',
+    icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Assigned Task',
+        to: '/taskmanagement/assignedtask',
+      },
+    ],
+  },
+  {
     component: CNavItem,
     name: 'Company',
     to: '/companies/Companies',
@@ -686,6 +698,18 @@ export const _navTeamLead = [
     ],
   },
   {
+    component: CNavGroup,
+    name: 'Task Management',
+    icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Create New Task',
+        to: '/taskmanagement/createnewtask',
+      },
+    ],
+  },
+  {
     component: CNavItem,
     name: 'Company',
     to: '/companies/Companies',
@@ -763,11 +787,5 @@ export const _navTeamLead = [
     name: 'FSF',
     to: '/allfsf',
     icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: 'Task Management',
-    to: '/taskassignment',
-    icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
   },
 ]
