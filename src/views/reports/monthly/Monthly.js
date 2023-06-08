@@ -1,491 +1,206 @@
-import { React, useEffect, useState } from 'react'
-import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
-import { Card, Divider, Button } from 'antd'
-import moment from 'moment'
+import React from 'react'
+import Box from '@mui/material/Box'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
+import FileDownloadIcon from '@mui/icons-material/FileDownload'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import { ArrowLeftOutlined, ArrowRightOutlined } from '@mui/icons-material'
+import { DatePicker, Button, Card } from 'antd'
+const { RangePicker } = DatePicker
 
-const Dashboard = () => {
-  //Local Storage data
-  const local = JSON.parse(localStorage.getItem('user-info'))
-  const session = JSON.parse(sessionStorage.getItem('user-info'))
-  const session_token = session.token
-  useEffect(() => {
-    getTotalTimeUser(session_token)
-  }, [])
-
-  //CSS Stylings
-  const mystyle = {
-    color: 'white',
-    backgroundColor: '#0070FF ',
-    padding: '15px',
-    fontFamily: 'Arial',
-    textAlign: 'center',
-    alignSelf: 'flex-end',
-  }
-
-  const mystyle2 = {
-    backgroundColor: 'white ',
-    padding: '15px',
-    fontFamily: 'Arial',
-    fontSize: 14,
-    textAlign: 'center',
-    alignSelf: 'flex-end',
-  }
-
-  const cardStyle = {
+const { cardStyle, head, subhead, arrowStyle, tableHeaderCellStyle } = {
+  cardStyle: {
     width: '100%',
-  }
-
-  const cardStyle2 = {
-    width: '100%',
-    backgroundColor: '#FFFFFF ',
-  }
-
-  const head = {
-    color: '#6E6E6E',
-    fontSize: 14,
-  }
-
-  const subhead = {
+  },
+  head: {
+    color: '#9E9E9E',
+  },
+  subhead: {
     color: '#28B463',
-  }
-
-  const userStyle = {
-    fontFamily: 'Arial',
-    fontSize: 20,
+  },
+  arrowStyle: {
+    padding: '2px',
+    width: '40px',
+    color: 'black',
+  },
+  tableHeaderCellStyle: {
     fontWeight: 'bold',
-    color: '#0070FF ',
-  }
-
-  const timingStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-  }
-
-  //Declarations for API calls
-  const [users, setUsers] = useState([])
-  const [projects, setProjects] = useState([])
-  const [departments, setDepartments] = useState([])
-  const [clients, setClients] = useState([])
-  const [screenshot, setScreenshot] = useState([])
-  const [assigned, setAssigned] = useState([])
-  const [hours, setHours] = useState('')
-  const [minutes, setMinutes] = useState('')
-  const [seconds, setSeconds] = useState('')
-  const [totalhours, setTotalHours] = useState('')
-  const [totalminutes, setTotalMinutes] = useState('')
-  const [totalseconds, setTotalSeconds] = useState('')
-  const [totalUserProjects, setTotalUserProjects] = useState('')
-  const [totalProjects, setTotalProjects] = useState('')
-  const [totalweeklyhours, setTotalWeeklyHours] = useState('')
-  const [totalweeklyminutes, setTotalWeeklyMinutes] = useState('')
-  const [totalweeklyseconds, setTotalWeeklySeconds] = useState('')
-  var screenfilter = []
-  var filteredUsers = []
-
-  //Initial rendering through useEffect
-  useEffect(() => {
-    getCompanies()
-    getProjects()
-    getDepartment()
-    getClients()
-    getTotalTime()
-    getProjectScreenshots()
-    getAssigns()
-    getWeeklyWorked()
-  }, [])
-
-  //GET API calls
-  function getCompanies() {
-    fetch('http://10.3.3.80/api/getcompany')
-      .then((response) => response.json())
-      .then((data) => {
-        if (local.Users.role === 1) {
-          filteredUsers = data.companies
-        } else if (local.Users.role === 3) {
-          filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
-        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
-          filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
-        }
-        setUsers(filteredUsers)
-      })
-      .catch((error) => console.log(error))
-  }
-
-  function getProjects() {
-    fetch('http://10.3.3.80/api/getproject')
-      .then((response) => response.json())
-      .then((data) => {
-        if (local.Users.role === 1) {
-          filteredUsers = data.projects
-        } else if (local.Users.role === 3) {
-          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
-        }
-        setProjects(filteredUsers)
-        setTotalProjects(filteredUsers.length)
-      })
-      .catch((error) => console.log(error))
-  }
-
-  function getDepartment() {
-    fetch('http://10.3.3.80/api/getdepartment')
-      .then((response) => response.json())
-      .then((data) => {
-        if (local.Users.role === 1) {
-          filteredUsers = data.Departments
-        } else if (local.Users.role === 3) {
-          filteredUsers = data.Departments.filter(
-            (user) => user.company_id === local.Users.company_id,
-          )
-        }
-        setDepartments(filteredUsers)
-      })
-      .catch((error) => console.log(error))
-  }
-
-  function getAssigns() {
-    fetch('http://10.3.3.80/api/get_assign_projects')
-      .then((response) => response.json())
-      .then((data) => {
-        if (local.Users.role === 1) {
-          filteredUsers = data.Project_Assigns
-        } else if (local.Users.role === 3) {
-          filteredUsers = data.Project_Assigns.filter(
-            (user) => user.company_id === local.Users.company_id,
-          )
-        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
-          filteredUsers = data.Project_Assigns.filter(
-            (user) => user.assign_projects_user_id === local.Users.user_id,
-          )
-        }
-        setAssigned(filteredUsers)
-        setTotalUserProjects(filteredUsers.length)
-      })
-      .catch((error) => console.log(error))
-  }
-
-  function getClients() {
-    fetch('http://10.3.3.80/api/get_client')
-      .then((response) => response.json())
-      .then((data) => setClients(data.Departments))
-      .catch((error) => console.log(error))
-  }
-
-  function getWeeklyWorked() {
-    fetch('http://10.3.3.80/api/calculateWeeklyWork', {
-      headers: {
-        Authorization: `Bearer ${session_token}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setTotalWeeklyHours(data.hours)
-        setTotalWeeklyMinutes(data.minutes)
-        setTotalWeeklySeconds(data.seconds)
-      })
-      .catch((error) => console.log(error))
-  }
-
-  function getTotalTimeUser(token) {
-    fetch('http://10.3.3.80/api/getSum', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setTotalHours(data.hours)
-        setTotalMinutes(data.minutes)
-        setTotalSeconds(data.seconds)
-      })
-      .catch((error) => console.log(error))
-  }
-
-  function getTotalTime() {
-    fetch('http://10.3.3.80/api/get_Project_Screenshots')
-      .then((response) => response.json())
-      .then((data) => {
-        setHours(data.TotalHours)
-        setMinutes(data.TotalMinutes)
-        setSeconds(data.TotalSeconds)
-      })
-      .catch((error) => console.log(error))
-  }
-
-  function getProjectScreenshots() {
-    fetch('http://10.3.3.80/api/get_Project_Screenshots')
-      .then((response) => response.json())
-      .then((data) => {
-        if (local.Users.role === 1) {
-          screenfilter = data.projectscreenshot
-        } else if (local.Users.role === 3) {
-          screenfilter = data.projectscreenshot.filter(
-            (screenshot) => screenshot.company_id === local.Users.company_id,
-          )
-        } else {
-          screenfilter = data.projectscreenshot.filter(
-            (screenshot) => screenshot.user_id === local.Users.user_id,
-          )
-        }
-        setScreenshot(screenfilter)
-      })
-      .catch((error) => console.log(error))
-  }
-
-  return (
-    <>
-      <div className="row">
-        <div className="col-md-4">
-          {local.Users.role === 3 ? (
-            <h4 style={userStyle}>Dashboard</h4>
-          ) : (
-            <h4 style={userStyle}>{local.Users.name}</h4>
-          )}
-        </div>
-      </div>
-
-      {/* Statistics Data Modal Starts */}
-      <Card style={cardStyle}>
-        <div className="row">
-          <div className="col-md-2">
-            <h6 style={head}>TOTAL PROJECTS</h6>
-            <h3 style={subhead}>{local.Users.role === 3 ? totalProjects : totalUserProjects}</h3>
-          </div>
-          <div className="col-md-2">
-            <h6 style={head}>TODAY ACTIVITY</h6>
-            <h3 style={subhead}>0%</h3>
-          </div>
-          <div className="col-md-2">
-            <h6 style={head}>TODAY WORKED</h6>
-            <h3 style={subhead}>
-              {totalhours}:{totalminutes}:{totalseconds}
-            </h3>
-          </div>
-          <div className="col-md-2">
-            <h6 style={head}>WEEKLY ACTIVITY</h6>
-            <h3 style={subhead}>0%</h3>
-          </div>
-          <div className="col-md-2">
-            <h6 style={head}>WORKED THIS WEEK</h6>
-            <h3 style={subhead}>
-              {totalweeklyhours}:{totalweeklyminutes}:{totalweeklyseconds}
-            </h3>
-          </div>
-        </div>
-      </Card>
-      {/* Statistics Data Modal Ends */}
-
-      <br></br>
-
-      <div className="row">
-        <div className="col-md-6">
-          {/* Card for Companies Modal Starts */}
-          <Card style={cardStyle2}>
-            <h5 style={head}>COMPANIES</h5>
-            <CTable
-              align="middle"
-              className="mb-0 border"
-              hover
-              responsive
-              style={{ marginTop: '20px' }}
-            >
-              <CTableHead color="light">
-                <CTableRow>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Company Name
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Company Email
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    City
-                  </CTableHeaderCell>
-                </CTableRow>
-
-                {users.slice(0, 3).map((company) => (
-                  <CTableRow key={company.id}>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {company.company_name}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {company.company_email}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {company.city}
-                    </CTableHeaderCell>
-                  </CTableRow>
-                ))}
-              </CTableHead>
-
-              <CTableBody></CTableBody>
-            </CTable>
-
-            <Divider></Divider>
-            <div className="text-center">
-              <Button type="link" href="/companies/Companies">
-                View companies &gt;
-              </Button>
-            </div>
-          </Card>
-          {/* Card for Companies Modal Ends */}
-
-          <br></br>
-
-          {/* Card for Departments Modal Starts  */}
-          {local.Users.role === 1 || local.Users.role === 3 ? (
-            <Card style={cardStyle2}>
-              <h5 style={head}>DEPARTMENTS</h5>
-              <CTable
-                align="middle"
-                className="mb-0 border"
-                hover
-                responsive
-                style={{ marginTop: '20px' }}
-              >
-                <CTableHead color="light">
-                  <CTableRow>
-                    <CTableHeaderCell className="text-center" style={mystyle}>
-                      Department Name
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle}>
-                      Company
-                    </CTableHeaderCell>
-                  </CTableRow>
-
-                  {departments.slice(0, 3).map((dept) => (
-                    <CTableRow key={dept.id}>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {dept.department_name}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {dept.company_name}
-                      </CTableHeaderCell>
-                    </CTableRow>
-                  ))}
-                </CTableHead>
-
-                <CTableBody></CTableBody>
-              </CTable>
-
-              <Divider></Divider>
-              <div className="text-center">
-                <Button type="link" href="/departments/Departments">
-                  View departments &gt;
-                </Button>
-              </div>
-            </Card>
-          ) : null}
-
-          {/* Card for Departments Modal Ends */}
-        </div>
-
-        <div className="col-md-6">
-          {/* Card for Projects Modal Starts */}
-          {local.Users.role === 1 ||
-            (local.Users.role === 3 && (
-              <Card style={cardStyle2}>
-                <h5 style={head}>PROJECTS</h5>
-                <CTable
-                  align="middle"
-                  className="mb-0 border"
-                  hover
-                  responsive
-                  style={{ marginTop: '20px' }}
-                >
-                  <CTableHead color="light">
-                    <CTableRow>
-                      <CTableHeaderCell className="text-center" style={mystyle}>
-                        Project
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle}>
-                        Start Date
-                      </CTableHeaderCell>
-                    </CTableRow>
-
-                    {projects.slice(0, 4).map((proj) => {
-                      const start = moment(proj.start_date).format('DD-MM-YYYY')
-
-                      return (
-                        <CTableRow key={proj.id}>
-                          <CTableHeaderCell className="text-center" style={mystyle2}>
-                            {proj.project_name}
-                          </CTableHeaderCell>
-                          <CTableHeaderCell className="text-center" style={mystyle2}>
-                            {start}
-                          </CTableHeaderCell>
-                        </CTableRow>
-                      )
-                    })}
-                  </CTableHead>
-
-                  <CTableBody></CTableBody>
-                </CTable>
-
-                <Divider></Divider>
-                <div className="text-center">
-                  <Button type="link" href="/projectmanagement/projects">
-                    View projects &gt;
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          {/* Card for Projects Modal Ends */}
-
-          {/* Card for Assigned Project Modal Starts */}
-          <Card style={cardStyle2}>
-            <h5 style={head}>ASSIGNED PROJECTS</h5>
-            <CTable
-              align="middle"
-              className="mb-0 border"
-              hover
-              responsive
-              style={{ marginTop: '20px' }}
-            >
-              <CTableHead color="light">
-                <CTableRow>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Project Name
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Stream Name
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Total Hours Worked
-                  </CTableHeaderCell>
-                </CTableRow>
-              </CTableHead>
-              <CTableBody>
-                {assigned.slice(0, 4).map((assign) => {
-                  return (
-                    <CTableRow key={assign.id}>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {assign.project_name}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {assign.stream_name}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        22:00
-                      </CTableHeaderCell>
-                    </CTableRow>
-                  )
-                })}
-              </CTableBody>
-            </CTable>
-
-            <Divider></Divider>
-            <div className="text-center">
-              <Button type="link" href="/projectmanagement/assigned">
-                View assigned projects &gt;
-              </Button>
-            </div>
-          </Card>
-          {/* Card for Assigned Project Modal Ends */}
-
-          <br></br>
-        </div>
-      </div>
-    </>
-  )
+    textAlign: 'right',
+  },
 }
 
-export default Dashboard
+function createData(
+  projectName,
+  weekDay1,
+  weekDay2,
+  weekDay3,
+  weekDay4,
+  weekDay5,
+  weekDay6,
+  totalWeekHours,
+  persentageWeeklyPerformance,
+) {
+  return {
+    projectName,
+    weekDay1,
+    weekDay2,
+    weekDay3,
+    weekDay4,
+    weekDay5,
+    weekDay6,
+    totalWeekHours,
+    persentageWeeklyPerformance,
+  }
+}
+
+const rows = [
+  createData('TIME TRACKER', '03:30', '-', '04:00', '-', '-', '-', '07:30', '82%'),
+  createData('CARDIFY', '03:30', '-', '02:00', '-', '01:30', '-', '07:00', '72%'),
+  createData('OFFICE WORK', '03:30', '02:00', '02:00', '-', '01:30', '-', '08:00', '62%'),
+]
+
+const tableData = [
+  {
+    mainRow: 'THU, 08-JUNE-2023',
+    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
+    totalWorkedRows: ['04:00', '02:00', '-'],
+    activityRows: ['50%', '25%', '0%'],
+  },
+  {
+    mainRow: 'FRI, 09-JUNE-2023	',
+    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
+    totalWorkedRows: ['02:00', '-', '04:00'],
+    activityRows: ['25%', '0%', '50%'],
+  },
+  // Add more data objects as needed
+]
+
+export default function Dashboard() {
+  return (
+    <Box>
+      <Box className="row">
+        <Box className="col-md 6">
+          <Typography variant="h4">Weekly Reports</Typography>
+        </Box>
+      </Box>
+      <Box className="row justify-content-end">
+        <Box className="col-md-5">
+          <Button type="default" style={arrowStyle} icon={<ArrowLeftOutlined />} />
+          &nbsp;
+          <Button type="default" style={arrowStyle} icon={<ArrowRightOutlined />} />
+          &nbsp;
+          <RangePicker />
+          &nbsp; &nbsp;
+          <Button type="default">Today</Button>
+          &nbsp; &nbsp;
+          <Button variant="contained" color="primary">
+            Filters
+          </Button>
+        </Box>
+      </Box>
+      <Box mt={2}>
+        <Card style={cardStyle}>
+          <Box className="row">
+            <Box className="col-md-3">
+              <Typography variant="h6" sx={head}>
+                ASSIGNED PROJECTS
+              </Typography>
+              <Typography variant="h4" sx={subhead}>
+                1
+              </Typography>
+            </Box>
+            <Box className="col-md-3">
+              <Typography variant="h6" sx={head}>
+                AVG. HOURS PER DAY
+              </Typography>
+              <Typography variant="h4" sx={subhead}>
+                5:35
+              </Typography>
+            </Box>
+            <Box className="col-md-3">
+              <Typography variant="h6" sx={head}>
+                AVG. ACTIVITY
+              </Typography>
+              <Typography variant="h4" sx={subhead}>
+                82%
+              </Typography>
+            </Box>
+            <Box className="col-md-3">
+              <Typography variant="h6" sx={head}>
+                EARNING
+              </Typography>
+              <Typography variant="h4" sx={subhead}>
+                -
+              </Typography>
+            </Box>
+          </Box>
+        </Card>
+      </Box>
+      <Box sx={{ width: '100%', mt: 2 }}>
+        <Paper sx={{ width: '100%', mb: 2 }}>
+          <Toolbar
+            sx={{
+              pl: { sm: 2 },
+              pr: { xs: 1, sm: 1 },
+            }}
+          >
+            <Typography
+              sx={{ flex: '1 1 100%', color: 'blue' }}
+              variant="h4"
+              id="tableTitle"
+              component="div"
+            >
+              COMPANY NAME <span style={{ fontSize: 'small', color: 'gray' }}>LOCATION</span>
+            </Typography>{' '}
+            <Tooltip title="Generate Report">
+              <IconButton>
+                <FileDownloadIcon />
+              </IconButton>
+            </Tooltip>
+          </Toolbar>
+
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>DATE</TableCell>
+                <TableCell>PROJECTS</TableCell>
+                <TableCell>TOTAL WORKED</TableCell>
+                <TableCell>ACTIVITY</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {tableData.map((data, index) => (
+                <React.Fragment key={index}>
+                  <TableRow>
+                    <TableCell rowSpan={3}>{data.mainRow}</TableCell>
+                    <TableCell>{data.projectRows[0]}</TableCell>
+                    <TableCell>{data.totalWorkedRows[0]}</TableCell>
+                    <TableCell>{data.activityRows[0]}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>{data.projectRows[1]}</TableCell>
+                    <TableCell>{data.totalWorkedRows[1]}</TableCell>
+                    <TableCell>{data.activityRows[1]}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>{data.projectRows[2]}</TableCell>
+                    <TableCell>{data.totalWorkedRows[2]}</TableCell>
+                    <TableCell>{data.activityRows[2]}</TableCell>
+                  </TableRow>
+                </React.Fragment>
+              ))}
+            </TableBody>
+          </Table>
+        </Paper>
+      </Box>
+    </Box>
+  )
+}
