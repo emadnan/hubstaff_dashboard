@@ -57,6 +57,10 @@ function FSFform() {
 
   const [isFocused, setIsFocused] = useState(false)
 
+  useEffect(() => {
+    setWRicefId(`Biafo-${project_name}-${module_name}`);
+  }, [project_name, module_name]);
+
   // const editorRef = useRef()
 
   const editorConfig = {
@@ -866,7 +870,7 @@ function FSFform() {
                     type="wricef_id"
                     name="wricef_id"
                     value={wricef_id}
-                    onChange={(e) => setWRicefId(e.target.value)}
+                    // onChange={handleWricefChange}
                     placeholder="Enter WRICEF ID"
                     sx={{ width: '100%' }}
                   />
