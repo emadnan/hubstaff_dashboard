@@ -927,8 +927,14 @@ function AllFSF() {
           </Modal>
 
           {/* Modal for Deletion Confirmation */}
-          <Modal title="Are you sure you want to delete?" open={isModalOpen3} onOk={handleOk3} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel3} style={modalStyle}>
-          </Modal>
+          <Modal
+            title="Are you sure you want to delete?"
+            open={isModalOpen3}
+            onOk={handleOk3}
+            okButtonProps={{ style: { background: 'blue' } }}
+            onCancel={handleCancel3}
+            style={modalStyle}
+          ></Modal>
 
           {/* Alert for Add Company Success*/}
           {showAlert1 && (

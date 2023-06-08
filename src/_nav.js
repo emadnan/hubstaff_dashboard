@@ -199,24 +199,24 @@ export const _navCompanyAdmin = [
     to: '/dashboard',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
-  {
-    component: CNavGroup,
-    name: 'Timesheets',
-    to: '/timesheets',
-    icon: <CIcon icon={cilClock} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'View & Edit',
-        to: '/timesheets/viewedit',
-      },
-      {
-        component: CNavItem,
-        name: 'Approvals',
-        to: '/timesheets/approvals',
-      },
-    ],
-  },
+  // {
+  //   component: CNavGroup,
+  //   name: 'Timesheets',
+  //   to: '/timesheets',
+  //   icon: <CIcon icon={cilClock} customClassName="nav-icon" />,
+  //   items: [
+  //     {
+  //       component: CNavItem,
+  //       name: 'View & Edit',
+  //       to: '/timesheets/viewedit',
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       name: 'Approvals',
+  //       to: '/timesheets/approvals',
+  //     },
+  //   ],
+  // },
   {
     component: CNavGroup,
     name: 'Activity',
@@ -228,16 +228,16 @@ export const _navCompanyAdmin = [
         name: 'Screenshots',
         to: '/activity/screenshots',
       },
-      {
-        component: CNavItem,
-        name: 'Apps',
-        to: '/activity/apps',
-      },
-      {
-        component: CNavItem,
-        name: 'URLs',
-        to: '/activity/urls',
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'Apps',
+      //   to: '/activity/apps',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'URLs',
+      //   to: '/activity/urls',
+      // },
     ],
   },
   {
@@ -254,11 +254,6 @@ export const _navCompanyAdmin = [
         component: CNavItem,
         name: 'Assigned Projects',
         to: '/projectmanagement/assigned',
-      },
-      {
-        component: CNavItem,
-        name: 'Clients',
-        to: '/projectmanagement/client',
       },
     ],
   },
@@ -281,36 +276,42 @@ export const _navCompanyAdmin = [
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {
-    component: CNavGroup,
-    name: 'Calendar',
-    icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Schedules',
-        to: '/calendar/schedules',
-      },
-      {
-        component: CNavItem,
-        name: 'Time off Requests',
-        to: '/calendar/timeoffrequests',
-      },
-    ],
+    component: CNavItem,
+    name: 'Clients',
+    to: '/projectmanagement/client',
+    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
+  // {
+  //   component: CNavGroup,
+  //   name: 'Calendar',
+  //   icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
+  //   items: [
+  //     {
+  //       component: CNavItem,
+  //       name: 'Schedules',
+  //       to: '/calendar/schedules',
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       name: 'Time off Requests',
+  //       to: '/calendar/timeoffrequests',
+  //     },
+  //   ],
+  // },
   {
     component: CNavGroup,
     name: 'Reports',
     icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
     items: [
+      // {
+      //   component: CNavItem,
+      //   name: 'Time & Activity',
+      //   to: '/reports/timenactivity',
+      // },
       {
         component: CNavItem,
-        name: 'Time & Activity',
-        to: '/reports/timenactivity',
-      },
-      {
-        component: CNavItem,
-        name: 'Monthly',
-        to: '/reports/monthly',
+        name: 'Daily',
+        to: '/reports/daily',
       },
       {
         component: CNavItem,
@@ -319,24 +320,24 @@ export const _navCompanyAdmin = [
       },
       {
         component: CNavItem,
-        name: 'Daily',
-        to: '/reports/daily',
+        name: 'Monthly',
+        to: '/reports/monthly',
       },
-      {
-        component: CNavItem,
-        name: 'Accounts Owed',
-        to: '/reports/accountsowed',
-      },
-      {
-        component: CNavItem,
-        name: 'Payments',
-        to: '/reports/payments',
-      },
-      {
-        component: CNavItem,
-        name: 'All Reports',
-        to: '/reports/allreports',
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'Accounts Owed',
+      //   to: '/reports/accountsowed',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'Payments',
+      //   to: '/reports/payments',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'All Reports',
+      //   to: '/reports/allreports',
+      // },
     ],
   },
   {
@@ -345,12 +346,12 @@ export const _navCompanyAdmin = [
     to: '/teams',
     icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
   },
-  {
-    component: CNavItem,
-    name: 'Expenses',
-    to: '/expenses',
-    icon: <CIcon icon={cilCash} customClassName="nav-icon" />,
-  },
+  // {
+  //   component: CNavItem,
+  //   name: 'Expenses',
+  //   to: '/expenses',
+  //   icon: <CIcon icon={cilCash} customClassName="nav-icon" />,
+  // },
 ]
 
 export const _navEmployee = [
@@ -360,24 +361,24 @@ export const _navEmployee = [
     to: '/dashboard',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
-  {
-    component: CNavGroup,
-    name: 'Timesheets',
-    to: '/timesheets',
-    icon: <CIcon icon={cilClock} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'View & Edit',
-        to: '/timesheets/viewedit',
-      },
-      {
-        component: CNavItem,
-        name: 'Approvals',
-        to: '/timesheets/approvals',
-      },
-    ],
-  },
+  // {
+  //   component: CNavGroup,
+  //   name: 'Timesheets',
+  //   to: '/timesheets',
+  //   icon: <CIcon icon={cilClock} customClassName="nav-icon" />,
+  //   items: [
+  //     {
+  //       component: CNavItem,
+  //       name: 'View & Edit',
+  //       to: '/timesheets/viewedit',
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       name: 'Approvals',
+  //       to: '/timesheets/approvals',
+  //     },
+  //   ],
+  // },
   {
     component: CNavGroup,
     name: 'Activity',
@@ -389,16 +390,16 @@ export const _navEmployee = [
         name: 'Screenshots',
         to: '/activity/screenshots',
       },
-      {
-        component: CNavItem,
-        name: 'Apps',
-        to: '/activity/apps',
-      },
-      {
-        component: CNavItem,
-        name: 'URLs',
-        to: '/activity/urls',
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'Apps',
+      //   to: '/activity/apps',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'URLs',
+      //   to: '/activity/urls',
+      // },
     ],
   },
   {
@@ -437,23 +438,23 @@ export const _navEmployee = [
     to: '/users/Users',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
-  {
-    component: CNavGroup,
-    name: 'Calendar',
-    icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Schedules',
-        to: '/calendar/schedules',
-      },
-      {
-        component: CNavItem,
-        name: 'Time off Requests',
-        to: '/calendar/timeoffrequests',
-      },
-    ],
-  },
+  // {
+  //   component: CNavGroup,
+  //   name: 'Calendar',
+  //   icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
+  //   items: [
+  //     {
+  //       component: CNavItem,
+  //       name: 'Schedules',
+  //       to: '/calendar/schedules',
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       name: 'Time off Requests',
+  //       to: '/calendar/timeoffrequests',
+  //     },
+  //   ],
+  // },
   {
     component: CNavGroup,
     name: 'Reports',
@@ -466,8 +467,8 @@ export const _navEmployee = [
       // },
       {
         component: CNavItem,
-        name: 'Monthly',
-        to: '/reports/monthly',
+        name: 'Daily',
+        to: '/reports/daily',
       },
       {
         component: CNavItem,
@@ -476,8 +477,8 @@ export const _navEmployee = [
       },
       {
         component: CNavItem,
-        name: 'Daily',
-        to: '/reports/daily',
+        name: 'Monthly',
+        to: '/reports/monthly',
       },
       // {
       //   component: CNavItem,
@@ -502,12 +503,12 @@ export const _navEmployee = [
     to: '/teams',
     icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
   },
-  {
-    component: CNavItem,
-    name: 'Expenses',
-    to: '/expenses',
-    icon: <CIcon icon={cilCash} customClassName="nav-icon" />,
-  },
+  // {
+  //   component: CNavItem,
+  //   name: 'Expenses',
+  //   to: '/expenses',
+  //   icon: <CIcon icon={cilCash} customClassName="nav-icon" />,
+  // },
   {
     component: CNavItem,
     name: 'FSF',
@@ -523,24 +524,24 @@ export const _navFunctional = [
     to: '/dashboard',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
-  {
-    component: CNavGroup,
-    name: 'Timesheets',
-    to: '/timesheets',
-    icon: <CIcon icon={cilClock} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'View & Edit',
-        to: '/timesheets/viewedit',
-      },
-      {
-        component: CNavItem,
-        name: 'Approvals',
-        to: '/timesheets/approvals',
-      },
-    ],
-  },
+  // {
+  //   component: CNavGroup,
+  //   name: 'Timesheets',
+  //   to: '/timesheets',
+  //   icon: <CIcon icon={cilClock} customClassName="nav-icon" />,
+  //   items: [
+  //     {
+  //       component: CNavItem,
+  //       name: 'View & Edit',
+  //       to: '/timesheets/viewedit',
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       name: 'Approvals',
+  //       to: '/timesheets/approvals',
+  //     },
+  //   ],
+  // },
   {
     component: CNavGroup,
     name: 'Activity',
@@ -552,16 +553,16 @@ export const _navFunctional = [
         name: 'Screenshots',
         to: '/activity/screenshots',
       },
-      {
-        component: CNavItem,
-        name: 'Apps',
-        to: '/activity/apps',
-      },
-      {
-        component: CNavItem,
-        name: 'URLs',
-        to: '/activity/urls',
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'Apps',
+      //   to: '/activity/apps',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'URLs',
+      //   to: '/activity/urls',
+      // },
     ],
   },
   {
@@ -588,23 +589,23 @@ export const _navFunctional = [
     to: '/users/Users',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
-  {
-    component: CNavGroup,
-    name: 'Calendar',
-    icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Schedules',
-        to: '/calendar/schedules',
-      },
-      {
-        component: CNavItem,
-        name: 'Time off Requests',
-        to: '/calendar/timeoffrequests',
-      },
-    ],
-  },
+  // {
+  //   component: CNavGroup,
+  //   name: 'Calendar',
+  //   icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
+  //   items: [
+  //     {
+  //       component: CNavItem,
+  //       name: 'Schedules',
+  //       to: '/calendar/schedules',
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       name: 'Time off Requests',
+  //       to: '/calendar/timeoffrequests',
+  //     },
+  //   ],
+  // },
   {
     component: CNavGroup,
     name: 'Reports',
@@ -617,8 +618,8 @@ export const _navFunctional = [
       // },
       {
         component: CNavItem,
-        name: 'Monthly',
-        to: '/reports/monthly',
+        name: 'Daily',
+        to: '/reports/daily',
       },
       {
         component: CNavItem,
@@ -627,8 +628,8 @@ export const _navFunctional = [
       },
       {
         component: CNavItem,
-        name: 'Daily',
-        to: '/reports/daily',
+        name: 'Monthly',
+        to: '/reports/monthly',
       },
       // {
       //   component: CNavItem,
@@ -653,12 +654,12 @@ export const _navFunctional = [
     to: '/teams',
     icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
   },
-  {
-    component: CNavItem,
-    name: 'Expenses',
-    to: '/expenses',
-    icon: <CIcon icon={cilCash} customClassName="nav-icon" />,
-  },
+  // {
+  //   component: CNavItem,
+  //   name: 'Expenses',
+  //   to: '/expenses',
+  //   icon: <CIcon icon={cilCash} customClassName="nav-icon" />,
+  // },
   {
     component: CNavItem,
     name: 'FSF',
@@ -674,24 +675,24 @@ export const _navTeamLead = [
     to: '/dashboard',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
-  {
-    component: CNavGroup,
-    name: 'Timesheets',
-    to: '/timesheets',
-    icon: <CIcon icon={cilClock} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'View & Edit',
-        to: '/timesheets/viewedit',
-      },
-      {
-        component: CNavItem,
-        name: 'Approvals',
-        to: '/timesheets/approvals',
-      },
-    ],
-  },
+  // {
+  //   component: CNavGroup,
+  //   name: 'Timesheets',
+  //   to: '/timesheets',
+  //   icon: <CIcon icon={cilClock} customClassName="nav-icon" />,
+  //   items: [
+  //     {
+  //       component: CNavItem,
+  //       name: 'View & Edit',
+  //       to: '/timesheets/viewedit',
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       name: 'Approvals',
+  //       to: '/timesheets/approvals',
+  //     },
+  //   ],
+  // },
   {
     component: CNavGroup,
     name: 'Activity',
@@ -703,16 +704,16 @@ export const _navTeamLead = [
         name: 'Screenshots',
         to: '/activity/screenshots',
       },
-      {
-        component: CNavItem,
-        name: 'Apps',
-        to: '/activity/apps',
-      },
-      {
-        component: CNavItem,
-        name: 'URLs',
-        to: '/activity/urls',
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'Apps',
+      //   to: '/activity/apps',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'URLs',
+      //   to: '/activity/urls',
+      // },
     ],
   },
   {
@@ -751,23 +752,23 @@ export const _navTeamLead = [
     to: '/users/Users',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
-  {
-    component: CNavGroup,
-    name: 'Calendar',
-    icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Schedules',
-        to: '/calendar/schedules',
-      },
-      {
-        component: CNavItem,
-        name: 'Time off Requests',
-        to: '/calendar/timeoffrequests',
-      },
-    ],
-  },
+  // {
+  //   component: CNavGroup,
+  //   name: 'Calendar',
+  //   icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
+  //   items: [
+  //     {
+  //       component: CNavItem,
+  //       name: 'Schedules',
+  //       to: '/calendar/schedules',
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       name: 'Time off Requests',
+  //       to: '/calendar/timeoffrequests',
+  //     },
+  //   ],
+  // },
   {
     component: CNavGroup,
     name: 'Reports',
@@ -780,8 +781,8 @@ export const _navTeamLead = [
       // },
       {
         component: CNavItem,
-        name: 'Monthly',
-        to: '/reports/monthly',
+        name: 'Daily',
+        to: '/reports/daily',
       },
       {
         component: CNavItem,
@@ -790,8 +791,8 @@ export const _navTeamLead = [
       },
       {
         component: CNavItem,
-        name: 'Daily',
-        to: '/reports/daily',
+        name: 'Monthly',
+        to: '/reports/monthly',
       },
       // {
       //   component: CNavItem,
@@ -816,12 +817,12 @@ export const _navTeamLead = [
     to: '/teams',
     icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
   },
-  {
-    component: CNavItem,
-    name: 'Expenses',
-    to: '/expenses',
-    icon: <CIcon icon={cilCash} customClassName="nav-icon" />,
-  },
+  // {
+  //   component: CNavItem,
+  //   name: 'Expenses',
+  //   to: '/expenses',
+  //   icon: <CIcon icon={cilCash} customClassName="nav-icon" />,
+  // },
   {
     component: CNavItem,
     name: 'FSF',
