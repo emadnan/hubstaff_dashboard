@@ -309,8 +309,18 @@ export const _navCompanyAdmin = [
       },
       {
         component: CNavItem,
+        name: 'Monthly',
+        to: '/reports/monthly',
+      },
+      {
+        component: CNavItem,
         name: 'Weekly',
         to: '/reports/weekly',
+      },
+      {
+        component: CNavItem,
+        name: 'Daily',
+        to: '/reports/daily',
       },
       {
         component: CNavItem,
@@ -449,10 +459,15 @@ export const _navEmployee = [
     name: 'Reports',
     icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
     items: [
+      // {
+      //   component: CNavItem,
+      //   name: 'Time & Activity',
+      //   to: '/reports/timenactivity',
+      // },
       {
         component: CNavItem,
-        name: 'Time & Activity',
-        to: '/reports/timenactivity',
+        name: 'Monthly',
+        to: '/reports/monthly',
       },
       {
         component: CNavItem,
@@ -461,19 +476,24 @@ export const _navEmployee = [
       },
       {
         component: CNavItem,
-        name: 'Accounts Owed',
-        to: '/reports/accountsowed',
+        name: 'Daily',
+        to: '/reports/daily',
       },
-      {
-        component: CNavItem,
-        name: 'Payments',
-        to: '/reports/payments',
-      },
-      {
-        component: CNavItem,
-        name: 'All Reports',
-        to: '/reports/allreports',
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'Accounts Owed',
+      //   to: '/reports/accountsowed',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'Payments',
+      //   to: '/reports/payments',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'All Reports',
+      //   to: '/reports/allreports',
+      // },
     ],
   },
   {
@@ -590,10 +610,15 @@ export const _navFunctional = [
     name: 'Reports',
     icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
     items: [
+      // {
+      //   component: CNavItem,
+      //   name: 'Time & Activity',
+      //   to: '/reports/timenactivity',
+      // },
       {
         component: CNavItem,
-        name: 'Time & Activity',
-        to: '/reports/timenactivity',
+        name: 'Monthly',
+        to: '/reports/monthly',
       },
       {
         component: CNavItem,
@@ -602,19 +627,24 @@ export const _navFunctional = [
       },
       {
         component: CNavItem,
-        name: 'Accounts Owed',
-        to: '/reports/accountsowed',
+        name: 'Daily',
+        to: '/reports/daily',
       },
-      {
-        component: CNavItem,
-        name: 'Payments',
-        to: '/reports/payments',
-      },
-      {
-        component: CNavItem,
-        name: 'All Reports',
-        to: '/reports/allreports',
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'Accounts Owed',
+      //   to: '/reports/accountsowed',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'Payments',
+      //   to: '/reports/payments',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'All Reports',
+      //   to: '/reports/allreports',
+      // },
     ],
   },
   {
@@ -743,10 +773,15 @@ export const _navTeamLead = [
     name: 'Reports',
     icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
     items: [
+      // {
+      //   component: CNavItem,
+      //   name: 'Time & Activity',
+      //   to: '/reports/timenactivity',
+      // },
       {
         component: CNavItem,
-        name: 'Time & Activity',
-        to: '/reports/timenactivity',
+        name: 'Monthly',
+        to: '/reports/monthly',
       },
       {
         component: CNavItem,
@@ -755,19 +790,24 @@ export const _navTeamLead = [
       },
       {
         component: CNavItem,
-        name: 'Accounts Owed',
-        to: '/reports/accountsowed',
+        name: 'Daily',
+        to: '/reports/daily',
       },
-      {
-        component: CNavItem,
-        name: 'Payments',
-        to: '/reports/payments',
-      },
-      {
-        component: CNavItem,
-        name: 'All Reports',
-        to: '/reports/allreports',
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'Accounts Owed',
+      //   to: '/reports/accountsowed',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'Payments',
+      //   to: '/reports/payments',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'All Reports',
+      //   to: '/reports/allreports',
+      // },
     ],
   },
   {

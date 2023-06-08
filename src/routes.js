@@ -26,7 +26,9 @@ const Accountsowed = React.lazy(() => import('./views/reports/accountsowed/Accou
 const Allreports = React.lazy(() => import('./views/reports/allreports/Allreports'))
 const Payments = React.lazy(() => import('./views/reports/payments/Payments'))
 const Timenactivity = React.lazy(() => import('./views/reports/timenactivity/Timenactivity'))
+const Monthly = React.lazy(() => import('./views/reports/monthly/Monthly'))
 const Weekly = React.lazy(() => import('./views/reports/weekly/Weekly'))
+const Daily = React.lazy(() => import('./views/reports/daily/Daily'))
 const Teams = React.lazy(() => import('./views/teams/Teams'))
 const Expenses = React.lazy(() => import('./views/expenses/Expenses'))
 const AllFSF = React.lazy(() => import('./views/fsf/AllFSF'))
@@ -63,7 +65,9 @@ const routes = [
   { path: '/reports/allreports', name: 'All Reports', element: Allreports },
   { path: '/reports/payments', name: 'Payments', element: Payments },
   { path: '/reports/timenactivity', name: 'Time & Activity', element: Timenactivity },
+  { path: '/reports/monthly', name: 'Weekly', element: Monthly },
   { path: '/reports/weekly', name: 'Weekly', element: Weekly },
+  { path: '/reports/daily', name: 'Weekly', element: Daily },
   { path: '/teams', name: 'Teams', element: Teams },
   { path: '/expenses', name: 'Expenses', element: Expenses },
   { path: '/allfsf', name: 'All FSF', element: AllFSF },
