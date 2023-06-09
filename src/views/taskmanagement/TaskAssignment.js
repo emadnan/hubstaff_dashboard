@@ -16,8 +16,8 @@ function TaskAssignment() {
   const [user_id, setUserId] = useState('')
   const [project_id, setProjectId] = useState('')
   const [task_description, setTaskDescription] = useState('')
-  const [start_date, setStartDate] = useState('')
-  const [dead_line, setDeadLine] = useState('')
+  const [task_managements_start_date, setTaskManagementStartDate] = useState('')
+  const [task_managements_dead_line, setTaskManagementDeadLine] = useState('')
 
   const [users, setAllUsers] = useState([])
   const [projects, setProjects] = useState([])
@@ -77,8 +77,8 @@ function TaskAssignment() {
     setUserId('')
     setProjectId('')
     setTaskDescription('')
-    setStartDate(null)
-    setDeadLine(null)
+    setTaskManagementStartDate(null)
+    setTaskManagementDeadLine(null)
   }
 
   // For Radio Buttons
@@ -108,15 +108,14 @@ function TaskAssignment() {
     setUserId('')
     setProjectId('')
     setTaskDescription('')
-    setStartDate(null)
-    setDeadLine(null)
+    setTaskManagementStartDate(null)
+    setTaskManagementDeadLine(null)
   }
 
   function getTasks() {
     fetch(`${BASE_URL}/api/getTasks`)
       .then((response) => response.json())
       .then((data) => {
-        console.log('data in getTasks: ', data)
         if (local.Users.role === 7) {
           filteredUsers = data.task.filter((user) => user.team_lead_id === local.Users.id)
         }
@@ -158,8 +157,8 @@ function TaskAssignment() {
       project_id,
       priorities,
       task_description,
-      start_date,
-      dead_line,
+      start_date: task_managements_start_date,
+      dead_line: task_managements_dead_line,
     }
     await fetch(`${BASE_URL}/api/addTasks`, {
       method: 'POST',
@@ -180,8 +179,8 @@ function TaskAssignment() {
         setUserId('')
         setProjectId('')
         setTaskDescription('')
-        setStartDate('')
-        setDeadLine('')
+        setTaskManagementStartDate(null)
+        setTaskManagementDeadLine(null)
       })
       .catch((error) => {
         console.error(error)
@@ -193,14 +192,16 @@ function TaskAssignment() {
       .then((response) => response.json())
       .then((data) => {
         console.log('data: ', data)
-        setUserId(data.task.name)
-        setProjectId(data.task.project_name)
+        setUserId(data.task.user_id)
+        setProjectId(data.task.project_id)
         setTaskDescription(data.task.task_description)
         setPriorities(data.task.priorites)
-        const formattedStartDate = moment(data.task.start_date).format('YYYY-MM-DD')
-        setStartDate(formattedStartDate)
-        const formattedDeadLine = moment(data.task.dead_line).format('YYYY-MM-DD')
-        setDeadLine(formattedDeadLine)
+        const formattedStartDate = moment(data.task.task_managements_start_date).format(
+          'YYYY-MM-DD',
+        )
+        setTaskManagementStartDate(formattedStartDate)
+        const formattedDeadLine = moment(data.task.task_managements_dead_line).format('YYYY-MM-DD')
+        setTaskManagementDeadLine(formattedDeadLine)
       })
       .catch((error) => console.log(error))
   }
@@ -213,8 +214,8 @@ function TaskAssignment() {
       project_id: project_id,
       priorities: priorities,
       task_description: task_description,
-      start_date: start_date,
-      dead_line: dead_line,
+      start_date: task_managements_start_date,
+      dead_line: task_managements_dead_line,
     }
 
     await fetch(`${BASE_URL}/api/updateTasks`, {
@@ -319,10 +320,10 @@ function TaskAssignment() {
                 {task.priorites}
               </CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>
-                {task.start_date}
+                {moment(task.task_managements_start_date).format('DD-MM-YYYY')}
               </CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>
-                {task.dead_line}
+                {moment(task.task_managements_dead_line).format('DD-MM-YYYY')}
               </CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>
                 <IconButton aria-label="Update">
@@ -402,8 +403,8 @@ function TaskAssignment() {
               <label>Start Date</label>
               <input
                 type="date"
-                value={start_date}
-                onChange={(e) => setStartDate(e.target.value)}
+                value={task_managements_start_date}
+                onChange={(e) => setTaskManagementStartDate(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Start Date"
               />
@@ -413,8 +414,8 @@ function TaskAssignment() {
               <label>End Date</label>
               <input
                 type="date"
-                value={dead_line}
-                onChange={(e) => setDeadLine(e.target.value)}
+                value={task_managements_dead_line}
+                onChange={(e) => setTaskManagementDeadLine(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Dead Line"
               />
@@ -494,8 +495,8 @@ function TaskAssignment() {
               <label>Start Date</label>
               <input
                 type="date"
-                value={start_date}
-                onChange={(e) => setStartDate(e.target.value)}
+                value={task_managements_start_date}
+                onChange={(e) => setTaskManagementStartDate(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Start Date"
               />
@@ -505,8 +506,8 @@ function TaskAssignment() {
               <label>End Date</label>
               <input
                 type="date"
-                value={dead_line}
-                onChange={(e) => setDeadLine(e.target.value)}
+                value={task_managements_dead_line}
+                onChange={(e) => setTaskManagementDeadLine(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Dead Line"
               />
