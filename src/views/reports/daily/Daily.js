@@ -9,7 +9,6 @@ import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
-import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@mui/icons-material'
@@ -33,7 +32,6 @@ const { cardStyle, head, subhead, arrowStyle, tableHeaderCellStyle } = {
   },
   tableHeaderCellStyle: {
     fontWeight: 'bold',
-    textAlign: 'right',
   },
 }
 
@@ -102,8 +100,10 @@ export default function Dashboard() {
         <Paper sx={{ width: '100%', mb: 2 }}>
           <Toolbar
             sx={{
-              pl: { sm: 2 },
-              pr: { xs: 1, sm: 1 },
+              pl: { sm: 4 },
+              pr: { xs: 2, sm: 2 },
+              pt: 2,
+              mb: 2,
             }}
           >
             <Typography
@@ -126,7 +126,7 @@ export default function Dashboard() {
                 <TableBody>
                   {tableData.map((item) => (
                     <TableRow key={item.label}>
-                      <TableCell component="th" scope="row">
+                      <TableCell component="th" scope="row" sx={tableHeaderCellStyle}>
                         {item.label}
                       </TableCell>
                       <TableCell>{item.value}</TableCell>

@@ -132,8 +132,10 @@ export default function Dashboard() {
         <Paper sx={{ width: '100%', mb: 2 }}>
           <Toolbar
             sx={{
-              pl: { sm: 2 },
-              pr: { xs: 1, sm: 1 },
+              pl: { sm: 4 },
+              pr: { xs: 2, sm: 2 },
+              pt: 2,
+              mb: 2,
             }}
           >
             <Typography
@@ -151,45 +153,67 @@ export default function Dashboard() {
             </Tooltip>
           </Toolbar>
 
-          <TableContainer>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>PROJECTS</TableCell>
-                  <TableCell style={tableHeaderCellStyle}>MON, 05-JUNE-2023</TableCell>
-                  <TableCell style={tableHeaderCellStyle}>TUE, 06-JUNE-2023</TableCell>
-                  <TableCell style={tableHeaderCellStyle}>WED, 07-JUNE-2023</TableCell>
-                  <TableCell style={tableHeaderCellStyle}>THU, 08-JUNE-2023</TableCell>
-                  <TableCell style={tableHeaderCellStyle}>FRI, 09-JUNE-2023</TableCell>
-                  <TableCell style={tableHeaderCellStyle}>SAT, 10-JUNE-2023</TableCell>
-                  <TableCell style={tableHeaderCellStyle}>TOTAL WORKED</TableCell>
-                  <TableCell style={tableHeaderCellStyle}>ACTIVITY</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow
-                    key={row.name}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      {row.projectName}
-                    </TableCell>
-                    <TableCell style={tableHeaderCellStyle}>{row.weekDay1}</TableCell>
-                    <TableCell style={tableHeaderCellStyle}>{row.weekDay2}</TableCell>
-                    <TableCell style={tableHeaderCellStyle}>{row.weekDay3}</TableCell>
-                    <TableCell style={tableHeaderCellStyle}>{row.weekDay4}</TableCell>
-                    <TableCell style={tableHeaderCellStyle}>{row.weekDay5}</TableCell>
-                    <TableCell style={tableHeaderCellStyle}>{row.weekDay6}</TableCell>
-                    <TableCell style={tableHeaderCellStyle}>{row.totalWeekHours}</TableCell>
-                    <TableCell style={tableHeaderCellStyle}>
-                      {row.persentageWeeklyPerformance}
-                    </TableCell>
+          <Box className="row" style={{ width: '90%', margin: 'auto' }}>
+            <Box className="col-md-6">
+              <Typography variant="h5" sx={head}>
+                EMPLOYEE NAME
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                Muhammad Jahanzaib Baig
+              </Typography>
+            </Box>
+            <Box className="col-md-6">
+              <Typography variant="h5" sx={head}>
+                WEEK DETAILS
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                Mon, 03-June-2023. to Fri, 09-June-2023
+              </Typography>
+            </Box>
+            <hr />
+          </Box>
+
+          <div style={{ width: '90%', margin: 'auto', justifyItems: 'center' }}>
+            <TableContainer>
+              <Table sx={{ minWidth: 650, mb: 4 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>PROJECTS</TableCell>
+                    <TableCell style={tableHeaderCellStyle}>MON, 05-JUNE-2023</TableCell>
+                    <TableCell style={tableHeaderCellStyle}>TUE, 06-JUNE-2023</TableCell>
+                    <TableCell style={tableHeaderCellStyle}>WED, 07-JUNE-2023</TableCell>
+                    <TableCell style={tableHeaderCellStyle}>THU, 08-JUNE-2023</TableCell>
+                    <TableCell style={tableHeaderCellStyle}>FRI, 09-JUNE-2023</TableCell>
+                    <TableCell style={tableHeaderCellStyle}>SAT, 10-JUNE-2023</TableCell>
+                    <TableCell style={tableHeaderCellStyle}>TOTAL WORKED</TableCell>
+                    <TableCell style={tableHeaderCellStyle}>ACTIVITY</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row) => (
+                    <TableRow
+                      key={row.name}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        {row.projectName}
+                      </TableCell>
+                      <TableCell style={tableHeaderCellStyle}>{row.weekDay1}</TableCell>
+                      <TableCell style={tableHeaderCellStyle}>{row.weekDay2}</TableCell>
+                      <TableCell style={tableHeaderCellStyle}>{row.weekDay3}</TableCell>
+                      <TableCell style={tableHeaderCellStyle}>{row.weekDay4}</TableCell>
+                      <TableCell style={tableHeaderCellStyle}>{row.weekDay5}</TableCell>
+                      <TableCell style={tableHeaderCellStyle}>{row.weekDay6}</TableCell>
+                      <TableCell style={tableHeaderCellStyle}>{row.totalWeekHours}</TableCell>
+                      <TableCell style={tableHeaderCellStyle}>
+                        {row.persentageWeeklyPerformance}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
         </Paper>
       </Box>
     </Box>
