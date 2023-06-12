@@ -14,6 +14,8 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@mui/icons-material'
 import { DatePicker, Button, Card } from 'antd'
+import { saveAs } from 'file-saver'
+import json2csv from 'json2csv'
 const { RangePicker } = DatePicker
 
 const { cardStyle, head, subhead, arrowStyle, tableHeaderCellStyle } = {
@@ -37,221 +39,81 @@ const { cardStyle, head, subhead, arrowStyle, tableHeaderCellStyle } = {
   },
 }
 
-const tableData = [
+const data = [
   {
-    dateRow: 'THU, 01-JUNE-2023',
-    totalWorkedRow: '06:30',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:30', '02:00', '-'],
-    activityRows: ['45%', '25%', '0%'],
+    DATE: 'THU, 01-JUNE-2023',
+    'TOTAL DAY HOURS': '06:30',
+    PROJECTS: [
+      { PROJECT: 'TIME TACKER', HOURS: '04:30', PERCENTAGE: '45%' },
+      { PROJECT: 'CARDIFY', HOURS: '02:00', PERCENTAGE: '25%' },
+      { PROJECT: 'OFFICE WORK', HOURS: '-', PERCENTAGE: '0%' },
+    ],
   },
   {
-    dateRow: 'FRI, 02-JUNE-2023',
-    totalWorkedRow: '05:45',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['03:45', '-', '02:00'],
-    activityRows: ['40%', '0%', '20%'],
+    DATE: 'FRI, 02-JUNE-2023',
+    'TOTAL DAY HOURS': '07:15',
+    PROJECTS: [
+      { PROJECT: 'PROJECT A', HOURS: '05:45', PERCENTAGE: '60%' },
+      { PROJECT: 'PROJECT B', HOURS: '01:30', PERCENTAGE: '15%' },
+      { PROJECT: 'PROJECT C', HOURS: '00:00', PERCENTAGE: '0%' },
+    ],
   },
   {
-    dateRow: 'SAT, 03-JUNE-2023',
-    totalWorkedRow: '05:15',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:00', '01:00', '00:15'],
-    activityRows: ['50%', '10%', '5%'],
+    DATE: 'SAT, 03-JUNE-2023',
+    'TOTAL DAY HOURS': '08:00',
+    PROJECTS: [
+      { PROJECT: 'PROJECT X', HOURS: '06:00', PERCENTAGE: '75%' },
+      { PROJECT: 'PROJECT Y', HOURS: '01:30', PERCENTAGE: '18%' },
+      { PROJECT: 'PROJECT Z', HOURS: '00:30', PERCENTAGE: '7%' },
+    ],
   },
   {
-    dateRow: 'SUN, 04-JUNE-2023',
-    totalWorkedRow: '04:00',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['03:00', '-', '01:00'],
-    activityRows: ['37.5%', '0%', '12.5%'],
+    DATE: 'SUN, 04-JUNE-2023',
+    'TOTAL DAY HOURS': '05:45',
+    PROJECTS: [
+      { PROJECT: 'PROJECT P', HOURS: '04:30', PERCENTAGE: '70%' },
+      { PROJECT: 'PROJECT Q', HOURS: '01:00', PERCENTAGE: '17%' },
+      { PROJECT: 'PROJECT R', HOURS: '00:15', PERCENTAGE: '3%' },
+    ],
   },
   {
-    dateRow: 'MON, 05-JUNE-2023',
-    totalWorkedRow: '06:15',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:15', '01:00', '01:00'],
-    activityRows: ['55%', '10%', '10%'],
+    DATE: 'MON, 05-JUNE-2023',
+    'TOTAL DAY HOURS': '09:15',
+    PROJECTS: [
+      { PROJECT: 'PROJECT M', HOURS: '07:30', PERCENTAGE: '80%' },
+      { PROJECT: 'PROJECT N', HOURS: '01:45', PERCENTAGE: '19%' },
+      { PROJECT: 'PROJECT O', HOURS: '-', PERCENTAGE: '0%' },
+    ],
   },
-  {
-    dateRow: 'TUE, 06-JUNE-2023',
-    totalWorkedRow: '07:00',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:30', '00:30', '02:00'],
-    activityRows: ['65%', '5%', '20%'],
-  },
-  {
-    dateRow: 'WED, 07-JUNE-2023',
-    totalWorkedRow: '06:45',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['03:45', '-', '03:00'],
-    activityRows: ['60%', '0%', '30%'],
-  },
-  {
-    dateRow: 'THU, 08-JUNE-2023',
-    totalWorkedRow: '06:00',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:00', '02:00', '-'],
-    activityRows: ['50%', '25%', '0%'],
-  },
-  {
-    dateRow: 'FRI, 09-JUNE-2023',
-    totalWorkedRow: '06:30',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:30', '-', '02:00'],
-    activityRows: ['55%', '0%', '25%'],
-  },
-  {
-    dateRow: 'SAT, 10-JUNE-2023',
-    totalWorkedRow: '05:45',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['03:45', '01:00', '01:00'],
-    activityRows: ['45%', '10%', '10%'],
-  },
-  {
-    dateRow: 'SUN, 11-JUNE-2023',
-    totalWorkedRow: '04:15',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['03:15', '-', '01:00'],
-    activityRows: ['38%', '0%', '14%'],
-  },
-  {
-    dateRow: 'MON, 12-JUNE-2023',
-    totalWorkedRow: '06:00',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:00', '01:00', '01:00'],
-    activityRows: ['50%', '10%', '10%'],
-  },
-  {
-    dateRow: 'TUE, 13-JUNE-2023',
-    totalWorkedRow: '07:30',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['05:00', '01:30', '01:00'],
-    activityRows: ['67%', '15%', '10%'],
-  },
-  {
-    dateRow: 'WED, 14-JUNE-2023',
-    totalWorkedRow: '06:45',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:45', '-', '02:00'],
-    activityRows: ['60%', '0%', '20%'],
-  },
-  {
-    dateRow: 'THU, 15-JUNE-2023',
-    totalWorkedRow: '06:15',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:15', '01:00', '01:00'],
-    activityRows: ['55%', '10%', '10%'],
-  },
-  {
-    dateRow: 'FRI, 16-JUNE-2023',
-    totalWorkedRow: '05:30',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['03:30', '-', '02:00'],
-    activityRows: ['50%', '0%', '20%'],
-  },
-  {
-    dateRow: 'SAT, 17-JUNE-2023',
-    totalWorkedRow: '05:00',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:00', '01:00', '-'],
-    activityRows: ['45%', '10%', '0%'],
-  },
-  {
-    dateRow: 'SUN, 18-JUNE-2023',
-    totalWorkedRow: '04:30',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['03:30', '-', '01:00'],
-    activityRows: ['40%', '0%', '10%'],
-  },
-  {
-    dateRow: 'MON, 19-JUNE-2023',
-    totalWorkedRow: '06:15',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:15', '01:00', '01:00'],
-    activityRows: ['55%', '10%', '10%'],
-  },
-  {
-    dateRow: 'TUE, 20-JUNE-2023',
-    totalWorkedRow: '07:00',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['05:00', '01:00', '01:00'],
-    activityRows: ['65%', '10%', '10%'],
-  },
-  {
-    dateRow: 'WED, 21-JUNE-2023',
-    totalWorkedRow: '06:30',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:30', '-', '02:00'],
-    activityRows: ['60%', '0%', '20%'],
-  },
-  {
-    dateRow: 'THU, 22-JUNE-2023',
-    totalWorkedRow: '06:00',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:00', '01:00', '01:00'],
-    activityRows: ['55%', '10%', '10%'],
-  },
-  {
-    dateRow: 'FRI, 23-JUNE-2023',
-    totalWorkedRow: '05:45',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['03:45', '-', '02:00'],
-    activityRows: ['50%', '0%', '20%'],
-  },
-  {
-    dateRow: 'SAT, 24-JUNE-2023',
-    totalWorkedRow: '05:30',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:30', '01:00', '-'],
-    activityRows: ['45%', '10%', '0%'],
-  },
-  {
-    dateRow: 'SUN, 25-JUNE-2023',
-    totalWorkedRow: '04:45',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['03:45', '-', '01:00'],
-    activityRows: ['42.5%', '0%', '10%'],
-  },
-  {
-    dateRow: 'MON, 26-JUNE-2023',
-    totalWorkedRow: '06:15',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:15', '01:00', '01:00'],
-    activityRows: ['55%', '10%', '10%'],
-  },
-  {
-    dateRow: 'TUE, 27-JUNE-2023',
-    totalWorkedRow: '07:30',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['05:00', '01:30', '01:00'],
-    activityRows: ['67%', '15%', '10%'],
-  },
-  {
-    dateRow: 'WED, 28-JUNE-2023',
-    totalWorkedRow: '06:45',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:45', '-', '02:00'],
-    activityRows: ['60%', '0%', '20%'],
-  },
-  {
-    dateRow: 'THU, 29-JUNE-2023',
-    totalWorkedRow: '06:00',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['04:00', '01:00', '01:00'],
-    activityRows: ['55%', '10%', '10%'],
-  },
-  {
-    dateRow: 'FRI, 30-JUNE-2023',
-    totalWorkedRow: '05:30',
-    projectRows: ['TIME TACKER', 'CARDIFY', 'OFFICE WORK'],
-    totalWorkedOnProjectsRows: ['03:30', '-', '02:00'],
-    activityRows: ['50%', '0%', '20%'],
-  },
-  // Continue with remaining days of June...
+  // Add more records...
 ]
 
 export default function Dashboard() {
+  const handleDownloadCSV = () => {
+    // Flatten the nested data structure
+    const flattenedData = data
+      .map((item) => {
+        const flattenedProjects = item.PROJECTS.map((project) => ({
+          DATE: item.DATE,
+          'TOTAL DAY HOURS': item['TOTAL DAY HOURS'],
+          PROJECT: project.PROJECT,
+          HOURS: project.HOURS,
+          PERCENTAGE: project.PERCENTAGE,
+        }))
+
+        return flattenedProjects
+      })
+      .flat()
+
+    // Generate the CSV data
+    const csvData = json2csv.parse(flattenedData, {
+      fields: ['DATE', 'TOTAL DAY HOURS', 'PROJECT', 'HOURS', 'PERCENTAGE'],
+      header: true,
+    })
+
+    const csvBlob = new Blob([csvData], { type: 'text/csv;charset=utf-8' })
+    saveAs(csvBlob, 'Monthly-Report.csv')
+  }
   return (
     <Box>
       <Box className="row">
@@ -332,7 +194,7 @@ export default function Dashboard() {
             </Typography>{' '}
             <Tooltip title="Generate Report">
               <IconButton>
-                <FileDownloadIcon />
+                <FileDownloadIcon onClick={handleDownloadCSV} />
               </IconButton>
             </Tooltip>
           </Toolbar>
@@ -364,34 +226,35 @@ export default function Dashboard() {
                   <TableRow>
                     <TableCell sx={tableHeaderCellStyle}>DATE</TableCell>
                     <TableCell sx={tableHeaderCellStyle}>TOTAL DAY HOURS</TableCell>
-                    <TableCell sx={tableHeaderCellStyle} colSpan={3}>
-                      PROJECTS
-                    </TableCell>
+                    <TableCell sx={tableHeaderCellStyle}>PROJECTS</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {tableData.map((data, index) => (
-                    <React.Fragment key={index}>
-                      <TableRow>
-                        <TableCell rowSpan={data.projectRows.length + 1}>
-                          <Typography variant="h6" sx={subhead}>
-                            {data.dateRow}
-                          </Typography>
-                        </TableCell>
-                        <TableCell rowSpan={data.projectRows.length + 1}>
-                          <Typography variant="h6" sx={subhead}>
-                            {data.totalWorkedRow}
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                      {data.projectRows.map((project, projectIndex) => (
-                        <TableRow key={projectIndex}>
-                          <TableCell>{project}</TableCell>
-                          <TableCell>{data.totalWorkedOnProjectsRows[projectIndex]}</TableCell>
-                          <TableCell>{data.activityRows[projectIndex]}</TableCell>
-                        </TableRow>
-                      ))}
-                    </React.Fragment>
+                  {data.map((item) => (
+                    <TableRow key={item.DATE}>
+                      <TableCell>{item.DATE}</TableCell>
+                      <TableCell>{item['TOTAL DAY HOURS']}</TableCell>
+                      <TableCell>
+                        <Table>
+                          <TableHead>
+                            <TableRow>
+                              <TableCell sx={tableHeaderCellStyle}>PROJECT</TableCell>
+                              <TableCell sx={tableHeaderCellStyle}>HOURS</TableCell>
+                              <TableCell sx={tableHeaderCellStyle}>PERCENTAGE</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {item.PROJECTS.map((project, index) => (
+                              <TableRow key={index}>
+                                <TableCell>{project.PROJECT}</TableCell>
+                                <TableCell>{project.HOURS}</TableCell>
+                                <TableCell>{project.PERCENTAGE}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableCell>
+                    </TableRow>
                   ))}
                 </TableBody>
               </Table>

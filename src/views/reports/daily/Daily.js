@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
@@ -13,6 +13,9 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@mui/icons-material'
 import { DatePicker, Button, Card } from 'antd'
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
+
 const { RangePicker } = DatePicker
 
 const { cardStyle, head, subhead, arrowStyle, tableHeaderCellStyle } = {
@@ -44,6 +47,33 @@ const tableData = [
 ]
 
 export default function Dashboard() {
+  const tableRef = useRef(null)
+
+  const handleDownloadPDF = () => {
+    const input = tableRef.current
+
+    // Hide FileDownloadIcon
+    const downloadIcon = input.querySelector('.MuiIconButton-root')
+    if (downloadIcon) {
+      downloadIcon.style.display = 'none'
+    }
+
+    html2canvas(input).then((canvas) => {
+      // Restore FileDownloadIcon visibility
+      if (downloadIcon) {
+        downloadIcon.style.display = 'initial'
+      }
+
+      const imgData = canvas.toDataURL('image/png')
+      const pdf = new jsPDF()
+      const imgProps = pdf.getImageProperties(imgData)
+      const pdfWidth = pdf.internal.pageSize.getWidth()
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
+      pdf.save('Daily-Report.pdf')
+    })
+  }
+
   return (
     <Box>
       <Box className="row">
@@ -66,77 +96,79 @@ export default function Dashboard() {
           </Button>
         </Box>
       </Box>
-      <Box mt={2}>
-        <Card style={cardStyle}>
-          <Box className="row">
-            <Box className="col-md-4">
-              <Typography variant="h6" sx={head}>
-                ASSIGNED PROJECTS
-              </Typography>
-              <Typography variant="h4" sx={subhead}>
-                3
-              </Typography>
+      <Box ref={tableRef}>
+        <Box mt={2}>
+          <Card style={cardStyle}>
+            <Box className="row">
+              <Box className="col-md-4">
+                <Typography variant="h6" sx={head}>
+                  ASSIGNED PROJECTS
+                </Typography>
+                <Typography variant="h4" sx={subhead}>
+                  3
+                </Typography>
+              </Box>
+              <Box className="col-md-4">
+                <Typography variant="h6" sx={head}>
+                  DAY HOURS
+                </Typography>
+                <Typography variant="h4" sx={subhead}>
+                  06:00
+                </Typography>
+              </Box>
+              <Box className="col-md-4">
+                <Typography variant="h6" sx={head}>
+                  DAY ACTIVITY
+                </Typography>
+                <Typography variant="h4" sx={subhead}>
+                  80%
+                </Typography>
+              </Box>
             </Box>
-            <Box className="col-md-4">
-              <Typography variant="h6" sx={head}>
-                DAY HOURS
-              </Typography>
-              <Typography variant="h4" sx={subhead}>
-                06:00
-              </Typography>
-            </Box>
-            <Box className="col-md-4">
-              <Typography variant="h6" sx={head}>
-                DAY ACTIVITY
-              </Typography>
-              <Typography variant="h4" sx={subhead}>
-                80%
-              </Typography>
-            </Box>
-          </Box>
-        </Card>
-      </Box>
-      <Box sx={{ width: '100%', mt: 2 }}>
-        <Paper sx={{ width: '100%', mb: 2 }}>
-          <Toolbar
-            sx={{
-              pl: { sm: 4 },
-              pr: { xs: 2, sm: 2 },
-              pt: 2,
-              mb: 2,
-            }}
-          >
-            <Typography
-              sx={{ flex: '1 1 100%', color: 'blue' }}
-              variant="h4"
-              id="tableTitle"
-              component="div"
+          </Card>
+        </Box>
+        <Box ref={tableRef} sx={{ width: '100%', mt: 2 }}>
+          <Paper sx={{ width: '100%', mb: 2 }}>
+            <Toolbar
+              sx={{
+                pl: { sm: 4 },
+                pr: { xs: 2, sm: 2 },
+                pt: 2,
+                mb: 2,
+              }}
             >
-              COMPANY NAME <span style={{ fontSize: 'small', color: 'gray' }}>LOCATION</span>
-            </Typography>{' '}
-            <Tooltip title="Generate Report">
-              <IconButton>
-                <FileDownloadIcon />
-              </IconButton>
-            </Tooltip>
-          </Toolbar>
-          <div style={{ width: '90%', margin: 'auto', justifyItems: 'center' }}>
-            <TableContainer>
-              <Table sx={{ minWidth: 650, mb: 4 }}>
-                <TableBody>
-                  {tableData.map((item) => (
-                    <TableRow key={item.label}>
-                      <TableCell component="th" scope="row" sx={tableHeaderCellStyle}>
-                        {item.label}
-                      </TableCell>
-                      <TableCell>{item.value}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
-        </Paper>
+              <Typography
+                sx={{ flex: '1 1 100%', color: 'blue' }}
+                variant="h4"
+                id="tableTitle"
+                component="div"
+              >
+                COMPANY NAME <span style={{ fontSize: 'small', color: 'gray' }}>LOCATION</span>
+              </Typography>{' '}
+              <Tooltip title="Generate Report">
+                <IconButton>
+                  <FileDownloadIcon onClick={handleDownloadPDF} />
+                </IconButton>
+              </Tooltip>
+            </Toolbar>
+            <div style={{ width: '90%', margin: 'auto', justifyItems: 'center' }}>
+              <TableContainer>
+                <Table sx={{ minWidth: 650, mb: 4 }}>
+                  <TableBody>
+                    {tableData.map((item) => (
+                      <TableRow key={item.label}>
+                        <TableCell component="th" scope="row" sx={tableHeaderCellStyle}>
+                          {item.label}
+                        </TableCell>
+                        <TableCell>{item.value}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          </Paper>
+        </Box>
       </Box>
     </Box>
   )
