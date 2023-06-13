@@ -293,7 +293,7 @@ export default function Dashboard() {
       .map((item) => {
         const flattenedProjects = item.projects.map((project) => ({
           DATE: item.date,
-          'TOTAL DAY HOURS': item.totalDayHours,
+          'TOTAL DAY HOURS': item.totalWorkingHourOfDay,
           PROJECT: project.project,
           HOURS: project.HOURS,
           PERCENTAGE: project.PERCENTAGE,
