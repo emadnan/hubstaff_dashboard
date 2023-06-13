@@ -13,16 +13,46 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@mui/icons-material'
-import { DatePicker, Button, Card } from 'antd'
+import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
+import { DatePicker, Button, Card, Divider } from 'antd'
 import { saveAs } from 'file-saver'
 import json2csv from 'json2csv'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 const { RangePicker } = DatePicker
 
-const { cardStyle, head, subhead, arrowStyle, tableHeaderCellStyle } = {
+const {
+  cardStyle,
+  cardStyle2,
+  mystyle2,
+  mystyle,
+  head,
+  subhead,
+  arrowStyle,
+  tableHeaderCellStyle,
+} = {
   cardStyle: {
     width: '100%',
+  },
+  cardStyle2: {
+    width: '100%',
+    backgroundColor: '#FFFFFF ',
+  },
+  mystyle: {
+    color: 'white',
+    backgroundColor: '#0070FF ',
+    padding: '15px',
+    fontFamily: 'Arial',
+    textAlign: 'center',
+    alignSelf: 'flex-end',
+  },
+  mystyle2: {
+    backgroundColor: 'white ',
+    padding: '15px',
+    fontFamily: 'Arial',
+    fontSize: 14,
+    textAlign: 'center',
+    alignSelf: 'flex-end',
   },
   head: {
     color: '#9E9E9E',
@@ -44,8 +74,13 @@ const { cardStyle, head, subhead, arrowStyle, tableHeaderCellStyle } = {
 export default function Dashboard() {
   const [totalWorkingHoursOfMonth, setTotalWorkingHoursOfMonth] = useState('')
   const [userId, setUserId] = useState()
+  const [month, setMonth] = useState([])
   const [monthlyReportData, setMonthlyReportData] = useState([])
+  const [companies, setCompanies] = useState([])
+  const [totalProjects, setTotalProjects] = useState([])
   const [totalNumberOfProjects, setTotalNumberOfProjects] = useState()
+  const [averageWorkingHoursOfDay, setAverageWorkingHoursOfDay] = useState(0)
+
   let local = JSON.parse(localStorage.getItem('user-info'))
 
   useEffect(() => {
@@ -53,6 +88,24 @@ export default function Dashboard() {
       setUserId(local.Users.id)
     }
   }, [])
+
+  const getMonthName = (monthIndex) => {
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ]
+    return months[monthIndex]
+  }
 
   const getMonthlyReport = () => {
     if (!local) {
@@ -63,11 +116,40 @@ export default function Dashboard() {
     fetch(`${BASE_URL}/api/calculateMonthlyActivity/${userId}`)
       .then((response) => response.json())
       .then((data) => {
+        const totalSeconds = data.project.reduce((total, project) => {
+          return total + project.hours * 3600 + project.minutes * 60 + project.seconds
+        }, 0)
+
+        const averageSeconds = totalSeconds / data.project.length
+        const averageHours = Math.floor(averageSeconds / 3600)
+        const averageMinutes = Math.floor((averageSeconds % 3600) / 60)
+
+        setAverageWorkingHoursOfDay(`
+          ${averageHours.toString().padStart(2, '0')}
+          : ${averageMinutes.toString().padStart(2, '0')}
+        `)
         setTotalWorkingHoursOfMonth(`
            ${data.hours.toString().padStart(2, '0')}
-          :${data.minutes.toString().padStart(2, '0')}
-          :${data.seconds.toString().padStart(2, '0')}
+          : ${data.minutes.toString().padStart(2, '0')}
+          : ${data.seconds.toString().padStart(2, '0')}
         `)
+
+        const projectDates = data.project.map((project) => new Date(project.date))
+        const minDate = new Date(Math.min(...projectDates))
+        const maxDate = new Date(Math.max(...projectDates))
+
+        const startDate = `${getMonthName(minDate.getMonth())} ${minDate
+          .getDate()
+          .toString()
+          .padStart(2, '0')}, ${minDate.getFullYear()}`
+        const endDate = `${getMonthName(maxDate.getMonth())} ${maxDate
+          .getDate()
+          .toString()
+          .padStart(2, '0')}, ${maxDate.getFullYear()}`
+        const dateRange = `${startDate} - ${endDate}`
+        console.log('Date Range:', dateRange)
+        setMonth(dateRange)
+
         processData(data)
       })
       .catch((error) => console.log(error))
@@ -156,7 +238,7 @@ export default function Dashboard() {
     setMonthlyReportData(Object.values(processedData))
   }
 
-  function getAssigns() {
+  function getAssignedProjects() {
     if (!local) {
       console.log('Local variable is not available')
       return
@@ -177,14 +259,32 @@ export default function Dashboard() {
             (user) => user.assign_projects_user_id === local.Users.user_id,
           )
         }
+        setTotalProjects(filteredAssignedProjects)
         setTotalNumberOfProjects(filteredAssignedProjects.length)
       })
       .catch((error) => console.log(error))
   }
 
+  function getCompanies() {
+    let filteredCompanies = []
+    fetch(`${BASE_URL}/api/getcompany`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === 1) {
+          filteredCompanies = data.companies
+        } else if (local.Users.role === 3) {
+          filteredCompanies = data.companies.filter((user) => user.id === local.Users.company_id)
+        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+          filteredCompanies = data.companies.filter((user) => user.id === local.Users.company_id)
+        }
+        setCompanies(filteredCompanies)
+      })
+      .catch((error) => console.log(error))
+  }
   useEffect(() => {
     getMonthlyReport()
-    getAssigns()
+    getCompanies()
+    getAssignedProjects()
   }, [userId])
 
   const handleDownloadCSV = () => {
@@ -256,15 +356,61 @@ export default function Dashboard() {
             </Box>
             <Box className="col-md-3">
               <Typography variant="h6" sx={head}>
-                ASSIGNED PROJECTS
+                AVG. WORKING HOURS OF DAY
               </Typography>
               <Typography variant="h4" sx={subhead}>
-                1
+                {averageWorkingHoursOfDay}
               </Typography>
             </Box>
           </Box>
         </Card>
       </Box>
+      <Box sx={{ width: '100%', mt: 2 }}>
+        <Card style={cardStyle2}>
+          <h5 style={head}>ASSIGNED PROJECTS</h5>
+          <CTable
+            align="middle"
+            className="mb-0 border"
+            hover
+            responsive
+            style={{ marginTop: '20px' }}
+          >
+            <CTableHead color="light">
+              <CTableRow>
+                <CTableHeaderCell className="text-center" style={mystyle}>
+                  Project Name
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>
+                  Stream Name
+                </CTableHeaderCell>
+              </CTableRow>
+
+              {totalProjects.map((project) => {
+                return (
+                  <CTableRow key={project.id}>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {project.project_name}
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {project.stream_name}
+                    </CTableHeaderCell>
+                  </CTableRow>
+                )
+              })}
+            </CTableHead>
+
+            <CTableBody></CTableBody>
+          </CTable>
+
+          <Divider />
+          <div className="text-center">
+            <Button type="link" href="/projectmanagement/assigned">
+              View assigned projects &gt;
+            </Button>
+          </div>
+        </Card>
+      </Box>
+
       <Box sx={{ width: '100%', mt: 2 }}>
         <Paper sx={{ width: '100%', mb: 2 }}>
           <Toolbar
@@ -275,14 +421,18 @@ export default function Dashboard() {
               mb: 2,
             }}
           >
-            <Typography
-              sx={{ flex: '1 1 100%', color: 'blue' }}
-              variant="h4"
-              id="tableTitle"
-              component="div"
-            >
-              COMPANY NAME <span style={{ fontSize: 'small', color: 'gray' }}>LOCATION</span>
-            </Typography>{' '}
+            {companies.map((company) => (
+              <Typography
+                sx={{ flex: '1 1 100%', color: 'blue' }}
+                variant="h4"
+                id="tableTitle"
+                component="div"
+                key={company.id}
+              >
+                {company.company_name}
+                <span style={{ fontSize: 'medium', color: 'gray', ml: 4 }}>{company.city}</span>
+              </Typography>
+            ))}{' '}
             <Tooltip title="Generate Report">
               <IconButton>
                 <FileDownloadIcon onClick={handleDownloadCSV} />
@@ -296,15 +446,15 @@ export default function Dashboard() {
                 EMPLOYEE NAME
               </Typography>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                Muhammad Jahanzaib Baig
+                {local.Users.name}
               </Typography>
             </Box>
             <Box className="col-md-6">
               <Typography variant="h5" sx={head}>
-                MONTH
+                MONTH DATE RANGE
               </Typography>
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                June, 2023.
+                {month}
               </Typography>
             </Box>
             <hr />
@@ -324,7 +474,9 @@ export default function Dashboard() {
                   {monthlyReportData.map((item) => (
                     <TableRow key={item.date}>
                       <TableCell style={{ fontSize: 'large' }}>{item.date}</TableCell>
-                      <TableCell style={{ fontSize: 'large' }}>{item.totalDayHours}</TableCell>
+                      <TableCell style={{ fontSize: 'large' }}>
+                        {item.totalWorkingHourOfDay}
+                      </TableCell>
                       <TableCell>
                         <Table>
                           <TableHead>
