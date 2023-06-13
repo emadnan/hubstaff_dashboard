@@ -95,8 +95,8 @@ export default function Dashboard() {
 
   // Function to process the JSON data
   const processData = (jsonData) => {
-    // Initialize an empty array to store the processed data
-    const processedData = []
+    // Initialize an empty object to store the processed data
+    const processedData = {}
 
     // Iterate over each object in the "project" array of the JSON data
     jsonData.project.forEach((project) => {
@@ -106,24 +106,27 @@ export default function Dashboard() {
       // Calculate the total time in seconds
       const totalSeconds = hours * 3600 + minutes * 60 + seconds
 
-      // Find the corresponding dayData object in the processedData array
-      let dayData = processedData.find((data) => data.date === date)
+      // Format the date
+      const formattedDate = formatDate(date)
 
-      // If the dayData object doesn't exist, create a new one
-      if (!dayData) {
-        dayData = {
-          date: formatDate(date), // Format the date
-          totalDayHours: formatTime(0), // Initialize total day hours as 0
+      // If the date doesn't exist in the processedData object, create a new entry
+      if (!processedData[formattedDate]) {
+        processedData[formattedDate] = {
+          date: formattedDate,
+          totalWorkingHourOfDay: formatTime(0), // Initialize total working hours as 0
           projects: [],
         }
-        processedData.push(dayData)
       }
 
-      // Update the total day hours
-      dayData.totalDayHours = formatTime(timeInSeconds(dayData.totalDayHours) + totalSeconds)
+      // Update the total working hours for the date
+      processedData[formattedDate].totalWorkingHourOfDay = formatTime(
+        timeInSeconds(processedData[formattedDate].totalWorkingHourOfDay) + totalSeconds,
+      )
 
-      // Find the corresponding projectData object in the dayData's projects array
-      let projectData = dayData.projects.find((data) => data.project === project_name)
+      // Find the corresponding projectData object in the projects array for the date
+      let projectData = processedData[formattedDate].projects.find(
+        (data) => data.project === project_name,
+      )
 
       // If the projectData object doesn't exist, create a new one
       if (!projectData) {
@@ -132,7 +135,7 @@ export default function Dashboard() {
           HOURS: formatTime(totalSeconds), // Format the project hours
           PERCENTAGE: '-',
         }
-        dayData.projects.push(projectData)
+        processedData[formattedDate].projects.push(projectData)
       } else {
         // Update the project hours
         projectData.HOURS = formatTime(timeInSeconds(projectData.HOURS) + totalSeconds)
@@ -140,15 +143,17 @@ export default function Dashboard() {
     })
 
     // Calculate the percentages for each project in each day
-    processedData.forEach((dayData) => {
-      const totalDaySeconds = timeInSeconds(dayData.totalDayHours)
+    Object.values(processedData).forEach((dayData) => {
+      const totalDaySeconds = timeInSeconds(dayData.totalWorkingHourOfDay)
       dayData.projects.forEach((projectData) => {
         const projectSeconds = timeInSeconds(projectData.HOURS)
         projectData.PERCENTAGE = `${((projectSeconds / totalDaySeconds) * 100).toFixed(0)}%`
       })
     })
 
-    setMonthlyReportData(processedData)
+    console.log('processedData: ', Object.values(processedData))
+
+    setMonthlyReportData(Object.values(processedData))
   }
 
   function getAssigns() {
