@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
@@ -16,6 +16,8 @@ import { ArrowLeftOutlined, ArrowRightOutlined } from '@mui/icons-material'
 import { DatePicker, Button, Card } from 'antd'
 import { saveAs } from 'file-saver'
 import json2csv from 'json2csv'
+const BASE_URL = process.env.REACT_APP_BASE_URL
+
 const { RangePicker } = DatePicker
 
 const { cardStyle, head, subhead, arrowStyle, tableHeaderCellStyle } = {
@@ -39,64 +41,155 @@ const { cardStyle, head, subhead, arrowStyle, tableHeaderCellStyle } = {
   },
 }
 
-const data = [
-  {
-    DATE: 'THU, 01-JUNE-2023',
-    'TOTAL DAY HOURS': '06:30',
-    PROJECTS: [
-      { PROJECT: 'TIME TACKER', HOURS: '04:30', PERCENTAGE: '45%' },
-      { PROJECT: 'CARDIFY', HOURS: '02:00', PERCENTAGE: '25%' },
-      { PROJECT: 'OFFICE WORK', HOURS: '-', PERCENTAGE: '0%' },
-    ],
-  },
-  {
-    DATE: 'FRI, 02-JUNE-2023',
-    'TOTAL DAY HOURS': '07:15',
-    PROJECTS: [
-      { PROJECT: 'PROJECT A', HOURS: '05:45', PERCENTAGE: '60%' },
-      { PROJECT: 'PROJECT B', HOURS: '01:30', PERCENTAGE: '15%' },
-      { PROJECT: 'PROJECT C', HOURS: '00:00', PERCENTAGE: '0%' },
-    ],
-  },
-  {
-    DATE: 'SAT, 03-JUNE-2023',
-    'TOTAL DAY HOURS': '08:00',
-    PROJECTS: [
-      { PROJECT: 'PROJECT X', HOURS: '06:00', PERCENTAGE: '75%' },
-      { PROJECT: 'PROJECT Y', HOURS: '01:30', PERCENTAGE: '18%' },
-      { PROJECT: 'PROJECT Z', HOURS: '00:30', PERCENTAGE: '7%' },
-    ],
-  },
-  {
-    DATE: 'SUN, 04-JUNE-2023',
-    'TOTAL DAY HOURS': '05:45',
-    PROJECTS: [
-      { PROJECT: 'PROJECT P', HOURS: '04:30', PERCENTAGE: '70%' },
-      { PROJECT: 'PROJECT Q', HOURS: '01:00', PERCENTAGE: '17%' },
-      { PROJECT: 'PROJECT R', HOURS: '00:15', PERCENTAGE: '3%' },
-    ],
-  },
-  {
-    DATE: 'MON, 05-JUNE-2023',
-    'TOTAL DAY HOURS': '09:15',
-    PROJECTS: [
-      { PROJECT: 'PROJECT M', HOURS: '07:30', PERCENTAGE: '80%' },
-      { PROJECT: 'PROJECT N', HOURS: '01:45', PERCENTAGE: '19%' },
-      { PROJECT: 'PROJECT O', HOURS: '-', PERCENTAGE: '0%' },
-    ],
-  },
-  // Add more records...
-]
-
 export default function Dashboard() {
+  const [totalWorkingHoursOfMonth, setTotalWorkingHoursOfMonth] = useState('')
+  const [userId, setUserId] = useState()
+  const [monthlyReportData, setMonthlyReportData] = useState([])
+  const [totalNumberOfProjects, setTotalNumberOfProjects] = useState()
+  let local = JSON.parse(localStorage.getItem('user-info'))
+
+  useEffect(() => {
+    if (local) {
+      setUserId(local.Users.id)
+    }
+  }, [])
+
+  const getMonthlyReport = () => {
+    if (!local) {
+      console.log('Local variable is not available')
+      return
+    }
+
+    fetch(`${BASE_URL}/api/calculateMonthlyActivity/${userId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setTotalWorkingHoursOfMonth(`
+           ${data.hours.toString().padStart(2, '0')}
+          :${data.minutes.toString().padStart(2, '0')}
+          :${data.seconds.toString().padStart(2, '0')}
+        `)
+        processData(data)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  // Function to format the date
+  const formatDate = (dateString) => {
+    const options = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', options).toUpperCase()
+  }
+
+  // Function to format time as HH:MM
+  const formatTime = (totalSeconds) => {
+    const hours = Math.floor(totalSeconds / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+  }
+
+  // Function to convert time in HH:MM format to seconds
+  const timeInSeconds = (timeString) => {
+    const [hours, minutes] = timeString.split(':')
+    return parseInt(hours) * 3600 + parseInt(minutes) * 60
+  }
+
+  // Function to process the JSON data
+  const processData = (jsonData) => {
+    // Initialize an empty array to store the processed data
+    const processedData = []
+
+    // Iterate over each object in the "project" array of the JSON data
+    jsonData.project.forEach((project) => {
+      // Extract the relevant properties from the project object
+      const { date, hours, minutes, seconds, project_name } = project
+
+      // Calculate the total time in seconds
+      const totalSeconds = hours * 3600 + minutes * 60 + seconds
+
+      // Find the corresponding dayData object in the processedData array
+      let dayData = processedData.find((data) => data.date === date)
+
+      // If the dayData object doesn't exist, create a new one
+      if (!dayData) {
+        dayData = {
+          date: formatDate(date), // Format the date
+          totalDayHours: formatTime(0), // Initialize total day hours as 0
+          projects: [],
+        }
+        processedData.push(dayData)
+      }
+
+      // Update the total day hours
+      dayData.totalDayHours = formatTime(timeInSeconds(dayData.totalDayHours) + totalSeconds)
+
+      // Find the corresponding projectData object in the dayData's projects array
+      let projectData = dayData.projects.find((data) => data.project === project_name)
+
+      // If the projectData object doesn't exist, create a new one
+      if (!projectData) {
+        projectData = {
+          project: project_name,
+          HOURS: formatTime(totalSeconds), // Format the project hours
+          PERCENTAGE: '-',
+        }
+        dayData.projects.push(projectData)
+      } else {
+        // Update the project hours
+        projectData.HOURS = formatTime(timeInSeconds(projectData.HOURS) + totalSeconds)
+      }
+    })
+
+    // Calculate the percentages for each project in each day
+    processedData.forEach((dayData) => {
+      const totalDaySeconds = timeInSeconds(dayData.totalDayHours)
+      dayData.projects.forEach((projectData) => {
+        const projectSeconds = timeInSeconds(projectData.HOURS)
+        projectData.PERCENTAGE = `${((projectSeconds / totalDaySeconds) * 100).toFixed(0)}%`
+      })
+    })
+
+    setMonthlyReportData(processedData)
+  }
+
+  function getAssigns() {
+    if (!local) {
+      console.log('Local variable is not available')
+      return
+    }
+    let filteredAssignedProjects = []
+
+    fetch(`${BASE_URL}/api/get_assign_projects`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === 1) {
+          filteredAssignedProjects = data.Project_Assigns
+        } else if (local.Users.role === 3) {
+          filteredAssignedProjects = data.Project_Assigns.filter(
+            (user) => user.company_id === local.Users.company_id,
+          )
+        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+          filteredAssignedProjects = data.Project_Assigns.filter(
+            (user) => user.assign_projects_user_id === local.Users.user_id,
+          )
+        }
+        setTotalNumberOfProjects(filteredAssignedProjects.length)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  useEffect(() => {
+    getMonthlyReport()
+    getAssigns()
+  }, [userId])
+
   const handleDownloadCSV = () => {
     // Flatten the nested data structure
-    const flattenedData = data
+    const flattenedData = monthlyReportData
       .map((item) => {
-        const flattenedProjects = item.PROJECTS.map((project) => ({
-          DATE: item.DATE,
-          'TOTAL DAY HOURS': item['TOTAL DAY HOURS'],
-          PROJECT: project.PROJECT,
+        const flattenedProjects = item.projects.map((project) => ({
+          DATE: item.date,
+          'TOTAL DAY HOURS': item.totalDayHours,
+          PROJECT: project.project,
           HOURS: project.HOURS,
           PERCENTAGE: project.PERCENTAGE,
         }))
@@ -114,6 +207,7 @@ export default function Dashboard() {
     const csvBlob = new Blob([csvData], { type: 'text/csv;charset=utf-8' })
     saveAs(csvBlob, 'Monthly-Report.csv')
   }
+
   return (
     <Box>
       <Box className="row">
@@ -141,34 +235,26 @@ export default function Dashboard() {
           <Box className="row">
             <Box className="col-md-3">
               <Typography variant="h6" sx={head}>
+                NO. OF ASSIGNED PROJECTS
+              </Typography>
+              <Typography variant="h4" sx={subhead}>
+                {totalNumberOfProjects}
+              </Typography>
+            </Box>
+            <Box className="col-md-3">
+              <Typography variant="h6" sx={head}>
+                TOTAL HOURS OF MONTH
+              </Typography>
+              <Typography variant="h4" sx={subhead}>
+                {totalWorkingHoursOfMonth}
+              </Typography>
+            </Box>
+            <Box className="col-md-3">
+              <Typography variant="h6" sx={head}>
                 ASSIGNED PROJECTS
               </Typography>
               <Typography variant="h4" sx={subhead}>
                 1
-              </Typography>
-            </Box>
-            <Box className="col-md-3">
-              <Typography variant="h6" sx={head}>
-                AVG. HOURS PER DAY
-              </Typography>
-              <Typography variant="h4" sx={subhead}>
-                5:35
-              </Typography>
-            </Box>
-            <Box className="col-md-3">
-              <Typography variant="h6" sx={head}>
-                AVG. ACTIVITY
-              </Typography>
-              <Typography variant="h4" sx={subhead}>
-                82%
-              </Typography>
-            </Box>
-            <Box className="col-md-3">
-              <Typography variant="h6" sx={head}>
-                EARNING
-              </Typography>
-              <Typography variant="h4" sx={subhead}>
-                -
               </Typography>
             </Box>
           </Box>
@@ -230,10 +316,10 @@ export default function Dashboard() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.map((item) => (
-                    <TableRow key={item.DATE}>
-                      <TableCell>{item.DATE}</TableCell>
-                      <TableCell>{item['TOTAL DAY HOURS']}</TableCell>
+                  {monthlyReportData.map((item) => (
+                    <TableRow key={item.date}>
+                      <TableCell style={{ fontSize: 'large' }}>{item.date}</TableCell>
+                      <TableCell style={{ fontSize: 'large' }}>{item.totalDayHours}</TableCell>
                       <TableCell>
                         <Table>
                           <TableHead>
@@ -244,9 +330,9 @@ export default function Dashboard() {
                             </TableRow>
                           </TableHead>
                           <TableBody>
-                            {item.PROJECTS.map((project, index) => (
+                            {item.projects.map((project, index) => (
                               <TableRow key={index}>
-                                <TableCell>{project.PROJECT}</TableCell>
+                                <TableCell>{project.project}</TableCell>
                                 <TableCell>{project.HOURS}</TableCell>
                                 <TableCell>{project.PERCENTAGE}</TableCell>
                               </TableRow>
