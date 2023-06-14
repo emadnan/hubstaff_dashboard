@@ -277,6 +277,7 @@ export default function Dashboard() {
         filteredAssignedProjects = data.Project_Assigns.filter(
           (project) => project.assign_projects_user_id === userId,
         )
+        console.log('filteredAssignedProjects: ', filteredAssignedProjects)
         setTotalProjects(filteredAssignedProjects)
         setTotalNumberOfProjects(filteredAssignedProjects.length)
       })
@@ -369,53 +370,6 @@ export default function Dashboard() {
         </Box>
       </Box>
 
-      {/* <Box sx={{ width: '100%', mt: 2 }}>
-        <Card style={cardStyle2}>
-          <h5 style={head}>ASSIGNED PROJECTS</h5>
-          <CTable
-            align="middle"
-            className="mb-0 border"
-            hover
-            responsive
-            style={{ marginTop: '20px' }}
-          >
-            <CTableHead color="light">
-              <CTableRow>
-                <CTableHeaderCell className="text-center" style={mystyle}>
-                  Project Name
-                </CTableHeaderCell>
-                <CTableHeaderCell className="text-center" style={mystyle}>
-                  Stream Name
-                </CTableHeaderCell>
-              </CTableRow>
-
-              {totalProjects.map((project) => {
-                const uniqueKey = `${project.id}-${project.name}-${project.stream_name}`
-                return (
-                  <CTableRow key={uniqueKey}>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {project.project_name}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {project.stream_name}
-                    </CTableHeaderCell>
-                  </CTableRow>
-                )
-              })}
-            </CTableHead>
-
-            <CTableBody></CTableBody>
-          </CTable>
-
-          <Divider />
-          <div className="text-center">
-            <Button type="link" href="/projectmanagement/assigned">
-              View assigned projects &gt;
-            </Button>
-          </div>
-        </Card>
-      </Box> */}
-
       {isReportPreview && isReportPreview === true ? (
         <>
           <Box mt={2}>
@@ -446,6 +400,49 @@ export default function Dashboard() {
                   </Typography>
                 </Box>
               </Box>
+            </Card>
+          </Box>
+          <Box sx={{ width: '100%', mt: 2 }}>
+            <Card style={cardStyle2}>
+              <h5 style={head}>ASSIGNED PROJECTS</h5>
+              <CTable
+                align="middle"
+                className="mb-0 border"
+                hover
+                responsive
+                style={{ marginTop: '20px' }}
+              >
+                <CTableHead color="light">
+                  <CTableRow>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Project Name
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Stream Name
+                    </CTableHeaderCell>
+                  </CTableRow>
+
+                  {totalProjects.map((project, index) => (
+                    <CTableRow key={index}>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {project.project_name}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {project.stream_name}
+                      </CTableHeaderCell>
+                    </CTableRow>
+                  ))}
+                </CTableHead>
+
+                <CTableBody></CTableBody>
+              </CTable>
+
+              <Divider />
+              <div className="text-center">
+                <Button type="link" href="/projectmanagement/assigned">
+                  View assigned projects &gt;
+                </Button>
+              </div>
             </Card>
           </Box>
           <Box sx={{ width: '100%', mt: 2 }}>

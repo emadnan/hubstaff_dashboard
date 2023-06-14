@@ -456,48 +456,6 @@ export const _navEmployee = [
   //   ],
   // },
   {
-    component: CNavGroup,
-    name: 'Reports',
-    icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
-    items: [
-      // {
-      //   component: CNavItem,
-      //   name: 'Time & Activity',
-      //   to: '/reports/timenactivity',
-      // },
-      {
-        component: CNavItem,
-        name: 'Daily',
-        to: '/reports/daily',
-      },
-      {
-        component: CNavItem,
-        name: 'Weekly',
-        to: '/reports/weekly',
-      },
-      {
-        component: CNavItem,
-        name: 'Monthly',
-        to: '/reports/monthly',
-      },
-      // {
-      //   component: CNavItem,
-      //   name: 'Accounts Owed',
-      //   to: '/reports/accountsowed',
-      // },
-      // {
-      //   component: CNavItem,
-      //   name: 'Payments',
-      //   to: '/reports/payments',
-      // },
-      // {
-      //   component: CNavItem,
-      //   name: 'All Reports',
-      //   to: '/reports/allreports',
-      // },
-    ],
-  },
-  {
     component: CNavItem,
     name: 'Teams',
     to: '/teams',
@@ -606,48 +564,6 @@ export const _navFunctional = [
   //     },
   //   ],
   // },
-  {
-    component: CNavGroup,
-    name: 'Reports',
-    icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
-    items: [
-      // {
-      //   component: CNavItem,
-      //   name: 'Time & Activity',
-      //   to: '/reports/timenactivity',
-      // },
-      {
-        component: CNavItem,
-        name: 'Daily',
-        to: '/reports/daily',
-      },
-      {
-        component: CNavItem,
-        name: 'Weekly',
-        to: '/reports/weekly',
-      },
-      {
-        component: CNavItem,
-        name: 'Monthly',
-        to: '/reports/monthly',
-      },
-      // {
-      //   component: CNavItem,
-      //   name: 'Accounts Owed',
-      //   to: '/reports/accountsowed',
-      // },
-      // {
-      //   component: CNavItem,
-      //   name: 'Payments',
-      //   to: '/reports/payments',
-      // },
-      // {
-      //   component: CNavItem,
-      //   name: 'All Reports',
-      //   to: '/reports/allreports',
-      // },
-    ],
-  },
   {
     component: CNavItem,
     name: 'Teams',
@@ -769,48 +685,6 @@ export const _navTeamLead = [
   //     },
   //   ],
   // },
-  {
-    component: CNavGroup,
-    name: 'Reports',
-    icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
-    items: [
-      // {
-      //   component: CNavItem,
-      //   name: 'Time & Activity',
-      //   to: '/reports/timenactivity',
-      // },
-      {
-        component: CNavItem,
-        name: 'Daily',
-        to: '/reports/daily',
-      },
-      {
-        component: CNavItem,
-        name: 'Weekly',
-        to: '/reports/weekly',
-      },
-      {
-        component: CNavItem,
-        name: 'Monthly',
-        to: '/reports/monthly',
-      },
-      // {
-      //   component: CNavItem,
-      //   name: 'Accounts Owed',
-      //   to: '/reports/accountsowed',
-      // },
-      // {
-      //   component: CNavItem,
-      //   name: 'Payments',
-      //   to: '/reports/payments',
-      // },
-      // {
-      //   component: CNavItem,
-      //   name: 'All Reports',
-      //   to: '/reports/allreports',
-      // },
-    ],
-  },
   {
     component: CNavItem,
     name: 'Teams',
