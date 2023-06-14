@@ -14,7 +14,7 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@mui/icons-material'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
-import { DatePicker, Button, Card, Divider } from 'antd'
+import { DatePicker, Button, Card, Divider, Select, Form } from 'antd'
 import { saveAs } from 'file-saver'
 import json2csv from 'json2csv'
 const BASE_URL = process.env.REACT_APP_BASE_URL
@@ -80,14 +80,43 @@ export default function Dashboard() {
   const [totalProjects, setTotalProjects] = useState([])
   const [totalNumberOfProjects, setTotalNumberOfProjects] = useState()
   const [averageWorkingHoursOfDay, setAverageWorkingHoursOfDay] = useState(0)
+  const [age, setAge] = useState()
+  const [users, setUsers] = useState([])
+  const [currentUser, setCurrentUser] = useState([])
+  const [isReportPreview, setIsReportPreview] = useState(false)
 
   let local = JSON.parse(localStorage.getItem('user-info'))
 
-  useEffect(() => {
-    if (local) {
-      setUserId(local.Users.id)
+  const handleUserChange = (value) => {
+    const selectedUser = users.filter((user) => user.id === value)
+    setCurrentUser(selectedUser)
+    setUserId(value)
+    getMonthlyReport(value)
+    getAssignedProjects(value)
+    getCompanies(selectedUser)
+    setIsReportPreview(true)
+  }
+  const getUsers = () => {
+    if (!local) {
+      console.log('Local variable is not available')
+      return
     }
-  }, [])
+    let filteredUsers = []
+
+    fetch(`${BASE_URL}/api/get_users`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === 1) {
+          filteredUsers = data.Users
+        } else if (local.Users.role === 3) {
+          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id)
+        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+          filteredUsers = data.Users.filter((user) => user.id === local.Users.id)
+        }
+        setUsers(filteredUsers)
+      })
+      .catch((error) => console.log(error))
+  }
 
   const getMonthName = (monthIndex) => {
     const months = [
@@ -107,7 +136,7 @@ export default function Dashboard() {
     return months[monthIndex]
   }
 
-  const getMonthlyReport = () => {
+  const getMonthlyReport = (userId) => {
     if (!local) {
       console.log('Local variable is not available')
       return
@@ -147,7 +176,6 @@ export default function Dashboard() {
           .toString()
           .padStart(2, '0')}, ${maxDate.getFullYear()}`
         const dateRange = `${startDate} - ${endDate}`
-        console.log('Date Range:', dateRange)
         setMonth(dateRange)
 
         processData(data)
@@ -233,12 +261,10 @@ export default function Dashboard() {
       })
     })
 
-    console.log('processedData: ', Object.values(processedData))
-
     setMonthlyReportData(Object.values(processedData))
   }
 
-  function getAssignedProjects() {
+  function getAssignedProjects(userId) {
     if (!local) {
       console.log('Local variable is not available')
       return
@@ -248,43 +274,29 @@ export default function Dashboard() {
     fetch(`${BASE_URL}/api/get_assign_projects`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
-          filteredAssignedProjects = data.Project_Assigns
-        } else if (local.Users.role === 3) {
-          filteredAssignedProjects = data.Project_Assigns.filter(
-            (user) => user.company_id === local.Users.company_id,
-          )
-        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
-          filteredAssignedProjects = data.Project_Assigns.filter(
-            (user) => user.assign_projects_user_id === local.Users.user_id,
-          )
-        }
+        filteredAssignedProjects = data.Project_Assigns.filter(
+          (project) => project.assign_projects_user_id === userId,
+        )
         setTotalProjects(filteredAssignedProjects)
         setTotalNumberOfProjects(filteredAssignedProjects.length)
       })
       .catch((error) => console.log(error))
   }
 
-  function getCompanies() {
+  function getCompanies(selectedUser) {
+    const companyId = selectedUser[0].company_id
     let filteredCompanies = []
     fetch(`${BASE_URL}/api/getcompany`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
-          filteredCompanies = data.companies
-        } else if (local.Users.role === 3) {
-          filteredCompanies = data.companies.filter((user) => user.id === local.Users.company_id)
-        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
-          filteredCompanies = data.companies.filter((user) => user.id === local.Users.company_id)
-        }
+        filteredCompanies = data.companies.filter((company) => company.id === companyId)
         setCompanies(filteredCompanies)
       })
       .catch((error) => console.log(error))
   }
+
   useEffect(() => {
-    getMonthlyReport()
-    getCompanies()
-    getAssignedProjects()
+    getUsers()
   }, [userId])
 
   const handleDownloadCSV = () => {
@@ -320,7 +332,7 @@ export default function Dashboard() {
           <Typography variant="h4">Monthly Reports</Typography>
         </Box>
       </Box>
-      <Box className="row justify-content-end">
+      <Box className="row justify-content-between" sx={{ mt: 1 }}>
         <Box className="col-md-5">
           <Button type="default" style={arrowStyle} icon={<ArrowLeftOutlined />} />
           &nbsp;
@@ -334,38 +346,30 @@ export default function Dashboard() {
             Filters
           </Button>
         </Box>
-      </Box>
-      <Box mt={2}>
-        <Card style={cardStyle}>
-          <Box className="row">
-            <Box className="col-md-3">
-              <Typography variant="h6" sx={head}>
-                NO. OF ASSIGNED PROJECTS
-              </Typography>
-              <Typography variant="h4" sx={subhead}>
-                {totalNumberOfProjects}
-              </Typography>
-            </Box>
-            <Box className="col-md-3">
-              <Typography variant="h6" sx={head}>
-                TOTAL HOURS OF MONTH
-              </Typography>
-              <Typography variant="h4" sx={subhead}>
-                {totalWorkingHoursOfMonth}
-              </Typography>
-            </Box>
-            <Box className="col-md-3">
-              <Typography variant="h6" sx={head}>
-                AVG. WORKING HOURS OF DAY
-              </Typography>
-              <Typography variant="h4" sx={subhead}>
-                {averageWorkingHoursOfDay}
-              </Typography>
-            </Box>
+
+        <Box
+          className="col-md-7"
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Box className="col-md-5">
+            <Form.Item name="select" hasFeedback>
+              <Select placeholder="SELECT EMPLOYEE" onChange={handleUserChange}>
+                {users.map((user) => (
+                  <Select.Option value={user.id} key={user.id}>
+                    {user.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
           </Box>
-        </Card>
+        </Box>
       </Box>
-      <Box sx={{ width: '100%', mt: 2 }}>
+
+      {/* <Box sx={{ width: '100%', mt: 2 }}>
         <Card style={cardStyle2}>
           <h5 style={head}>ASSIGNED PROJECTS</h5>
           <CTable
@@ -386,8 +390,9 @@ export default function Dashboard() {
               </CTableRow>
 
               {totalProjects.map((project) => {
+                const uniqueKey = `${project.id}-${project.name}-${project.stream_name}`
                 return (
-                  <CTableRow key={project.id}>
+                  <CTableRow key={uniqueKey}>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       {project.project_name}
                     </CTableHeaderCell>
@@ -409,102 +414,146 @@ export default function Dashboard() {
             </Button>
           </div>
         </Card>
-      </Box>
+      </Box> */}
 
-      <Box sx={{ width: '100%', mt: 2 }}>
-        <Paper sx={{ width: '100%', mb: 2 }}>
-          <Toolbar
-            sx={{
-              pl: { sm: 4 },
-              pr: { xs: 2, sm: 2 },
-              pt: 2,
-              mb: 2,
-            }}
-          >
-            {companies.map((company) => (
-              <Typography
-                sx={{ flex: '1 1 100%', color: 'blue' }}
-                variant="h4"
-                id="tableTitle"
-                component="div"
-                key={company.id}
-              >
-                {company.company_name}
-                <span style={{ fontSize: 'medium', color: 'gray', ml: 4 }}>{company.city}</span>
-              </Typography>
-            ))}{' '}
-            <Tooltip title="Generate Report">
-              <IconButton>
-                <FileDownloadIcon onClick={handleDownloadCSV} />
-              </IconButton>
-            </Tooltip>
-          </Toolbar>
-
-          <Box className="row" style={{ width: '90%', margin: 'auto' }}>
-            <Box className="col-md-6">
-              <Typography variant="h5" sx={head}>
-                EMPLOYEE NAME
-              </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                {local.Users.name}
-              </Typography>
-            </Box>
-            <Box className="col-md-6">
-              <Typography variant="h5" sx={head}>
-                MONTH DATE RANGE
-              </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                {month}
-              </Typography>
-            </Box>
-            <hr />
+      {isReportPreview && isReportPreview === true ? (
+        <>
+          <Box mt={2}>
+            <Card style={cardStyle}>
+              <Box className="row">
+                <Box className="col-md-3">
+                  <Typography variant="h6" sx={head}>
+                    NO. OF ASSIGNED PROJECTS
+                  </Typography>
+                  <Typography variant="h4" sx={subhead}>
+                    {totalNumberOfProjects}
+                  </Typography>
+                </Box>
+                <Box className="col-md-3">
+                  <Typography variant="h6" sx={head}>
+                    TOTAL HOURS OF MONTH
+                  </Typography>
+                  <Typography variant="h4" sx={subhead}>
+                    {totalWorkingHoursOfMonth}
+                  </Typography>
+                </Box>
+                <Box className="col-md-3">
+                  <Typography variant="h6" sx={head}>
+                    AVG. WORKING HOURS OF DAY
+                  </Typography>
+                  <Typography variant="h4" sx={subhead}>
+                    {averageWorkingHoursOfDay}
+                  </Typography>
+                </Box>
+              </Box>
+            </Card>
           </Box>
+          <Box sx={{ width: '100%', mt: 2 }}>
+            <Paper sx={{ width: '100%', mb: 2 }}>
+              <Toolbar
+                sx={{
+                  pl: { sm: 4 },
+                  pr: { xs: 2, sm: 2 },
+                  pt: 2,
+                  mb: 2,
+                }}
+              >
+                {companies.map((company) => (
+                  <Typography
+                    sx={{ flex: '1 1 100%', color: 'blue' }}
+                    variant="h4"
+                    id="tableTitle"
+                    component="div"
+                    key={company.id}
+                  >
+                    {company.company_name}
+                    <span style={{ fontSize: 'medium', color: 'gray', ml: 4 }}>{company.city}</span>
+                  </Typography>
+                ))}{' '}
+                <Tooltip title="Generate Report">
+                  <IconButton>
+                    <FileDownloadIcon onClick={handleDownloadCSV} />
+                  </IconButton>
+                </Tooltip>
+              </Toolbar>
 
-          <div style={{ width: '90%', margin: 'auto', justifyItems: 'center' }}>
-            <TableContainer>
-              <Table sx={{ minWidth: 650, mb: 4 }}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={tableHeaderCellStyle}>DATE</TableCell>
-                    <TableCell sx={tableHeaderCellStyle}>TOTAL DAY HOURS</TableCell>
-                    <TableCell sx={tableHeaderCellStyle}>PROJECTS</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {monthlyReportData.map((item) => (
-                    <TableRow key={item.date}>
-                      <TableCell style={{ fontSize: 'large' }}>{item.date}</TableCell>
-                      <TableCell style={{ fontSize: 'large' }}>
-                        {item.totalWorkingHourOfDay}
-                      </TableCell>
-                      <TableCell>
-                        <Table>
-                          <TableHead>
-                            <TableRow>
-                              <TableCell sx={tableHeaderCellStyle}>PROJECT</TableCell>
-                              <TableCell sx={tableHeaderCellStyle}>HOURS</TableCell>
-                              <TableCell sx={tableHeaderCellStyle}>PERCENTAGE</TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {item.projects.map((project, index) => (
-                              <TableRow key={index}>
-                                <TableCell>{project.project}</TableCell>
-                                <TableCell>{project.HOURS}</TableCell>
-                                <TableCell>{project.PERCENTAGE}</TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
-        </Paper>
-      </Box>
+              <Box className="row" style={{ width: '90%', margin: 'auto' }}>
+                <Box className="col-md-6">
+                  <Typography variant="h5" sx={head}>
+                    EMPLOYEE NAME
+                  </Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    {currentUser[0].name}
+                  </Typography>
+                </Box>
+                <Box className="col-md-6">
+                  <Typography variant="h5" sx={head}>
+                    MONTH DATE RANGE
+                  </Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    {month}
+                  </Typography>
+                </Box>
+                <hr />
+              </Box>
+
+              <div style={{ width: '90%', margin: 'auto', justifyItems: 'center' }}>
+                <TableContainer>
+                  <Table sx={{ minWidth: 650, mb: 4 }}>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={tableHeaderCellStyle}>DATE</TableCell>
+                        <TableCell sx={tableHeaderCellStyle}>TOTAL DAY HOURS</TableCell>
+                        <TableCell sx={tableHeaderCellStyle}>PROJECTS</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {monthlyReportData.map((item) => (
+                        <TableRow key={item.date}>
+                          <TableCell style={{ fontSize: 'large' }}>{item.date}</TableCell>
+                          <TableCell style={{ fontSize: 'large' }}>
+                            {item.totalWorkingHourOfDay}
+                          </TableCell>
+                          <TableCell>
+                            <Table>
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell sx={tableHeaderCellStyle}>PROJECT</TableCell>
+                                  <TableCell sx={tableHeaderCellStyle}>HOURS</TableCell>
+                                  <TableCell sx={tableHeaderCellStyle}>PERCENTAGE</TableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {item.projects.map((project, index) => (
+                                  <TableRow key={index}>
+                                    <TableCell>{project.project}</TableCell>
+                                    <TableCell>{project.HOURS}</TableCell>
+                                    <TableCell>{project.PERCENTAGE}</TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </div>
+            </Paper>
+          </Box>
+        </>
+      ) : (
+        <Box mt={2}>
+          <Card style={cardStyle}>
+            <Box className="row">
+              <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }}>
+                PLEASE SELECT THE EMPLOYEE, WHOM YOU WANNA GENERATE REPORT
+              </Typography>
+            </Box>
+          </Card>
+        </Box>
+      )}
     </Box>
   )
 }
