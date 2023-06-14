@@ -257,7 +257,12 @@ const Screenshots = () => {
       ) : null}
       {local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7 ? (
         <div>
-          <h3>Total Worked  {alltotalhours}:{alltotalminutes}:{alltotalseconds}</h3>
+          {alltotalhours || alltotalminutes || alltotalseconds ? (
+            <h3>Total Worked  {alltotalhours}:{alltotalminutes}:{alltotalseconds}</h3>
+          ) : (
+            <h3>Total Worked 0:0:0</h3>
+          )
+          }
         </div>
       ) : null}
       <div className="row">

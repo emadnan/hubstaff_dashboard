@@ -1,5 +1,5 @@
 import { React, useState, useEffect, useRef } from 'react'
-import { Modal } from 'antd'
+import { Modal, Form, Select } from 'antd'
 import {
   CTableBody,
   CTableHead,
@@ -23,20 +23,26 @@ import CloseIcon from '@mui/icons-material/Close'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 function FSFform() {
+
   const local = JSON.parse(localStorage.getItem('user-info'))
 
   //Variable declarations
+  const [reference_id, setReferenceId] = useState('')
+  const [module_id, setModuleId] = useState('')
+  const [moduleName, setModuleName] = useState('')
+  const [project_id, setProjectId] = useState('')
+  const [projectName, setProjectName] = useState('')
+  const [functional_lead_id, setFunctionalLeadId] = useState(local.Users.id)
+  const [ABAP_team_lead_id, setABAPTeamLeadId] = useState('')
   const [wricef_id, setWRicefId] = useState('')
-  const [module_name, setModuleName] = useState('')
-  const [project_name, setProjectName] = useState('')
-  const [functional_lead_id, setFuncionalLeadId] = useState(local.Users.id)
-  const [team_lead_id, setTeamLeadId] = useState('')
-  const [requested_date, setRequestedDate] = useState('')
   const [type_of_development, setTypeOfDevelopment] = useState('')
+  const [requested_date, setRequestedDate] = useState('')
   const [priority, setPriority] = useState('')
   const [usage_frequency, setUsageFrequency] = useState('')
   const [transaction_code, setTransactionCode] = useState('')
-  const [authorization_level, setAuthorizationLevel] = useState('')
+  const [authorization_role, setAuthorizationRole] = useState('')
+  const [development_logic, setDevelopmentLogic] = useState('')
+  
   const [description, setDescription] = useState('')
   const [field_technical_name, setFieldTechnicalName] = useState('')
   const [field_length, setFieldLength] = useState('')
@@ -44,6 +50,7 @@ function FSFform() {
   const [field_table_name, setFieldTableName] = useState('')
   const [mandatory_or_optional, setMandatoryOrOptional] = useState('')
   const [parameter_or_selection, setParameterOrSelection] = useState('')
+
   const [project, setProjects] = useState([])
   const [fsfHasParameter, setFsfHasParameter] = useState([])
   const [ref_id, setRef_id] = useState()
@@ -51,6 +58,7 @@ function FSFform() {
   const [users, setUsers] = useState([])
   const [teamlead, setTeamLeads] = useState([])
   const [projectmodule, setProjectModule] = useState([])
+  const [fsfwricef, setFsfWricef] = useState([])
   var filteredUsers = []
 
   const navigate = useNavigate()
@@ -58,8 +66,8 @@ function FSFform() {
   const [isFocused, setIsFocused] = useState(false)
 
   useEffect(() => {
-    setWRicefId(`Biafo-${project_name}-${module_name}`);
-  }, [project_name, module_name]);
+    setWRicefId(`Biafo-${projectName}-${moduleName}`);
+  }, [projectName, moduleName]);
 
   // const editorRef = useRef()
 
@@ -178,123 +186,38 @@ function FSFform() {
   }
 
   //GET calls handling
-  const handleModuleChange = (event) => {
-    const selectedValue = event.target.value
-    setModuleName(selectedValue)
+  const handleModuleChange = (value,option) => {
+    setModuleId(value)
+    setModuleName(option.module_name)
+  };
+
+  const handleProjectChange = (value,option) => {
+    setProjectId(value)
+    setProjectName(option.project_name)
   }
 
-  const handleProjectNameChange = (event) => {
-    const selectedValue = event.target.value
-    setProjectName(selectedValue)
+  const handleTypeOfDevelopmentChange = (value) => {
+    setTypeOfDevelopment(value)
   }
 
-  const handleTypeOfDevelopmentChange = (event) => {
-    const selectedValue = event.target.value
-    setTypeOfDevelopment(selectedValue)
+  const handleFunctionalLeadChange = (value) => {
+    setFunctionalLeadId(value)
   }
 
-  const handlePriorityChange = (event) => {
-    const selectedValue = event.target.value
-    setPriority(selectedValue)
+  const handleReferenceIdChange = (value) => {
+    setReferenceId(value)
   }
 
-  const handleTeamLeadChange = (event) => {
-    const selectedValue = event.target.value
-    setTeamLeadId(selectedValue)
+  const handleAbapTeamLeadId = (value) => {
+    setABAPTeamLeadId(value)
   }
 
-  const handleFunctionalLeadChange = (event) => {
-    const selectedValue = event.target.value
-    setFuncionalLeadId(selectedValue)
+  const handlePriorityChange = (value) => {
+    setPriority(value)
   }
 
-  const handleUsageFrequencyChange = (event) => {
-    const selectedValue = event.target.value
-    setUsageFrequency(selectedValue)
-  }
-
-  const handleMandatoryOrOptionalChange = (event) => {
-    const selectedValue = event.target.value
-    setMandatoryOrOptional(selectedValue)
-  }
-
-  const handleParameterOrSelection = (event) => {
-    const selectedValue = event.target.value
-    setParameterOrSelection(selectedValue)
-  }
-
-  // Functions of Add Parameter Modal
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const showModal = () => {
-    setIsModalOpen(true)
-  }
-
-  const handleOk = () => {
-    addFsfStage3()
-    setIsModalOpen(false)
-    setDescription('')
-    setFieldTechnicalName('')
-    setFieldLength('')
-    setFieldType('')
-    setFieldTableName('')
-    setMandatoryOrOptional('')
-    setParameterOrSelection('')
-  }
-
-  const handleCancel = () => {
-    setIsModalOpen(false)
-    setDescription('')
-    setFieldTechnicalName('')
-    setFieldLength('')
-    setFieldType('')
-    setFieldTableName('')
-    setMandatoryOrOptional('')
-    setParameterOrSelection('')
-  }
-
-  // Functions for Delete FSF Parameter Modal
-  const [isModalOpen2, setIsModalOpen2] = useState(false)
-  const showModal2 = (id) => {
-    setIsModalOpen2(id)
-  }
-
-  const handleOk2 = () => {
-    deleteFSF(isModalOpen2)
-    setIsModalOpen2(false)
-  }
-
-  const handleCancel2 = () => {
-    setIsModalOpen2(false)
-  }
-
-  // Functions for Update FSF Parameter Modal
-  const [isModalOpen3, setIsModalOpen3] = useState(false)
-  const showModal3 = (id) => {
-    getFsfHasParameterByFsfId(id)
-    setIsModalOpen3(id)
-  }
-
-  const handleOk3 = () => {
-    updateFSF(isModalOpen3)
-    setIsModalOpen3(false)
-    setDescription('')
-    setFieldTechnicalName('')
-    setFieldLength('')
-    setFieldType('')
-    setFieldTableName('')
-    setMandatoryOrOptional('')
-    setParameterOrSelection('')
-  }
-
-  const handleCancel3 = () => {
-    setIsModalOpen3(false)
-    setDescription('')
-    setFieldTechnicalName('')
-    setFieldLength('')
-    setFieldType('')
-    setFieldTableName('')
-    setMandatoryOrOptional('')
-    setParameterOrSelection('')
+  const handleUsageFrequencyChange = (value) => {
+    setUsageFrequency(value)
   }
 
   //DIV handlings
@@ -318,13 +241,11 @@ function FSFform() {
     setShowLevel1(true)
     setIsHoveredPrimary(false)
     setIsHoveredDanger(false)
-    addFsfStage1()
   }
 
   const handleNext2 = () => {
     setShowLevel2(false)
     setShowLevel3(true)
-    addFsfStage2()
     setIsHoveredPrimary(false)
     setIsHoveredDanger(false)
   }
@@ -341,6 +262,7 @@ function FSFform() {
     setShowLevel4(true)
     setIsHoveredPrimary(false)
     setIsHoveredDanger(false)
+    addFsfForm()
   }
 
   const handleBack4 = () => {
@@ -507,6 +429,7 @@ function FSFform() {
     getUsers()
     getTeamLeads(local.Users.company_id)
     getProjectModules()
+    getFsfWricefId()
   }, [])
 
   //GET API calls
@@ -554,6 +477,13 @@ function FSFform() {
       .catch((error) => console.log(error))
   }
 
+  function getFsfWricefId() {
+    fetch(`${BASE_URL}/api/getFunctionalSpecificationForm`)
+      .then((response) => response.json())
+      .then((data) => setFsfWricef(data.Functional))
+      .catch((error) => console.log(error))
+  }
+
   function getFSFParameters() {
     fetch(`${BASE_URL}/api/getFsfHasParameterByFsfId/${ref_id}`)
       .then((response) => response.json())
@@ -578,20 +508,25 @@ function FSFform() {
   }
 
   // Add API calls
-  async function addFsfStage1() {
+  async function addFsfForm() {
     let data = {
-      wricef_id,
-      module_name,
-      functional_lead_id,
-      team_lead_id,
-      requested_date,
+      reference_id,
+      module_id,
+      project_id,
       type_of_development,
+      wricef_id, 
+      functional_lead_id,
+      ABAP_team_lead_id,
+      requested_date,
       priority,
       usage_frequency,
+      transaction_code,
+      authorization_role,
+      development_logic,
     }
     console.log(data)
 
-    await fetch(`${BASE_URL}/api/addFunctionalSpecificationForm/1/`, {
+    await fetch(`${BASE_URL}/api/addFunctionalSpecificationForm`, {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -600,7 +535,7 @@ function FSFform() {
     })
       .then((response) => {
         if (response.ok) {
-          return response.json() // Parse the response body as JSON
+          return response.json() 
         } else {
           throw new Error('Request failed with status ' + response.status)
         }
@@ -610,125 +545,6 @@ function FSFform() {
         setRef_id(data.id)
       })
       .catch((error) => {
-        console.error(error)
-      })
-  }
-
-  async function addFsfStage2() {
-    let data = { id: ref_id, transaction_code, authorization_level }
-    console.log(data)
-
-    await fetch(`${BASE_URL}/api/addFunctionalSpecificationForm/2/`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json() // Parse the response body as JSON
-        } else {
-          throw new Error('Request failed with status ' + response.status)
-        }
-      })
-      .then((data) => {
-        console.log(data)
-      })
-      .catch((error) => {
-        handleButtonClick2()
-        console.error(error)
-      })
-  }
-
-  async function addFsfStage3() {
-    let data = {
-      fsf_id: ref_id,
-      description,
-      field_technical_name,
-      field_length,
-      field_type,
-      field_table_name,
-      mandatory_or_optional,
-      parameter_or_selection,
-    }
-    console.log(data)
-
-    try {
-      const response = await fetch(`${BASE_URL}/api/addFunctionalSpecificationForm/3/`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      if (response.ok) {
-        const responseData = await response.json()
-        console.log('responseData: ', responseData)
-        handleButtonClick4()
-        getFSFParameters()
-      } else {
-        throw new Error('Request failed with status ' + response.status)
-      }
-    } catch (error) {
-      handleButtonClick2()
-      console.error(error)
-    }
-  }
-
-  // Delete FSF Parameter API call
-  async function deleteFSF(id) {
-    await fetch(`${BASE_URL}/api/DeleteFsfHasParameterByFsfId`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: id,
-      }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          handleButtonClick5()
-          getFSFParameters()
-        }
-      })
-      .catch((error) => {
-        handleButtonClick2()
-        console.error(error)
-      })
-  }
-
-  // Update FSF Parameter API call
-  async function updateFSF(newid) {
-    await fetch(`${BASE_URL}/api/UpdateFsfHasParameterByFsfId`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: newid,
-        fsf_id: ref_id,
-        description: description,
-        field_technical_name: field_technical_name,
-        field_length: field_length,
-        field_type: field_type,
-        field_table_name: field_table_name,
-        mandatory_or_optional: mandatory_or_optional,
-        parameter_or_selection: parameter_or_selection,
-      }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          handleButtonClick3()
-          getFSFParameters()
-        } else {
-          // handleButtonClick6();
-        }
-      })
-      .catch((error) => {
-        handleButtonClick2()
         console.error(error)
       })
   }
@@ -761,65 +577,77 @@ function FSFform() {
             <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
               <CardContent>
 
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                  <TextField
-                    id="select-module_name"
-                    label="Module"
-                    variant="standard"
-                    select
-                    value={module_name}
-                    onChange={handleModuleChange}
-                    placeholder="Select Module Name"
-                    sx={{ width: '100%' }}
-                  >
-                    {projectmodule.map((proj) => (
-                      <MenuItem value={proj.name} key={proj.id}>
-                        {proj.name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Box>
+                <div className="form-outline mb-3">
+                  <label>Reference Id</label>
+                  <Form.Item>
+                    <Select
+                      placeholder="Select Reference Id"
+                      onChange={handleReferenceIdChange}
+                      value={reference_id}
+                    >
+                      <Select.Option value="0" key="none">None</Select.Option>
+                      {fsfwricef.map((fsf) => (
+                        <Select.Option value={fsf.id} key={fsf.id}>
+                          {fsf.wricef_id}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
 
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                  <TextField
-                    id="select-module_name"
-                    label="Project"
-                    variant="standard"
-                    select
-                    value={project_name}
-                    onChange={handleProjectNameChange}
-                    placeholder="Select Project Name"
-                    sx={{ width: '100%' }}
-                  >
-                    {project.map((pro) => (
-                      <MenuItem value={pro.project_name} key={pro.id}>
-                        {pro.project_name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Box>
+                <div className="form-outline mb-3">
+                  <label>Module</label>
+                  <Form.Item>
+                    <Select
+                      placeholder="Select Module"
+                      onChange={handleModuleChange}
+                      value={module_id}
+                    >
+                      {projectmodule.map((proj) => (
+                        <Select.Option value={proj.id}  key={proj.id} module_name={proj.name}>
+                          {proj.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
 
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                  <TextField
-                    id="select-type_of_development"
-                    label="Type of Development"
-                    variant="standard"
-                    select
-                    value={type_of_development}
-                    onChange={handleTypeOfDevelopmentChange}
-                    placeholder="Select Type of Development"
-                    sx={{ width: '100%' }}
-                  >
-                    <MenuItem value="Workflow">Workflow</MenuItem>
-                    <MenuItem value="Report">Report</MenuItem>
-                    <MenuItem value="Enhancement">Enhancement</MenuItem>
-                    <MenuItem value="Interface">Interface</MenuItem>
-                    <MenuItem value="Customization">Customization</MenuItem>
-                    <MenuItem value="Form">Form</MenuItem>
-                    <MenuItem value="Upload">Upload</MenuItem>
-                    <MenuItem value="Integration">Integration</MenuItem>
-                  </TextField>
-                </Box>
+                <div className="form-outline mb-3">
+                  <label>Project</label>
+                  <Form.Item>
+                    <Select
+                      placeholder="Select Project"
+                      onChange={handleProjectChange}
+                      value={project_id}
+                    >
+                      {project.map((pro) => (
+                        <Select.Option value={pro.id} key={pro.id} project_name={pro.project_name}>
+                          {pro.project_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+
+                <div className="form-outline mb-3">
+                  <label>Type of Development</label>
+                  <Form.Item>
+                    <Select
+                      placeholder="Select Type of Development"
+                      onChange={handleTypeOfDevelopmentChange}
+                      value={type_of_development}
+                    >
+                        <Select.Option value="Workflow">Workflow</Select.Option>
+                        <Select.Option value="Report">Report</Select.Option>
+                        <Select.Option value="Enhancement">Enhancement</Select.Option>
+                        <Select.Option value="Interface">Interface</Select.Option>
+                        <Select.Option value="Customization">Customization</Select.Option>
+                        <Select.Option value="Form">Form</Select.Option>
+                        <Select.Option value="Upload">Upload</Select.Option>
+                        <Select.Option value="Integration">Integration</Select.Option>
+                    </Select>
+                  </Form.Item>
+                </div>
 
                 <Button
                   onClick={handleNext1}
@@ -862,115 +690,86 @@ function FSFform() {
             <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
               <CardContent>
 
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                  <TextField
-                    id="input-wricef-id"
-                    label="WRICEF ID"
-                    variant="standard"
-                    type="wricef_id"
-                    name="wricef_id"
+                {/* <div className="form-outline mb-3">
+                  <label>WRICEF Id</label>
+                  <input
+                    type="text"
                     value={wricef_id}
-                    // onChange={handleWricefChange}
-                    placeholder="Enter WRICEF ID"
-                    sx={{ width: '100%' }}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Wricef Id"
                   />
-                </Box>
+                </div> */}
 
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                  <TextField
-                    id="input-functional_lead"
-                    label="Functional Lead"
-                    variant="standard"
-                    type="functional_lead"
-                    name="functional_lead"
-                    value={local.Users.name}
+                {/* <div className="form-outline mb-3">
+                  <label>Functional Lead</label>
+                  <input
+                    type="number"
+                    value={local.Users.id}
                     onChange={handleFunctionalLeadChange}
-                    placeholder="Functional Lead"
-                    sx={{ width: '100%' }}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Functional Lead"
                   />
-                </Box>
+                </div> */}
 
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                  <TextField
-                    id="select-team_lead"
-                    label="ABAP Team Lead"
-                    variant="standard"
-                    select
-                    value={team_lead_id}
-                    onChange={handleTeamLeadChange}
-                    placeholder="Select ABAP Team Lead"
-                    sx={{ width: '100%' }}
-                  >
-                    {teamlead.map((team) => (
-                      <MenuItem value={team.id} key={team.id}>
-                        {team.name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Box>
+                <div className="form-outline mb-3">
+                  <label>ABAP Team Lead</label>
+                  <Form.Item>
+                    <Select
+                      placeholder="Select ABAP Team Lead"
+                      onChange={handleAbapTeamLeadId}
+                      value={ABAP_team_lead_id}
+                    >
+                      {teamlead.map((team) => (
+                        <Select.Option value={team.id} key={team.id}>
+                          {team.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
 
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                  <TextField
-                    id="input-requested_date"
-                    label="Requested Date"
-                    variant="standard"
+                <div className="form-outline mb-3">
+                  <label>Requested Date</label>
+                  <input
                     type="date"
                     value={requested_date}
                     onChange={(e) => setRequestedDate(e.target.value)}
-                    placeholder="Select Requested Date"
-                    sx={{ width: '100%' }}
-                    InputProps={{
-                      style: {
-                        color: isFocused || requested_date ? 'black' : 'transparent',
-                      },
-                      onFocus: handleInputFocus,
-                      onBlur: handleInputBlur,
-                    }}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Requested Date"
                   />
-                </Box>
+                </div>
 
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                  <TextField
-                    id="select-priority"
-                    label="Priority"
-                    variant="standard"
-                    select
-                    value={priority}
-                    onChange={handlePriorityChange}
-                    placeholder="Select Priority"
-                    sx={{ width: '100%' }}
-                  >
-                    <MenuItem value="Low">Low</MenuItem>
-                    <MenuItem value="Medium">Medium</MenuItem>
-                    <MenuItem value="High">High</MenuItem>
-                    <MenuItem value="Go-Live Critical">Go-Live Critical</MenuItem>
-                    <MenuItem value="After Go-Live">After Go-Live</MenuItem>
-                  </TextField>
-                </Box>
+                <div className="form-outline mb-3">
+                  <label>Priority</label>
+                  <Form.Item>
+                    <Select
+                      placeholder="Select Priority"
+                      onChange={handlePriorityChange}
+                      value={priority}
+                    >
+                        <Select.Option value="Low">Low</Select.Option>
+                        <Select.Option value="Medium">Medium</Select.Option>
+                        <Select.Option value="High">High</Select.Option>
+                        <Select.Option value="Go-Live Critical">Go-Live Critical</Select.Option>
+                        <Select.Option value="After Go-Live">After Go-Live</Select.Option>
+                    </Select>
+                  </Form.Item>
+                </div>
 
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                  <TextField
-                    id="select-usage_frequency"
-                    label="Usage Frequency"
-                    variant="standard"
-                    select
-                    value={usage_frequency}
-                    onChange={handleUsageFrequencyChange}
-                    placeholder="Select Usage Frequency"
-                    sx={{ width: '100%' }}
-                  >
-                    <MenuItem value="Daily">Daily</MenuItem>
-                    <MenuItem value="Weekly">Weekly</MenuItem>
-                    <MenuItem value="Monthly">Monthly</MenuItem>
-                  </TextField>
-                </Box>
-
+                <div className="form-outline mb-3">
+                  <label>Usage Frequency</label>
+                  <Form.Item>
+                    <Select
+                      placeholder="Select Usage Frequency"
+                      onChange={handleUsageFrequencyChange}
+                      value={usage_frequency}
+                    >
+                        <Select.Option value="Daily">Daily</Select.Option>
+                        <Select.Option value="Weekly">Weekly</Select.Option>
+                        <Select.Option value="Monthly">Monthly</Select.Option>
+                    </Select>
+                  </Form.Item>
+                </div>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <Button
@@ -1023,36 +822,46 @@ function FSFform() {
           <div className="row justify-content-center">
             <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
               <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                  <TextField
-                    id="input-transaction-code"
-                    label="Transaction Code"
-                    variant="standard"
+
+                <div className="form-outline mb-3">
+                  <label>Transaction Code</label>
+                  <input
                     type="text"
                     value={transaction_code}
                     onChange={(e) => setTransactionCode(e.target.value)}
-                    sx={{ width: '100%' }}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Transaction Code"
                   />
-                </Box>
+                </div>
 
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                  <TextField
-                    id="input-authorization-level"
-                    label="Authorization Role"
-                    variant="standard"
+                <div className="form-outline mb-3">
+                  <label>Authorization Role</label>
+                  <input
                     type="text"
-                    value={authorization_level}
-                    onChange={(e) => setAuthorizationLevel(e.target.value)}
-                    sx={{ width: '100%' }}
+                    value={authorization_role}
+                    onChange={(e) => setAuthorizationRole(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Authorization Role"
                   />
-                </Box>
+                </div>
 
-                <Editor
+                <div className="form-outline mb-3">
+                  <label>Development Logic</label>
+                  <input
+                    type="text"
+                    value={development_logic}
+                    onChange={(e) => setDevelopmentLogic(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Development Logic"
+                  />
+                </div>
+
+                {/* <Editor
                   apiKey="46tu7q2m7kbsfpbdoc5mwnyn5hs97kdpefj8dnpuvz65aknl"
                   cloudChannel="dev"
                   init={editorConfig}
                   onEditorChange={handleEditorChange}
-                />
+                /> */}
 
                 <br></br>
 
@@ -1112,14 +921,14 @@ function FSFform() {
               mb: 2,
             }}
           >
-            <Button
+            {/* <Button
               onClick={handleBack4}
               style={dangerButtonStyle}
               onMouseEnter={handleMouseEnterDanger}
               onMouseLeave={handleMouseLeaveDanger}
             >
               Back
-            </Button>
+            </Button> */}
             <Button
               onClick={handleNext4}
               style={primaryButtonStyle}
@@ -1164,7 +973,7 @@ function FSFform() {
               mb: 1,
             }}
           >
-            <Tooltip title="Add Parameters">
+            {/* <Tooltip title="Add Parameters">
               <Button
                 style={primaryButtonStyle}
                 onClick={showModal}
@@ -1173,7 +982,7 @@ function FSFform() {
               >
                 <AddIcon />
               </Button>
-            </Tooltip>
+            </Tooltip> */}
           </Box>
 
           <CTable
@@ -1242,19 +1051,19 @@ function FSFform() {
                   <CTableDataCell className="text-center" style={mystyle}>
                     {data.parameter_or_selection}
                   </CTableDataCell>
-                  <CTableDataCell className="text-center" style={mystyle}>
+                  {/* <CTableDataCell className="text-center" style={mystyle}>
                     <IconButton aria-label="Update" onClick={() => showModal3(data.id)}>
                       <EditIcon htmlColor="#28B463" />
                     </IconButton>
                     <IconButton aria-label="Delete" onClick={() => showModal2(data.id)}>
                       <DeleteIcon htmlColor="#FF0000" />
                     </IconButton>
-                  </CTableDataCell>
+                  </CTableDataCell> */}
                 </CTableRow>
               ))}
 
               {/* Modal for Add Parameter */}
-              <Modal
+              {/* <Modal
                 open={isModalOpen}
                 maskClosable={false}
                 closeIcon={<CloseIcon onClick={handleCancel} />}
@@ -1385,179 +1194,7 @@ function FSFform() {
                     <MenuItem value="Selection">Selection</MenuItem>
                   </TextField>
                 </Box>
-              </Modal>
-
-              {/* Modal for Update FSF Parameters */}
-
-              <Modal
-                open={isModalOpen3}
-                maskClosable={false}
-                closeIcon={<CloseIcon onClick={handleCancel} />}
-                footer={
-                  <div
-                    style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}
-                  >
-                    <Button
-                      onClick={handleCancel3}
-                      style={dangerButtonStyle}
-                      onMouseEnter={handleMouseEnterDanger}
-                      onMouseLeave={handleMouseLeaveDanger}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleOk3}
-                      style={primaryButtonStyle}
-                      onMouseEnter={handleMouseEnterPrimary}
-                      onMouseLeave={handleMouseLeavePrimary}
-                    >
-                      Update
-                    </Button>
-                  </div>
-                }
-              >
-                <Typography variant="h5" component="div" sx={{ marginBottom: '10px' }}>
-                  Update a Parameter
-                </Typography>
-                {fsfHasParameter.map((fsf) => (
-                  <div key={fsf.id}>
-                    <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                      <TextField
-                        id="input-description"
-                        label="Description"
-                        variant="standard"
-                        type="description"
-                        name="description"
-                        defaultValue={fsf.description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Enter Description"
-                        sx={{ width: '100%' }}
-                      />
-                    </Box>
-
-                    <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                      <TextField
-                        id="input-field_technical_name"
-                        label="Field Technical Name"
-                        variant="standard"
-                        type="field_technical_name"
-                        name="field_technical_name"
-                        defaultValue={fsf.field_technical_name}
-                        onChange={(e) => setFieldTechnicalName(e.target.value)}
-                        placeholder="Enter Field Technical Name"
-                        sx={{ width: '100%' }}
-                      />
-                    </Box>
-
-                    <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                      <TextField
-                        id="input-field_length"
-                        label="Field Length"
-                        variant="standard"
-                        type="field_length"
-                        name="field_technical_name"
-                        defaultValue={fsf.field_length}
-                        onChange={(e) => setFieldLength(e.target.value)}
-                        placeholder="Enter Field Length"
-                        sx={{ width: '100%' }}
-                      />
-                    </Box>
-
-                    <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                      <TextField
-                        id="input-field_type"
-                        label="Field Type"
-                        variant="standard"
-                        type="field_type"
-                        name="field_type"
-                        defaultValue={fsf.field_type}
-                        onChange={(e) => setFieldType(e.target.value)}
-                        placeholder="Enter Field Type"
-                        sx={{ width: '100%' }}
-                      />
-                    </Box>
-
-                    <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                      <TextField
-                        id="input-field_table_name"
-                        label="Field Table Name"
-                        variant="standard"
-                        type="field_table_name"
-                        name="field_table_name"
-                        defaultValue={fsf.field_table_name}
-                        onChange={(e) => setFieldTableName(e.target.value)}
-                        placeholder="Enter Field Table Name"
-                        sx={{ width: '100%' }}
-                      />
-                    </Box>
-
-                    <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                      <TextField
-                        id="select-mandatory_or_optional"
-                        label="Mandatory or Optional"
-                        variant="standard"
-                        select
-                        defaultValue={fsf.mandatory_or_optional}
-                        onChange={handleMandatoryOrOptionalChange}
-                        placeholder="Select Mandatory or Optional"
-                        sx={{ width: '100%' }}
-                      >
-                        <MenuItem value="Mandatory">Mandatory</MenuItem>
-                        <MenuItem value="Optional">Optional</MenuItem>
-                      </TextField>
-                    </Box>
-
-                    <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
-                      <TextField
-                        id="select-parameter_or_selection"
-                        label="Parameter or Selection"
-                        variant="standard"
-                        select
-                        defaultValue={fsf.parameter_or_selection}
-                        onChange={handleParameterOrSelection}
-                        placeholder="Select Parameter or Selection"
-                        sx={{ width: '100%' }}
-                      >
-                        <MenuItem value="Parameter">Parameter</MenuItem>
-                        <MenuItem value="Selection">Selection</MenuItem>
-                      </TextField>
-                    </Box>
-                  </div>
-                ))}
-              </Modal>
-
-              {/* Modal for Deletion Confirmation */}
-              <Modal
-                open={isModalOpen2}
-                maskClosable={false}
-                closeIcon={<CloseIcon onClick={handleCancel2} />}
-                footer={
-                  <div
-                    style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}
-                  >
-                    <Button
-                      onClick={handleCancel2}
-                      style={dangerButtonStyle}
-                      onMouseEnter={handleMouseEnterDanger}
-                      onMouseLeave={handleMouseLeaveDanger}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleOk2}
-                      style={primaryButtonStyle}
-                      onMouseEnter={handleMouseEnterPrimary}
-                      onMouseLeave={handleMouseLeavePrimary}
-                    >
-                      OK
-                    </Button>
-                  </div>
-                }
-              >
-                <Typography variant="h5" component="div" sx={{ marginBottom: '10px' }}>
-                  Are you sure you want to delete?
-                </Typography>
-              </Modal>
+              </Modal> */}
 
               {/* Alert for Add FSF Success*/}
               {showAlert1 && (
@@ -1698,6 +1335,276 @@ function FSFform() {
               </Typography>
             </Box>
           </Box>
+
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              gap: '10px',
+              mt: 3,
+              mb: 1,
+            }}
+          >
+            {/* <Tooltip title="Add Parameters">
+              <Button
+                style={primaryButtonStyle}
+                onClick={showModal}
+                onMouseEnter={handleMouseEnterPrimary}
+                onMouseLeave={handleMouseLeavePrimary}
+              >
+                <AddIcon />
+              </Button>
+            </Tooltip> */}
+          </Box>
+
+          <CTable
+            align="middle"
+            className="mb-0 border"
+            hover
+            responsive
+            style={{ marginTop: '20px' }}
+          >
+            <CTableHead color="light">
+              <CTableRow>
+                <CTableHeaderCell className="text-center" style={mystyle}>
+                  Sr No.
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>
+                  Description
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>
+                  Field Technical Name
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>
+                  Field Length
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>
+                  Field Type
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>
+                  Field Table Name
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>
+                  Mandatory/Optional
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>
+                  Parameter/Selection
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>
+                  Actions
+                </CTableHeaderCell>{' '}
+                {/* Add Actions column */}
+              </CTableRow>
+            </CTableHead>
+            <CTableBody>
+              {postData.map((data, index) => (
+                <CTableRow key={index}>
+                  <CTableDataCell className="text-center" style={mystyle}>
+                    {index + 1}
+                  </CTableDataCell>
+                  <CTableDataCell className="text-center" style={mystyle}>
+                    {data.description}
+                  </CTableDataCell>
+                  <CTableDataCell className="text-center" style={mystyle}>
+                    {data.field_technical_name}
+                  </CTableDataCell>
+                  <CTableDataCell className="text-center" style={mystyle}>
+                    {data.field_length}
+                  </CTableDataCell>
+                  <CTableDataCell className="text-center" style={mystyle}>
+                    {data.field_type}
+                  </CTableDataCell>
+                  <CTableDataCell className="text-center" style={mystyle}>
+                    {data.field_table_name}
+                  </CTableDataCell>
+                  <CTableDataCell className="text-center" style={mystyle}>
+                    {data.mandatory_or_optional}
+                  </CTableDataCell>
+                  <CTableDataCell className="text-center" style={mystyle}>
+                    {data.parameter_or_selection}
+                  </CTableDataCell>
+                  {/* <CTableDataCell className="text-center" style={mystyle}>
+                    <IconButton aria-label="Update" onClick={() => showModal3(data.id)}>
+                      <EditIcon htmlColor="#28B463" />
+                    </IconButton>
+                    <IconButton aria-label="Delete" onClick={() => showModal2(data.id)}>
+                      <DeleteIcon htmlColor="#FF0000" />
+                    </IconButton>
+                  </CTableDataCell> */}
+                </CTableRow>
+              ))}
+
+              {/* Modal for Add Parameter */}
+              {/* <Modal
+                open={isModalOpen}
+                maskClosable={false}
+                closeIcon={<CloseIcon onClick={handleCancel} />}
+                footer={
+                  <div
+                    style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}
+                  >
+                    <Button
+                      onClick={handleCancel}
+                      style={dangerButtonStyle}
+                      onMouseEnter={handleMouseEnterDanger}
+                      onMouseLeave={handleMouseLeaveDanger}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleOk}
+                      style={primaryButtonStyle}
+                      onMouseEnter={handleMouseEnterPrimary}
+                      onMouseLeave={handleMouseLeavePrimary}
+                    >
+                      OK
+                    </Button>
+                  </div>
+                }
+              >
+                <Typography variant="h5" component="div" sx={{ marginBottom: '10px' }}>
+                  Add a Parameter
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
+                  <TextField
+                    id="input-description"
+                    label="Description"
+                    variant="standard"
+                    type="description"
+                    name="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Enter Description"
+                    sx={{ width: '100%' }}
+                  />
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
+                  <TextField
+                    id="input-field_technical_name"
+                    label="Field Technical Name"
+                    variant="standard"
+                    type="field_technical_name"
+                    name="field_technical_name"
+                    value={field_technical_name}
+                    onChange={(e) => setFieldTechnicalName(e.target.value)}
+                    placeholder="Enter Field Technical Name"
+                    sx={{ width: '100%' }}
+                  />
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
+                  <TextField
+                    id="input-field_length"
+                    label="Field Length"
+                    variant="standard"
+                    type="field_length"
+                    name="field_technical_name"
+                    value={field_length}
+                    onChange={(e) => setFieldLength(e.target.value)}
+                    placeholder="Enter Field Length"
+                    sx={{ width: '100%' }}
+                  />
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
+                  <TextField
+                    id="input-field_type"
+                    label="Field Type"
+                    variant="standard"
+                    type="field_type"
+                    name="field_type"
+                    value={field_type}
+                    onChange={(e) => setFieldType(e.target.value)}
+                    placeholder="Enter Field Type"
+                    sx={{ width: '100%' }}
+                  />
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
+                  <TextField
+                    id="input-field_table_name"
+                    label="Field Table Name"
+                    variant="standard"
+                    type="field_table_name"
+                    name="field_table_name"
+                    value={field_table_name}
+                    onChange={(e) => setFieldTableName(e.target.value)}
+                    placeholder="Enter Field Table Name"
+                    sx={{ width: '100%' }}
+                  />
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
+                  <TextField
+                    id="select-mandatory_or_optional"
+                    label="Mandatory or Optional"
+                    variant="standard"
+                    select
+                    value={mandatory_or_optional}
+                    onChange={handleMandatoryOrOptionalChange}
+                    placeholder="Select Mandatory or Optional"
+                    sx={{ width: '100%' }}
+                  >
+                    <MenuItem value="Mandatory">Mandatory</MenuItem>
+                    <MenuItem value="Optional">Optional</MenuItem>
+                  </TextField>
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: 1, mb: 2 }}>
+                  <TextField
+                    id="select-parameter_or_selection"
+                    label="Parameter or Selection"
+                    variant="standard"
+                    select
+                    value={parameter_or_selection}
+                    onChange={handleParameterOrSelection}
+                    placeholder="Select Parameter or Selection"
+                    sx={{ width: '100%' }}
+                  >
+                    <MenuItem value="Parameter">Parameter</MenuItem>
+                    <MenuItem value="Selection">Selection</MenuItem>
+                  </TextField>
+                </Box>
+              </Modal> */}
+
+              {/* Alert for Add FSF Success*/}
+              {showAlert1 && (
+                <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
+                  FSF Added Successfully
+                </Alert>
+              )}
+
+              {/* Alert for Add FSF Failure*/}
+              {showAlert2 && (
+                <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
+                  Failed to Add FSF
+                </Alert>
+              )}
+
+              {/* Alert for Update FSF Parameters*/}
+              {showAlert3 && (
+                <Alert onClose={handleCloseAlert3} severity="primary" style={modalStyle2}>
+                  FSF Update Successfully
+                </Alert>
+              )}
+
+              {/* Alert for Add FSF Parameters*/}
+              {showAlert4 && (
+                <Alert onClose={handleCloseAlert4} severity="primary" style={modalStyle2}>
+                  FSF Parameter Added Successfully
+                </Alert>
+              )}
+
+              {/* Alert for Delete FSF Parameters*/}
+              {showAlert5 && (
+                <Alert onClose={handleCloseAlert5} severity="primary" style={modalStyle2}>
+                  FSF Parameter Deleted Successfully
+                </Alert>
+              )}
+            </CTableBody>
+          </CTable>
 
           <Box
             sx={{
