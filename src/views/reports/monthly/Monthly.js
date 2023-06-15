@@ -17,9 +17,8 @@ import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@co
 import { DatePicker, Button, Card, Divider, Select, Form } from 'antd'
 import { saveAs } from 'file-saver'
 import json2csv from 'json2csv'
+import moment from 'moment'
 const BASE_URL = process.env.REACT_APP_BASE_URL
-
-const { RangePicker } = DatePicker
 
 const {
   cardStyle,
@@ -96,6 +95,22 @@ export default function Dashboard() {
     getCompanies(selectedUser)
     setIsReportPreview(true)
   }
+
+  const onDateChange = (date, dateString) => {
+    const selectedMonth = moment(dateString, 'YYYY-MM')
+    const startOfMonth = selectedMonth.clone().startOf('month').format('YYYY-MM-DD')
+    const endOfMonth = selectedMonth.clone().endOf('month').format('YYYY-MM-DD')
+
+    console.log('userId: ', userId)
+    console.log('Start of month:', startOfMonth)
+    console.log('End of month:', endOfMonth)
+    if (startOfMonth !== 'Invalid date' && endOfMonth !== 'Invalid date') {
+      getMonthlyReportOnMonthSelection(startOfMonth, endOfMonth, userId)
+    } else {
+      getMonthlyReport(userId)
+    }
+  }
+
   const getUsers = () => {
     if (!local) {
       console.log('Local variable is not available')
@@ -183,6 +198,54 @@ export default function Dashboard() {
       .catch((error) => console.log(error))
   }
 
+  const getMonthlyReportOnMonthSelection = (
+    selectedMonthStartDate,
+    selectedMonthEndDate,
+    selectedUserId,
+  ) => {
+    fetch(
+      `${BASE_URL}/api/getSumByDateWithUserId/${selectedMonthStartDate}/${selectedMonthEndDate}/${selectedUserId}`,
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        const totalSeconds = data.projects.reduce((total, projects) => {
+          return total + projects.hours * 3600 + projects.minutes * 60 + projects.seconds
+        }, 0)
+
+        const averageSeconds = totalSeconds / data.projects.length
+        const averageHours = Math.floor(averageSeconds / 3600)
+        const averageMinutes = Math.floor((averageSeconds % 3600) / 60)
+
+        setAverageWorkingHoursOfDay(`
+          ${averageHours.toString().padStart(2, '0')}
+          : ${averageMinutes.toString().padStart(2, '0')}
+        `)
+        setTotalWorkingHoursOfMonth(`
+           ${data.hours.toString().padStart(2, '0')}
+          : ${data.minutes.toString().padStart(2, '0')}
+          : ${data.seconds.toString().padStart(2, '0')}
+        `)
+
+        const projectDates = data.projects.map((project) => new Date(project.date))
+        const minDate = new Date(Math.min(...projectDates))
+        const maxDate = new Date(Math.max(...projectDates))
+
+        const startDate = `${getMonthName(minDate.getMonth())} ${minDate
+          .getDate()
+          .toString()
+          .padStart(2, '0')}, ${minDate.getFullYear()}`
+        const endDate = `${getMonthName(maxDate.getMonth())} ${maxDate
+          .getDate()
+          .toString()
+          .padStart(2, '0')}, ${maxDate.getFullYear()}`
+        const dateRange = `${startDate} - ${endDate}`
+        setMonth(dateRange)
+
+        processDataOnMonthSelection(data)
+      })
+      .catch((error) => console.log(error))
+  }
+
   // Function to format the date
   const formatDate = (dateString) => {
     const options = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }
@@ -210,6 +273,66 @@ export default function Dashboard() {
 
     // Iterate over each object in the "project" array of the JSON data
     jsonData.project.forEach((project) => {
+      // Extract the relevant properties from the project object
+      const { date, hours, minutes, seconds, project_name } = project
+
+      // Calculate the total time in seconds
+      const totalSeconds = hours * 3600 + minutes * 60 + seconds
+
+      // Format the date
+      const formattedDate = formatDate(date)
+
+      // If the date doesn't exist in the processedData object, create a new entry
+      if (!processedData[formattedDate]) {
+        processedData[formattedDate] = {
+          date: formattedDate,
+          totalWorkingHourOfDay: formatTime(0), // Initialize total working hours as 0
+          projects: [],
+        }
+      }
+
+      // Update the total working hours for the date
+      processedData[formattedDate].totalWorkingHourOfDay = formatTime(
+        timeInSeconds(processedData[formattedDate].totalWorkingHourOfDay) + totalSeconds,
+      )
+
+      // Find the corresponding projectData object in the projects array for the date
+      let projectData = processedData[formattedDate].projects.find(
+        (data) => data.project === project_name,
+      )
+
+      // If the projectData object doesn't exist, create a new one
+      if (!projectData) {
+        projectData = {
+          project: project_name,
+          HOURS: formatTime(totalSeconds), // Format the project hours
+          PERCENTAGE: '-',
+        }
+        processedData[formattedDate].projects.push(projectData)
+      } else {
+        // Update the project hours
+        projectData.HOURS = formatTime(timeInSeconds(projectData.HOURS) + totalSeconds)
+      }
+    })
+
+    // Calculate the percentages for each project in each day
+    Object.values(processedData).forEach((dayData) => {
+      const totalDaySeconds = timeInSeconds(dayData.totalWorkingHourOfDay)
+      dayData.projects.forEach((projectData) => {
+        const projectSeconds = timeInSeconds(projectData.HOURS)
+        projectData.PERCENTAGE = `${((projectSeconds / totalDaySeconds) * 100).toFixed(0)}%`
+      })
+    })
+
+    setMonthlyReportData(Object.values(processedData))
+  }
+
+  const processDataOnMonthSelection = (jsonData) => {
+    // Initialize an empty object to store the processed data
+    const processedData = {}
+
+    // Iterate over each object in the "project" array of the JSON data
+    jsonData.projects.forEach((project) => {
       // Extract the relevant properties from the project object
       const { date, hours, minutes, seconds, project_name } = project
 
@@ -334,18 +457,16 @@ export default function Dashboard() {
         </Box>
       </Box>
       <Box className="row justify-content-between" sx={{ mt: 1 }}>
-        <Box className="col-md-5">
-          <Button type="default" style={arrowStyle} icon={<ArrowLeftOutlined />} />
-          &nbsp;
-          <Button type="default" style={arrowStyle} icon={<ArrowRightOutlined />} />
-          &nbsp;
-          <RangePicker />
-          &nbsp; &nbsp;
-          <Button type="default">Today</Button>
-          &nbsp; &nbsp;
-          <Button variant="contained" color="primary">
-            Filters
-          </Button>
+        <Box className="col-md-3">
+          <DatePicker
+            placeholder="SELECT MONTH"
+            onChange={onDateChange}
+            picker="month"
+            disabled={!isReportPreview}
+            style={{
+              width: '100%',
+            }}
+          />
         </Box>
 
         <Box
