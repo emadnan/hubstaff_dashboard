@@ -55,7 +55,8 @@ function FSFform() {
   const [parameter_or_selection, setParameterOrSelection] = useState('')
 
   const [project, setProjects] = useState([])
-  const [fsfHasParameter, setFsfHasParameter] = useState([])
+  const [fsfHasInputParameter, setFsfHasInputParameter] = useState([])
+  const [fsfHasOutputParameter, setFsfHasOutputParameter] = useState([])
   const [ref_id, setRef_id] = useState()
   const [users, setUsers] = useState([])
   const [teamlead, setTeamLeads] = useState([])
@@ -320,6 +321,100 @@ function FSFform() {
     setIsModalOpen2(false)
     setOutputParameterName('')
     setDescription('')
+    setFieldTechnicalName('')
+    setFieldLength('')
+    setFieldType('')
+    setFieldTableName('')
+    setMandatoryOrOptional('')
+    setParameterOrSelection('')
+  }
+
+  // Functions for Delete FSF Input Parameter Modal
+  const [isModalOpen3, setIsModalOpen3] = useState(false)
+  const showModal3 = (id) => {
+    setIsModalOpen3(id)
+  }
+
+  const handleOk3 = () => {
+    deleteFSF(isModalOpen3)
+    setIsModalOpen3(false)
+  }
+
+  const handleCancel3 = () => {
+    setIsModalOpen3(false)
+  }
+
+  // Functions for Update FSF Output Parameter Modal
+  const [isModalOpen4, setIsModalOpen4] = useState(false)
+  const showModal4 = (id) => {
+    getFsfHasParameterByFsfId(id)
+    setIsModalOpen4(id)
+  }
+
+  const handleOk4 = () => {
+    updateFSF(isModalOpen4)
+    setIsModalOpen4(false)
+    setDescription('')
+    setInputParameterName('')
+    setFieldTechnicalName('')
+    setFieldLength('')
+    setFieldType('')
+    setFieldTableName('')
+    setMandatoryOrOptional('')
+    setParameterOrSelection('')
+  }
+
+  const handleCancel4 = () => {
+    setIsModalOpen4(false)
+    setDescription('')
+    setInputParameterName('')
+    setFieldTechnicalName('')
+    setFieldLength('')
+    setFieldType('')
+    setFieldTableName('')
+    setMandatoryOrOptional('')
+    setParameterOrSelection('')
+  }
+
+  // Functions for Delete FSF Output Parameter Modal
+  const [isModalOpen5, setIsModalOpen5] = useState(false)
+  const showModal5 = (id) => {
+    setIsModalOpen5(id)
+  }
+
+  const handleOk5 = () => {
+    deleteOutputFSF(isModalOpen5)
+    setIsModalOpen5(false)
+  }
+
+  const handleCancel5 = () => {
+    setIsModalOpen5(false)
+  }
+
+  // Functions for Update FSF Output Parameter Modal
+  const [isModalOpen6, setIsModalOpen6] = useState(false)
+  const showModal6 = (id) => {
+    getFsfHasOutputParameterByFsfId(id)
+    setIsModalOpen6(id)
+  }
+
+  const handleOk6 = () => {
+    updateOutputFSF(isModalOpen6)
+    setIsModalOpen6(false)
+    setDescription('')
+    setOutputParameterName('')
+    setFieldTechnicalName('')
+    setFieldLength('')
+    setFieldType('')
+    setFieldTableName('')
+    setMandatoryOrOptional('')
+    setParameterOrSelection('')
+  }
+
+  const handleCancel6 = () => {
+    setIsModalOpen6(false)
+    setDescription('')
+    setOutputParameterName('')
     setFieldTechnicalName('')
     setFieldLength('')
     setFieldType('')
@@ -610,7 +705,8 @@ function FSFform() {
     fetch(`${BASE_URL}/api/getFsfHasParameterById/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        setFsfHasParameter(data.fsf)
+        setFsfHasInputParameter(data.fsf)
+        setInputParameterName(data.fsf[0].input_parameter_name)
         setDescription(data.fsf[0].description)
         setFieldTechnicalName(data.fsf[0].field_technical_name)
         setFieldLength(data.fsf[0].field_length)
@@ -622,7 +718,24 @@ function FSFform() {
       .catch((error) => console.log(error))
   }
 
-  // Add API calls
+  function getFsfHasOutputParameterByFsfId(id) {
+    fetch(`${BASE_URL}/api/getFsfHasOutputParameterById/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setFsfHasOutputParameter(data.fsf_has_output_parameter)
+        setOutputParameterName(data.fsf_has_output_parameter[0].output_parameter_name)
+        setDescription(data.fsf_has_output_parameter[0].description)
+        setFieldTechnicalName(data.fsf_has_output_parameter[0].field_technical_name)
+        setFieldLength(data.fsf_has_output_parameter[0].field_length)
+        setFieldType(data.fsf_has_output_parameter[0].field_type)
+        setFieldTableName(data.fsf_has_output_parameter[0].field_table_name)
+        setMandatoryOrOptional(data.fsf_has_output_parameter[0].mandatory_or_optional)
+        setParameterOrSelection(data.fsf_has_output_parameter[0].parameter_or_selection)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  // Add FSF API call
   async function addFsfForm() {
     let data = {
       reference_id,
@@ -664,6 +777,7 @@ function FSFform() {
       })
   }
 
+  // Add Input FSF API call
   async function addInputParameter() {
     let inputfsf = {
       fsf_id: ref_id,
@@ -700,6 +814,7 @@ function FSFform() {
       })
   }
 
+  // Add Output FSF API call
   async function addOutputParameter() {
     let inputfsf = {
       fsf_id: ref_id,
@@ -732,6 +847,117 @@ function FSFform() {
         console.log(data)
       })
       .catch((error) => {
+        console.error(error)
+      })
+  }
+
+  // Delete FSF Parameter Input API call
+  async function deleteFSF(id) {
+    await fetch(`${BASE_URL}/api/DeleteFsfHasParameterByFsfId`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: id,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          handleButtonClick5()
+          getFSFInputParameters()
+        }
+      })
+      .catch((error) => {
+        handleButtonClick2()
+        console.error(error)
+      })
+  }
+
+  // Update FSF Parameter Input API call
+  async function updateFSF(newid) {
+    await fetch(`${BASE_URL}/api/UpdateFsfHasInputParameterByFsfId`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: newid,
+        fsf_id: ref_id,
+        input_parameter_name: input_parameter_name,
+        description: description,
+        field_technical_name: field_technical_name,
+        field_length: field_length,
+        field_type: field_type,
+        field_table_name: field_table_name,
+        mandatory_or_optional: mandatory_or_optional,
+        parameter_or_selection: parameter_or_selection,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          handleButtonClick3()
+          getFSFInputParameters()
+        } else {
+          // handleButtonClick6();
+        }
+      })
+      .catch((error) => {
+        handleButtonClick2()
+        console.error(error)
+      })
+  }
+
+   // Delete FSF Parameter Output API call
+   async function deleteOutputFSF(id) {
+    await fetch(`${BASE_URL}/api/DeleteFsfHasOutputParameterByFsfId/${id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          handleButtonClick5()
+          getFSFOutputParameters()
+        }
+      })
+      .catch((error) => {
+        handleButtonClick2()
+        console.error(error)
+      })
+  }
+
+  // Update FSF Parameter Output API call
+  async function updateOutputFSF(newid) {
+    await fetch(`${BASE_URL}/api/UpdateFsfHasOutputParameterByFsfId`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: newid,
+        fsf_id: ref_id,
+        output_parameter_name: output_parameter_name,
+        description: description,
+        field_technical_name: field_technical_name,
+        field_length: field_length,
+        field_type: field_type,
+        field_table_name: field_table_name,
+        mandatory_or_optional: mandatory_or_optional,
+        parameter_or_selection: parameter_or_selection,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          handleButtonClick3()
+          getFSFOutputParameters()
+        } else {
+          // handleButtonClick6();
+        }
+      })
+      .catch((error) => {
+        handleButtonClick2()
         console.error(error)
       })
   }
@@ -1119,12 +1345,12 @@ function FSFform() {
             <input
               type="file"
               onChange={handleFileUpload}
-              accept="image/*" 
+              accept="image/*"
               style={{ display: 'none' }}
               ref={fileInputRef}
             />
             <Button
-              onClick={() => fileInputRef.current.click()} 
+              onClick={() => fileInputRef.current.click()}
               style={primaryButtonStyle}
               onMouseEnter={handleMouseEnterSuccess}
               onMouseLeave={handleMouseLeaveSuccess}
@@ -1209,6 +1435,9 @@ function FSFform() {
                   Sr No.
                 </CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle}>
+                  Parameter Name
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>
                   Description
                 </CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle}>
@@ -1229,9 +1458,9 @@ function FSFform() {
                 <CTableHeaderCell className="text-center" style={mystyle}>
                   Parameter/Selection
                 </CTableHeaderCell>
-                {/* <CTableHeaderCell className="text-center" style={mystyle}>
+                <CTableHeaderCell className="text-center" style={mystyle}>
                   Actions
-                </CTableHeaderCell> */}
+                </CTableHeaderCell>
                 {/* Add Actions column */}
               </CTableRow>
             </CTableHead>
@@ -1240,6 +1469,9 @@ function FSFform() {
                 <CTableRow key={index}>
                   <CTableDataCell className="text-center" style={mystyle}>
                     {index + 1}
+                  </CTableDataCell>
+                  <CTableDataCell className="text-center" style={mystyle}>
+                    {data.input_parameter_name}
                   </CTableDataCell>
                   <CTableDataCell className="text-center" style={mystyle}>
                     {data.description}
@@ -1262,14 +1494,14 @@ function FSFform() {
                   <CTableDataCell className="text-center" style={mystyle}>
                     {data.parameter_or_selection}
                   </CTableDataCell>
-                  {/* <CTableDataCell className="text-center" style={mystyle}>
-                    <IconButton aria-label="Update" onClick={() => showModal3(data.id)}>
+                  <CTableDataCell className="text-center" style={mystyle}>
+                    <IconButton aria-label="Update" onClick={() => showModal4(data.id)}>
                       <EditIcon htmlColor="#28B463" />
                     </IconButton>
-                    <IconButton aria-label="Delete" onClick={() => showModal2(data.id)}>
+                    <IconButton aria-label="Delete" onClick={() => showModal3(data.id)}>
                       <DeleteIcon htmlColor="#FF0000" />
                     </IconButton>
-                  </CTableDataCell> */}
+                  </CTableDataCell>
                 </CTableRow>
               ))}
 
@@ -1401,6 +1633,169 @@ function FSFform() {
 
               </Modal>
 
+              {/* Modal for Update FSF Parameters */}
+              <Modal
+                open={isModalOpen4}
+                maskClosable={false}
+                closeIcon={<CloseIcon onClick={handleCancel4} />}
+                footer={
+                  <div
+                    style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}
+                  >
+                    <Button
+                      onClick={handleCancel4}
+                      style={dangerButtonStyle}
+                      onMouseEnter={handleMouseEnterDanger}
+                      onMouseLeave={handleMouseLeaveDanger}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleOk4}
+                      style={primaryButtonStyle}
+                      onMouseEnter={handleMouseEnterPrimary}
+                      onMouseLeave={handleMouseLeavePrimary}
+                    >
+                      Update
+                    </Button>
+                  </div>
+                }
+              >
+                <Typography variant="h5" component="div" sx={{ marginBottom: '10px' }}>
+                  Update a Parameter
+                </Typography>
+                {fsfHasInputParameter.map((fsf) => (
+                  <div key={fsf.id}>
+                    <div className="form-outline mb-3">
+                      <label>Parameter Name</label>
+                      <input
+                        type="text"
+                        value={input_parameter_name}
+                        onChange={(e) => setInputParameterName(e.target.value)}
+                        className="form-control form-control-lg"
+                        placeholder="Enter Input Parameter Name"
+                      />
+                    </div>
+
+                    <div className="form-outline mb-3">
+                      <label>Description</label>
+                      <input
+                        type="text"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        className="form-control form-control-lg"
+                        placeholder="Enter Description"
+                      />
+                    </div>
+
+                    <div className="form-outline mb-3">
+                      <label>Field Technical Name</label>
+                      <input
+                        type="text"
+                        value={field_technical_name}
+                        onChange={(e) => setFieldTechnicalName(e.target.value)}
+                        className="form-control form-control-lg"
+                        placeholder="Enter Field Technical Name"
+                      />
+                    </div>
+
+                    <div className="form-outline mb-3">
+                      <label>Field Length</label>
+                      <input
+                        type="text"
+                        value={field_length}
+                        onChange={(e) => setFieldLength(e.target.value)}
+                        className="form-control form-control-lg"
+                        placeholder="Enter Field Length"
+                      />
+                    </div>
+
+                    <div className="form-outline mb-3">
+                      <label>Field Type</label>
+                      <input
+                        type="text"
+                        value={field_type}
+                        onChange={(e) => setFieldType(e.target.value)}
+                        className="form-control form-control-lg"
+                        placeholder="Enter Field Type"
+                      />
+                    </div>
+
+                    <div className="form-outline mb-3">
+                      <label>Field Table Name</label>
+                      <input
+                        type="text"
+                        value={field_table_name}
+                        onChange={(e) => setFieldTableName(e.target.value)}
+                        className="form-control form-control-lg"
+                        placeholder="Enter Field Table Name"
+                      />
+                    </div>
+
+                    <div className="form-outline mb-3">
+                      <label>Mandatory or Optional</label>
+                      <Form.Item>
+                        <Select
+                          placeholder="Select"
+                          onChange={handleMandatoryOrOptionalChange}
+                          value={mandatory_or_optional}
+                        >
+                          <Select.Option value="Mandatory">Mandatory</Select.Option>
+                          <Select.Option value="Optional">Optional</Select.Option>
+                        </Select>
+                      </Form.Item>
+                    </div>
+
+                    <div className="form-outline mb-3">
+                      <label>Parameter or Selection</label>
+                      <Form.Item>
+                        <Select
+                          placeholder="Select"
+                          onChange={handleParameterOrSelection}
+                          value={parameter_or_selection}
+                        >
+                          <Select.Option value="Parameter">Parameter</Select.Option>
+                          <Select.Option value="Selection">Selection</Select.Option>
+                        </Select>
+                      </Form.Item>
+                    </div>
+                  </div>
+                ))}
+              </Modal>
+
+              {/* Modal for Deletion Confirmation */}
+              <Modal
+                open={isModalOpen3}
+                maskClosable={false}
+                closeIcon={<CloseIcon onClick={handleCancel3} />}
+                footer={
+                  <div
+                    style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}
+                  >
+                    <Button
+                      onClick={handleCancel3}
+                      style={dangerButtonStyle}
+                      onMouseEnter={handleMouseEnterDanger}
+                      onMouseLeave={handleMouseLeaveDanger}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleOk3}
+                      style={primaryButtonStyle}
+                      onMouseEnter={handleMouseEnterPrimary}
+                      onMouseLeave={handleMouseLeavePrimary}
+                    >
+                      OK
+                    </Button>
+                  </div>
+                }
+              >
+                <Typography variant="h5" component="div" sx={{ marginBottom: '10px' }}>
+                  Are you sure you want to delete?
+                </Typography>
+              </Modal>
+
               {/* Alert for Add FSF Success*/}
               {showAlert1 && (
                 <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
@@ -1510,12 +1905,12 @@ function FSFform() {
             <input
               type="file"
               onChange={handleFileUpload2}
-              accept="image/*" 
+              accept="image/*"
               style={{ display: 'none' }}
               ref={fileInputRef2}
             />
             <Button
-              onClick={() => fileInputRef2.current.click()} 
+              onClick={() => fileInputRef2.current.click()}
               style={primaryButtonStyle}
               onMouseEnter={handleMouseEnterSuccess}
               onMouseLeave={handleMouseLeaveSuccess}
@@ -1600,6 +1995,9 @@ function FSFform() {
                   Sr No.
                 </CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle}>
+                  Parameter Name
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>
                   Description
                 </CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle}>
@@ -1633,6 +2031,9 @@ function FSFform() {
                     {index + 1}
                   </CTableDataCell>
                   <CTableDataCell className="text-center" style={mystyle}>
+                    {data.output_parameter_name}
+                  </CTableDataCell>
+                  <CTableDataCell className="text-center" style={mystyle}>
                     {data.description}
                   </CTableDataCell>
                   <CTableDataCell className="text-center" style={mystyle}>
@@ -1653,14 +2054,14 @@ function FSFform() {
                   <CTableDataCell className="text-center" style={mystyle}>
                     {data.parameter_or_selection}
                   </CTableDataCell>
-                  {/* <CTableDataCell className="text-center" style={mystyle}>
-                    <IconButton aria-label="Update" onClick={() => showModal3(data.id)}>
+                  <CTableDataCell className="text-center" style={mystyle}>
+                    <IconButton aria-label="Update" onClick={() => showModal6(data.id)}>
                       <EditIcon htmlColor="#28B463" />
                     </IconButton>
-                    <IconButton aria-label="Delete" onClick={() => showModal2(data.id)}>
+                    <IconButton aria-label="Delete" onClick={() => showModal5(data.id)}>
                       <DeleteIcon htmlColor="#FF0000" />
                     </IconButton>
-                  </CTableDataCell> */}
+                  </CTableDataCell>
                 </CTableRow>
               ))}
 
@@ -1788,6 +2189,169 @@ function FSFform() {
                     </Select>
                   </Form.Item>
                 </div>
+              </Modal>
+
+              {/* Modal for Update FSF Parameters */}
+              <Modal
+                open={isModalOpen6}
+                maskClosable={false}
+                closeIcon={<CloseIcon onClick={handleCancel6} />}
+                footer={
+                  <div
+                    style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}
+                  >
+                    <Button
+                      onClick={handleCancel6}
+                      style={dangerButtonStyle}
+                      onMouseEnter={handleMouseEnterDanger}
+                      onMouseLeave={handleMouseLeaveDanger}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleOk6}
+                      style={primaryButtonStyle}
+                      onMouseEnter={handleMouseEnterPrimary}
+                      onMouseLeave={handleMouseLeavePrimary}
+                    >
+                      Update
+                    </Button>
+                  </div>
+                }
+              >
+                <Typography variant="h5" component="div" sx={{ marginBottom: '10px' }}>
+                  Update a Parameter
+                </Typography>
+                {fsfHasOutputParameter.map((fsf) => (
+                  <div key={fsf.id}>
+                    <div className="form-outline mb-3">
+                      <label>Parameter Name</label>
+                      <input
+                        type="text"
+                        value={output_parameter_name}
+                        onChange={(e) => setOutputParameterName(e.target.value)}
+                        className="form-control form-control-lg"
+                        placeholder="Enter Output Parameter Name"
+                      />
+                    </div>
+
+                    <div className="form-outline mb-3">
+                      <label>Description</label>
+                      <input
+                        type="text"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        className="form-control form-control-lg"
+                        placeholder="Enter Description"
+                      />
+                    </div>
+
+                    <div className="form-outline mb-3">
+                      <label>Field Technical Name</label>
+                      <input
+                        type="text"
+                        value={field_technical_name}
+                        onChange={(e) => setFieldTechnicalName(e.target.value)}
+                        className="form-control form-control-lg"
+                        placeholder="Enter Field Technical Name"
+                      />
+                    </div>
+
+                    <div className="form-outline mb-3">
+                      <label>Field Length</label>
+                      <input
+                        type="text"
+                        value={field_length}
+                        onChange={(e) => setFieldLength(e.target.value)}
+                        className="form-control form-control-lg"
+                        placeholder="Enter Field Length"
+                      />
+                    </div>
+
+                    <div className="form-outline mb-3">
+                      <label>Field Type</label>
+                      <input
+                        type="text"
+                        value={field_type}
+                        onChange={(e) => setFieldType(e.target.value)}
+                        className="form-control form-control-lg"
+                        placeholder="Enter Field Type"
+                      />
+                    </div>
+
+                    <div className="form-outline mb-3">
+                      <label>Field Table Name</label>
+                      <input
+                        type="text"
+                        value={field_table_name}
+                        onChange={(e) => setFieldTableName(e.target.value)}
+                        className="form-control form-control-lg"
+                        placeholder="Enter Field Table Name"
+                      />
+                    </div>
+
+                    <div className="form-outline mb-3">
+                      <label>Mandatory or Optional</label>
+                      <Form.Item>
+                        <Select
+                          placeholder="Select"
+                          onChange={handleMandatoryOrOptionalChange}
+                          value={mandatory_or_optional}
+                        >
+                          <Select.Option value="Mandatory">Mandatory</Select.Option>
+                          <Select.Option value="Optional">Optional</Select.Option>
+                        </Select>
+                      </Form.Item>
+                    </div>
+
+                    <div className="form-outline mb-3">
+                      <label>Parameter or Selection</label>
+                      <Form.Item>
+                        <Select
+                          placeholder="Select"
+                          onChange={handleParameterOrSelection}
+                          value={parameter_or_selection}
+                        >
+                          <Select.Option value="Parameter">Parameter</Select.Option>
+                          <Select.Option value="Selection">Selection</Select.Option>
+                        </Select>
+                      </Form.Item>
+                    </div>
+                  </div>
+                ))}
+              </Modal>
+
+              {/* Modal for Deletion Confirmation */}
+              <Modal
+                open={isModalOpen5}
+                maskClosable={false}
+                closeIcon={<CloseIcon onClick={handleCancel5} />}
+                footer={
+                  <div
+                    style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}
+                  >
+                    <Button
+                      onClick={handleCancel5}
+                      style={dangerButtonStyle}
+                      onMouseEnter={handleMouseEnterDanger}
+                      onMouseLeave={handleMouseLeaveDanger}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleOk5}
+                      style={primaryButtonStyle}
+                      onMouseEnter={handleMouseEnterPrimary}
+                      onMouseLeave={handleMouseLeavePrimary}
+                    >
+                      OK
+                    </Button>
+                  </div>
+                }
+              >
+                <Typography variant="h5" component="div" sx={{ marginBottom: '10px' }}>
+                  Are you sure you want to delete?
+                </Typography>
               </Modal>
 
               {/* Alert for Add FSF Success*/}
