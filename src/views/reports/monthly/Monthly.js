@@ -12,12 +12,12 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-import { ArrowLeftOutlined, ArrowRightOutlined } from '@mui/icons-material'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { DatePicker, Button, Card, Divider, Select, Form } from 'antd'
 import { saveAs } from 'file-saver'
 import json2csv from 'json2csv'
 import moment from 'moment'
+import dayjs from 'dayjs'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 const {
@@ -83,6 +83,7 @@ export default function Dashboard() {
   const [users, setUsers] = useState([])
   const [currentUser, setCurrentUser] = useState([])
   const [isReportPreview, setIsReportPreview] = useState(false)
+  const [selectedDate, setSelectedDate] = useState(null)
 
   let local = JSON.parse(localStorage.getItem('user-info'))
 
@@ -94,21 +95,22 @@ export default function Dashboard() {
     getAssignedProjects(value)
     getCompanies(selectedUser)
     setIsReportPreview(true)
+    setSelectedDate(null)
   }
 
   const onDateChange = (date, dateString) => {
+    setSelectedDate(dateString)
     const selectedMonth = moment(dateString, 'YYYY-MM')
     const startOfMonth = selectedMonth.clone().startOf('month').format('YYYY-MM-DD')
     const endOfMonth = selectedMonth.clone().endOf('month').format('YYYY-MM-DD')
-
-    console.log('userId: ', userId)
-    console.log('Start of month:', startOfMonth)
-    console.log('End of month:', endOfMonth)
     if (startOfMonth !== 'Invalid date' && endOfMonth !== 'Invalid date') {
       getMonthlyReportOnMonthSelection(startOfMonth, endOfMonth, userId)
     } else {
       getMonthlyReport(userId)
     }
+    const dateRange = `${moment(startOfMonth).format('MMMM DD, YYYY')} 
+                      - ${moment(endOfMonth).format('MMMM DD, YYYY')}`
+    setMonth(dateRange)
   }
 
   const getUsers = () => {
@@ -165,8 +167,13 @@ export default function Dashboard() {
         }, 0)
 
         const averageSeconds = totalSeconds / data.project.length
-        const averageHours = Math.floor(averageSeconds / 3600)
-        const averageMinutes = Math.floor((averageSeconds % 3600) / 60)
+        let averageHours = 0
+        let averageMinutes = 0
+
+        if (averageSeconds > 0) {
+          averageHours = Math.floor(averageSeconds / 3600)
+          averageMinutes = Math.floor((averageSeconds % 3600) / 60)
+        }
 
         setAverageWorkingHoursOfDay(`
           ${averageHours.toString().padStart(2, '0')}
@@ -213,8 +220,13 @@ export default function Dashboard() {
         }, 0)
 
         const averageSeconds = totalSeconds / data.projects.length
-        const averageHours = Math.floor(averageSeconds / 3600)
-        const averageMinutes = Math.floor((averageSeconds % 3600) / 60)
+        let averageHours = 0
+        let averageMinutes = 0
+
+        if (averageSeconds > 0) {
+          averageHours = Math.floor(averageSeconds / 3600)
+          averageMinutes = Math.floor((averageSeconds % 3600) / 60)
+        }
 
         setAverageWorkingHoursOfDay(`
           ${averageHours.toString().padStart(2, '0')}
@@ -225,21 +237,6 @@ export default function Dashboard() {
           : ${data.minutes.toString().padStart(2, '0')}
           : ${data.seconds.toString().padStart(2, '0')}
         `)
-
-        const projectDates = data.projects.map((project) => new Date(project.date))
-        const minDate = new Date(Math.min(...projectDates))
-        const maxDate = new Date(Math.max(...projectDates))
-
-        const startDate = `${getMonthName(minDate.getMonth())} ${minDate
-          .getDate()
-          .toString()
-          .padStart(2, '0')}, ${minDate.getFullYear()}`
-        const endDate = `${getMonthName(maxDate.getMonth())} ${maxDate
-          .getDate()
-          .toString()
-          .padStart(2, '0')}, ${maxDate.getFullYear()}`
-        const dateRange = `${startDate} - ${endDate}`
-        setMonth(dateRange)
 
         processDataOnMonthSelection(data)
       })
@@ -318,10 +315,17 @@ export default function Dashboard() {
     // Calculate the percentages for each project in each day
     Object.values(processedData).forEach((dayData) => {
       const totalDaySeconds = timeInSeconds(dayData.totalWorkingHourOfDay)
-      dayData.projects.forEach((projectData) => {
-        const projectSeconds = timeInSeconds(projectData.HOURS)
-        projectData.PERCENTAGE = `${((projectSeconds / totalDaySeconds) * 100).toFixed(0)}%`
-      })
+
+      if (totalDaySeconds !== 0) {
+        dayData.projects.forEach((projectData) => {
+          const projectSeconds = timeInSeconds(projectData.HOURS)
+          projectData.PERCENTAGE = `${((projectSeconds / totalDaySeconds) * 100).toFixed(0)}%`
+        })
+      } else {
+        dayData.projects.forEach((projectData) => {
+          projectData.PERCENTAGE = `0%`
+        })
+      }
     })
 
     setMonthlyReportData(Object.values(processedData))
@@ -461,6 +465,7 @@ export default function Dashboard() {
           <DatePicker
             placeholder="SELECT MONTH"
             onChange={onDateChange}
+            value={selectedDate ? dayjs(selectedDate, 'YYYY-MM') : null}
             picker="month"
             disabled={!isReportPreview}
             style={{
