@@ -326,7 +326,7 @@ function TaskAssignment() {
               <CTableHeaderCell className="text-center" style={mystyle2}>
                 {task.project_name}
               </CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle2}>
+              <CTableHeaderCell className="text-center" style={{ ...mystyle2, width: '200px' }}>
                 {task.task_description}
               </CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>
