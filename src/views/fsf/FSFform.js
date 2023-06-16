@@ -79,11 +79,13 @@ function FSFform() {
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
-
-    // Check if the selected file is an image
     if (file && file.type.startsWith('image/')) {
-      setSelectedImage(URL.createObjectURL(file));
-      setImageError(false);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setSelectedImage(event.target.result);
+        setImageError(false);
+      };
+      reader.readAsDataURL(file);
     } else {
       setSelectedImage(null);
       setImageError(true);
@@ -92,11 +94,13 @@ function FSFform() {
 
   const handleFileUpload2 = (event) => {
     const file = event.target.files[0];
-
-    // Check if the selected file is an image
     if (file && file.type.startsWith('image/')) {
-      setSelectedImage2(URL.createObjectURL(file));
-      setImageError2(false);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setSelectedImage2(event.target.result);
+        setImageError2(false);
+      };
+      reader.readAsDataURL(file);
     } else {
       setSelectedImage2(null);
       setImageError2(true);
@@ -113,9 +117,9 @@ function FSFform() {
     height: 200,
     menubar: 'file edit view insert format',
     plugins: [
-      'advlist autolink lists link image charmap print preview anchor',
+      'advlist autolink lists image charmap print preview',
       'searchreplace visualblocks code fullscreen',
-      'insertdatetime media table paste code help wordcount',
+      'insertdatetime  paste code help wordcount',
     ],
     toolbar: `undo redo | formatselect | bold italic backcolor |
       alignleft aligncenter alignright alignjustify |
@@ -489,9 +493,10 @@ function FSFform() {
     setIsHoveredDanger(false)
   }
 
-  const handleNext5 = () => {
+  const handleNext5 = (id) => {
     setShowLevel5(false)
     setShowLevel6(true)
+    inputImagePost(id)
     setIsHoveredPrimary(false)
     setIsHoveredDanger(false)
   }
@@ -534,8 +539,9 @@ function FSFform() {
     setShowAlert1(false)
   }
 
-  function submitHandle() {
-    handleButtonClick1()
+  function submitHandle(id) {
+    // handleButtonClick1()
+    outputImagePost(id)
     setTimeout(() => {
       navigate('/allfsf')
     }, 2000)
@@ -908,8 +914,8 @@ function FSFform() {
       })
   }
 
-   // Delete FSF Parameter Output API call
-   async function deleteOutputFSF(id) {
+  // Delete FSF Parameter Output API call
+  async function deleteOutputFSF(id) {
     await fetch(`${BASE_URL}/api/DeleteFsfHasOutputParameterByFsfId/${id}`, {
       method: 'POST',
       headers: {
@@ -961,6 +967,53 @@ function FSFform() {
         console.error(error)
       })
   }
+
+  // POST Input Image API call
+  async function inputImagePost(id) {
+    await fetch(`${BASE_URL}/api/addInputScreen/${id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        screenShots: selectedImage,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          // handleButtonClick5();
+          // getFSFInputParameters();
+        }
+      })
+      .catch((error) => {
+        // handleButtonClick2();
+        console.error(error);
+      });
+  }
+
+  // POST Output Image API call
+  async function outputImagePost(id) {
+    await fetch(`${BASE_URL}/api/addOutputScreen/${id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        screenShots: selectedImage2,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          // handleButtonClick5();
+          // getFSFInputParameters();
+        }
+      })
+      .catch((error) => {
+        // handleButtonClick2();
+        console.error(error);
+      });
+  }
+
 
   return (
     <>
@@ -1851,7 +1904,7 @@ function FSFform() {
               Back
             </Button>
             <Button
-              onClick={handleNext5}
+              onClick={() => handleNext5(ref_id)}
               style={primaryButtonStyle}
               onMouseEnter={handleMouseEnterSuccess}
               onMouseLeave={handleMouseLeaveSuccess}
@@ -2410,7 +2463,7 @@ function FSFform() {
               Back
             </Button>
             <Button
-              onClick={submitHandle}
+              onClick={() => submitHandle(ref_id)}
               style={successButtonStyle}
               onMouseEnter={handleMouseEnterSuccess}
               onMouseLeave={handleMouseLeaveSuccess}
