@@ -308,16 +308,16 @@ export const _navCompanyAdmin = [
       //   name: 'Time & Activity',
       //   to: '/reports/timenactivity',
       // },
-      {
-        component: CNavItem,
-        name: 'Daily',
-        to: '/reports/daily',
-      },
-      {
-        component: CNavItem,
-        name: 'Weekly',
-        to: '/reports/weekly',
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'Daily',
+      //   to: '/reports/daily',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'Weekly',
+      //   to: '/reports/weekly',
+      // },
       {
         component: CNavItem,
         name: 'Monthly',

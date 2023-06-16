@@ -76,9 +76,11 @@ function AllFSF() {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    height: "100%",
-    width: "100%",
+    minHeight: "100%",
+    minWidth: "100%",
+    marginTop: "50px",
   };
+
 
   const mystyle2 = {
     backgroundColor: "white ",
@@ -86,6 +88,12 @@ function AllFSF() {
 
   const perStyle = {
     fontSize: 14,
+  };
+
+  const perStyle2 = {
+    fontSize: 14,
+    textAlign: 'center',
+    fontWeight: 'bold', 
   };
 
   const headStyle = {
@@ -126,7 +134,7 @@ function AllFSF() {
   };
 
   function getFsfById(id) {
-    fetch(`${BASE_URL}/api/getFunctionalSpecificationFormById?fsf=${id}`)
+    fetch(`${BASE_URL}/api/getFunctionalSpecificationFormById/${id}`)
       .then((response) => response.json())
       .then((data) => setFsfById(data.Functional))
       .catch((error) => console.log(error));
@@ -157,7 +165,7 @@ function AllFSF() {
         if (local.Users.role === 6) {
           filteredUsers = data.Functional.filter((user) => user.functional_lead_id === local.Users.user_id);
         } else if (local.Users.role === 7) {
-          filteredUsers = data.Functional.filter((user) => user.team_lead_id === local.Users.user_id);
+          filteredUsers = data.Functional.filter((user) => user.ABAP_team_lead_id === local.Users.user_id);
         }
         setFsfOnTeamId(filteredUsers)
       })
@@ -648,9 +656,9 @@ function AllFSF() {
                   {
                     local.Users.role === 6 ? (
                       <CTableHeaderCell className="text-center" style={mystyle2}>
-                        <IconButton aria-label="update">
+                        {/* <IconButton aria-label="update">
                           <EditIcon htmlColor='#28B463' />
-                        </IconButton>
+                        </IconButton> */}
                         <IconButton aria-label="delete" onClick={() => showModal3(fsf.id)}>
                           <DeleteIcon htmlColor='#FF0000' />
                         </IconButton>
@@ -694,7 +702,7 @@ function AllFSF() {
 
         <CTableBody>
 
-          {/* Modal for Assign Permissions */}
+          {/* Modal for Assign Members */}
           <Modal title="Assign Members" open={isModalOpen4} onOk={handleOk4} okButtonProps={{ style: { background: 'blue' } }} onCancel={handleCancel4}>
 
             <br></br>
@@ -740,7 +748,7 @@ function AllFSF() {
 
           {/* Modal for View FSF Details */}
           <Modal
-            title={<div style={{ textAlign: 'center' }}>FSF Details</div>}
+            title={<div style={{ textAlign: 'center', fontWeight: 'bold' }}>FSF Details</div>}
             open={isModalOpen}
             onOk={handleOk}
             okButtonProps={{ style: { background: 'blue' } }}
@@ -754,12 +762,14 @@ function AllFSF() {
                   <br></br>
                   <h6 style={perStyle}>WRICEF ID</h6>
                   <p>{fsf.wricef_id}</p>
+                  <h6 style={perStyle}>Project Name</h6>
+                  <p>{fsf.project_name}</p>
                   <h6 style={perStyle}>Module Name</h6>
-                  <p>{fsf.module_name}</p>
-                  <h6 style={perStyle}>Team Lead</h6>
-                  <p>{fsf.team_lead_details.name}</p>
+                  <p>{fsf.Module_name}</p>
+                  <h6 style={perStyle}>Functional Lead Name</h6>
+                  <p>{fsf.function_lead_details.name}</p>
                   <h6 style={perStyle}>Requested Date</h6>
-                  <p>{fsf.requested_date}</p>
+                  <p>{new Date(fsf.requested_date).toLocaleDateString()}</p>
                   <h6 style={perStyle}>Type of Development</h6>
                   <p>{fsf.type_of_development}</p>
                   <h6 style={perStyle}>Priority</h6>
@@ -769,14 +779,22 @@ function AllFSF() {
                   <h6 style={perStyle}>Transaction Code</h6>
                   <p>{fsf.transaction_code}</p>
                   <h6 style={perStyle}>Authorization Level</h6>
-                  <p>{fsf.authorization_level}</p>
-
+                  <p>{fsf.authorization_role}</p>
+                  <Divider></Divider>
+                  <h6 style={perStyle2}>Input Screen</h6>
+                  <br></br>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <img src={fsf.input_screen} alt="Input Screen" style={{ width: '800px', height: '400px' }} />
+                  </div>
+                  <br></br>
+                  <h6 style={perStyle2}>Input Parameters</h6>
                   <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
                     <CTableHead color="light" >
 
                       {/* FSF table heading */}
                       <CTableRow>
                         <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Parameter Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Field Technical Name</CTableHeaderCell>
                         <CTableHeaderCell className="text-center" style={mystyle}>Field Length</CTableHeaderCell>
@@ -786,9 +804,10 @@ function AllFSF() {
                         <CTableHeaderCell className="text-center" style={mystyle}>P/S</CTableHeaderCell>
                       </CTableRow>
 
-                      {fsf.get_fsf_parameter.map((param, index) => (
+                      {fsf.get_fsf_input_parameter.map((param, index) => (
                         <CTableRow key={param.id}>
                           <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{param.input_parameter_name}</CTableHeaderCell>
                           <CTableHeaderCell className="text-center" style={mystyle2}>{param.description}</CTableHeaderCell>
                           <CTableHeaderCell className="text-center" style={mystyle2}>{param.field_technical_name}</CTableHeaderCell>
                           <CTableHeaderCell className="text-center" style={mystyle2}>{param.field_length}</CTableHeaderCell>
@@ -803,8 +822,51 @@ function AllFSF() {
                     <CTableBody>
                     </CTableBody>
                   </CTable>
+                  <br></br>
+                  <Divider></Divider>
+                  <h6 style={perStyle2}>Output Screen</h6>
+                  <br></br>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <img src={fsf.output_screen} alt="Output Screen" style={{ width: '800px', height: '400px' }} />
+                  </div>
+                  <br></br>
+                  <h6 style={perStyle2}>Output Parameters</h6>
+                  <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
+                    <CTableHead color="light" >
+
+                      {/* FSF table heading */}
+                      <CTableRow>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Sr/No</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Parameter Name</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Description</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Field Technical Name</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Field Length</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Field Type</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>Field Table Name</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>M/O</CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle}>P/S</CTableHeaderCell>
+                      </CTableRow>
+
+                      {fsf.get_fsf_output_parameter.map((param, index) => (
+                        <CTableRow key={param.id}>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{param.output_parameter_name}</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{param.description}</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{param.field_technical_name}</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{param.field_length}</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{param.field_type}</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{param.field_table_name}</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{param.mandatory_or_optional}</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>{param.parameter_or_selection}</CTableHeaderCell>
+                        </CTableRow>
+                      ))}
+                    </CTableHead>
+                    <CTableBody>
+                    </CTableBody>
+                  </CTable>
+                  <Divider></Divider>
                 </div>
-              );
+              )
             })}
           </Modal>
 
