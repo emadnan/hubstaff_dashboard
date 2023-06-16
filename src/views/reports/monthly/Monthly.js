@@ -562,13 +562,6 @@ export default function Dashboard() {
 
                 <CTableBody></CTableBody>
               </CTable>
-
-              <Divider />
-              <div className="text-center">
-                <Button type="link" href="/projectmanagement/assigned">
-                  View assigned projects &gt;
-                </Button>
-              </div>
             </Card>
           </Box>
           <Box sx={{ width: '100%', mt: 2 }}>
