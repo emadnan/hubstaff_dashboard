@@ -299,6 +299,12 @@ function TaskAssignment() {
               Task Priority
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
+              Task Status
+            </CTableHeaderCell>
+            {/* <CTableHeaderCell className="text-center" style={mystyle}>
+              Task Comments
+            </CTableHeaderCell> */}
+            <CTableHeaderCell className="text-center" style={mystyle}>
               Start Date
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
@@ -326,6 +332,12 @@ function TaskAssignment() {
               <CTableHeaderCell className="text-center" style={mystyle2}>
                 {task.priorites}
               </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+                {task.status}
+              </CTableHeaderCell>
+              {/* <CTableHeaderCell className="text-center" style={mystyle2}>
+                {task.comment == null ? '-' : task.comment}
+              </CTableHeaderCell> */}
               <CTableHeaderCell className="text-center" style={mystyle2}>
                 {moment(task.task_managements_start_date).format('DD-MM-YYYY')}
               </CTableHeaderCell>
