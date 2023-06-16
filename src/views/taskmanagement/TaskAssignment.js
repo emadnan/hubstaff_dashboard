@@ -77,8 +77,9 @@ function TaskAssignment() {
     setUserId('')
     setProjectId('')
     setTaskDescription('')
-    setTaskManagementStartDate(null)
-    setTaskManagementDeadLine(null)
+    setPriorities('')
+    setTaskManagementStartDate('')
+    setTaskManagementDeadLine('')
   }
 
   // For Radio Buttons
@@ -94,7 +95,6 @@ function TaskAssignment() {
   // Functions for Assign Tasks Modal
   const [isModalOpenUpdate, setIsModalOpenUpdate] = useState(false)
   const showUpdateModal = (task_managements_id) => {
-    console.log('task_managements_id: ', task_managements_id)
     setEditedTaskId(task_managements_id)
     getTaskById(task_managements_id)
     setIsModalOpenUpdate(true)
@@ -108,8 +108,9 @@ function TaskAssignment() {
     setUserId('')
     setProjectId('')
     setTaskDescription('')
-    setTaskManagementStartDate(null)
-    setTaskManagementDeadLine(null)
+    setPriorities('')
+    setTaskManagementStartDate('')
+    setTaskManagementDeadLine('')
   }
 
   function getTasks() {
@@ -171,16 +172,17 @@ function TaskAssignment() {
       .then((response) => {
         if (response.ok) {
           getTasks()
+          setUserId('')
+          setProjectId('')
+          setTaskDescription('')
+          setPriorities('')
+          setTaskManagementStartDate('')
+          setTaskManagementDeadLine('')
           // handleButtonClick3();
           // getMembers()
         } else {
           // handleButtonClick4();
         }
-        setUserId('')
-        setProjectId('')
-        setTaskDescription('')
-        setTaskManagementStartDate(null)
-        setTaskManagementDeadLine(null)
       })
       .catch((error) => {
         console.error(error)
@@ -228,8 +230,13 @@ function TaskAssignment() {
     })
       .then((response) => {
         if (response.ok) {
-          console.log('Task Updated Successfully')
           getTasks()
+          setUserId('')
+          setProjectId('')
+          setTaskDescription('')
+          setPriorities('')
+          setTaskManagementStartDate('')
+          setTaskManagementDeadLine('')
         }
       })
       .catch((error) => {

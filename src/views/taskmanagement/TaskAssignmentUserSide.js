@@ -633,7 +633,7 @@ const TaskAssignmentUserSide = () => {
               className="form-control"
               placeholder="Add Comments Releted to Task"
               onChange={(event) => setTaskComment(event.target.value)}
-              value={taskComment}
+              value={taskComment != null ? taskComment : ''}
             />
           </div>
         </Modal>
