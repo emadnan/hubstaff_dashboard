@@ -582,6 +582,11 @@ function AllFSF() {
                   ) : null
                 }
                 {
+                  local.Users.role === 6 ? (
+                    <CTableHeaderCell className="text-center" style={mystyle}>Comment</CTableHeaderCell>
+                  ) : null
+                }
+                {
                   local.Users.role === 7 ? (
                     <CTableHeaderCell className="text-center" style={mystyle}>Assign</CTableHeaderCell>
                   ) : null
@@ -615,6 +620,12 @@ function AllFSF() {
                   {
                     local.Users.role === 6 ? (
                       <CTableHeaderCell className="text-center" style={mystyle2}>{fsf.status}</CTableHeaderCell>
+
+                    ) : null
+                  }
+                  {
+                    local.Users.role === 6 ? (
+                      <CTableHeaderCell className="text-center" style={mystyle2}>{fsf.comment}</CTableHeaderCell>
 
                     ) : null
                   }
@@ -986,7 +997,7 @@ function AllFSF() {
                   <div className='col md-2 text-center'>
                     <h6>{stat.name}</h6>
                   </div>
-                  <div className='col md-3'></div>+
+                  <div className='col md-3'></div>
                   <div className='col md-2 text-center'>
                     <h6>{stat.status}</h6>
                   </div>
