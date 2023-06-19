@@ -126,7 +126,11 @@ export default function Dashboard() {
         if (local.Users.role === 1) {
           filteredUsers = data.Users
         } else if (local.Users.role === 3) {
-          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id)
+          filteredUsers = data.Users.filter(
+            (user) =>
+              user.company_id === local.Users.company_id && user.role !== 3 && user.role !== 1,
+          )
+          console.log('filteredUsers in getUsers: ', filteredUsers)
         } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
           filteredUsers = data.Users.filter((user) => user.id === local.Users.id)
         }
