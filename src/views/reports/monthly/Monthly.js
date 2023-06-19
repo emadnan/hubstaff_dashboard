@@ -13,7 +13,7 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
-import { DatePicker, Button, Card, Divider, Select, Form } from 'antd'
+import { DatePicker, Card, Select, Form } from 'antd'
 import { saveAs } from 'file-saver'
 import json2csv from 'json2csv'
 import moment from 'moment'
@@ -428,6 +428,8 @@ export default function Dashboard() {
   }, [userId])
 
   const handleDownloadCSV = () => {
+    const employeeName = currentUser[0].name
+    const monthName = month
     // Flatten the nested data structure
     const flattenedData = monthlyReportData
       .map((item) => {
@@ -448,9 +450,11 @@ export default function Dashboard() {
       fields: ['DATE', 'TOTAL DAY HOURS', 'PROJECT', 'HOURS', 'PERCENTAGE'],
       header: true,
     })
+    // Add employee name, month name, and header to the CSV data
+    const modifiedCsvData = `Employee: ${employeeName}, Month: ${monthName}\nDATE,TOTAL DAY HOURS,PROJECT,HOURS,PERCENTAGE\n${csvData}`
 
-    const csvBlob = new Blob([csvData], { type: 'text/csv;charset=utf-8' })
-    saveAs(csvBlob, 'Monthly-Report.csv')
+    const csvBlob = new Blob([modifiedCsvData], { type: 'text/csv;charset=utf-8' })
+    saveAs(csvBlob, `${currentUser[0].name} Monthly-Report.csv`)
   }
 
   return (
