@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
@@ -18,6 +18,9 @@ import { saveAs } from 'file-saver'
 import json2csv from 'json2csv'
 import moment from 'moment'
 import dayjs from 'dayjs'
+import PictureAsPdfSharpIcon from '@mui/icons-material/PictureAsPdfSharp'
+import html2pdf from 'html2pdf.js';
+
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 const {
@@ -71,6 +74,7 @@ const {
 }
 
 export default function Dashboard() {
+  const tableRef = useRef(null)
   const [totalWorkingHoursOfMonth, setTotalWorkingHoursOfMonth] = useState('')
   const [userId, setUserId] = useState()
   const [month, setMonth] = useState([])
@@ -183,15 +187,8 @@ export default function Dashboard() {
           averageMinutes = Math.floor((averageSeconds % 3600) / 60)
         }
 
-        setAverageWorkingHoursOfDay(`
-          ${averageHours.toString().padStart(2, '0')}
-          : ${averageMinutes.toString().padStart(2, '0')}
-        `)
-        setTotalWorkingHoursOfMonth(`
-           ${data.hours.toString().padStart(2, '0')}
-          : ${data.minutes.toString().padStart(2, '0')}
-          : ${data.seconds.toString().padStart(2, '0')}
-        `)
+        setAverageWorkingHoursOfDay(`${averageHours.toString().padStart(2, '0')}: ${averageMinutes.toString().padStart(2, '0')}`)
+        setTotalWorkingHoursOfMonth(`${data.hours.toString().padStart(2, '0')}:${data.minutes.toString().padStart(2, '0')}:${data.seconds.toString().padStart(2, '0')}`)
 
         const projectDates = data.project.map((project) => new Date(project.date))
         const minDate = new Date(Math.min(...projectDates))
@@ -437,7 +434,9 @@ export default function Dashboard() {
 
   const handleDownloadCSV = () => {
     const employeeName = currentUser[0].name
-    const monthName = month
+    const startDate = new Date(month.split(' - ')[0])
+    const monthName = startDate.toLocaleString('en-US', { month: 'long' })
+    const year = startDate.getFullYear()
     // Flatten the nested data structure
     const flattenedData = monthlyReportData
       .map((item) => {
@@ -463,7 +462,7 @@ export default function Dashboard() {
     const headerRow = 'DATE,TOTAL DAY HOURS,PROJECT,HOURS,PERCENTAGE'
 
     // Create the merged cell row with the Monthly Report, Employee name, and Month Date Range
-    const mergedCellRow = `Monthly Report\nEmployee: ${employeeName}\nMonth: ${monthName}`
+    const mergedCellRow = `Monthly Report\nEmployee: ${employeeName}\nMonth: ${monthName}-${year}\nTotal Hours of ${monthName}-${year}: ${totalWorkingHoursOfMonth}\nAVG. Working Hours of Day in ${monthName}-${year}: ${averageWorkingHoursOfDay}\n`
 
     // Combine the merged cell row, header row, and CSV data
     const modifiedCsvData = `${mergedCellRow}\n${headerRow}\n${csvData}`
@@ -471,6 +470,21 @@ export default function Dashboard() {
     const csvBlob = new Blob([modifiedCsvData], { type: 'text/csv;charset=utf-8' })
     saveAs(csvBlob, `${currentUser[0].name} Monthly-Report.csv`)
   }
+
+  const handleDownloadPDF = () => {
+    const input = tableRef.current;
+
+    html2pdf()
+      .set({
+        margin: 0.5,
+        filename: `${currentUser[0].name} Monthly-Report.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, logging: true },
+        jsPDF: { unit: 'mm', format: 'a3' },
+      })
+      .from(input)
+      .save();
+  };
 
   return (
     <Box>
@@ -516,8 +530,8 @@ export default function Dashboard() {
       </Box>
 
       {isReportPreview && isReportPreview === true ? (
-        <>
-          <Box mt={2}>
+        <div ref={tableRef}>
+          <Box mt={2} >
             <Card style={cardStyle}>
               <Box className="row">
                 <Box className="col-md-3">
@@ -605,11 +619,16 @@ export default function Dashboard() {
                     <span style={{ fontSize: 'medium', color: 'gray', ml: 4 }}>{company.city}</span>
                   </Typography>
                 ))}{' '}
-                <Tooltip title="Generate Report">
+                <Tooltip title="Generate CSV Report">
                   <IconButton>
                     <FileDownloadIcon onClick={handleDownloadCSV} />
                   </IconButton>
                 </Tooltip>
+                <Tooltip title="Generate PDF Report">
+                <IconButton>
+                  <PictureAsPdfSharpIcon onClick={handleDownloadPDF} />
+                </IconButton>
+              </Tooltip>
               </Toolbar>
 
               <Box className="row" style={{ width: '90%', margin: 'auto' }}>
@@ -629,7 +648,6 @@ export default function Dashboard() {
                     {month}
                   </Typography>
                 </Box>
-                <hr />
               </Box>
 
               <div style={{ width: '90%', margin: 'auto', justifyItems: 'center' }}>
@@ -677,7 +695,7 @@ export default function Dashboard() {
               </div>
             </Paper>
           </Box>
-        </>
+        </div>
       ) : (
         <Box mt={2}>
           <Card style={cardStyle}>
