@@ -103,7 +103,7 @@ function TaskAssignment() {
   }
 
   const clearFilters = () => {
-    setSelectedUser(null)
+    setSelectedUser('')
     getTasks()
   }
 
@@ -512,10 +512,10 @@ function TaskAssignment() {
                       {task.status}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.start_date).toLocaleDateString()}
+                      {new Date(task.task_managements_start_date).toLocaleDateString()}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.dead_line).toLocaleDateString()}
+                      {new Date(task.task_managements_dead_line).toLocaleDateString()}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       <IconButton aria-label="Update">
@@ -644,10 +644,10 @@ function TaskAssignment() {
                       {task.status}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.start_date).toLocaleDateString()}
+                      {new Date(task.task_managements_start_date).toLocaleDateString()}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.dead_line).toLocaleDateString()}
+                      {new Date(task.task_managements_dead_line).toLocaleDateString()}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       <IconButton aria-label="Update">
@@ -782,10 +782,10 @@ function TaskAssignment() {
                       {task.status}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.start_date).toLocaleDateString()}
+                      {new Date(task.task_managements_start_date).toLocaleDateString()}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.dead_line).toLocaleDateString()}
+                      {new Date(task.task_managements_dead_line).toLocaleDateString()}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       <IconButton aria-label="Update">
