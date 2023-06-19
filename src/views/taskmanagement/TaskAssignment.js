@@ -12,6 +12,7 @@ import { Modal, Button, Form, Select, Radio } from 'antd'
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
+import Box from '@mui/material/Box'
 import moment from 'moment'
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
@@ -92,6 +93,10 @@ function TaskAssignment() {
   //Get calls handling
   const handleUserChange = (value) => {
     setUserId(value)
+  }
+
+  const handleFilterTaskOnUserChange = (id) => {
+    console.log('id', id)
   }
 
   const handleProjectChange = (value) => {
@@ -368,6 +373,28 @@ function TaskAssignment() {
           </Button>
         </div>
       </div>
+      <Box className="row justify-content-between" sx={{ mt: 1 }}>
+        <Box
+          className="col-md-7"
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Box className="col-md-5">
+            <Form.Item name="select" hasFeedback>
+              <Select placeholder="SELECT EMPLOYEE" onChange={handleFilterTaskOnUserChange}>
+                {users.map((user) => (
+                  <Select.Option value={user.id} key={user.id}>
+                    {user.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Box>
+        </Box>
+      </Box>
       <br></br>
 
       <div>

@@ -108,8 +108,12 @@ export default function Dashboard() {
     } else {
       getMonthlyReport(userId)
     }
-    const dateRange = `${moment(startOfMonth).format('MMMM DD, YYYY')} 
-                      - ${moment(endOfMonth).format('MMMM DD, YYYY')}`
+
+    const startMonthName = getMonthName(selectedMonth.month())
+    const endMonthName = getMonthName(selectedMonth.clone().endOf('month').month())
+    const dateRange = `${startMonthName} ${moment(startOfMonth).format(
+      'DD, YYYY',
+    )} - ${endMonthName} ${moment(endOfMonth).format('DD, YYYY')}`
     setMonth(dateRange)
   }
 
@@ -141,18 +145,18 @@ export default function Dashboard() {
 
   const getMonthName = (monthIndex) => {
     const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
+      'JAN',
+      'FEB',
+      'MAR',
+      'APR',
+      'MAY',
+      'JUN',
+      'JUL',
+      'AUG',
+      'SEP',
+      'OCT',
+      'NOV',
+      'DEC',
     ]
     return months[monthIndex]
   }
@@ -452,10 +456,17 @@ export default function Dashboard() {
     // Generate the CSV data
     const csvData = json2csv.parse(flattenedData, {
       fields: ['DATE', 'TOTAL DAY HOURS', 'PROJECT', 'HOURS', 'PERCENTAGE'],
-      header: true,
+      header: false, // We will manually add the header later
     })
-    // Add employee name, month name, and header to the CSV data
-    const modifiedCsvData = `Employee: ${employeeName}, Month: ${monthName}\nDATE,TOTAL DAY HOURS,PROJECT,HOURS,PERCENTAGE\n${csvData}`
+
+    // Create the header row
+    const headerRow = 'DATE,TOTAL DAY HOURS,PROJECT,HOURS,PERCENTAGE'
+
+    // Create the merged cell row with the Monthly Report, Employee name, and Month Date Range
+    const mergedCellRow = `Monthly Report\nEmployee: ${employeeName}\nMonth: ${monthName}`
+
+    // Combine the merged cell row, header row, and CSV data
+    const modifiedCsvData = `${mergedCellRow}\n${headerRow}\n${csvData}`
 
     const csvBlob = new Blob([modifiedCsvData], { type: 'text/csv;charset=utf-8' })
     saveAs(csvBlob, `${currentUser[0].name} Monthly-Report.csv`)
