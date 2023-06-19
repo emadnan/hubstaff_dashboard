@@ -39,7 +39,8 @@ function AllFSF() {
   const [hasmembers, setHasMembers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [assignedfsf, setAssignedFsf] = useState([]);
-  const [comment, setComment] = useState([]);
+  const [comment, setComment] = useState("");
+  const [fsfcomment, setFsfComment] = useState("");
   const [status, setStatus] = useState([]);
   const [teamstatus, setTeamStatus] = useState([]);
   const [assignedstatus, setAssignedStatus] = useState([]);
@@ -533,6 +534,7 @@ function AllFSF() {
     var formData = new FormData();
     formData.append('status', teamstatus);
     formData.append('fsf_id', newid);
+    formData.append('comment', fsfcomment);
     await fetch(`${BASE_URL}/api/updateStatusByTeamLogin`, {
       method: 'POST',
       headers: {
@@ -935,6 +937,17 @@ function AllFSF() {
                   </Form.Item>
                 </div>
 
+                <div className="form-outline mb-3">
+                  <label>Comment</label>
+                  <input
+                    type="text"
+                    defaultValue={assign.fsfcomment}
+                    onChange={(e) => setFsfComment(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Comment"
+                  />
+                </div>
+
               </div>
             ))}
           </Modal>
@@ -955,10 +968,10 @@ function AllFSF() {
               <div className='col md-2 text-center'>
                 <h6 style={heading}>Status</h6>
               </div>
-              {/* <div className='col md-3'></div>
+              <div className='col md-3'></div>
               <div className='col md-2 text-center'>
                 <h6 style={heading}>Comment</h6>
-              </div> */}
+              </div>
               &nbsp;
               <Divider></Divider>
             </div>
@@ -973,14 +986,14 @@ function AllFSF() {
                   <div className='col md-2 text-center'>
                     <h6>{stat.name}</h6>
                   </div>
-                  <div className='col md-3'></div>
+                  <div className='col md-3'></div>+
                   <div className='col md-2 text-center'>
                     <h6>{stat.status}</h6>
                   </div>
-                  {/* <div className='col md-3'></div>
+                  <div className='col md-3'></div>
                   <div className='col md-2 text-center'>
                     <h6>{stat.comment}</h6>
-                  </div> */}
+                  </div>
                   &nbsp;
                   <Divider />
                 </div>
