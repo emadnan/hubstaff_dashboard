@@ -48,6 +48,8 @@ function TaskAssignment() {
   const [totalItemsCompleted, setTotalItemsCompleted] = useState(0)
   const [currentItemsCompleted, setCurrentItemsCompleted] = useState([])
 
+  const [selectedUser, setSelectedUser] = useState(null)
+
   //CSS Styling
   const mystyle = {
     color: 'white',
@@ -96,7 +98,13 @@ function TaskAssignment() {
   }
 
   const handleFilterTaskOnUserChange = (id) => {
-    console.log('id', id)
+    setSelectedUser(id)
+    getTasksByUserId(id)
+  }
+
+  const clearFilters = () => {
+    setSelectedUser(null)
+    getTasks()
   }
 
   const handleProjectChange = (value) => {
@@ -157,13 +165,29 @@ function TaskAssignment() {
     fetch(`${BASE_URL}/api/getTasks`)
       .then((response) => response.json())
       .then((data) => {
-        console.log('data: ', data)
         if (local.Users.role === 7) {
-          console.log('Condition true')
           const filteredUsersTask = data.task.filter((user) => user.team_lead_id === local.Users.id)
-          console.log('filteredUsersTask: ', filteredUsersTask)
           const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
-          console.log('todoTasks: ', todoTasks)
+          const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
+          const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
+          setPendingTasks(todoTasks)
+          setInProgressTasks(in_progressTasks)
+          setCompletedTasks(doneTasks)
+          setTotalItemsPending(todoTasks.length)
+          setTotalItemsInProgress(in_progressTasks.length)
+          setTotalItemsCompleted(doneTasks.length)
+        }
+      })
+      .catch((error) => console.log(error))
+  }
+
+  function getTasksByUserId(userId) {
+    fetch(`${BASE_URL}/api/getTaskByUserId/${userId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === 7) {
+          const filteredUsersTask = data.task.filter((user) => user.team_lead_id === local.Users.id)
+          const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
           const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
           const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
           setPendingTasks(todoTasks)
@@ -249,7 +273,6 @@ function TaskAssignment() {
     fetch(`${BASE_URL}/api/getTaskById/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log('data: ', data)
         setUserId(data.task.user_id)
         setProjectId(data.task.project_id)
         setTaskDescription(data.task.task_description)
@@ -373,28 +396,37 @@ function TaskAssignment() {
           </Button>
         </div>
       </div>
-      <Box className="row justify-content-between" sx={{ mt: 1 }}>
-        <Box
-          className="col-md-7"
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Box className="col-md-5">
-            <Form.Item name="select" hasFeedback>
-              <Select placeholder="SELECT EMPLOYEE" onChange={handleFilterTaskOnUserChange}>
-                {users.map((user) => (
-                  <Select.Option value={user.id} key={user.id}>
-                    {user.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Box>
+
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          mt: 2,
+        }}
+      >
+        <Box className="col-md-5">
+          <Form.Item name="select" hasFeedback>
+            <Select
+              placeholder="SELECT EMPLOYEE"
+              value={selectedUser}
+              onChange={handleFilterTaskOnUserChange}
+            >
+              {users.map((user) => (
+                <Select.Option value={user.id} key={user.id}>
+                  {user.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Box>
+        <Box className="col-md-5">
+          <Button type="default" onClick={clearFilters}>
+            Clear Filter
+          </Button>
         </Box>
       </Box>
+
       <br></br>
 
       <div>

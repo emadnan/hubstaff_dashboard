@@ -362,7 +362,7 @@ const Register = () => {
               )}
 
               <Box sx={{ mt: 2 }}>
-                <Button variant="contained" onClick={signUp} fullWidth>
+                <Button id="register" variant="contained" onClick={signUp} fullWidth>
                   Sign Up
                 </Button>
               </Box>
