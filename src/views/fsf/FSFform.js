@@ -111,8 +111,6 @@ function FSFform() {
     setWRicefId(`Biafo-${projectName}-${moduleName}`);
   }, [projectName, moduleName]);
 
-  // const editorRef = useRef()
-
   const editorConfig = {
     height: 200,
     menubar: 'file edit view insert format',
@@ -143,9 +141,17 @@ function FSFform() {
   }
 
   const handleEditorChange = (content, editor) => {
-    console.log('content: ', content)
-    setDevelopmentLogic(content);
-  }
+    console.log('content: ', content);
+    const regex = /<img.*?src="(.*?)"/g;
+    const matches = [...content.matchAll(regex)];
+    
+    const images = matches.map((match) => {
+      const base64Data = match[1].split(',')[1];
+      return `data:image/png;base64,${base64Data}`;
+    });
+    
+    imageToLink(content, images);
+  };
 
   //CSS Styling
   const [isHoveredPrimary, setIsHoveredPrimary] = useState(false)
@@ -1014,6 +1020,35 @@ function FSFform() {
       });
   }
 
+  // POST Image conversion API call
+  async function imageToLink(content, images) {
+    let updatedContent = content;
+    
+    await Promise.all(
+      images.map(async (image) => {
+        try {
+          const response = await fetch(`${BASE_URL}/api/addDevelopmentLogicIntoFsfForm`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              screenShots: image,
+            }),
+          });
+          
+          if (response.ok) {
+            const imageUrl = await response.text();
+            updatedContent = updatedContent.replace(image, imageUrl);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      })
+    );
+    
+    setDevelopmentLogic(updatedContent);
+  }
 
   return (
     <>
@@ -1310,17 +1345,6 @@ function FSFform() {
                     placeholder="Enter Authorization Role"
                   />
                 </div>
-
-                {/* <div className="form-outline mb-3">
-                  <label>Development Logic</label>
-                  <input
-                    type="text"
-                    value={development_logic}
-                    onChange={(e) => setDevelopmentLogic(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Development Logic"
-                  />
-                </div> */}
 
                 <Editor
                   apiKey="46tu7q2m7kbsfpbdoc5mwnyn5hs97kdpefj8dnpuvz65aknl"
