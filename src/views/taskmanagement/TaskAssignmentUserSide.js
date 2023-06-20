@@ -150,8 +150,8 @@ const TaskAssignmentUserSide = () => {
         setTaskDescription(data.task.task_description)
         setTaskPriority(data.task.priorites)
         setTeamleadName(data.task.team_lead_details.name)
-        setStartDate(data.task.start_date)
-        setDeadLine(data.task.dead_line)
+        setStartDate(data.task.task_managements_start_date)
+        setDeadLine(data.task.task_managements_dead_line)
         setTaskStatus(data.task.status)
         setTaskComment(data.task.comment)
       })
@@ -282,10 +282,10 @@ const TaskAssignmentUserSide = () => {
                       {task.priorites}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.start_date).toLocaleDateString()}
+                      {new Date(task.task_managements_start_date).toLocaleDateString()}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.dead_line).toLocaleDateString()}
+                      {new Date(task.task_managements_dead_line).toLocaleDateString()}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       <IconButton
@@ -401,10 +401,10 @@ const TaskAssignmentUserSide = () => {
                       {task.priorites}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.start_date).toLocaleDateString()}
+                      {new Date(task.task_managements_start_date).toLocaleDateString()}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.dead_line).toLocaleDateString()}
+                      {new Date(task.task_managements_dead_line).toLocaleDateString()}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       <IconButton
@@ -524,10 +524,10 @@ const TaskAssignmentUserSide = () => {
                       {task.priorites}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.start_date).toLocaleDateString()}
+                      {new Date(task.task_managements_start_date).toLocaleDateString()}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.dead_line).toLocaleDateString()}
+                      {new Date(task.task_managements_dead_line).toLocaleDateString()}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       <IconButton
