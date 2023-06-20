@@ -11,7 +11,8 @@ import {
 import IconButton from '@mui/material/IconButton'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import moment from 'moment'
-import { Modal, Select, Form } from 'antd'
+import { Modal, Button, Form, Select, Radio, Space } from 'antd'
+import Box from '@mui/material/Box'
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -47,6 +48,10 @@ const TaskAssignmentUserSide = () => {
   const [taskStatus, setTaskStatus] = useState()
   const [taskComment, setTaskComment] = useState()
 
+  const [isPendingTasksTab, setIsPendingTasksTab] = useState(true)
+  const [isInProgressTasksTab, setIsInProgressTasksTab] = useState(false)
+  const [isCompletedTaskTab, setIsCompletedTasksTab] = useState(false)
+
   const [pendingTasks, setPendingTasks] = useState([])
   const [inProgressTasks, setInProgressTasks] = useState([])
   const [completedTask, setCompletedTasks] = useState([])
@@ -63,9 +68,12 @@ const TaskAssignmentUserSide = () => {
   const [totalItemsCompleted, setTotalItemsCompleted] = useState(0)
   const [currentItemsCompleted, setCurrentItemsCompleted] = useState([])
 
+  const [projects, setProjects] = useState([])
+
   // Component is initially mounted
   useEffect(() => {
     getTasks()
+    getProjects()
   }, [])
 
   useEffect(() => {
@@ -79,6 +87,21 @@ const TaskAssignmentUserSide = () => {
   useEffect(() => {
     setCurrentItemsCompleted(slicedItemsCompleted)
   }, [currentPageCompleted, completedTask])
+
+  function getProjects() {
+    let filteredProjects = []
+    fetch(`${BASE_URL}/api/getproject`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === 5) {
+          filteredProjects = data.projects.filter(
+            (project) => project.company_id === local.Users.company_id,
+          )
+        }
+        setProjects(filteredProjects)
+      })
+      .catch((error) => console.log(error))
+  }
 
   // Functions for Show Task Modal
   const [isModalOpenToTakeAction, setIsModalOpenToTakeAction] = useState(false)
@@ -122,7 +145,6 @@ const TaskAssignmentUserSide = () => {
     fetch(`${BASE_URL}/api/getTasks`)
       .then((response) => response.json())
       .then((data) => {
-        console.log('data: ', data)
         if (local.Users.role === 5) {
           const filteredUsersTask = data.task.filter((user) => user.user_id === local.Users.id)
           const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
@@ -157,6 +179,46 @@ const TaskAssignmentUserSide = () => {
       })
   }
 
+  const clearFilters = () => {
+    // setSelectedUser('')
+    getTasks()
+  }
+
+  const changeTab = (e) => {
+    if (e.target.value === 'Completed') {
+      setIsPendingTasksTab(false)
+      setIsInProgressTasksTab(false)
+      setIsCompletedTasksTab(true)
+    } else if (e.target.value === 'InProgress') {
+      setIsPendingTasksTab(false)
+      setIsInProgressTasksTab(true)
+      setIsCompletedTasksTab(false)
+    } else {
+      setIsPendingTasksTab(true)
+      setIsInProgressTasksTab(false)
+      setIsCompletedTasksTab(false)
+    }
+  }
+
+  const handleFilterTaskOnProjectChange = (projectId) => {
+    fetch(`${BASE_URL}/api/getTaskByProjectId/${projectId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === 5) {
+          const filteredUsersTask = data.task.filter((user) => user.user_id === local.Users.id)
+          const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
+          const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
+          const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
+          setPendingTasks(todoTasks)
+          setInProgressTasks(in_progressTasks)
+          setCompletedTasks(doneTasks)
+          setTotalItemsPending(todoTasks.length)
+          setTotalItemsInProgress(in_progressTasks.length)
+          setTotalItemsCompleted(doneTasks.length)
+        }
+      })
+      .catch((error) => console.log(error))
+  }
   //------------------
   // Pagination logic
   //------------------
@@ -209,9 +271,39 @@ const TaskAssignmentUserSide = () => {
         </div>
       </div>
       <hr />
-
+      <div className="row">
+        <Box className="col-md-4">
+          <Space
+            style={{
+              marginBottom: 24,
+            }}
+          >
+            <Radio.Group onChange={changeTab}>
+              <Radio.Button value="Pending">To Do</Radio.Button>
+              <Radio.Button value="InProgress">In-Progress</Radio.Button>
+              <Radio.Button value="Completed">Completed</Radio.Button>
+            </Radio.Group>
+          </Space>
+        </Box>
+        <Box className="col-md-4">
+          <Form.Item name="select" hasFeedback>
+            <Select placeholder="SELECT PROJECT" onChange={handleFilterTaskOnProjectChange}>
+              {projects.map((project) => (
+                <Select.Option value={project.id} key={project.id}>
+                  {project.project_name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Box>
+        <Box className="col-md-4">
+          <Button type="default" onClick={clearFilters}>
+            Clear Filter
+          </Button>
+        </Box>
+      </div>
       <div>
-        {currentItemsPending.length > 0 ? (
+        {isPendingTasksTab === true && currentItemsPending.length > 0 ? (
           <div>
             <div className="row">
               <div className="col-md 6">
@@ -236,23 +328,16 @@ const TaskAssignmentUserSide = () => {
                 {/* Task Assignment table heading */}
                 <CTableRow>
                   <CTableHeaderCell className="text-center" style={mystyle}>
-                    Sr No.
+                    Task No.
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Assigned by
                   </CTableHeaderCell>
-
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Project
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task Details
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task Priority
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Start Date
+                    Assigned Date
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Dead Line
@@ -266,20 +351,13 @@ const TaskAssignmentUserSide = () => {
                 {currentItemsPending.map((task, index) => (
                   <CTableRow key={task.task_managements_id}>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {index + 1}
+                      {task.project_name} - {task.task_managements_id}
                     </CTableHeaderCell>
-
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       {task.team_lead_details.name}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       {task.project_name}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.task_description}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.priorites}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       {new Date(task.task_managements_start_date).toLocaleDateString()}
@@ -330,7 +408,7 @@ const TaskAssignmentUserSide = () => {
           ''
         )}
 
-        {currentItemsInProgress.length > 0 ? (
+        {isInProgressTasksTab === true && currentItemsInProgress.length > 0 ? (
           <div>
             <div className="row">
               <div className="col-md 6">
@@ -355,23 +433,16 @@ const TaskAssignmentUserSide = () => {
                 {/* Task Assignment table heading */}
                 <CTableRow>
                   <CTableHeaderCell className="text-center" style={mystyle}>
-                    Sr No.
+                    Task No.
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Assigned by
                   </CTableHeaderCell>
-
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Project
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task Details
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task Priority
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Start Date
+                    Assigned Date
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Dead Line
@@ -385,7 +456,7 @@ const TaskAssignmentUserSide = () => {
                 {currentItemsInProgress.map((task, index) => (
                   <CTableRow key={task.task_managements_id}>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {index + 1}
+                      {task.project_name} - {task.task_managements_id}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       {task.team_lead_details.name}
@@ -393,12 +464,6 @@ const TaskAssignmentUserSide = () => {
 
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       {task.project_name}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.task_description}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.priorites}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       {new Date(task.task_managements_start_date).toLocaleDateString()}
@@ -453,7 +518,8 @@ const TaskAssignmentUserSide = () => {
         ) : (
           ''
         )}
-        {currentItemsCompleted.length > 0 ? (
+
+        {isCompletedTaskTab === true && currentItemsCompleted.length > 0 ? (
           <div>
             <div className="row">
               <div className="col-md 6">
@@ -478,23 +544,16 @@ const TaskAssignmentUserSide = () => {
                 {/* Task Assignment table heading */}
                 <CTableRow>
                   <CTableHeaderCell className="text-center" style={mystyle}>
-                    Sr No.
+                    Task No.
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Assigned by
                   </CTableHeaderCell>
-
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Project
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task Details
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task Priority
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Start Date
+                    Assigned Date
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Dead Line
@@ -508,7 +567,7 @@ const TaskAssignmentUserSide = () => {
                 {currentItemsCompleted.map((task, index) => (
                   <CTableRow key={task.task_managements_id}>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {index + 1}
+                      {task.project_name} - {task.task_managements_id}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       {task.team_lead_details.name}

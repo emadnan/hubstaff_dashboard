@@ -8,7 +8,7 @@ import {
   CPagination,
   CPaginationItem,
 } from '@coreui/react'
-import { Modal, Button, Form, Select, Radio } from 'antd'
+import { Modal, Button, Form, Select, Radio, Space } from 'antd'
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
@@ -18,7 +18,7 @@ import moment from 'moment'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 function TaskAssignment() {
-  const ITEMS_PER_PAGE = 5
+  const ITEMS_PER_PAGE = 10
   const session = JSON.parse(sessionStorage.getItem('user-info'))
   const local = JSON.parse(localStorage.getItem('user-info'))
   const session_token = session.token
@@ -28,6 +28,7 @@ function TaskAssignment() {
   const [task_description, setTaskDescription] = useState('')
   const [task_managements_start_date, setTaskManagementStartDate] = useState('')
   const [task_managements_dead_line, setTaskManagementDeadLine] = useState('')
+  const [taskStatus, setTaskStatus] = useState()
 
   const [users, setAllUsers] = useState([])
   const [projects, setProjects] = useState([])
@@ -49,6 +50,10 @@ function TaskAssignment() {
   const [currentItemsCompleted, setCurrentItemsCompleted] = useState([])
 
   const [selectedUser, setSelectedUser] = useState(null)
+
+  const [isPendingTasksTab, setIsPendingTasksTab] = useState(true)
+  const [isInProgressTasksTab, setIsInProgressTasksTab] = useState(false)
+  const [isCompletedTaskTab, setIsCompletedTasksTab] = useState(false)
 
   //CSS Styling
   const mystyle = {
@@ -102,6 +107,10 @@ function TaskAssignment() {
     getTasksByUserId(id)
   }
 
+  const handleFilterTaskOnProjectChange = (projectId) => {
+    getTaskByProjectAndUserId(projectId)
+  }
+
   const clearFilters = () => {
     setSelectedUser('')
     getTasks()
@@ -128,6 +137,7 @@ function TaskAssignment() {
     setPriorities('')
     setTaskManagementStartDate('')
     setTaskManagementDeadLine('')
+    setTaskStatus('')
   }
 
   // For Radio Buttons
@@ -159,6 +169,7 @@ function TaskAssignment() {
     setPriorities('')
     setTaskManagementStartDate('')
     setTaskManagementDeadLine('')
+    setTaskStatus('')
   }
 
   function getTasks() {
@@ -187,6 +198,27 @@ function TaskAssignment() {
       .then((data) => {
         if (local.Users.role === 7) {
           const filteredUsersTask = data.task.filter((user) => user.team_lead_id === local.Users.id)
+          const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
+          const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
+          const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
+          setPendingTasks(todoTasks)
+          setInProgressTasks(in_progressTasks)
+          setCompletedTasks(doneTasks)
+          setTotalItemsPending(todoTasks.length)
+          setTotalItemsInProgress(in_progressTasks.length)
+          setTotalItemsCompleted(doneTasks.length)
+        }
+      })
+      .catch((error) => console.log(error))
+  }
+
+  const getTaskByProjectAndUserId = (projectId) => {
+    fetch(`${BASE_URL}/api/getTaskByUserIdAndProjectId/${selectedUser}/${projectId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('data: ', data)
+        if (local.Users.role === 5) {
+          const filteredUsersTask = data.task.filter((user) => user.user_id === local.Users.id)
           const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
           const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
           const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
@@ -258,6 +290,7 @@ function TaskAssignment() {
           setPriorities('')
           setTaskManagementStartDate('')
           setTaskManagementDeadLine('')
+          setTaskStatus('')
           // handleButtonClick3();
           // getMembers()
         } else {
@@ -277,6 +310,7 @@ function TaskAssignment() {
         setProjectId(data.task.project_id)
         setTaskDescription(data.task.task_description)
         setPriorities(data.task.priorites)
+        setTaskStatus(data.task.status)
         const formattedStartDate = moment(data.task.task_managements_start_date).format(
           'YYYY-MM-DD',
         )
@@ -294,6 +328,7 @@ function TaskAssignment() {
       team_lead_id: local.Users.id,
       project_id: project_id,
       priorities: priorities,
+      status: taskStatus,
       task_description: task_description,
       start_date: task_managements_start_date,
       dead_line: task_managements_dead_line,
@@ -342,6 +377,23 @@ function TaskAssignment() {
       .catch((error) => {
         console.error(error)
       })
+  }
+
+  const changeTab = (e) => {
+    console.log('value: ', e.target.value)
+    if (e.target.value === 'Completed') {
+      setIsPendingTasksTab(false)
+      setIsInProgressTasksTab(false)
+      setIsCompletedTasksTab(true)
+    } else if (e.target.value === 'InProgress') {
+      setIsPendingTasksTab(false)
+      setIsInProgressTasksTab(true)
+      setIsCompletedTasksTab(false)
+    } else {
+      setIsPendingTasksTab(true)
+      setIsInProgressTasksTab(false)
+      setIsCompletedTasksTab(false)
+    }
   }
 
   //------------------
@@ -396,22 +448,23 @@ function TaskAssignment() {
           </Button>
         </div>
       </div>
-
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          mt: 2,
-        }}
-      >
-        <Box className="col-md-5">
+      <div className="row">
+        <Box className="col-md-3">
+          <Space
+            style={{
+              marginBottom: 24,
+            }}
+          >
+            <Radio.Group onChange={changeTab}>
+              <Radio.Button value="Pending">To Do</Radio.Button>
+              <Radio.Button value="InProgress">In-Progress</Radio.Button>
+              <Radio.Button value="Completed">Completed</Radio.Button>
+            </Radio.Group>
+          </Space>
+        </Box>
+        <Box className="col-md-3">
           <Form.Item name="select" hasFeedback>
-            <Select
-              placeholder="SELECT EMPLOYEE"
-              value={selectedUser}
-              onChange={handleFilterTaskOnUserChange}
-            >
+            <Select placeholder="SELECT EMPLOYEE" onChange={handleFilterTaskOnUserChange}>
               {users.map((user) => (
                 <Select.Option value={user.id} key={user.id}>
                   {user.name}
@@ -420,17 +473,28 @@ function TaskAssignment() {
             </Select>
           </Form.Item>
         </Box>
-        <Box className="col-md-5">
+        <Box className="col-md-3">
+          <Form.Item name="select" hasFeedback>
+            <Select placeholder="SELECT PROJECT" onChange={handleFilterTaskOnProjectChange}>
+              {projects.map((project) => (
+                <Select.Option value={project.id} key={project.id}>
+                  {project.project_name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Box>
+        <Box className="col-md-3">
           <Button type="default" onClick={clearFilters}>
             Clear Filter
           </Button>
         </Box>
-      </Box>
+      </div>
 
       <br></br>
 
       <div>
-        {currentItemsPending.length > 0 ? (
+        {isPendingTasksTab === true && pendingTasks.length > 0 && currentItemsPending.length > 0 ? (
           <div>
             <div className="row">
               <div className="col-md 6">
@@ -455,7 +519,7 @@ function TaskAssignment() {
                 {/* Task Assignment table heading */}
                 <CTableRow>
                   <CTableHeaderCell className="text-center" style={mystyle}>
-                    Sr No.
+                    Task No.
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Assigned To
@@ -472,11 +536,8 @@ function TaskAssignment() {
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Task Status
                   </CTableHeaderCell>
-                  {/* <CTableHeaderCell className="text-center" style={mystyle}>
-              Task Comments
-            </CTableHeaderCell> */}
                   <CTableHeaderCell className="text-center" style={mystyle}>
-                    Start Date
+                    Assigned Date
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Dead Line
@@ -487,52 +548,55 @@ function TaskAssignment() {
                 </CTableRow>
               </CTableHead>
               <CTableBody>
-                {currentItemsPending.map((task, index) => (
-                  <CTableRow key={task.task_managements_id}>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {index + 1}
-                    </CTableHeaderCell>
-
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.name}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.project_name}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell
-                      className="text-center"
-                      style={{ ...mystyle2, width: '200px' }}
-                    >
-                      {task.task_description}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.priorites}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.status}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.task_managements_start_date).toLocaleDateString()}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.task_managements_dead_line).toLocaleDateString()}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      <IconButton aria-label="Update">
-                        <EditIcon
-                          htmlColor="#28B463"
-                          onClick={() => showUpdateModal(task.task_managements_id)}
-                        />
-                      </IconButton>
-                      <IconButton aria-label="Delete">
-                        <DeleteIcon
-                          htmlColor="#FF0000"
-                          onClick={() => deleteTask(task.task_managements_id)}
-                        />
-                      </IconButton>
-                    </CTableHeaderCell>
-                  </CTableRow>
-                ))}
+                {pendingTasks.length > 0 &&
+                  currentItemsPending.map((task, index) => (
+                    <CTableRow key={task.task_managements_id}>
+                      <CTableHeaderCell
+                        className="text-center"
+                        style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                      >
+                        {task.project_name} - {task.task_managements_id}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {task.name}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {task.project_name}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell
+                        className="text-center"
+                        style={{ ...mystyle2, width: '200px' }}
+                      >
+                        {task.task_description}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {task.priorites}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {task.status}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {new Date(task.task_managements_start_date).toLocaleDateString()}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {new Date(task.task_managements_dead_line).toLocaleDateString()}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        <IconButton aria-label="Update">
+                          <EditIcon
+                            htmlColor="#28B463"
+                            onClick={() => showUpdateModal(task.task_managements_id)}
+                          />
+                        </IconButton>
+                        <IconButton aria-label="Delete">
+                          <DeleteIcon
+                            htmlColor="#FF0000"
+                            onClick={() => deleteTask(task.task_managements_id)}
+                          />
+                        </IconButton>
+                      </CTableHeaderCell>
+                    </CTableRow>
+                  ))}
               </CTableBody>
             </CTable>
 
@@ -566,7 +630,9 @@ function TaskAssignment() {
           ''
         )}
 
-        {currentItemsInProgress.length > 0 ? (
+        {isInProgressTasksTab === true &&
+        inProgressTasks.length > 0 &&
+        currentItemsInProgress.length > 0 ? (
           <div>
             <div className="row">
               <div className="col-md 6">
@@ -591,7 +657,7 @@ function TaskAssignment() {
                 {/* Task Assignment table heading */}
                 <CTableRow>
                   <CTableHeaderCell className="text-center" style={mystyle}>
-                    Sr No.
+                    Task No.
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Assigned by
@@ -609,7 +675,7 @@ function TaskAssignment() {
                     Task Status
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
-                    Start Date
+                    Assigned Date
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Dead Line
@@ -620,51 +686,52 @@ function TaskAssignment() {
                 </CTableRow>
               </CTableHead>
               <CTableBody>
-                {currentItemsInProgress.map((task, index) => (
-                  <CTableRow key={task.task_managements_id}>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {index + 1}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.name}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.project_name}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell
-                      className="text-center"
-                      style={{ ...mystyle2, width: '200px' }}
-                    >
-                      {task.task_description}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.priorites}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.status}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.task_managements_start_date).toLocaleDateString()}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.task_managements_dead_line).toLocaleDateString()}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      <IconButton aria-label="Update">
-                        <EditIcon
-                          htmlColor="#28B463"
-                          onClick={() => showUpdateModal(task.task_managements_id)}
-                        />
-                      </IconButton>
-                      <IconButton aria-label="Delete">
-                        <DeleteIcon
-                          htmlColor="#FF0000"
-                          onClick={() => deleteTask(task.task_managements_id)}
-                        />
-                      </IconButton>
-                    </CTableHeaderCell>
-                  </CTableRow>
-                ))}
+                {inProgressTasks.length > 0 &&
+                  currentItemsInProgress.map((task, index) => (
+                    <CTableRow key={task.task_managements_id}>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {task.project_name} - {task.task_managements_id}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {task.name}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {task.project_name}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell
+                        className="text-center"
+                        style={{ ...mystyle2, width: '200px' }}
+                      >
+                        {task.task_description}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {task.priorites}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {task.status}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {new Date(task.task_managements_start_date).toLocaleDateString()}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {new Date(task.task_managements_dead_line).toLocaleDateString()}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        <IconButton aria-label="Update">
+                          <EditIcon
+                            htmlColor="#28B463"
+                            onClick={() => showUpdateModal(task.task_managements_id)}
+                          />
+                        </IconButton>
+                        <IconButton aria-label="Delete">
+                          <DeleteIcon
+                            htmlColor="#FF0000"
+                            onClick={() => deleteTask(task.task_managements_id)}
+                          />
+                        </IconButton>
+                      </CTableHeaderCell>
+                    </CTableRow>
+                  ))}
               </CTableBody>
             </CTable>
 
@@ -703,7 +770,9 @@ function TaskAssignment() {
           ''
         )}
 
-        {currentItemsCompleted.length > 0 ? (
+        {isCompletedTaskTab === true &&
+        completedTask.length > 0 &&
+        currentItemsCompleted.length > 0 ? (
           <div>
             <div className="row">
               <div className="col-md 6">
@@ -728,7 +797,7 @@ function TaskAssignment() {
                 {/* Task Assignment table heading */}
                 <CTableRow>
                   <CTableHeaderCell className="text-center" style={mystyle}>
-                    Sr No.
+                    Task No.
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Assigned by
@@ -746,7 +815,7 @@ function TaskAssignment() {
                     Task Status
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
-                    Start Date
+                    Assigned Date
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Dead Line
@@ -757,52 +826,53 @@ function TaskAssignment() {
                 </CTableRow>
               </CTableHead>
               <CTableBody>
-                {currentItemsCompleted.map((task, index) => (
-                  <CTableRow key={task.task_managements_id}>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {index + 1}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.name}
-                    </CTableHeaderCell>
+                {completedTask.length > 0 &&
+                  currentItemsCompleted.map((task, index) => (
+                    <CTableRow key={task.task_managements_id}>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {task.project_name} - {task.task_managements_id}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {task.name}
+                      </CTableHeaderCell>
 
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.project_name}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell
-                      className="text-center"
-                      style={{ ...mystyle2, width: '200px' }}
-                    >
-                      {task.task_description}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.priorites}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.status}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.task_managements_start_date).toLocaleDateString()}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.task_managements_dead_line).toLocaleDateString()}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      <IconButton aria-label="Update">
-                        <EditIcon
-                          htmlColor="#28B463"
-                          onClick={() => showUpdateModal(task.task_managements_id)}
-                        />
-                      </IconButton>
-                      <IconButton aria-label="Delete">
-                        <DeleteIcon
-                          htmlColor="#FF0000"
-                          onClick={() => deleteTask(task.task_managements_id)}
-                        />
-                      </IconButton>
-                    </CTableHeaderCell>
-                  </CTableRow>
-                ))}
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {task.project_name}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell
+                        className="text-center"
+                        style={{ ...mystyle2, width: '200px' }}
+                      >
+                        {task.task_description}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {task.priorites}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {task.status}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {new Date(task.task_managements_start_date).toLocaleDateString()}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {new Date(task.task_managements_dead_line).toLocaleDateString()}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        <IconButton aria-label="Update">
+                          <EditIcon
+                            htmlColor="#28B463"
+                            onClick={() => showUpdateModal(task.task_managements_id)}
+                          />
+                        </IconButton>
+                        <IconButton aria-label="Delete">
+                          <DeleteIcon
+                            htmlColor="#FF0000"
+                            onClick={() => deleteTask(task.task_managements_id)}
+                          />
+                        </IconButton>
+                      </CTableHeaderCell>
+                    </CTableRow>
+                  ))}
               </CTableBody>
             </CTable>
 
@@ -888,13 +958,13 @@ function TaskAssignment() {
         </div>
 
         <div className="form-outline mb-3">
-          <label>Start Date</label>
+          <label>Assigned Date</label>
           <input
             type="date"
             value={task_managements_start_date}
             onChange={(e) => setTaskManagementStartDate(e.target.value)}
             className="form-control form-control-lg"
-            placeholder="Enter Start Date"
+            placeholder="Enter Assigned Date"
           />
         </div>
 
@@ -907,6 +977,27 @@ function TaskAssignment() {
             className="form-control form-control-lg"
             placeholder="Enter Dead Line"
           />
+        </div>
+
+        <div className="form-outline mb-3">
+          <label>Task Status</label>
+          <Form.Item>
+            <Select
+              placeholder="Select Task Status"
+              onChange={(value) => setTaskStatus(value)}
+              value={taskStatus}
+            >
+              <Select.Option value="Pending" key="Pending">
+                Pending
+              </Select.Option>
+              <Select.Option value="InProgress" key="InProgress">
+                In-Progress
+              </Select.Option>
+              <Select.Option value="Completed" key="Completed">
+                Completed
+              </Select.Option>
+            </Select>
+          </Form.Item>
         </div>
 
         <div className="form-outline mb-3">
@@ -972,13 +1063,13 @@ function TaskAssignment() {
         </div>
 
         <div className="form-outline mb-3">
-          <label>Start Date</label>
+          <label>Assigned Date</label>
           <input
             type="date"
             value={task_managements_start_date}
             onChange={(e) => setTaskManagementStartDate(e.target.value)}
             className="form-control form-control-lg"
-            placeholder="Enter Start Date"
+            placeholder="Enter Assigned Date"
           />
         </div>
 
@@ -991,6 +1082,27 @@ function TaskAssignment() {
             className="form-control form-control-lg"
             placeholder="Enter Dead Line"
           />
+        </div>
+
+        <div className="form-outline mb-3">
+          <label>Task Status</label>
+          <Form.Item>
+            <Select
+              placeholder="Select Task Status"
+              onChange={(value) => setTaskStatus(value)}
+              value={taskStatus}
+            >
+              <Select.Option value="Pending" key="Pending">
+                Pending
+              </Select.Option>
+              <Select.Option value="InProgress" key="InProgress">
+                In-Progress
+              </Select.Option>
+              <Select.Option value="Completed" key="Completed">
+                Completed
+              </Select.Option>
+            </Select>
+          </Form.Item>
         </div>
 
         <div className="form-outline mb-3">
