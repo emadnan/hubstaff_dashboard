@@ -9,7 +9,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar'
+import PeopleIcon from '@mui/icons-material/People';
 import { Box, TextField, MenuItem } from '@mui/material'
+import { Editor } from '@tinymce/tinymce-react'
+
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 function AllFSF() {
@@ -588,17 +591,17 @@ function AllFSF() {
                 }
                 {
                   local.Users.role === 7 ? (
-                    <CTableHeaderCell className="text-center" style={mystyle}>Assign</CTableHeaderCell>
-                  ) : null
-                }
-                {
-                  local.Users.role === 7 ? (
                     <CTableHeaderCell className="text-center" style={mystyle}>View</CTableHeaderCell>
                   ) : null
                 }
                 {
                   local.Users.role === 7 ? (
-                    <CTableHeaderCell className="text-center" style={mystyle}>Assigned Status</CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>Assign User</CTableHeaderCell>
+                  ) : null
+                }
+                {
+                  local.Users.role === 7 ? (
+                    <CTableHeaderCell className="text-center" style={mystyle}>Users Assigned Status</CTableHeaderCell>
                   ) : null
                 }
                 {
@@ -632,6 +635,15 @@ function AllFSF() {
                   {
                     local.Users.role === 7 ? (
                       <CTableHeaderCell className="text-center" style={mystyle2}>
+                        <IconButton aria-label="view" title='View FSF' onClick={() => showModal(fsf.id)}>
+                          <VisibilityIcon htmlColor="#28B463" />
+                        </IconButton>
+                      </CTableHeaderCell>
+                    ) : null
+                  }
+                  {
+                    local.Users.role === 7 ? (
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
                         <IconButton aria-label="assign" title="Assign Members" onClick={() => showModal4(fsf.id)}>
                           <PermContactCalendarIcon htmlColor="#0070ff" />
                         </IconButton>
@@ -642,17 +654,8 @@ function AllFSF() {
                   {
                     local.Users.role === 7 ? (
                       <CTableHeaderCell className="text-center" style={mystyle2}>
-                        <IconButton aria-label="view" title='View FSF' onClick={() => showModal(fsf.id)}>
-                          <VisibilityIcon htmlColor="#28B463" />
-                        </IconButton>
-                      </CTableHeaderCell>
-                    ) : null
-                  }
-                  {
-                    local.Users.role === 7 ? (
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
                         <IconButton aria-label="assigned-status" title='Assigned Status' onClick={() => showModal6(fsf.id)}>
-                          <AlignHorizontalLeftIcon htmlColor="#0070ff" />
+                          <PeopleIcon htmlColor="#0070ff" />
                         </IconButton>
                       </CTableHeaderCell>
                     ) : null
@@ -791,8 +794,16 @@ function AllFSF() {
                   <p>{fsf.usage_frequency}</p>
                   <h6 style={perStyle}>Transaction Code</h6>
                   <p>{fsf.transaction_code}</p>
-                  <h6 style={perStyle}>Authorization Level</h6>
+                  <h6 style={perStyle}>Authorization Role</h6>
                   <p>{fsf.authorization_role}</p>
+                  <h6 style={perStyle}>Development Logic</h6>
+                  <Editor
+                  apiKey="46tu7q2m7kbsfpbdoc5mwnyn5hs97kdpefj8dnpuvz65aknl"
+                  cloudChannel="dev"
+                  value={fsf.development_logic}
+                  modules={{ toolbar: false }}
+                  readOnly={true}
+                  />
                   <Divider></Divider>
                   <h6 style={perStyle2}>Input Screen</h6>
                   <br></br>
