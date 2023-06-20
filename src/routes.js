@@ -30,6 +30,7 @@ const Monthly = React.lazy(() => import('./views/reports/monthly/Monthly'))
 const Weekly = React.lazy(() => import('./views/reports/weekly/Weekly'))
 const Daily = React.lazy(() => import('./views/reports/daily/Daily'))
 const Teams = React.lazy(() => import('./views/teams/Teams'))
+const Subscriptions = React.lazy(() => import('./views/subscriptions/Subscriptions'))
 const Expenses = React.lazy(() => import('./views/expenses/Expenses'))
 const AllFSF = React.lazy(() => import('./views/fsf/AllFSF'))
 const FSFform = React.lazy(() => import('./views/fsf/FSFform'))
@@ -69,6 +70,7 @@ const routes = [
   { path: '/reports/weekly', name: 'Weekly', element: Weekly },
   { path: '/reports/daily', name: 'Weekly', element: Daily },
   { path: '/teams', name: 'Teams', element: Teams },
+  { path: '/subscriptions', name: 'Subscriptions', element: Subscriptions },
   { path: '/expenses', name: 'Expenses', element: Expenses },
   { path: '/allfsf', name: 'All FSF', element: AllFSF },
   { path: '/allcrf', name: 'All CRF', element: AllCRF },

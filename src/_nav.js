@@ -14,6 +14,7 @@ import {
   cilUserFollow,
   cilStream,
   cilLineWeight,
+  cilDollar,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem } from '@coreui/react'
 
@@ -171,6 +172,12 @@ export const _navAdmin = [
     name: 'Teams',
     to: '/teams',
     icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Subscriptions',
+    to: '/subscriptions',
+    icon: <CIcon icon={cilDollar} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
@@ -345,6 +352,12 @@ export const _navCompanyAdmin = [
     name: 'Teams',
     to: '/teams',
     icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Subscriptions',
+    to: '/subscriptions',
+    icon: <CIcon icon={cilDollar} customClassName="nav-icon" />,
   },
   // {
   //   component: CNavItem,
