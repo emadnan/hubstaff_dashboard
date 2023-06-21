@@ -175,10 +175,8 @@ const TaskAssignmentUserSide = () => {
     fetch(`${BASE_URL}/api/getTaskByProjectId/${projectId}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log('data: ', data)
         if (local.Users.role === 5) {
           const filteredUsersTask = data.task.filter((user) => user.user_id === local.Users.id)
-          console.log('filteredUsersTask: ', filteredUsersTask)
           const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
           const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
           const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')

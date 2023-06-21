@@ -56,6 +56,8 @@ function TaskAssignment() {
   const [isInProgressTasksTab, setIsInProgressTasksTab] = useState(false)
   const [isCompletedTaskTab, setIsCompletedTasksTab] = useState(false)
 
+  const [isFilterApplied, setIsFilterApplied] = useState(false)
+
   let [form] = Form.useForm()
 
   //CSS Styling
@@ -106,6 +108,7 @@ function TaskAssignment() {
   }
 
   const applyFilters = () => {
+    setIsFilterApplied(true)
     if (selectedUser && selectedProject) {
       getTaskByProjectAndUserId()
     } else if (selectedProject && !selectedUser) {
@@ -118,6 +121,7 @@ function TaskAssignment() {
   }
 
   const clearFilters = () => {
+    setIsFilterApplied(false)
     form.resetFields()
     setSelectedUser(null)
     setSelectedProject(null)
@@ -201,14 +205,11 @@ function TaskAssignment() {
   }
 
   function getTasksByUserId() {
-    console.log('selectedUser : ', selectedUser)
     fetch(`${BASE_URL}/api/getTaskByUserId/${selectedUser}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log('data: ', data)
         if (local.Users.role === 7) {
           const filteredUsersTask = data.task.filter((user) => user.team_lead_id === local.Users.id)
-          console.log('filteredUsersTask: ', filteredUsersTask)
           const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
           const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
           const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
@@ -224,14 +225,11 @@ function TaskAssignment() {
   }
 
   const getTaskByProjectId = () => {
-    console.log('selectedProject: ', selectedProject)
     fetch(`${BASE_URL}/api/getTaskByProjectId/${selectedProject}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log('data: ', data)
         if (local.Users.role === 7) {
           const filteredUsersTask = data.task.filter((task) => task.team_lead_id === local.Users.id)
-          console.log('filteredUsersTask: ', filteredUsersTask)
           const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
           const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
           const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
@@ -247,15 +245,11 @@ function TaskAssignment() {
   }
 
   const getTaskByProjectAndUserId = () => {
-    console.log('${selectedUser}/${selectedProject} : ', selectedUser, selectedProject)
     fetch(`${BASE_URL}/api/getTaskByUserIdAndProjectId/${selectedUser}/${selectedProject}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log('data: ', data)
         if (local.Users.role === 7) {
-          console.log('Condition True in getTaskByProjectAndUserId ')
           const filteredUsersTask = data.task.filter((task) => task.team_lead_id === local.Users.id)
-          console.log('filteredUsersTask: ', filteredUsersTask)
           const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
           const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
           const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
@@ -417,6 +411,10 @@ function TaskAssignment() {
   }
 
   const changeTab = (e) => {
+    if (isFilterApplied === false) {
+      clearFilters()
+    }
+
     if (e.target.value === 'Completed') {
       setIsPendingTasksTab(false)
       setIsInProgressTasksTab(false)
