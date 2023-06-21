@@ -26,7 +26,13 @@ const LandingAboutUs = () => {
           </p>
           <div className="flex justify-center">
             <button className="inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg">
-              Next
+              <a
+                // href="https://mega.nz/file/1bY1QbgD#mTHJZW-_uNdD5GmNjeYAjkdWuZizvQvTL9gC7CLlRdc"
+                target="blank"
+                style={{ textDecoration: 'none', color: 'white' }}
+              >
+                Download for Windows
+              </a>
             </button>
           </div>
         </div>

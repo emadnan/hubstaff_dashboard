@@ -29,6 +29,17 @@ function TaskAssignment() {
   const [task_managements_start_date, setTaskManagementStartDate] = useState('')
   const [task_managements_dead_line, setTaskManagementDeadLine] = useState('')
   const [taskStatus, setTaskStatus] = useState()
+  const [priorities, setPriorities] = useState('LOW')
+
+  // For Radio Buttons
+  const radioOptions = [
+    { value: 'LOW', color: 'blue' },
+    { value: 'MEDIUM', color: 'green' },
+    { value: 'HIGH', color: 'red' },
+  ]
+
+  // Get & Set Selected Task ID :
+  const [editedTaskId, setEditedTaskId] = useState()
 
   const [users, setAllUsers] = useState([])
   const [projects, setProjects] = useState([])
@@ -137,10 +148,56 @@ function TaskAssignment() {
   const showModal = () => {
     setIsModalOpen(true)
   }
+  const [formErrors, setFormErrors] = useState({
+    user_id,
+    project_id,
+    priorities,
+    task_description,
+    task_managements_start_date,
+    task_managements_dead_line,
+  })
   const handleOk = () => {
-    addTask()
-    setIsModalOpen(false)
+    if (
+      user_id &&
+      project_id &&
+      priorities &&
+      task_description &&
+      task_managements_start_date &&
+      task_managements_dead_line
+    ) {
+      addTask()
+      setIsModalOpen(false)
+    } else {
+      const errors = {}
+      if (!user_id) {
+        errors.user_id = 'Please Select the User'
+      }
+      if (!project_id) {
+        errors.project_id = 'Please Select the Project'
+      }
+      if (!task_description) {
+        errors.task_description = 'Task Description is required'
+      }
+      if (!task_managements_start_date) {
+        errors.task_managements_start_date = 'Start Date is required'
+      }
+      if (!task_managements_dead_line) {
+        errors.task_managements_dead_line = 'End Date is required'
+      }
+
+      setFormErrors(errors)
+    }
   }
+
+  const handleFocus = (e) => {
+    const { name } = e.target
+
+    setFormErrors((prevFormErrors) => ({
+      ...prevFormErrors,
+      [name]: '',
+    }))
+  }
+
   const handleCancel = () => {
     setIsModalOpen(false)
     setUserId('')
@@ -152,16 +209,6 @@ function TaskAssignment() {
     setTaskStatus('')
   }
 
-  // For Radio Buttons
-  const radioOptions = [
-    { value: 'LOW', color: 'blue' },
-    { value: 'MEDIUM', color: 'green' },
-    { value: 'HIGH', color: 'red' },
-  ]
-  const [priorities, setPriorities] = useState('LOW')
-
-  // Get & Set Selected Task ID :
-  const [editedTaskId, setEditedTaskId] = useState()
   // Functions for Assign Tasks Modal
   const [isModalOpenUpdate, setIsModalOpenUpdate] = useState(false)
   const showUpdateModal = (task_managements_id) => {
@@ -963,10 +1010,20 @@ function TaskAssignment() {
       >
         <br></br>
 
-        <div className="form-outline mb-3">
+        <div className="form-outline mt-3">
           <label>User</label>
-          <Form.Item>
-            <Select placeholder="Select Departments" onChange={handleUserChange} value={user_id}>
+          <Form.Item
+            name="user_id"
+            validateStatus={formErrors.user_id ? 'error' : ''}
+            help={formErrors.user_id}
+          >
+            <Select
+              placeholder="Select Departments"
+              onChange={handleUserChange}
+              onFocus={handleFocus}
+              name="user_id"
+              value={user_id}
+            >
               {users.map((user) => (
                 <Select.Option value={user.id} key={user.id}>
                   {user.name}
@@ -976,10 +1033,19 @@ function TaskAssignment() {
           </Form.Item>
         </div>
 
-        <div className="form-outline mb-3">
+        <div className="form-outline mt-3">
           <label>Project</label>
-          <Form.Item>
-            <Select placeholder="Select Project" onChange={handleProjectChange} value={project_id}>
+          <Form.Item
+            name="project_id"
+            validateStatus={formErrors.project_id ? 'error' : ''}
+            help={formErrors.project_id}
+          >
+            <Select
+              placeholder="Select Project"
+              onChange={handleProjectChange}
+              onFocus={handleFocus}
+              value={project_id}
+            >
               {projects.map((pro) => (
                 <Select.Option value={pro.id} key={pro.id}>
                   {pro.project_name}
@@ -989,61 +1055,55 @@ function TaskAssignment() {
           </Form.Item>
         </div>
 
-        <div className="form-outline mb-3">
+        <div className="form-outline mt-3">
           <label>Task Description</label>
           <input
             type="text"
+            name="task_description"
             value={task_description}
             onChange={(e) => setTaskDescription(e.target.value)}
+            onFocus={handleFocus}
             className="form-control form-control-lg"
             placeholder="Enter Description"
           />
         </div>
+        {formErrors.task_description && (
+          <div className="text-danger">{formErrors.task_description}</div>
+        )}
 
-        <div className="form-outline mb-3">
+        <div className="form-outline mt-3">
           <label>Assigned Date</label>
           <input
             type="date"
+            name="task_managements_start_date"
             value={task_managements_start_date}
             onChange={(e) => setTaskManagementStartDate(e.target.value)}
+            onFocus={handleFocus}
             className="form-control form-control-lg"
             placeholder="Enter Assigned Date"
           />
         </div>
+        {formErrors.task_managements_start_date && (
+          <div className="text-danger">{formErrors.task_managements_start_date}</div>
+        )}
 
-        <div className="form-outline mb-3">
+        <div className="form-outline mt-3">
           <label>End Date</label>
           <input
             type="date"
+            name="task_managements_dead_line"
             value={task_managements_dead_line}
             onChange={(e) => setTaskManagementDeadLine(e.target.value)}
+            onFocus={handleFocus}
             className="form-control form-control-lg"
             placeholder="Enter Dead Line"
           />
         </div>
+        {formErrors.task_managements_dead_line && (
+          <div className="text-danger">{formErrors.task_managements_dead_line}</div>
+        )}
 
-        <div className="form-outline mb-3">
-          <label>Task Status</label>
-          <Form.Item>
-            <Select
-              placeholder="Select Task Status"
-              onChange={(value) => setTaskStatus(value)}
-              value={taskStatus}
-            >
-              <Select.Option value="Pending" key="Pending">
-                Pending
-              </Select.Option>
-              <Select.Option value="InProgress" key="InProgress">
-                In-Progress
-              </Select.Option>
-              <Select.Option value="Completed" key="Completed">
-                Completed
-              </Select.Option>
-            </Select>
-          </Form.Item>
-        </div>
-
-        <div className="form-outline mb-3">
+        <div className="form-outline mt-3">
           <div>
             <b>Select Priority of Task</b>
           </div>
@@ -1068,10 +1128,15 @@ function TaskAssignment() {
       >
         <br />
 
-        <div className="form-outline mb-3">
+        <div className="form-outline mt-3">
           <label>User</label>
-          <Form.Item>
-            <Select placeholder="Select Departments" onChange={handleUserChange} value={user_id}>
+          <Form.Item validateStatus={formErrors.user_id ? 'error' : ''} help={formErrors.user_id}>
+            <Select
+              placeholder="Select Departments"
+              onChange={handleUserChange}
+              onFocus={handleFocus}
+              value={user_id}
+            >
               {users.map((user) => (
                 <Select.Option value={user.id} key={user.id}>
                   {user.name}
@@ -1081,9 +1146,12 @@ function TaskAssignment() {
           </Form.Item>
         </div>
 
-        <div className="form-outline mb-3">
+        <div className="form-outline mt-3">
           <label>Project</label>
-          <Form.Item>
+          <Form.Item
+            validateStatus={formErrors.project_id ? 'error' : ''}
+            help={formErrors.project_id}
+          >
             <Select placeholder="Select Project" onChange={handleProjectChange} value={project_id}>
               {projects.map((pro) => (
                 <Select.Option value={pro.id} key={pro.id}>
@@ -1094,40 +1162,55 @@ function TaskAssignment() {
           </Form.Item>
         </div>
 
-        <div className="form-outline mb-3">
+        <div className="form-outline mt-3">
           <label>Task Description</label>
           <input
             type="text"
+            name="task_description"
             value={task_description}
             onChange={(e) => setTaskDescription(e.target.value)}
+            onFocus={handleFocus}
             className="form-control form-control-lg"
             placeholder="Enter Description"
           />
         </div>
+        {formErrors.task_description && (
+          <div className="text-danger">{formErrors.task_description}</div>
+        )}
 
-        <div className="form-outline mb-3">
+        <div className="form-outline mt-3">
           <label>Assigned Date</label>
           <input
             type="date"
+            name="task_managements_start_date"
             value={task_managements_start_date}
             onChange={(e) => setTaskManagementStartDate(e.target.value)}
+            onFocus={handleFocus}
             className="form-control form-control-lg"
             placeholder="Enter Assigned Date"
           />
         </div>
+        {formErrors.task_managements_start_date && (
+          <div className="text-danger">{formErrors.task_managements_start_date}</div>
+        )}
 
-        <div className="form-outline mb-3">
+        <div className="form-outline mt-3">
           <label>End Date</label>
           <input
             type="date"
+            name="task_managements_dead_line"
             value={task_managements_dead_line}
             onChange={(e) => setTaskManagementDeadLine(e.target.value)}
+            onFocus={handleFocus}
             className="form-control form-control-lg"
             placeholder="Enter Dead Line"
           />
         </div>
+        {formErrors.task_managements_dead_line && (
+          <div className="text-danger">{formErrors.task_managements_dead_line}</div>
+        )}
 
-        <div className="form-outline mb-3">
+        <div className="form-outline mt-3">
           <label>Task Status</label>
           <Form.Item>
             <Select
@@ -1148,7 +1231,7 @@ function TaskAssignment() {
           </Form.Item>
         </div>
 
-        <div className="form-outline mb-3">
+        <div className="form-outline mt-3">
           <div>
             <b>Select Priority of Task</b>
           </div>
