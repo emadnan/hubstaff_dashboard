@@ -49,11 +49,14 @@ function TaskAssignment() {
   const [totalItemsCompleted, setTotalItemsCompleted] = useState(0)
   const [currentItemsCompleted, setCurrentItemsCompleted] = useState([])
 
-  const [selectedUser, setSelectedUser] = useState(null)
+  const [selectedUser, setSelectedUser] = useState()
+  const [selectedProject, setSelectedProject] = useState()
 
   const [isPendingTasksTab, setIsPendingTasksTab] = useState(true)
   const [isInProgressTasksTab, setIsInProgressTasksTab] = useState(false)
   const [isCompletedTaskTab, setIsCompletedTasksTab] = useState(false)
+
+  let [form] = Form.useForm()
 
   //CSS Styling
   const mystyle = {
@@ -102,17 +105,22 @@ function TaskAssignment() {
     setUserId(value)
   }
 
-  const handleFilterTaskOnUserChange = (id) => {
-    setSelectedUser(id)
-    getTasksByUserId(id)
-  }
-
-  const handleFilterTaskOnProjectChange = (projectId) => {
-    getTaskByProjectAndUserId(projectId)
+  const applyFilters = () => {
+    if (selectedUser && selectedProject) {
+      getTaskByProjectAndUserId()
+    } else if (selectedProject && !selectedUser) {
+      getTaskByProjectId()
+    } else if (!selectedProject && selectedUser) {
+      getTasksByUserId()
+    } else {
+      return
+    }
   }
 
   const clearFilters = () => {
-    setSelectedUser('')
+    form.resetFields()
+    setSelectedUser(null)
+    setSelectedProject(null)
     getTasks()
   }
 
@@ -192,12 +200,15 @@ function TaskAssignment() {
       .catch((error) => console.log(error))
   }
 
-  function getTasksByUserId(userId) {
-    fetch(`${BASE_URL}/api/getTaskByUserId/${userId}`)
+  function getTasksByUserId() {
+    console.log('selectedUser : ', selectedUser)
+    fetch(`${BASE_URL}/api/getTaskByUserId/${selectedUser}`)
       .then((response) => response.json())
       .then((data) => {
+        console.log('data: ', data)
         if (local.Users.role === 7) {
           const filteredUsersTask = data.task.filter((user) => user.team_lead_id === local.Users.id)
+          console.log('filteredUsersTask: ', filteredUsersTask)
           const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
           const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
           const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
@@ -212,13 +223,39 @@ function TaskAssignment() {
       .catch((error) => console.log(error))
   }
 
-  const getTaskByProjectAndUserId = (projectId) => {
-    fetch(`${BASE_URL}/api/getTaskByUserIdAndProjectId/${selectedUser}/${projectId}`)
+  const getTaskByProjectId = () => {
+    console.log('selectedProject: ', selectedProject)
+    fetch(`${BASE_URL}/api/getTaskByProjectId/${selectedProject}`)
       .then((response) => response.json())
       .then((data) => {
         console.log('data: ', data)
-        if (local.Users.role === 5) {
-          const filteredUsersTask = data.task.filter((user) => user.user_id === local.Users.id)
+        if (local.Users.role === 7) {
+          const filteredUsersTask = data.task.filter((task) => task.team_lead_id === local.Users.id)
+          console.log('filteredUsersTask: ', filteredUsersTask)
+          const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
+          const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
+          const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
+          setPendingTasks(todoTasks)
+          setInProgressTasks(in_progressTasks)
+          setCompletedTasks(doneTasks)
+          setTotalItemsPending(todoTasks.length)
+          setTotalItemsInProgress(in_progressTasks.length)
+          setTotalItemsCompleted(doneTasks.length)
+        }
+      })
+      .catch((error) => console.log(error))
+  }
+
+  const getTaskByProjectAndUserId = () => {
+    console.log('${selectedUser}/${selectedProject} : ', selectedUser, selectedProject)
+    fetch(`${BASE_URL}/api/getTaskByUserIdAndProjectId/${selectedUser}/${selectedProject}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('data: ', data)
+        if (local.Users.role === 7) {
+          console.log('Condition True in getTaskByProjectAndUserId ')
+          const filteredUsersTask = data.task.filter((task) => task.team_lead_id === local.Users.id)
+          console.log('filteredUsersTask: ', filteredUsersTask)
           const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
           const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
           const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
@@ -380,7 +417,6 @@ function TaskAssignment() {
   }
 
   const changeTab = (e) => {
-    console.log('value: ', e.target.value)
     if (e.target.value === 'Completed') {
       setIsPendingTasksTab(false)
       setIsInProgressTasksTab(false)
@@ -462,30 +498,39 @@ function TaskAssignment() {
             </Radio.Group>
           </Space>
         </Box>
-        <Box className="col-md-3">
-          <Form.Item name="select" hasFeedback>
-            <Select placeholder="SELECT EMPLOYEE" onChange={handleFilterTaskOnUserChange}>
-              {users.map((user) => (
-                <Select.Option value={user.id} key={user.id}>
-                  {user.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Box>
-        <Box className="col-md-3">
-          <Form.Item name="select" hasFeedback>
-            <Select placeholder="SELECT PROJECT" onChange={handleFilterTaskOnProjectChange}>
-              {projects.map((project) => (
-                <Select.Option value={project.id} key={project.id}>
-                  {project.project_name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Box>
-        <Box className="col-md-3">
-          <Button type="default" onClick={clearFilters}>
+        <Form form={form} className="row col-md-6">
+          <Box className="col-md-6">
+            <Form.Item name="selectUser" hasFeedback>
+              <Select placeholder="SELECT EMPLOYEE" onChange={(value) => setSelectedUser(value)}>
+                {users.map((user) => (
+                  <Select.Option value={user.id} key={user.id}>
+                    {user.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Box>
+          <Box className="col-md-6">
+            <Form.Item name="selectProject" hasFeedback>
+              <Select placeholder="SELECT PROJECT" onChange={(value) => setSelectedProject(value)}>
+                {projects.map((project) => (
+                  <Select.Option value={project.id} key={project.id}>
+                    {project.project_name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Box>
+        </Form>
+        <Box
+          className="col-md-3"
+          sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly' }}
+        >
+          <Button type="default" onClick={applyFilters}>
+            Apply Filter
+          </Button>
+
+          <Button type="default" onClick={clearFilters} danger>
             Clear Filter
           </Button>
         </Box>

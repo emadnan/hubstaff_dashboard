@@ -70,6 +70,8 @@ const TaskAssignmentUserSide = () => {
 
   const [projects, setProjects] = useState([])
 
+  let [form] = Form.useForm()
+
   // Component is initially mounted
   useEffect(() => {
     getTasks()
@@ -88,7 +90,7 @@ const TaskAssignmentUserSide = () => {
     setCurrentItemsCompleted(slicedItemsCompleted)
   }, [currentPageCompleted, completedTask])
 
-  function getProjects() {
+  const getProjects = () => {
     let filteredProjects = []
     fetch(`${BASE_URL}/api/getproject`)
       .then((response) => response.json())
@@ -97,8 +99,8 @@ const TaskAssignmentUserSide = () => {
           filteredProjects = data.projects.filter(
             (project) => project.company_id === local.Users.company_id,
           )
+          setProjects(filteredProjects)
         }
-        setProjects(filteredProjects)
       })
       .catch((error) => console.log(error))
   }
@@ -109,11 +111,6 @@ const TaskAssignmentUserSide = () => {
     setIsModalOpenToTakeAction(true)
     setTaskId(id)
     getTasksById(id)
-  }
-
-  const handleOkToTakeActionAgainstTask = () => {
-    updateTaskStatus(task_id, taskStatus, taskComment)
-    setIsModalOpenToTakeAction(false)
   }
 
   const updateTaskStatus = (taskId, task_status, task_comment) => {
@@ -134,11 +131,6 @@ const TaskAssignmentUserSide = () => {
       .catch((error) => {
         console.error('Error:', error)
       })
-  }
-
-  const handleCancelToTakeActionAgainstTask = () => {
-    setTaskComment('')
-    setIsModalOpenToTakeAction(false)
   }
 
   function getTasks() {
@@ -179,8 +171,30 @@ const TaskAssignmentUserSide = () => {
       })
   }
 
+  const getTaskByProjectChange = (projectId) => {
+    fetch(`${BASE_URL}/api/getTaskByProjectId/${projectId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('data: ', data)
+        if (local.Users.role === 5) {
+          const filteredUsersTask = data.task.filter((user) => user.user_id === local.Users.id)
+          console.log('filteredUsersTask: ', filteredUsersTask)
+          const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
+          const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
+          const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
+          setPendingTasks(todoTasks)
+          setInProgressTasks(in_progressTasks)
+          setCompletedTasks(doneTasks)
+          setTotalItemsPending(todoTasks.length)
+          setTotalItemsInProgress(in_progressTasks.length)
+          setTotalItemsCompleted(doneTasks.length)
+        }
+      })
+      .catch((error) => console.log(error))
+  }
+
   const clearFilters = () => {
-    // setSelectedUser('')
+    form.resetFields()
     getTasks()
   }
 
@@ -200,25 +214,20 @@ const TaskAssignmentUserSide = () => {
     }
   }
 
-  const handleFilterTaskOnProjectChange = (projectId) => {
-    fetch(`${BASE_URL}/api/getTaskByProjectId/${projectId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (local.Users.role === 5) {
-          const filteredUsersTask = data.task.filter((user) => user.user_id === local.Users.id)
-          const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
-          const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
-          const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
-          setPendingTasks(todoTasks)
-          setInProgressTasks(in_progressTasks)
-          setCompletedTasks(doneTasks)
-          setTotalItemsPending(todoTasks.length)
-          setTotalItemsInProgress(in_progressTasks.length)
-          setTotalItemsCompleted(doneTasks.length)
-        }
-      })
-      .catch((error) => console.log(error))
+  const handleOkToTakeActionAgainstTask = () => {
+    updateTaskStatus(task_id, taskStatus, taskComment)
+    setIsModalOpenToTakeAction(false)
   }
+
+  const handleCancelToTakeActionAgainstTask = () => {
+    setTaskComment('')
+    setIsModalOpenToTakeAction(false)
+  }
+
+  const handleFilterTaskOnProjectChange = (projectId) => {
+    getTaskByProjectChange(projectId)
+  }
+
   //------------------
   // Pagination logic
   //------------------
@@ -286,15 +295,17 @@ const TaskAssignmentUserSide = () => {
           </Space>
         </Box>
         <Box className="col-md-4">
-          <Form.Item name="select" hasFeedback>
-            <Select placeholder="SELECT PROJECT" onChange={handleFilterTaskOnProjectChange}>
-              {projects.map((project) => (
-                <Select.Option value={project.id} key={project.id}>
-                  {project.project_name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
+          <Form form={form}>
+            <Form.Item name="select" hasFeedback>
+              <Select placeholder="SELECT PROJECT" onChange={handleFilterTaskOnProjectChange}>
+                {projects.map((project) => (
+                  <Select.Option value={project.id} key={project.id}>
+                    {project.project_name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Form>
         </Box>
         <Box className="col-md-4">
           <Button type="default" onClick={clearFilters}>
@@ -575,12 +586,6 @@ const TaskAssignmentUserSide = () => {
 
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       {task.project_name}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.task_description}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.priorites}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       {new Date(task.task_managements_start_date).toLocaleDateString()}

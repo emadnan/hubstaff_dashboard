@@ -22,7 +22,7 @@ const AppFooter = () => {
         >
           BiafoTech
         </a>
-        <span className="ms-1">&copy; {currentYear} Private Ltd.</span>
+        <span className="ms-1">Private Ltd. &copy; {currentYear}</span>
       </div>
       <div className="ms-auto">
         <span className="me-1">Powered by</span>
