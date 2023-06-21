@@ -19,7 +19,7 @@ import json2csv from 'json2csv'
 import moment from 'moment'
 import dayjs from 'dayjs'
 import PictureAsPdfSharpIcon from '@mui/icons-material/PictureAsPdfSharp'
-import html2pdf from 'html2pdf.js';
+import html2pdf from 'html2pdf.js'
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -187,8 +187,16 @@ export default function Dashboard() {
           averageMinutes = Math.floor((averageSeconds % 3600) / 60)
         }
 
-        setAverageWorkingHoursOfDay(`${averageHours.toString().padStart(2, '0')}: ${averageMinutes.toString().padStart(2, '0')}`)
-        setTotalWorkingHoursOfMonth(`${data.hours.toString().padStart(2, '0')}:${data.minutes.toString().padStart(2, '0')}:${data.seconds.toString().padStart(2, '0')}`)
+        setAverageWorkingHoursOfDay(
+          `${averageHours.toString().padStart(2, '0')}: ${averageMinutes
+            .toString()
+            .padStart(2, '0')}`,
+        )
+        setTotalWorkingHoursOfMonth(
+          `${data.hours.toString().padStart(2, '0')}:${data.minutes
+            .toString()
+            .padStart(2, '0')}:${data.seconds.toString().padStart(2, '0')}`,
+        )
 
         const projectDates = data.project.map((project) => new Date(project.date))
         const minDate = new Date(Math.min(...projectDates))
@@ -233,14 +241,15 @@ export default function Dashboard() {
           averageMinutes = Math.floor((averageSeconds % 3600) / 60)
         }
 
-        setAverageWorkingHoursOfDay(`
-          ${averageHours.toString().padStart(2, '0')}
-          : ${averageMinutes.toString().padStart(2, '0')}
-        `)
+        setAverageWorkingHoursOfDay(
+          `${averageHours.toString().padStart(2, '0')}: ${averageMinutes
+            .toString()
+            .padStart(2, '0')}`,
+        )
         setTotalWorkingHoursOfMonth(`
-           ${data.hours.toString().padStart(2, '0')}
-          : ${data.minutes.toString().padStart(2, '0')}
-          : ${data.seconds.toString().padStart(2, '0')}
+           ${data.hours.toString().padStart(2, '0')}: ${data.minutes
+          .toString()
+          .padStart(2, '0')}: ${data.seconds.toString().padStart(2, '0')}
         `)
 
         processDataOnMonthSelection(data)
@@ -308,7 +317,7 @@ export default function Dashboard() {
         projectData = {
           project: project_name,
           HOURS: formatTime(totalSeconds), // Format the project hours
-          PERCENTAGE: '-',
+          ACTIVITY: '-',
         }
         processedData[formattedDate].projects.push(projectData)
       } else {
@@ -320,15 +329,16 @@ export default function Dashboard() {
     // Calculate the percentages for each project in each day
     Object.values(processedData).forEach((dayData) => {
       const totalDaySeconds = timeInSeconds(dayData.totalWorkingHourOfDay)
+      const totalSecondsPerDay = 7 * 3600 // Total seconds for 7 hours per day
 
       if (totalDaySeconds !== 0) {
         dayData.projects.forEach((projectData) => {
           const projectSeconds = timeInSeconds(projectData.HOURS)
-          projectData.PERCENTAGE = `${((projectSeconds / totalDaySeconds) * 100).toFixed(0)}%`
+          projectData.ACTIVITY = `${((projectSeconds / totalSecondsPerDay) * 100).toFixed(0)}%`
         })
       } else {
         dayData.projects.forEach((projectData) => {
-          projectData.PERCENTAGE = `0%`
+          projectData.ACTIVITY = `0%`
         })
       }
     })
@@ -336,6 +346,7 @@ export default function Dashboard() {
     setMonthlyReportData(Object.values(processedData))
   }
 
+  // Function to process on Month Selection the JSON data
   const processDataOnMonthSelection = (jsonData) => {
     // Initialize an empty object to store the processed data
     const processedData = {}
@@ -375,7 +386,7 @@ export default function Dashboard() {
         projectData = {
           project: project_name,
           HOURS: formatTime(totalSeconds), // Format the project hours
-          PERCENTAGE: '-',
+          ACTIVITY: '-',
         }
         processedData[formattedDate].projects.push(projectData)
       } else {
@@ -387,9 +398,11 @@ export default function Dashboard() {
     // Calculate the percentages for each project in each day
     Object.values(processedData).forEach((dayData) => {
       const totalDaySeconds = timeInSeconds(dayData.totalWorkingHourOfDay)
+      const totalSecondsPerDay = 7 * 3600 // Total seconds for 7 hours per day
+
       dayData.projects.forEach((projectData) => {
         const projectSeconds = timeInSeconds(projectData.HOURS)
-        projectData.PERCENTAGE = `${((projectSeconds / totalDaySeconds) * 100).toFixed(0)}%`
+        projectData.ACTIVITY = `${((projectSeconds / totalSecondsPerDay) * 100).toFixed(0)}%`
       })
     })
 
@@ -445,7 +458,7 @@ export default function Dashboard() {
           'TOTAL DAY HOURS': item.totalWorkingHourOfDay,
           PROJECT: project.project,
           HOURS: project.HOURS,
-          PERCENTAGE: project.PERCENTAGE,
+          ACTIVITY: project.ACTIVITY,
         }))
 
         return flattenedProjects
@@ -454,12 +467,12 @@ export default function Dashboard() {
 
     // Generate the CSV data
     const csvData = json2csv.parse(flattenedData, {
-      fields: ['DATE', 'TOTAL DAY HOURS', 'PROJECT', 'HOURS', 'PERCENTAGE'],
+      fields: ['DATE', 'TOTAL DAY HOURS', 'PROJECT', 'HOURS', 'ACTIVITY'],
       header: false, // We will manually add the header later
     })
 
     // Create the header row
-    const headerRow = 'DATE,TOTAL DAY HOURS,PROJECT,HOURS,PERCENTAGE'
+    const headerRow = 'DATE,TOTAL DAY HOURS,PROJECT,HOURS,ACTIVITY'
 
     // Create the merged cell row with the Monthly Report, Employee name, and Month Date Range
     const mergedCellRow = `Monthly Report\nEmployee: ${employeeName}\nMonth: ${monthName}-${year}\nTotal Hours of ${monthName}-${year}: ${totalWorkingHoursOfMonth}\nAVG. Working Hours of Day in ${monthName}-${year}: ${averageWorkingHoursOfDay}\n`
@@ -472,7 +485,7 @@ export default function Dashboard() {
   }
 
   const handleDownloadPDF = () => {
-    const input = tableRef.current;
+    const input = tableRef.current
 
     html2pdf()
       .set({
@@ -483,8 +496,8 @@ export default function Dashboard() {
         jsPDF: { unit: 'mm', format: 'a3' },
       })
       .from(input)
-      .save();
-  };
+      .save()
+  }
 
   return (
     <Box>
@@ -531,7 +544,7 @@ export default function Dashboard() {
 
       {isReportPreview && isReportPreview === true ? (
         <div ref={tableRef}>
-          <Box mt={2} >
+          <Box mt={2}>
             <Card style={cardStyle}>
               <Box className="row">
                 <Box className="col-md-3">
@@ -625,10 +638,10 @@ export default function Dashboard() {
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Generate PDF Report">
-                <IconButton>
-                  <PictureAsPdfSharpIcon onClick={handleDownloadPDF} />
-                </IconButton>
-              </Tooltip>
+                  <IconButton>
+                    <PictureAsPdfSharpIcon onClick={handleDownloadPDF} />
+                  </IconButton>
+                </Tooltip>
               </Toolbar>
 
               <Box className="row" style={{ width: '90%', margin: 'auto' }}>
@@ -673,7 +686,7 @@ export default function Dashboard() {
                                 <TableRow>
                                   <TableCell sx={tableHeaderCellStyle}>PROJECT</TableCell>
                                   <TableCell sx={tableHeaderCellStyle}>HOURS</TableCell>
-                                  <TableCell sx={tableHeaderCellStyle}>PERCENTAGE</TableCell>
+                                  <TableCell sx={tableHeaderCellStyle}>ACTIVITY</TableCell>
                                 </TableRow>
                               </TableHead>
                               <TableBody>
@@ -681,7 +694,7 @@ export default function Dashboard() {
                                   <TableRow key={index}>
                                     <TableCell>{project.project}</TableCell>
                                     <TableCell>{project.HOURS}</TableCell>
-                                    <TableCell>{project.PERCENTAGE}</TableCell>
+                                    <TableCell>{project.ACTIVITY}</TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>
