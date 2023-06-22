@@ -1,4 +1,5 @@
 import React from 'react'
+import { isAuthenticated, getUserRole } from './auth'
 
 //Define routes for views
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
@@ -39,48 +40,156 @@ const TaskAssignment = React.lazy(() => import('./views/taskmanagement/TaskAssig
 const TaskAssignmentUserSide = React.lazy(() =>
   import('./views/taskmanagement/TaskAssignmentUserSide'),
 )
+const NotFound = React.lazy(() => import('./views/notFoundPage/NotFound'))
+
+// Function to check if the user has access to a specific route based on their role
+const hasAccess = (requiredRoles, userRole) => {
+  return requiredRoles.includes(userRole)
+}
 
 //Path setting for routes
 const routes = [
-  { path: '/', exact: true, name: 'Home' },
-  { path: '/dashboard', name: 'Dashboard', element: Dashboard },
-  { path: '/activity/screenshots', name: 'Screenshots', element: Screenshots },
-  { path: '/activity/apps', name: 'Apps', element: Apps },
-  { path: '/activity/urls', name: 'Urls', element: Urls },
-  { path: '/projectmanagement/client', name: 'Client', element: Client },
-  { path: '/projectmanagement/projects', name: 'Projects', element: Projects },
-  { path: '/projectmanagement/todos', name: 'Todos', element: Todos },
-  { path: '/projectmanagement/assigned', name: 'Assigned Projects', element: AssignedProjects },
-  { path: '/companies/Companies', name: 'Companies', element: Companies },
-  { path: '/departments/Departments', name: 'Departments', element: Departments },
-  { path: '/timesheets/approvals', name: 'Approvals', element: Approvals },
-  { path: '/timesheets/viewedit', name: 'View & Edit', element: Viewedit },
-  { path: '/insights', name: 'Insights', element: Insights },
-  { path: '/map', name: 'Map', element: Map },
-  { path: '/users/Users', name: 'Users', element: Users },
-  { path: '/roles/Roles', name: 'Roles', element: Roles },
-  { path: '/permissions/Permission', name: 'Permissions', element: Permissions },
-  { path: '/calendar/schedules', name: 'Schedules', element: Schedules },
-  { path: '/calendar/timeoffrequests', name: 'Time-Off-Requests', element: Timeoffrequests },
-  { path: '/reports/accountsowed', name: 'Accounts Owed', element: Accountsowed },
-  { path: '/reports/allreports', name: 'All Reports', element: Allreports },
-  { path: '/reports/payments', name: 'Payments', element: Payments },
-  { path: '/reports/timenactivity', name: 'Time & Activity', element: Timenactivity },
-  { path: '/reports/monthly', name: 'Weekly', element: Monthly },
-  { path: '/reports/weekly', name: 'Weekly', element: Weekly },
-  { path: '/reports/daily', name: 'Weekly', element: Daily },
-  { path: '/teams', name: 'Teams', element: Teams },
-  { path: '/subscriptions', name: 'Subscriptions', element: Subscriptions },
-  { path: '/expenses', name: 'Expenses', element: Expenses },
-  { path: '/allfsf', name: 'All FSF', element: AllFSF },
-  { path: '/allcrf', name: 'All CRF', element: AllCRF },
-  { path: '/fsfform', name: 'FSF Form', element: FSFform },
-  { path: '/taskmanagement/createnewtask', name: 'Task Assignment', element: TaskAssignment },
+  { path: '/', exact: true, name: 'Home', requiredRoles: [1, 3, 5, 6, 7] },
+  { path: '/dashboard', name: 'Dashboard', element: Dashboard, requiredRoles: [1, 3, 5, 6, 7] },
+  {
+    path: '/activity/screenshots',
+    name: 'Screenshots',
+    element: Screenshots,
+    requiredRoles: [1, 3, 5, 6, 7],
+  },
+  { path: '/activity/apps', name: 'Apps', element: Apps, requiredRoles: [1] },
+  { path: '/activity/urls', name: 'Urls', element: Urls, requiredRoles: [1] },
+  {
+    path: '/projectmanagement/client',
+    name: 'Client',
+    element: Client,
+    requiredRoles: [1, 3],
+  },
+  {
+    path: '/projectmanagement/projects',
+    name: 'Projects',
+    element: Projects,
+    requiredRoles: [1, 3],
+  },
+  // {
+  //   path: '/projectmanagement/todos',
+  //   name: 'Todos',
+  //   element: Todos,
+  //   requiredRoles: [1, 3, 5, 6, 7],
+  // },
+  {
+    path: '/projectmanagement/assigned',
+    name: 'Assigned Projects',
+    element: AssignedProjects,
+    requiredRoles: [1, 3, 5, 6, 7],
+  },
+  {
+    path: '/companies/Companies',
+    name: 'Companies',
+    element: Companies,
+    requiredRoles: [1, 3, 5, 6, 7],
+  },
+  {
+    path: '/departments/Departments',
+    name: 'Departments',
+    element: Departments,
+    requiredRoles: [1, 3],
+  },
+  {
+    path: '/timesheets/approvals',
+    name: 'Approvals',
+    element: Approvals,
+    requiredRoles: [1],
+  },
+  {
+    path: '/timesheets/viewedit',
+    name: 'View & Edit',
+    element: Viewedit,
+    requiredRoles: [1],
+  },
+  // { path: '/insights', name: 'Insights', element: Insights, requiredRoles: [1, 3, 5, 6, 7] },
+  // { path: '/map', name: 'Map', element: Map, requiredRoles: [1, 3, 5, 6, 7] },
+  { path: '/users/Users', name: 'Users', element: Users, requiredRoles: [1, 3, 5, 6, 7] },
+  { path: '/roles/Roles', name: 'Roles', element: Roles, requiredRoles: [1] },
+  {
+    path: '/permissions/Permission',
+    name: 'Permissions',
+    element: Permissions,
+    requiredRoles: [1],
+  },
+  {
+    path: '/calendar/schedules',
+    name: 'Schedules',
+    element: Schedules,
+    requiredRoles: [1],
+  },
+  {
+    path: '/calendar/timeoffrequests',
+    name: 'Time-Off-Requests',
+    element: Timeoffrequests,
+    requiredRoles: [1],
+  },
+  {
+    path: '/reports/accountsowed',
+    name: 'Accounts Owed',
+    element: Accountsowed,
+    requiredRoles: [1],
+  },
+  {
+    path: '/reports/allreports',
+    name: 'All Reports',
+    element: Allreports,
+    requiredRoles: [1],
+  },
+  {
+    path: '/reports/payments',
+    name: 'Payments',
+    element: Payments,
+    requiredRoles: [1],
+  },
+  {
+    path: '/reports/timenactivity',
+    name: 'Time & Activity',
+    element: Timenactivity,
+    requiredRoles: [1, 3],
+  },
+  { path: '/reports/monthly', name: 'Weekly', element: Monthly, requiredRoles: [1, 3] },
+  // { path: '/reports/weekly', name: 'Weekly', element: Weekly, requiredRoles: [1, 3, 5, 6, 7] },
+  { path: '/teams', name: 'Teams', element: Teams, requiredRoles: [1, 3, 5, 6, 7] },
+  {
+    path: '/subscriptions',
+    name: 'Subscriptions',
+    element: Subscriptions,
+    requiredRoles: [1, 3],
+  },
+  { path: '/expenses', name: 'Expenses', element: Expenses, requiredRoles: [1] },
+  { path: '/allfsf', name: 'All FSF', element: AllFSF, requiredRoles: [1, 5, 6, 7] },
+  { path: '/allcrf', name: 'All CRF', element: AllCRF, requiredRoles: [1] },
+  { path: '/fsfform', name: 'FSF Form', element: FSFform, requiredRoles: [1, 3, 6, 7] },
+  {
+    path: '/taskmanagement/createnewtask',
+    name: 'Task Assignment',
+    element: TaskAssignment,
+    requiredRoles: [1, 3, 6, 7],
+  },
   {
     path: '/taskmanagement/assignedtask',
     name: 'Task Assignment',
     element: TaskAssignmentUserSide,
+    requiredRoles: [1, 3, 5],
   },
+  { path: '*', name: '404 Page', element: NotFound, requiredRoles: [1, 3, 5, 6, 7] },
 ]
 
-export default routes
+const filteredRoutes = routes.filter((route) => {
+  // If the route doesn't have any required roles specified, allow access to all authenticated users
+  if (!route.requiredRoles || route.requiredRoles.length === 0) {
+    return isAuthenticated()
+  }
+
+  // If the route has required roles, check if the user has access
+  const userRole = getUserRole()
+  return hasAccess(route.requiredRoles, userRole)
+})
+
+export default filteredRoutes
