@@ -144,12 +144,12 @@ function FSFform() {
     console.log('content: ', content);
     const regex = /<img.*?src="(.*?)"/g;
     const matches = [...content.matchAll(regex)];
-    
+
     const images = matches.map((match) => {
       const base64Data = match[1].split(',')[1];
       return `data:image/png;base64,${base64Data}`;
     });
-    
+
     imageToLink(content, images);
   };
 
@@ -164,6 +164,7 @@ function FSFform() {
     usage_frequency: '',
     transaction_code: '',
     authorization_role: '',
+    development_logic: '',
     input_parameter_name: '',
     output_parameter_name: '',
     description: '',
@@ -210,7 +211,7 @@ function FSFform() {
 
   const modalStyle2 = {
     position: 'fixed',
-    top: '10%',
+    top: '80%',
     left: '55%',
     transform: 'translateX(-50%)',
   }
@@ -453,16 +454,46 @@ function FSFform() {
   }
 
   const handleOk4 = () => {
-    updateFSF(isModalOpen4)
-    setIsModalOpen4(false)
-    setDescription('')
-    setInputParameterName('')
-    setFieldTechnicalName('')
-    setFieldLength('')
-    setFieldType('')
-    setFieldTableName('')
-    setMandatoryOrOptional('')
-    setParameterOrSelection('')
+
+    const errors = {}
+    if (!input_parameter_name) {
+      errors.input_parameter_name = 'Input Parameter Name is required'
+    }
+    if (!description) {
+      errors.description = 'Description is required'
+    }
+    if (!field_technical_name) {
+      errors.field_technical_name = 'Field Technical Name is required'
+    }
+    if (!field_length) {
+      errors.field_length = 'Field Length is required'
+    }
+    if (!field_type) {
+      errors.field_type = 'Field Type is required'
+    }
+    if (!field_table_name) {
+      errors.field_table_name = 'Field Table Name is required'
+    }
+    if (!mandatory_or_optional) {
+      errors.mandatory_or_optional = 'Selection is required'
+    }
+    if (!parameter_or_selection) {
+      errors.parameter_or_selection = 'Selection is required'
+    }
+    setFormErrors(errors)
+
+    if (Object.keys(errors).length === 0) {
+      updateFSF(isModalOpen4)
+      setIsModalOpen4(false)
+      setDescription('')
+      setInputParameterName('')
+      setFieldTechnicalName('')
+      setFieldLength('')
+      setFieldType('')
+      setFieldTableName('')
+      setMandatoryOrOptional('')
+      setParameterOrSelection('')
+    }
   }
 
   const handleCancel4 = () => {
@@ -500,16 +531,46 @@ function FSFform() {
   }
 
   const handleOk6 = () => {
-    updateOutputFSF(isModalOpen6)
-    setIsModalOpen6(false)
-    setDescription('')
-    setOutputParameterName('')
-    setFieldTechnicalName('')
-    setFieldLength('')
-    setFieldType('')
-    setFieldTableName('')
-    setMandatoryOrOptional('')
-    setParameterOrSelection('')
+
+    const errors = {}
+    if (!output_parameter_name) {
+      errors.output_parameter_name = 'Output Parameter Name is required'
+    }
+    if (!description) {
+      errors.description = 'Description is required'
+    }
+    if (!field_technical_name) {
+      errors.field_technical_name = 'Field Technical Name is required'
+    }
+    if (!field_length) {
+      errors.field_length = 'Field Length is required'
+    }
+    if (!field_type) {
+      errors.field_type = 'Field Type is required'
+    }
+    if (!field_table_name) {
+      errors.field_table_name = 'Field Table Name is required'
+    }
+    if (!mandatory_or_optional) {
+      errors.mandatory_or_optional = 'Selection is required'
+    }
+    if (!parameter_or_selection) {
+      errors.parameter_or_selection = 'Selection is required'
+    }
+    setFormErrors(errors)
+
+    if (Object.keys(errors).length === 0) {
+      updateOutputFSF(isModalOpen6)
+      setIsModalOpen6(false)
+      setDescription('')
+      setOutputParameterName('')
+      setFieldTechnicalName('')
+      setFieldLength('')
+      setFieldType('')
+      setFieldTableName('')
+      setMandatoryOrOptional('')
+      setParameterOrSelection('')
+    }
   }
 
   const handleCancel6 = () => {
@@ -552,11 +613,11 @@ function FSFform() {
       setShowLevel1(false)
       setShowLevel2(true)
     }
-  
+
     setIsHoveredPrimary(false)
     setIsHoveredDanger(false)
   }
-  
+
 
   const handleBack2 = () => {
     setShowLevel2(false)
@@ -600,7 +661,10 @@ function FSFform() {
   const handleNext3 = () => {
     const errors = {}
     if (!authorization_role) {
-      errors.authorization_role = 'Authorization Role is required'
+      errors.authorization_role = 'Development Logic is required'
+    }
+    if (!development_logic) {
+      errors.development_logic = 'Development Logic is required'
     }
     setFormErrors(errors)
 
@@ -608,7 +672,7 @@ function FSFform() {
       setShowLevel3(false)
       setShowLevel4(true)
     }
-    
+
     setIsHoveredPrimary(false)
     setIsHoveredDanger(false)
     addFsfForm()
@@ -664,14 +728,16 @@ function FSFform() {
     setIsHoveredDanger(false)
   }
 
-  // Functions for Add FSF Success
+  function submitHandle(id) {
+    outputImagePost(id)
+    handleButtonClick15()
+    setTimeout(() => {
+      navigate('/allfsf')
+    }, 2000)
+  }
+
+  // Functions for Alerts
   const [showAlert1, setShowAlert1] = useState(false)
-
-  const [showAlert3, setShowAlert3] = useState(false)
-
-  const [showAlert4, setShowAlert4] = useState(false)
-
-  const [showAlert5, setShowAlert5] = useState(false)
 
   function handleButtonClick1() {
     setShowAlert1(true)
@@ -679,14 +745,6 @@ function FSFform() {
 
   function handleCloseAlert1() {
     setShowAlert1(false)
-  }
-
-  function submitHandle(id) {
-    // handleButtonClick1()
-    outputImagePost(id)
-    setTimeout(() => {
-      navigate('/allfsf')
-    }, 2000)
   }
 
   useEffect(() => {
@@ -699,7 +757,7 @@ function FSFform() {
     }
   }, [showAlert1])
 
-  // Functions for Add FSF Failure
+  //function 2 for fsf failure
   const [showAlert2, setShowAlert2] = useState(false)
 
   function handleButtonClick2() {
@@ -708,30 +766,6 @@ function FSFform() {
 
   function handleCloseAlert2() {
     setShowAlert2(false)
-  }
-
-  function handleButtonClick3() {
-    setShowAlert3(true)
-  }
-
-  function handleCloseAlert3() {
-    setShowAlert3(false)
-  }
-
-  function handleButtonClick4() {
-    setShowAlert4(true)
-  }
-
-  function handleCloseAlert4() {
-    setShowAlert4(false)
-  }
-
-  function handleButtonClick5() {
-    setShowAlert5(true)
-  }
-
-  function handleCloseAlert5() {
-    setShowAlert5(false)
   }
 
   useEffect(() => {
@@ -744,35 +778,278 @@ function FSFform() {
     }
   }, [showAlert2])
 
+  //function 3 for fsf failure
+  const [showAlert3, setShowAlert3] = useState(false)
+
+  function handleButtonClick3() {
+    setShowAlert3(true)
+  }
+
+  function handleCloseAlert3() {
+    setShowAlert3(false)
+  }
+
   useEffect(() => {
     if (showAlert3) {
       const timer = setTimeout(() => {
         setShowAlert3(false)
-      }, 2000)
+      }, 3000)
 
       return () => clearTimeout(timer)
     }
   }, [showAlert3])
 
+  //function 4 for fsf failure
+  const [showAlert4, setShowAlert4] = useState(false)
+
+  function handleButtonClick4() {
+    setShowAlert4(true)
+  }
+
+  function handleCloseAlert4() {
+    setShowAlert4(false)
+  }
+
   useEffect(() => {
     if (showAlert4) {
       const timer = setTimeout(() => {
         setShowAlert4(false)
-      }, 2000)
+      }, 3000)
 
       return () => clearTimeout(timer)
     }
   }, [showAlert4])
 
+  //function 4 for fsf failure
+  const [showAlert5, setShowAlert5] = useState(false)
+
+  function handleButtonClick5() {
+    setShowAlert5(true)
+  }
+
+  function handleCloseAlert5() {
+    setShowAlert5(false)
+  }
+
   useEffect(() => {
     if (showAlert5) {
       const timer = setTimeout(() => {
         setShowAlert5(false)
-      }, 2000)
+      }, 3000)
 
       return () => clearTimeout(timer)
     }
   }, [showAlert5])
+
+  //function 4 for fsf failure
+  const [showAlert6, setShowAlert6] = useState(false)
+
+  function handleButtonClick6() {
+    setShowAlert6(true)
+  }
+
+  function handleCloseAlert6() {
+    setShowAlert6(false)
+  }
+
+  useEffect(() => {
+    if (showAlert6) {
+      const timer = setTimeout(() => {
+        setShowAlert6(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert6])
+
+  //function 4 for fsf failure
+  const [showAlert7, setShowAlert7] = useState(false)
+
+  function handleButtonClick7() {
+    setShowAlert7(true)
+  }
+
+  function handleCloseAlert7() {
+    setShowAlert7(false)
+  }
+
+  useEffect(() => {
+    if (showAlert7) {
+      const timer = setTimeout(() => {
+        setShowAlert7(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert7])
+
+  //function 4 for fsf failure
+  const [showAlert8, setShowAlert8] = useState(false)
+
+  function handleButtonClick8() {
+    setShowAlert8(true)
+  }
+
+  function handleCloseAlert8() {
+    setShowAlert8(false)
+  }
+
+  useEffect(() => {
+    if (showAlert8) {
+      const timer = setTimeout(() => {
+        setShowAlert8(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert8])
+
+  //function 4 for fsf failure
+  const [showAlert9, setShowAlert9] = useState(false)
+
+  function handleButtonClick9() {
+    setShowAlert9(true)
+  }
+
+  function handleCloseAlert9() {
+    setShowAlert9(false)
+  }
+
+  useEffect(() => {
+    if (showAlert9) {
+      const timer = setTimeout(() => {
+        setShowAlert9(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert9])
+
+  //function 4 for fsf failure
+  const [showAlert10, setShowAlert10] = useState(false)
+
+  function handleButtonClick10() {
+    setShowAlert10(true)
+  }
+
+  function handleCloseAlert10() {
+    setShowAlert10(false)
+  }
+
+  useEffect(() => {
+    if (showAlert10) {
+      const timer = setTimeout(() => {
+        setShowAlert10(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert10])
+
+  //function 4 for fsf failure
+  const [showAlert11, setShowAlert11] = useState(false)
+
+  function handleButtonClick11() {
+    setShowAlert11(true)
+  }
+
+  function handleCloseAlert11() {
+    setShowAlert11(false)
+  }
+
+  useEffect(() => {
+    if (showAlert11) {
+      const timer = setTimeout(() => {
+        setShowAlert11(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert11])
+
+  //function 4 for fsf failure
+  const [showAlert12, setShowAlert12] = useState(false)
+
+  function handleButtonClick12() {
+    setShowAlert12(true)
+  }
+
+  function handleCloseAlert12() {
+    setShowAlert12(false)
+  }
+
+  useEffect(() => {
+    if (showAlert12) {
+      const timer = setTimeout(() => {
+        setShowAlert12(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert12])
+
+  //function 4 for fsf failure
+  const [showAlert13, setShowAlert13] = useState(false)
+
+  function handleButtonClick13() {
+    setShowAlert13(true)
+  }
+
+  function handleCloseAlert13() {
+    setShowAlert13(false)
+  }
+
+  useEffect(() => {
+    if (showAlert13) {
+      const timer = setTimeout(() => {
+        setShowAlert13(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert13])
+
+  //function 4 for fsf failure
+  const [showAlert14, setShowAlert14] = useState(false)
+
+  function handleButtonClick14() {
+    setShowAlert14(true)
+  }
+
+  function handleCloseAlert14() {
+    setShowAlert14(false)
+  }
+
+  useEffect(() => {
+    if (showAlert14) {
+      const timer = setTimeout(() => {
+        setShowAlert14(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert14])
+
+  //function 4 for fsf failure
+  const [showAlert15, setShowAlert15] = useState(false)
+
+  function handleButtonClick15() {
+    setShowAlert15(true)
+  }
+
+  function handleCloseAlert15() {
+    setShowAlert15(false)
+  }
+
+  useEffect(() => {
+    if (showAlert15) {
+      const timer = setTimeout(() => {
+        setShowAlert15(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert15])
 
   //Initial rendering
   useEffect(() => {
@@ -913,7 +1190,7 @@ function FSFform() {
         if (response.ok) {
           return response.json()
         } else {
-          throw new Error('Request failed with status ' + response.status)
+          handleButtonClick2()
         }
       })
       .then((data) => {
@@ -948,9 +1225,10 @@ function FSFform() {
     })
       .then((response) => {
         if (response.ok) {
+          handleButtonClick3()
           getFSFInputParameters()
         } else {
-          throw new Error('Request failed with status ' + response.status)
+          handleButtonClick4()
         }
       })
       .then((data) => {
@@ -986,8 +1264,9 @@ function FSFform() {
       .then((response) => {
         if (response.ok) {
           getFSFOutputParameters()
+          handleButtonClick9()
         } else {
-          throw new Error('Request failed with status ' + response.status)
+          handleButtonClick10()
         }
       })
       .then((data) => {
@@ -1012,6 +1291,9 @@ function FSFform() {
       .then((response) => {
         if (response.ok) {
           getFSFInputParameters()
+          handleButtonClick7()
+        } else {
+          handleButtonClick8()
         }
       })
       .catch((error) => {
@@ -1042,11 +1324,12 @@ function FSFform() {
       .then((response) => {
         if (response.ok) {
           getFSFInputParameters()
+          handleButtonClick5()
         } else {
+          handleButtonClick6()
         }
       })
       .catch((error) => {
-        handleButtonClick2()
         console.error(error)
       })
   }
@@ -1062,6 +1345,9 @@ function FSFform() {
       .then((response) => {
         if (response.ok) {
           getFSFOutputParameters()
+          handleButtonClick13()
+        } else {
+          handleButtonClick14()
         }
       })
       .catch((error) => {
@@ -1092,8 +1378,9 @@ function FSFform() {
       .then((response) => {
         if (response.ok) {
           getFSFOutputParameters()
+          handleButtonClick11()
         } else {
-          // handleButtonClick6();
+          handleButtonClick12();
         }
       })
       .catch((error) => {
@@ -1144,7 +1431,7 @@ function FSFform() {
   // POST Image conversion API call
   async function imageToLink(content, images) {
     let updatedContent = content;
-    
+
     await Promise.all(
       images.map(async (image) => {
         try {
@@ -1157,7 +1444,7 @@ function FSFform() {
               screenShots: image,
             }),
           });
-          
+
           if (response.ok) {
             const imageUrl = await response.text();
             updatedContent = updatedContent.replace(image, imageUrl);
@@ -1167,7 +1454,7 @@ function FSFform() {
         }
       })
     );
-    
+
     setDevelopmentLogic(updatedContent);
   }
 
@@ -1460,13 +1747,13 @@ function FSFform() {
 
                 <div className="form-outline mb-3">
                   <label>Custom Transaction Code</label>
-                    <input
-                      type="text"
-                      value={transaction_code}
-                      onChange={(e) => setTransactionCode(e.target.value)}
-                      className="form-control form-control-lg"
-                      placeholder="Enter Custom Transaction Code"
-                    />
+                  <input
+                    type="text"
+                    value={transaction_code}
+                    onChange={(e) => setTransactionCode(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Custom Transaction Code"
+                  />
                 </div>
 
                 <div className="form-outline mb-3">
@@ -1485,12 +1772,28 @@ function FSFform() {
                   </Form.Item>
                 </div>
 
-                <Editor
+                <div className="form-outline mb-3">
+                  <label>Development Logic</label>
+                  <Form.Item
+                    validateStatus={formErrors.development_logic ? 'error' : ''}
+                    help={formErrors.development_logic}
+                  >
+                    <input
+                      type="text"
+                      value={development_logic}
+                      onChange={(e) => setDevelopmentLogic(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Development Logic"
+                    />
+                  </Form.Item>
+                </div>
+
+                {/* <Editor
                   apiKey="46tu7q2m7kbsfpbdoc5mwnyn5hs97kdpefj8dnpuvz65aknl"
                   cloudChannel="dev"
                   init={editorConfig}
                   onEditorChange={handleEditorChange}
-                />
+                /> */}
 
                 <br></br>
 
@@ -1759,13 +2062,13 @@ function FSFform() {
                     validateStatus={formErrors.input_parameter_name ? 'error' : ''}
                     help={formErrors.input_parameter_name}
                   >
-                  <input
-                    type="text"
-                    value={input_parameter_name}
-                    onChange={(e) => setInputParameterName(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Input Parameter Name"
-                  />
+                    <input
+                      type="text"
+                      value={input_parameter_name}
+                      onChange={(e) => setInputParameterName(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Input Parameter Name"
+                    />
                   </Form.Item>
                 </div>
 
@@ -1808,7 +2111,7 @@ function FSFform() {
                     help={formErrors.field_length}
                   >
                     <input
-                      type="text"
+                      type="number"
                       value={field_length}
                       onChange={(e) => setFieldLength(e.target.value)}
                       className="form-control form-control-lg"
@@ -1920,73 +2223,106 @@ function FSFform() {
                   <div key={fsf.id}>
                     <div className="form-outline mb-3">
                       <label>Parameter Name</label>
-                      <input
-                        type="text"
-                        value={input_parameter_name}
-                        onChange={(e) => setInputParameterName(e.target.value)}
-                        className="form-control form-control-lg"
-                        placeholder="Enter Input Parameter Name"
-                      />
+                      <Form.Item
+                        validateStatus={formErrors.input_parameter_name ? 'error' : ''}
+                        help={formErrors.input_parameter_name}
+                      >
+                        <input
+                          type="text"
+                          value={input_parameter_name}
+                          onChange={(e) => setInputParameterName(e.target.value)}
+                          className="form-control form-control-lg"
+                          placeholder="Enter Input Parameter Name"
+                        />
+                      </Form.Item>
                     </div>
 
                     <div className="form-outline mb-3">
                       <label>Description</label>
-                      <input
-                        type="text"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        className="form-control form-control-lg"
-                        placeholder="Enter Description"
-                      />
+                      <Form.Item
+                        validateStatus={formErrors.description ? 'error' : ''}
+                        help={formErrors.description}
+                      >
+                        <input
+                          type="text"
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                          className="form-control form-control-lg"
+                          placeholder="Enter Description"
+                        />
+                      </Form.Item>
                     </div>
 
                     <div className="form-outline mb-3">
                       <label>Field Technical Name</label>
-                      <input
-                        type="text"
-                        value={field_technical_name}
-                        onChange={(e) => setFieldTechnicalName(e.target.value)}
-                        className="form-control form-control-lg"
-                        placeholder="Enter Field Technical Name"
-                      />
+                      <Form.Item
+                        validateStatus={formErrors.field_technical_name ? 'error' : ''}
+                        help={formErrors.field_technical_name}
+                      >
+                        <input
+                          type="text"
+                          value={field_technical_name}
+                          onChange={(e) => setFieldTechnicalName(e.target.value)}
+                          className="form-control form-control-lg"
+                          placeholder="Enter Field Technical Name"
+                        />
+                      </Form.Item>
                     </div>
 
                     <div className="form-outline mb-3">
                       <label>Field Length</label>
-                      <input
-                        type="text"
-                        value={field_length}
-                        onChange={(e) => setFieldLength(e.target.value)}
-                        className="form-control form-control-lg"
-                        placeholder="Enter Field Length"
-                      />
+                      <Form.Item
+                        validateStatus={formErrors.field_length ? 'error' : ''}
+                        help={formErrors.field_length}
+                      >
+                        <input
+                          type="number"
+                          value={field_length}
+                          onChange={(e) => setFieldLength(e.target.value)}
+                          className="form-control form-control-lg"
+                          placeholder="Enter Field Length"
+                        />
+                      </Form.Item>
                     </div>
 
                     <div className="form-outline mb-3">
                       <label>Field Type</label>
-                      <input
-                        type="text"
-                        value={field_type}
-                        onChange={(e) => setFieldType(e.target.value)}
-                        className="form-control form-control-lg"
-                        placeholder="Enter Field Type"
-                      />
+                      <Form.Item
+                        validateStatus={formErrors.field_type ? 'error' : ''}
+                        help={formErrors.field_type}
+                      >
+                        <input
+                          type="text"
+                          value={field_type}
+                          onChange={(e) => setFieldType(e.target.value)}
+                          className="form-control form-control-lg"
+                          placeholder="Enter Field Type"
+                        />
+                      </Form.Item>
                     </div>
 
                     <div className="form-outline mb-3">
                       <label>Field Table Name</label>
-                      <input
-                        type="text"
-                        value={field_table_name}
-                        onChange={(e) => setFieldTableName(e.target.value)}
-                        className="form-control form-control-lg"
-                        placeholder="Enter Field Table Name"
-                      />
+                      <Form.Item
+                        validateStatus={formErrors.field_table_name ? 'error' : ''}
+                        help={formErrors.field_table_name}
+                      >
+                        <input
+                          type="text"
+                          value={field_table_name}
+                          onChange={(e) => setFieldTableName(e.target.value)}
+                          className="form-control form-control-lg"
+                          placeholder="Enter Field Table Name"
+                        />
+                      </Form.Item>
                     </div>
 
                     <div className="form-outline mb-3">
                       <label>Mandatory or Optional</label>
-                      <Form.Item>
+                      <Form.Item
+                        validateStatus={formErrors.mandatory_or_optional ? 'error' : ''}
+                        help={formErrors.mandatory_or_optional}
+                      >
                         <Select
                           placeholder="Select"
                           onChange={handleMandatoryOrOptionalChange}
@@ -2000,7 +2336,10 @@ function FSFform() {
 
                     <div className="form-outline mb-3">
                       <label>Parameter or Selection</label>
-                      <Form.Item>
+                      <Form.Item
+                        validateStatus={formErrors.parameter_or_selection ? 'error' : ''}
+                        help={formErrors.parameter_or_selection}
+                      >
                         <Select
                           placeholder="Select"
                           onChange={handleParameterOrSelection}
@@ -2048,40 +2387,6 @@ function FSFform() {
                 </Typography>
               </Modal>
 
-              {/* Alert for Add FSF Success*/}
-              {showAlert1 && (
-                <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
-                  FSF Added Successfully
-                </Alert>
-              )}
-
-              {/* Alert for Add FSF Failure*/}
-              {showAlert2 && (
-                <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
-                  Failed to Add FSF
-                </Alert>
-              )}
-
-              {/* Alert for Update FSF Parameters*/}
-              {showAlert3 && (
-                <Alert onClose={handleCloseAlert3} severity="primary" style={modalStyle2}>
-                  FSF Update Successfully
-                </Alert>
-              )}
-
-              {/* Alert for Add FSF Parameters*/}
-              {showAlert4 && (
-                <Alert onClose={handleCloseAlert4} severity="primary" style={modalStyle2}>
-                  FSF Parameter Added Successfully
-                </Alert>
-              )}
-
-              {/* Alert for Delete FSF Parameters*/}
-              {showAlert5 && (
-                <Alert onClose={handleCloseAlert5} severity="primary" style={modalStyle2}>
-                  FSF Parameter Deleted Successfully
-                </Alert>
-              )}
             </CTableBody>
           </CTable>
           <Box
@@ -2404,7 +2709,7 @@ function FSFform() {
                     help={formErrors.field_length}
                   >
                     <input
-                      type="text"
+                      type="number"
                       value={field_length}
                       onChange={(e) => setFieldLength(e.target.value)}
                       className="form-control form-control-lg"
@@ -2515,73 +2820,106 @@ function FSFform() {
                   <div key={fsf.id}>
                     <div className="form-outline mb-3">
                       <label>Parameter Name</label>
-                      <input
-                        type="text"
-                        value={output_parameter_name}
-                        onChange={(e) => setOutputParameterName(e.target.value)}
-                        className="form-control form-control-lg"
-                        placeholder="Enter Output Parameter Name"
-                      />
+                      <Form.Item
+                        validateStatus={formErrors.output_parameter_name ? 'error' : ''}
+                        help={formErrors.output_parameter_name}
+                      >
+                        <input
+                          type="text"
+                          value={output_parameter_name}
+                          onChange={(e) => setOutputParameterName(e.target.value)}
+                          className="form-control form-control-lg"
+                          placeholder="Enter Output Parameter Name"
+                        />
+                      </Form.Item>
                     </div>
 
                     <div className="form-outline mb-3">
                       <label>Description</label>
-                      <input
-                        type="text"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        className="form-control form-control-lg"
-                        placeholder="Enter Description"
-                      />
+                      <Form.Item
+                        validateStatus={formErrors.description ? 'error' : ''}
+                        help={formErrors.description}
+                      >
+                        <input
+                          type="text"
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                          className="form-control form-control-lg"
+                          placeholder="Enter Description"
+                        />
+                      </Form.Item>
                     </div>
 
                     <div className="form-outline mb-3">
                       <label>Field Technical Name</label>
-                      <input
-                        type="text"
-                        value={field_technical_name}
-                        onChange={(e) => setFieldTechnicalName(e.target.value)}
-                        className="form-control form-control-lg"
-                        placeholder="Enter Field Technical Name"
-                      />
+                      <Form.Item
+                        validateStatus={formErrors.field_technical_name ? 'error' : ''}
+                        help={formErrors.field_technical_name}
+                      >
+                        <input
+                          type="text"
+                          value={field_technical_name}
+                          onChange={(e) => setFieldTechnicalName(e.target.value)}
+                          className="form-control form-control-lg"
+                          placeholder="Enter Field Technical Name"
+                        />
+                      </Form.Item>
                     </div>
 
                     <div className="form-outline mb-3">
                       <label>Field Length</label>
-                      <input
-                        type="text"
-                        value={field_length}
-                        onChange={(e) => setFieldLength(e.target.value)}
-                        className="form-control form-control-lg"
-                        placeholder="Enter Field Length"
-                      />
+                      <Form.Item
+                        validateStatus={formErrors.field_length ? 'error' : ''}
+                        help={formErrors.field_length}
+                      >
+                        <input
+                          type="number"
+                          value={field_length}
+                          onChange={(e) => setFieldLength(e.target.value)}
+                          className="form-control form-control-lg"
+                          placeholder="Enter Field Length"
+                        />
+                      </Form.Item>
                     </div>
 
                     <div className="form-outline mb-3">
                       <label>Field Type</label>
-                      <input
-                        type="text"
-                        value={field_type}
-                        onChange={(e) => setFieldType(e.target.value)}
-                        className="form-control form-control-lg"
-                        placeholder="Enter Field Type"
-                      />
+                      <Form.Item
+                        validateStatus={formErrors.field_type ? 'error' : ''}
+                        help={formErrors.field_type}
+                      >
+                        <input
+                          type="text"
+                          value={field_type}
+                          onChange={(e) => setFieldType(e.target.value)}
+                          className="form-control form-control-lg"
+                          placeholder="Enter Field Type"
+                        />
+                      </Form.Item>
                     </div>
 
                     <div className="form-outline mb-3">
                       <label>Field Table Name</label>
-                      <input
-                        type="text"
-                        value={field_table_name}
-                        onChange={(e) => setFieldTableName(e.target.value)}
-                        className="form-control form-control-lg"
-                        placeholder="Enter Field Table Name"
-                      />
+                      <Form.Item
+                        validateStatus={formErrors.field_table_name ? 'error' : ''}
+                        help={formErrors.field_table_name}
+                      >
+                        <input
+                          type="text"
+                          value={field_table_name}
+                          onChange={(e) => setFieldTableName(e.target.value)}
+                          className="form-control form-control-lg"
+                          placeholder="Enter Field Table Name"
+                        />
+                      </Form.Item>
                     </div>
 
                     <div className="form-outline mb-3">
                       <label>Mandatory or Optional</label>
-                      <Form.Item>
+                      <Form.Item
+                        validateStatus={formErrors.mandatory_or_optional ? 'error' : ''}
+                        help={formErrors.mandatory_or_optional}
+                      >
                         <Select
                           placeholder="Select"
                           onChange={handleMandatoryOrOptionalChange}
@@ -2595,7 +2933,10 @@ function FSFform() {
 
                     <div className="form-outline mb-3">
                       <label>Parameter or Selection</label>
-                      <Form.Item>
+                      <Form.Item
+                        validateStatus={formErrors.parameter_or_selection ? 'error' : ''}
+                        help={formErrors.parameter_or_selection}
+                      >
                         <Select
                           placeholder="Select"
                           onChange={handleParameterOrSelection}
@@ -2643,40 +2984,6 @@ function FSFform() {
                 </Typography>
               </Modal>
 
-              {/* Alert for Add FSF Success*/}
-              {showAlert1 && (
-                <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
-                  FSF Added Successfully
-                </Alert>
-              )}
-
-              {/* Alert for Add FSF Failure*/}
-              {showAlert2 && (
-                <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
-                  Failed to Add FSF
-                </Alert>
-              )}
-
-              {/* Alert for Update FSF Parameters*/}
-              {showAlert3 && (
-                <Alert onClose={handleCloseAlert3} severity="primary" style={modalStyle2}>
-                  FSF Update Successfully
-                </Alert>
-              )}
-
-              {/* Alert for Add FSF Parameters*/}
-              {showAlert4 && (
-                <Alert onClose={handleCloseAlert4} severity="primary" style={modalStyle2}>
-                  FSF Parameter Added Successfully
-                </Alert>
-              )}
-
-              {/* Alert for Delete FSF Parameters*/}
-              {showAlert5 && (
-                <Alert onClose={handleCloseAlert5} severity="primary" style={modalStyle2}>
-                  FSF Parameter Deleted Successfully
-                </Alert>
-              )}
             </CTableBody>
           </CTable>
 
@@ -2710,6 +3017,82 @@ function FSFform() {
         </div>
       )}
       {/* FSF Level 7 Form Ends */}
+
+      {showAlert1 && (
+        <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
+          FSF Forms Submitted Successfully
+        </Alert>
+      )}
+      {showAlert2 && (
+        <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
+          Failed to Submit FSF Forms
+        </Alert>
+      )}
+      {showAlert3 && (
+        <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
+          Input Parameter Added
+        </Alert>
+      )}
+      {showAlert4 && (
+        <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
+          Failed to Add Input Parameter
+        </Alert>
+      )}
+      {showAlert5 && (
+        <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
+          Input Parameter Updated
+        </Alert>
+      )}
+      {showAlert6 && (
+        <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
+          Failed to Update Input Parameter
+        </Alert>
+      )}
+      {showAlert7 && (
+        <Alert onClose={handleCloseAlert7} severity="success" style={modalStyle2}>
+          Input Parameter Deleted
+        </Alert>
+      )}
+      {showAlert8 && (
+        <Alert onClose={handleCloseAlert8} severity="error" style={modalStyle2}>
+          Failed to Delete Input Parameter
+        </Alert>
+      )}
+      {showAlert9 && (
+        <Alert onClose={handleCloseAlert9} severity="success" style={modalStyle2}>
+          Output Parameter Added
+        </Alert>
+      )}
+      {showAlert10 && (
+        <Alert onClose={handleCloseAlert10} severity="error" style={modalStyle2}>
+          Failed to Add Output Parameter
+        </Alert>
+      )}
+      {showAlert11 && (
+        <Alert onClose={handleCloseAlert11} severity="success" style={modalStyle2}>
+          Output Parameter Updated
+        </Alert>
+      )}
+      {showAlert12 && (
+        <Alert onClose={handleCloseAlert12} severity="error" style={modalStyle2}>
+          Failed to Update Output Parameter
+        </Alert>
+      )}
+      {showAlert13 && (
+        <Alert onClose={handleCloseAlert13} severity="success" style={modalStyle2}>
+          Output Parameter Deleted
+        </Alert>
+      )}
+      {showAlert14 && (
+        <Alert onClose={handleCloseAlert14} severity="error" style={modalStyle2}>
+          Failed to Delete Output Parameter
+        </Alert>
+      )}
+      {showAlert15 && (
+        <Alert onClose={handleCloseAlert15} severity="success" style={modalStyle2}>
+          FsF Form Submitted Success
+        </Alert>
+      )}
     </>
   )
 }

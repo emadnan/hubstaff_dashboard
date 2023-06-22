@@ -106,11 +106,11 @@ function AllFSF() {
   };
 
   const modalStyle2 = {
-    position: "fixed",
-    top: "10%",
-    left: "55%",
-    transform: "translateX(-50%)",
-  };
+    position: 'fixed',
+    top: '80%',
+    left: '55%',
+    transform: 'translateX(-50%)',
+  }
 
   //Function for checkbox handling
   const handleSelectUser = (e, permId) => {
@@ -147,7 +147,12 @@ function AllFSF() {
   function getMembers() {
     fetch(`${BASE_URL}/api/getUsersByRoleId/5`)
       .then((response) => response.json())
-      .then((data) => setMembers(data.User))
+      .then((data) => {
+        if (local.Users.role === 7) {
+          filteredUsers = data.User.filter((user) => user.company_id === local.Users.company_id);
+        } 
+        setMembers(filteredUsers)
+      })
       .catch((error) => console.log(error));
   };
 
@@ -336,7 +341,7 @@ function AllFSF() {
     if (showAlert5) {
       const timer = setTimeout(() => {
         setShowAlert5(false);
-      }, 3000);
+      }, 30000);
 
       return () => clearTimeout(timer);
     }
@@ -499,10 +504,10 @@ function AllFSF() {
       })
     }).then(response => {
       if (response.ok) {
-        handleButtonClick3();
         getMembers()
+        handleButtonClick3()
       } else {
-        handleButtonClick4();
+        handleButtonClick4()
       }
     })
       .catch(error => {
@@ -523,9 +528,9 @@ function AllFSF() {
       body: formData,
     }).then(response => {
       if (response.ok) {
-        handleButtonClick5();
+        handleButtonClick5()
       } else {
-        handleButtonClick6();
+        handleButtonClick6()
       }
     })
       .catch(error => {
@@ -797,13 +802,14 @@ function AllFSF() {
                   <h6 style={perStyle}>Authorization Role</h6>
                   <p>{fsf.authorization_role}</p>
                   <h6 style={perStyle}>Development Logic</h6>
-                  <Editor
+                  {/* <Editor
                   apiKey="46tu7q2m7kbsfpbdoc5mwnyn5hs97kdpefj8dnpuvz65aknl"
                   cloudChannel="dev"
                   value={fsf.development_logic}
                   modules={{ toolbar: false }}
                   readOnly={true}
-                  />
+                  /> */}
+                  <p>{fsf.development_logic}</p>
                   <Divider></Divider>
                   <h6 style={perStyle2}>Input Screen</h6>
                   <br></br>
@@ -1053,7 +1059,7 @@ function AllFSF() {
               Members Assigned Successfully
             </Alert>
           )}
-
+          
           {/* Alert for Assign Members Failure*/}
           {showAlert4 && (
             <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
