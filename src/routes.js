@@ -165,12 +165,12 @@ const routes = [
   { path: '/expenses', name: 'Expenses', element: Expenses, requiredRoles: [1] },
   { path: '/allfsf', name: 'All FSF', element: AllFSF, requiredRoles: [1, 5, 6, 7] },
   { path: '/allcrf', name: 'All CRF', element: AllCRF, requiredRoles: [1] },
-  { path: '/fsfform', name: 'FSF Form', element: FSFform, requiredRoles: [1, 3, 6, 7] },
+  { path: '/fsfform', name: 'FSF Form', element: FSFform, requiredRoles: [1, 3, 6] },
   {
     path: '/taskmanagement/createnewtask',
     name: 'Task Assignment',
     element: TaskAssignment,
-    requiredRoles: [1, 3, 6, 7],
+    requiredRoles: [6, 7],
   },
   {
     path: '/taskmanagement/assignedtask',
@@ -181,7 +181,7 @@ const routes = [
   { path: '*', name: '404 Page', element: NotFound, requiredRoles: [1, 3, 5, 6, 7] },
 ]
 
-const filteredRoutes = routes.filter((route) => {
+export const filteredRoutes = routes.filter((route) => {
   // If the route doesn't have any required roles specified, allow access to all authenticated users
   if (!route.requiredRoles || route.requiredRoles.length === 0) {
     return isAuthenticated()
@@ -191,5 +191,3 @@ const filteredRoutes = routes.filter((route) => {
   const userRole = getUserRole()
   return hasAccess(route.requiredRoles, userRole)
 })
-
-export default filteredRoutes

@@ -463,7 +463,7 @@ export default function Pricing() {
                   variant="contained"
                   color="primary"
                   className={classes.primaryAction}
-                  onClick={() => gotoPlanSelection('Desk Starter', 5)}
+                  onClick={() => gotoPlanSelection('Desk Starter', 5000)}
                 >
                   Select plan
                 </Button>
@@ -668,7 +668,7 @@ export default function Pricing() {
                   variant="contained"
                   color="primary"
                   className={classes.primaryAction}
-                  onClick={() => gotoPlanSelection('Desk Pro', 8)}
+                  onClick={() => gotoPlanSelection('Desk Pro', 8000)}
                 >
                   Select plan
                 </Button>

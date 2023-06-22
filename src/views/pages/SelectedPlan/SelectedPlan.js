@@ -112,7 +112,7 @@ function SelectedPlan({ selectedPlanTitle, selectedPlanAmount }) {
     } else if (activeStep === 2) {
       try {
         const { id } = paymentDetails
-        const response = await axios.post('URL', {
+        const response = await axios.post('http://localhost:4000/payment', {
           amount: selectedPlanAmount,
           id,
         }) // Replace 'URL' with the actual endpoint URL

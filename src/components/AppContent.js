@@ -3,10 +3,9 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { CContainer, CSpinner } from '@coreui/react'
 
 // routes config
-import routes from '../routes'
+import { filteredRoutes } from '../routes'
 
 const AppContent = () => {
-
   // const backgrounds = {
   //   backgroundColor: "white",
   // };
@@ -15,7 +14,7 @@ const AppContent = () => {
     <CContainer fluid>
       <Suspense fallback={<CSpinner color="primary" />}>
         <Routes>
-          {routes.map((route, idx) => {
+          {filteredRoutes.map((route, idx) => {
             return (
               route.element && (
                 <Route
