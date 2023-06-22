@@ -49,10 +49,10 @@ const Screenshots = () => {
       console.log('From: ', dateStrings[0], ', to: ', dateStrings[1])
       if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
         getDateWiseScreenshots(dateStrings[0], dateStrings[1], local.Users.user_id)
-        getAllWorkedTimeByInterval(dateStrings[0],dateStrings[1],local.Users.user_id)
+        getAllWorkedTimeByInterval(dateStrings[0], dateStrings[1], local.Users.user_id)
       } else if (local.Users.role === 3) {
         getDateWiseScreenshotsCompany(dateStrings[0], dateStrings[1], local.Users.company_id)
-        getAllWorkedTimeByInterval(dateStrings[0],dateStrings[1],user_id)
+        getAllWorkedTimeByInterval(dateStrings[0], dateStrings[1], user_id)
       }
     } else {
       console.log('Clear')
@@ -78,7 +78,7 @@ const Screenshots = () => {
   const [totalseconds, setTotalSeconds] = useState('')
   const [alltotalhours, setAllTotalHours] = useState('')
   const [alltotalminutes, setAllTotalMinutes] = useState('')
-  const [alltotalseconds, setAllTotalSeconds] = useState('') 
+  const [alltotalseconds, setAllTotalSeconds] = useState('')
   var filteredUsers = []
   var screenfilter = []
   var addressLocate = ''
@@ -251,18 +251,23 @@ const Screenshots = () => {
         <div>
           <h3>Location {addresses.length > 0 && <h3 style={userStyle}>{addresses}</h3>}</h3>
           <br></br>
-          <h3>Today Worked  {totalhours}:{totalminutes}:{totalseconds}</h3>
-          <h3>Total Worked  {alltotalhours}:{alltotalminutes}:{alltotalseconds}</h3>
+          <h3>
+            Today Worked {totalhours}:{totalminutes}:{totalseconds}
+          </h3>
+          <h3>
+            Total Worked {alltotalhours}:{alltotalminutes}:{alltotalseconds}
+          </h3>
         </div>
       ) : null}
       {local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7 ? (
         <div>
           {alltotalhours || alltotalminutes || alltotalseconds ? (
-            <h3>Total Worked  {alltotalhours}:{alltotalminutes}:{alltotalseconds}</h3>
+            <h3>
+              Total Worked {alltotalhours}:{alltotalminutes}:{alltotalseconds}
+            </h3>
           ) : (
             <h3>Total Worked 0:0:0</h3>
-          )
-          }
+          )}
         </div>
       ) : null}
       <div className="row">
@@ -312,7 +317,11 @@ const Screenshots = () => {
                             <AspectRatio ratio="2">
                               {timing.getattechments.map((attach) => (
                                 <div key={attach.id} style={{ position: 'relative' }}>
-                                  <img src={attach.path_url} alt={attach.path_url} />
+                                  <img
+                                    src={attach.path_url}
+                                    alt={attach.path_url}
+                                    style={{ filter: 'blur(3px)' }}
+                                  />
                                   <div
                                     style={{
                                       position: 'absolute',
@@ -320,13 +329,14 @@ const Screenshots = () => {
                                       left: '50%',
                                       transform: 'translate(-50%, -50%)',
                                       backdropFilter: 'blur(10px)',
-                                      padding: '8px',
+                                      padding: '8px 18px',
                                       borderRadius: '4px',
                                       backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                      border: '2px solid black',
                                     }}
                                   >
                                     {/* Replace the count with your desired value */}
-                                    <span style={{ fontSize: '18px', fontWeight: 'bold' }}>
+                                    <span style={{ fontSize: '24px', fontWeight: 'bold' }}>
                                       {timing.getattechments.length}
                                     </span>
                                   </div>
@@ -416,7 +426,11 @@ const Screenshots = () => {
                           <AspectRatio ratio="2">
                             {timing.getattechments.map((attach) => (
                               <div key={attach.id} style={{ position: 'relative' }}>
-                                <img src={attach.path_url} alt={attach.path_url} />
+                                <img
+                                  src={attach.path_url}
+                                  alt={attach.path_url}
+                                  style={{ filter: 'blur(3px)' }}
+                                />
                                 <div
                                   style={{
                                     position: 'absolute',
@@ -424,13 +438,14 @@ const Screenshots = () => {
                                     left: '50%',
                                     transform: 'translate(-50%, -50%)',
                                     backdropFilter: 'blur(10px)',
-                                    padding: '8px',
-                                    borderRadius: '4px',
+                                    padding: '8px 18px',
+                                    borderRadius: '50%',
                                     backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    border: '2px solid black',
                                   }}
                                 >
                                   {/* Replace the count with your desired value */}
-                                  <span style={{ fontSize: '18px', fontWeight: 'bold' }}>
+                                  <span style={{ fontSize: '22px', fontWeight: 'bold' }}>
                                     {timing.getattechments.length}
                                   </span>
                                 </div>
