@@ -153,6 +153,37 @@ function FSFform() {
     imageToLink(content, images);
   };
 
+  const [formErrors, setFormErrors] = useState({
+    reference_id: '',
+    module_id: '',
+    project_id: '',
+    type_of_development: '',
+    ABAP_team_lead_id: '',
+    requested_date: '',
+    priority: '',
+    usage_frequency: '',
+    transaction_code: '',
+    authorization_role: '',
+    input_parameter_name: '',
+    output_parameter_name: '',
+    description: '',
+    field_technical_name: '',
+    field_length: '',
+    field_type: '',
+    field_table_name: '',
+    mandatory_or_optional: '',
+    parameter_or_selection: '',
+  })
+
+  const handleFocus = (e) => {
+    const { name } = e.target
+
+    setFormErrors((prevFormErrors) => ({
+      ...prevFormErrors,
+      [name]: '',
+    }))
+  }
+
   //CSS Styling
   const [isHoveredPrimary, setIsHoveredPrimary] = useState(false)
 
@@ -443,11 +474,29 @@ function FSFform() {
   const [showLevel7, setShowLevel7] = useState(false)
 
   const handleNext1 = () => {
-    setShowLevel1(false)
-    setShowLevel2(true)
+    const errors = {}
+    if (!reference_id) {
+      errors.reference_id = 'Reference Id is required'
+    }
+    if (!module_id) {
+      errors.module_id = 'Module Name is required'
+    }
+    if (!project_id) {
+      errors.project_id = 'Project Name is required'
+    }
+    if (!type_of_development) {
+      errors.type_of_development = 'Type of Development is required'
+    }
+    setFormErrors(errors)
+    if (Object.keys(errors).length === 0) {
+      setShowLevel1(false)
+      setShowLevel2(true)
+    }
+  
     setIsHoveredPrimary(false)
     setIsHoveredDanger(false)
   }
+  
 
   const handleBack2 = () => {
     setShowLevel2(false)
@@ -457,8 +506,26 @@ function FSFform() {
   }
 
   const handleNext2 = () => {
-    setShowLevel2(false)
-    setShowLevel3(true)
+    const errors = {}
+    if (!ABAP_team_lead_id) {
+      errors.ABAP_team_lead_id = 'ABAP Team Lead is required'
+    }
+    if (!requested_date) {
+      errors.requested_date = 'Requested Date is required'
+    }
+    if (!priority) {
+      errors.priority = 'Priority is required'
+    }
+    if (!usage_frequency) {
+      errors.usage_frequency = 'Usage Frequency is required'
+    }
+    setFormErrors(errors)
+
+    if (Object.keys(errors).length === 0) {
+      setShowLevel2(false)
+      setShowLevel3(true)
+    }
+
     setIsHoveredPrimary(false)
     setIsHoveredDanger(false)
   }
@@ -471,8 +538,17 @@ function FSFform() {
   }
 
   const handleNext3 = () => {
-    setShowLevel3(false)
-    setShowLevel4(true)
+    const errors = {}
+    if (!authorization_role) {
+      errors.authorization_role = 'Authorization Role is required'
+    }
+    setFormErrors(errors)
+
+    if (Object.keys(errors).length === 0) {
+      setShowLevel3(false)
+      setShowLevel4(true)
+    }
+    
     setIsHoveredPrimary(false)
     setIsHoveredDanger(false)
     addFsfForm()
@@ -781,7 +857,6 @@ function FSFform() {
         }
       })
       .then((data) => {
-        console.log("My data", data)
         setRef_id(data.id)
       })
       .catch((error) => {
@@ -876,12 +951,10 @@ function FSFform() {
     })
       .then((response) => {
         if (response.ok) {
-          handleButtonClick5()
           getFSFInputParameters()
         }
       })
       .catch((error) => {
-        handleButtonClick2()
         console.error(error)
       })
   }
@@ -908,10 +981,8 @@ function FSFform() {
     })
       .then((response) => {
         if (response.ok) {
-          handleButtonClick3()
           getFSFInputParameters()
         } else {
-          // handleButtonClick6();
         }
       })
       .catch((error) => {
@@ -930,12 +1001,10 @@ function FSFform() {
     })
       .then((response) => {
         if (response.ok) {
-          handleButtonClick5()
           getFSFOutputParameters()
         }
       })
       .catch((error) => {
-        handleButtonClick2()
         console.error(error)
       })
   }
@@ -962,14 +1031,12 @@ function FSFform() {
     })
       .then((response) => {
         if (response.ok) {
-          handleButtonClick3()
           getFSFOutputParameters()
         } else {
           // handleButtonClick6();
         }
       })
       .catch((error) => {
-        handleButtonClick2()
         console.error(error)
       })
   }
@@ -987,12 +1054,9 @@ function FSFform() {
     })
       .then((response) => {
         if (response.ok) {
-          // handleButtonClick5();
-          // getFSFInputParameters();
         }
       })
       .catch((error) => {
-        // handleButtonClick2();
         console.error(error);
       });
   }
@@ -1010,12 +1074,9 @@ function FSFform() {
     })
       .then((response) => {
         if (response.ok) {
-          // handleButtonClick5();
-          // getFSFInputParameters();
         }
       })
       .catch((error) => {
-        // handleButtonClick2();
         console.error(error);
       });
   }
@@ -1080,11 +1141,16 @@ function FSFform() {
 
                 <div className="form-outline mb-3">
                   <label>Reference Id</label>
-                  <Form.Item>
+                  <Form.Item
+                    validateStatus={formErrors.reference_id ? 'error' : ''}
+                    help={formErrors.reference_id}
+                  >
                     <Select
                       placeholder="Select Reference Id"
                       onChange={handleReferenceIdChange}
                       value={reference_id}
+                      name="reference_id"
+                      onFocus={handleFocus}
                     >
                       <Select.Option value="0" key="none">None</Select.Option>
                       {fsfwricef.map((fsf) => (
@@ -1098,11 +1164,16 @@ function FSFform() {
 
                 <div className="form-outline mb-3">
                   <label>Module</label>
-                  <Form.Item>
+                  <Form.Item
+                    validateStatus={formErrors.module_id ? 'error' : ''}
+                    help={formErrors.module_id}
+                  >
                     <Select
                       placeholder="Select Module"
                       onChange={handleModuleChange}
                       value={module_id}
+                      name="module_id"
+                      onFocus={handleFocus}
                     >
                       {projectmodule.map((proj) => (
                         <Select.Option value={proj.id} key={proj.id} module_name={proj.name}>
@@ -1115,11 +1186,16 @@ function FSFform() {
 
                 <div className="form-outline mb-3">
                   <label>Project</label>
-                  <Form.Item>
+                  <Form.Item
+                    validateStatus={formErrors.project_id ? 'error' : ''}
+                    help={formErrors.project_id}
+                  >
                     <Select
                       placeholder="Select Project"
                       onChange={handleProjectChange}
                       value={project_id}
+                      name="project_id"
+                      onFocus={handleFocus}
                     >
                       {project.map((pro) => (
                         <Select.Option value={pro.id} key={pro.id} project_name={pro.project_name}>
@@ -1132,11 +1208,16 @@ function FSFform() {
 
                 <div className="form-outline mb-3">
                   <label>Type of Development</label>
-                  <Form.Item>
+                  <Form.Item
+                    validateStatus={formErrors.type_of_development ? 'error' : ''}
+                    help={formErrors.type_of_development}
+                  >
                     <Select
                       placeholder="Select Type of Development"
                       onChange={handleTypeOfDevelopmentChange}
                       value={type_of_development}
+                      name="type_of_development"
+                      onFocus={handleFocus}
                     >
                       <Select.Option value="Workflow">Workflow</Select.Option>
                       <Select.Option value="Report">Report</Select.Option>
@@ -1191,30 +1272,12 @@ function FSFform() {
             <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
               <CardContent>
 
-                {/* <div className="form-outline mb-3">
-                  <label>WRICEF Id</label>
-                  <input
-                    type="text"
-                    value={wricef_id}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Wricef Id"
-                  />
-                </div> */}
-
-                {/* <div className="form-outline mb-3">
-                  <label>Functional Lead</label>
-                  <input
-                    type="number"
-                    value={local.Users.id}
-                    onChange={handleFunctionalLeadChange}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Functional Lead"
-                  />
-                </div> */}
-
                 <div className="form-outline mb-3">
                   <label>ABAP Team Lead</label>
-                  <Form.Item>
+                  <Form.Item
+                    validateStatus={formErrors.ABAP_team_lead_id ? 'error' : ''}
+                    help={formErrors.ABAP_team_lead_id}
+                  >
                     <Select
                       placeholder="Select ABAP Team Lead"
                       onChange={handleAbapTeamLeadId}
@@ -1231,18 +1294,26 @@ function FSFform() {
 
                 <div className="form-outline mb-3">
                   <label>Requested Date</label>
-                  <input
-                    type="date"
-                    value={requested_date}
-                    onChange={(e) => setRequestedDate(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Requested Date"
-                  />
+                  <Form.Item
+                    validateStatus={formErrors.requested_date ? 'error' : ''}
+                    help={formErrors.requested_date}
+                  >
+                    <input
+                      type="date"
+                      value={requested_date}
+                      onChange={(e) => setRequestedDate(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Requested Date"
+                    />
+                  </Form.Item>
                 </div>
 
                 <div className="form-outline mb-3">
                   <label>Priority</label>
-                  <Form.Item>
+                  <Form.Item
+                    validateStatus={formErrors.priority ? 'error' : ''}
+                    help={formErrors.priority}
+                  >
                     <Select
                       placeholder="Select Priority"
                       onChange={handlePriorityChange}
@@ -1259,7 +1330,10 @@ function FSFform() {
 
                 <div className="form-outline mb-3">
                   <label>Usage Frequency</label>
-                  <Form.Item>
+                  <Form.Item
+                    validateStatus={formErrors.usage_frequency ? 'error' : ''}
+                    help={formErrors.usage_frequency}
+                  >
                     <Select
                       placeholder="Select Usage Frequency"
                       onChange={handleUsageFrequencyChange}
@@ -1325,25 +1399,30 @@ function FSFform() {
               <CardContent>
 
                 <div className="form-outline mb-3">
-                  <label>Transaction Code</label>
-                  <input
-                    type="text"
-                    value={transaction_code}
-                    onChange={(e) => setTransactionCode(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Transaction Code"
-                  />
+                  <label>Custom Transaction Code</label>
+                    <input
+                      type="text"
+                      value={transaction_code}
+                      onChange={(e) => setTransactionCode(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Custom Transaction Code"
+                    />
                 </div>
 
                 <div className="form-outline mb-3">
                   <label>Authorization Role</label>
-                  <input
-                    type="text"
-                    value={authorization_role}
-                    onChange={(e) => setAuthorizationRole(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Authorization Role"
-                  />
+                  <Form.Item
+                    validateStatus={formErrors.authorization_role ? 'error' : ''}
+                    help={formErrors.authorization_role}
+                  >
+                    <input
+                      type="text"
+                      value={authorization_role}
+                      onChange={(e) => setAuthorizationRole(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Authorization Role"
+                    />
+                  </Form.Item>
                 </div>
 
                 <Editor
@@ -1616,6 +1695,10 @@ function FSFform() {
 
                 <div className="form-outline mb-3">
                   <label>Parameter Name</label>
+                  <Form.Item
+                    validateStatus={formErrors.input_parameter_name ? 'error' : ''}
+                    help={formErrors.input_parameter_name}
+                  >
                   <input
                     type="text"
                     value={input_parameter_name}
@@ -1623,66 +1706,95 @@ function FSFform() {
                     className="form-control form-control-lg"
                     placeholder="Enter Input Parameter Name"
                   />
+                  </Form.Item>
                 </div>
 
                 <div className="form-outline mb-3">
                   <label>Description</label>
-                  <input
-                    type="text"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Description"
-                  />
+                  <Form.Item
+                    validateStatus={formErrors.description ? 'error' : ''}
+                    help={formErrors.description}
+                  >
+                    <input
+                      type="text"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Description"
+                    />
+                  </Form.Item>
                 </div>
 
                 <div className="form-outline mb-3">
                   <label>Field Technical Name</label>
-                  <input
-                    type="text"
-                    value={field_technical_name}
-                    onChange={(e) => setFieldTechnicalName(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Field Technical Name"
-                  />
+                  <Form.Item
+                    validateStatus={formErrors.field_technical_name ? 'error' : ''}
+                    help={formErrors.field_technical_name}
+                  >
+                    <input
+                      type="text"
+                      value={field_technical_name}
+                      onChange={(e) => setFieldTechnicalName(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Field Technical Name"
+                    />
+                  </Form.Item>
                 </div>
 
                 <div className="form-outline mb-3">
                   <label>Field Length</label>
-                  <input
-                    type="text"
-                    value={field_length}
-                    onChange={(e) => setFieldLength(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Field Length"
-                  />
+                  <Form.Item
+                    validateStatus={formErrors.field_length ? 'error' : ''}
+                    help={formErrors.field_length}
+                  >
+                    <input
+                      type="text"
+                      value={field_length}
+                      onChange={(e) => setFieldLength(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Field Length"
+                    />
+                  </Form.Item>
                 </div>
 
                 <div className="form-outline mb-3">
                   <label>Field Type</label>
-                  <input
-                    type="text"
-                    value={field_type}
-                    onChange={(e) => setFieldType(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Field Type"
-                  />
+                  <Form.Item
+                    validateStatus={formErrors.field_type ? 'error' : ''}
+                    help={formErrors.field_type}
+                  >
+                    <input
+                      type="text"
+                      value={field_type}
+                      onChange={(e) => setFieldType(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Field Type"
+                    />
+                  </Form.Item>
                 </div>
 
                 <div className="form-outline mb-3">
                   <label>Field Table Name</label>
-                  <input
-                    type="text"
-                    value={field_table_name}
-                    onChange={(e) => setFieldTableName(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Field Table Name"
-                  />
+                  <Form.Item
+                    validateStatus={formErrors.field_table_name ? 'error' : ''}
+                    help={formErrors.field_table_name}
+                  >
+                    <input
+                      type="text"
+                      value={field_table_name}
+                      onChange={(e) => setFieldTableName(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Field Table Name"
+                    />
+                  </Form.Item>
                 </div>
 
                 <div className="form-outline mb-3">
                   <label>Mandatory or Optional</label>
-                  <Form.Item>
+                  <Form.Item
+                    validateStatus={formErrors.mandatory_or_optional ? 'error' : ''}
+                    help={formErrors.mandatory_or_optional}
+                  >
                     <Select
                       placeholder="Select"
                       onChange={handleMandatoryOrOptionalChange}
@@ -1696,7 +1808,10 @@ function FSFform() {
 
                 <div className="form-outline mb-3">
                   <label>Parameter or Selection</label>
-                  <Form.Item>
+                  <Form.Item
+                    validateStatus={formErrors.parameter_or_selection ? 'error' : ''}
+                    help={formErrors.parameter_or_selection}
+                  >
                     <Select
                       placeholder="Select"
                       onChange={handleParameterOrSelection}

@@ -110,61 +110,6 @@ const Register = () => {
     }
   }
 
-  //   // Validate the form
-  //   const errors = {}
-  //   if (!name) {
-  //     errors.name = 'Company Name is required'
-  //   }
-  //   if (!email) {
-  //     errors.email = 'Email is required'
-  //   }
-  //   if (!password) {
-  //     errors.password = 'Password is required'
-  //   }
-  //   if (!confirmpass) {
-  //     errors.confirmpass = 'Confirmation of Password is required'
-  //   }
-  //   if (password && confirmpass && password !== confirmpass) {
-  //     errors.confirmpass = 'Passwords are not matching'
-  //   }
-
-  //   // Update the form errors
-  //   setFormErrors(errors)
-  //   let item = { name, email, password, confirmpass, role: 3 }
-  //   let response
-  //   try {
-  //     response = await fetch(`${BASE_URL}/api/register`, {
-  //       method: 'POST',
-  //       body: JSON.stringify(item),
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     })
-  //   } catch (error) {
-  //     console.error(error)
-  //     handleButtonClick4()
-  //     return
-  //   }
-
-  //   if (response.status === 400) {
-  //     handleButtonClick1()
-  //   } else if (response.status === 404) {
-  //     handleButtonClick3()
-  //   } else {
-  //     try {
-  //       const result = await response.json()
-  //       localStorage.setItem('user-info', JSON.stringify(result))
-  //       handleButtonClick2()
-  //       setTimeout(async () => {
-  //         await navigate('/login')
-  //       }, 2000)
-  //     } catch (error) {
-  //       console.error(error)
-  //       handleButtonClick4()
-  //     }
-  //   }
-  // }
-
   //Functions for Company register failure
   const [showAlert1, setShowAlert1] = useState(false)
 
