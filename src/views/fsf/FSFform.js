@@ -315,16 +315,46 @@ function FSFform() {
   }
 
   const handleOk = () => {
-    addInputParameter()
-    setIsModalOpen(false)
-    setInputParameterName('')
-    setDescription('')
-    setFieldTechnicalName('')
-    setFieldLength('')
-    setFieldType('')
-    setFieldTableName('')
-    setMandatoryOrOptional('')
-    setParameterOrSelection('')
+
+    const errors = {}
+    if (!input_parameter_name) {
+      errors.input_parameter_name = 'Input Parameter Name is required'
+    }
+    if (!description) {
+      errors.description = 'Description is required'
+    }
+    if (!field_technical_name) {
+      errors.field_technical_name = 'Field Technical Name is required'
+    }
+    if (!field_length) {
+      errors.field_length = 'Field Length is required'
+    }
+    if (!field_type) {
+      errors.field_type = 'Field Type is required'
+    }
+    if (!field_table_name) {
+      errors.field_table_name = 'Field Table Name is required'
+    }
+    if (!mandatory_or_optional) {
+      errors.mandatory_or_optional = 'Selection is required'
+    }
+    if (!parameter_or_selection) {
+      errors.parameter_or_selection = 'Selection is required'
+    }
+    setFormErrors(errors)
+
+    if (Object.keys(errors).length === 0) {
+      addInputParameter()
+      setIsModalOpen(false)
+      setInputParameterName('')
+      setDescription('')
+      setFieldTechnicalName('')
+      setFieldLength('')
+      setFieldType('')
+      setFieldTableName('')
+      setMandatoryOrOptional('')
+      setParameterOrSelection('')
+    }
   }
 
   const handleCancel = () => {
@@ -346,16 +376,46 @@ function FSFform() {
   }
 
   const handleOk2 = () => {
-    addOutputParameter()
-    setIsModalOpen2(false)
-    setOutputParameterName('')
-    setDescription('')
-    setFieldTechnicalName('')
-    setFieldLength('')
-    setFieldType('')
-    setFieldTableName('')
-    setMandatoryOrOptional('')
-    setParameterOrSelection('')
+
+    const errors = {}
+    if (!output_parameter_name) {
+      errors.output_parameter_name = 'Output Parameter Name is required'
+    }
+    if (!description) {
+      errors.description = 'Description is required'
+    }
+    if (!field_technical_name) {
+      errors.field_technical_name = 'Field Technical Name is required'
+    }
+    if (!field_length) {
+      errors.field_length = 'Field Length is required'
+    }
+    if (!field_type) {
+      errors.field_type = 'Field Type is required'
+    }
+    if (!field_table_name) {
+      errors.field_table_name = 'Field Table Name is required'
+    }
+    if (!mandatory_or_optional) {
+      errors.mandatory_or_optional = 'Selection is required'
+    }
+    if (!parameter_or_selection) {
+      errors.parameter_or_selection = 'Selection is required'
+    }
+    setFormErrors(errors)
+
+    if (Object.keys(errors).length === 0) {
+      addOutputParameter()
+      setIsModalOpen2(false)
+      setOutputParameterName('')
+      setDescription('')
+      setFieldTechnicalName('')
+      setFieldLength('')
+      setFieldType('')
+      setFieldTableName('')
+      setMandatoryOrOptional('')
+      setParameterOrSelection('')
+    }
   }
 
   const handleCancel2 = () => {
@@ -2288,75 +2348,109 @@ function FSFform() {
                 <Typography variant="h5" component="div" sx={{ marginBottom: '10px' }}>
                   Add a Parameter
                 </Typography>
+
                 <div className="form-outline mb-3">
                   <label>Parameter Name</label>
-                  <input
-                    type="text"
-                    value={output_parameter_name}
-                    onChange={(e) => setOutputParameterName(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Output Parameter Name"
-                  />
+                  <Form.Item
+                    validateStatus={formErrors.output_parameter_name ? 'error' : ''}
+                    help={formErrors.output_parameter_name}
+                  >
+                    <input
+                      type="text"
+                      value={output_parameter_name}
+                      onChange={(e) => setOutputParameterName(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Output Parameter Name"
+                    />
+                  </Form.Item>
                 </div>
 
                 <div className="form-outline mb-3">
                   <label>Description</label>
-                  <input
-                    type="text"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Description"
-                  />
+                  <Form.Item
+                    validateStatus={formErrors.description ? 'error' : ''}
+                    help={formErrors.description}
+                  >
+                    <input
+                      type="text"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Description"
+                    />
+                  </Form.Item>
                 </div>
 
                 <div className="form-outline mb-3">
                   <label>Field Technical Name</label>
-                  <input
-                    type="text"
-                    value={field_technical_name}
-                    onChange={(e) => setFieldTechnicalName(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Field Technical Name"
-                  />
+                  <Form.Item
+                    validateStatus={formErrors.field_technical_name ? 'error' : ''}
+                    help={formErrors.field_technical_name}
+                  >
+                    <input
+                      type="text"
+                      value={field_technical_name}
+                      onChange={(e) => setFieldTechnicalName(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Field Technical Name"
+                    />
+                  </Form.Item>
                 </div>
 
                 <div className="form-outline mb-3">
                   <label>Field Length</label>
-                  <input
-                    type="text"
-                    value={field_length}
-                    onChange={(e) => setFieldLength(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Field Length"
-                  />
+                  <Form.Item
+                    validateStatus={formErrors.field_length ? 'error' : ''}
+                    help={formErrors.field_length}
+                  >
+                    <input
+                      type="text"
+                      value={field_length}
+                      onChange={(e) => setFieldLength(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Field Length"
+                    />
+                  </Form.Item>
                 </div>
 
                 <div className="form-outline mb-3">
                   <label>Field Type</label>
-                  <input
-                    type="text"
-                    value={field_type}
-                    onChange={(e) => setFieldType(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Field Type"
-                  />
+                  <Form.Item
+                    validateStatus={formErrors.field_type ? 'error' : ''}
+                    help={formErrors.field_type}
+                  >
+                    <input
+                      type="text"
+                      value={field_type}
+                      onChange={(e) => setFieldType(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Field Type"
+                    />
+                  </Form.Item>
                 </div>
 
                 <div className="form-outline mb-3">
                   <label>Field Table Name</label>
-                  <input
-                    type="text"
-                    value={field_table_name}
-                    onChange={(e) => setFieldTableName(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Field Table Name"
-                  />
+                  <Form.Item
+                    validateStatus={formErrors.field_table_name ? 'error' : ''}
+                    help={formErrors.field_table_name}
+                  >
+                    <input
+                      type="text"
+                      value={field_table_name}
+                      onChange={(e) => setFieldTableName(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Field Table Name"
+                    />
+                  </Form.Item>
                 </div>
 
                 <div className="form-outline mb-3">
                   <label>Mandatory or Optional</label>
-                  <Form.Item>
+                  <Form.Item
+                    validateStatus={formErrors.mandatory_or_optional ? 'error' : ''}
+                    help={formErrors.mandatory_or_optional}
+                  >
                     <Select
                       placeholder="Select"
                       onChange={handleMandatoryOrOptionalChange}
@@ -2370,7 +2464,10 @@ function FSFform() {
 
                 <div className="form-outline mb-3">
                   <label>Parameter or Selection</label>
-                  <Form.Item>
+                  <Form.Item
+                    validateStatus={formErrors.parameter_or_selection ? 'error' : ''}
+                    help={formErrors.parameter_or_selection}
+                  >
                     <Select
                       placeholder="Select"
                       onChange={handleParameterOrSelection}
