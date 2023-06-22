@@ -512,7 +512,12 @@ const Projects = () => {
   function getStreams() {
     fetch(`${BASE_URL}/api/get-streams`)
       .then((response) => response.json())
-      .then((data) => setStream(data.Streams))
+      .then((data) => {
+        if (local.Users.role === 3) {
+          filteredUsers = data.Streams.filter((stream) => stream.company_id === local.Users.company_id)
+        }
+        setStream(filteredUsers)
+      })
       .catch((error) => console.log(error))
   }
 
