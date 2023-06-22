@@ -2111,7 +2111,7 @@ function FSFform() {
                     help={formErrors.field_length}
                   >
                     <input
-                      type="text"
+                      type="number"
                       value={field_length}
                       onChange={(e) => setFieldLength(e.target.value)}
                       className="form-control form-control-lg"
@@ -2276,7 +2276,7 @@ function FSFform() {
                         help={formErrors.field_length}
                       >
                         <input
-                          type="text"
+                          type="number"
                           value={field_length}
                           onChange={(e) => setFieldLength(e.target.value)}
                           className="form-control form-control-lg"
@@ -2709,7 +2709,7 @@ function FSFform() {
                     help={formErrors.field_length}
                   >
                     <input
-                      type="text"
+                      type="number"
                       value={field_length}
                       onChange={(e) => setFieldLength(e.target.value)}
                       className="form-control form-control-lg"
@@ -2873,7 +2873,7 @@ function FSFform() {
                         help={formErrors.field_length}
                       >
                         <input
-                          type="text"
+                          type="number"
                           value={field_length}
                           onChange={(e) => setFieldLength(e.target.value)}
                           className="form-control form-control-lg"
