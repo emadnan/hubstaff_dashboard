@@ -268,7 +268,7 @@ export const _navCompanyAdmin = [
       {
         component: CNavItem,
         name: 'Monthly',
-        to: '/reports/monthly',
+        to: '/reports_monthly',
       },
     ],
   },
