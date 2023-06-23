@@ -28,10 +28,15 @@ const SelectedPlanWrapper = () => {
   const location = useLocation()
   const selectedPlanAmount = location.state?.selectedPlanAmount || 0
   const selectedPlanTitle = location.state?.selectedPlanTitle || ''
+  const selectedPlanId = location.state?.selectedPlanId || 0
 
   return (
     <Elements stripe={stripePromise}>
-      <SelectedPlan selectedPlanTitle={selectedPlanTitle} selectedPlanAmount={selectedPlanAmount} />
+      <SelectedPlan
+        selectedPlanTitle={selectedPlanTitle}
+        selectedPlanAmount={selectedPlanAmount}
+        selectedPlanId={selectedPlanId}
+      />
     </Elements>
   )
 }

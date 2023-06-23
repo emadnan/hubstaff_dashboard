@@ -102,7 +102,6 @@ const Register = () => {
         }, 2000)
       }
     } catch (error) {
-      console.log('Jahanzaib Baig')
       console.error(error)
       if (Object.keys(errors).length === 0) {
         handleButtonClick4()

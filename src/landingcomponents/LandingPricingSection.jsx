@@ -39,8 +39,10 @@ export default function Pricing() {
   const classes = useStyles()
 
   const navigate = useNavigate()
-  const gotoPlanSelection = (title, amount) => {
-    navigate('/selectedPlan', { state: { selectedPlanTitle: title, selectedPlanAmount: amount } })
+  const gotoPlanSelection = (title, amount, id) => {
+    navigate('/selectedPlan', {
+      state: { selectedPlanTitle: title, selectedPlanAmount: amount, selectedPlanId: id },
+    })
   }
   return (
     <Container maxWidth="lg">
@@ -258,7 +260,7 @@ export default function Pricing() {
                   variant="contained"
                   color="primary"
                   className={classes.primaryAction}
-                  onClick={() => gotoPlanSelection('Desk Free', 0)}
+                  onClick={() => gotoPlanSelection('Desk Free', 0, 1)}
                 >
                   Select plan
                 </Button>
@@ -463,7 +465,7 @@ export default function Pricing() {
                   variant="contained"
                   color="primary"
                   className={classes.primaryAction}
-                  onClick={() => gotoPlanSelection('Desk Starter', 5000)}
+                  onClick={() => gotoPlanSelection('Desk Starter', 5000, 2)}
                 >
                   Select plan
                 </Button>
@@ -668,7 +670,7 @@ export default function Pricing() {
                   variant="contained"
                   color="primary"
                   className={classes.primaryAction}
-                  onClick={() => gotoPlanSelection('Desk Pro', 8000)}
+                  onClick={() => gotoPlanSelection('Desk Pro', 8000, 3)}
                 >
                   Select plan
                 </Button>
