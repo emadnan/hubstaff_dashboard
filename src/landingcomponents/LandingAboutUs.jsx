@@ -27,7 +27,7 @@ const LandingAboutUs = () => {
           <div className="flex justify-center">
             <button className="inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg">
               <a
-                href="https://mega.nz/file/1bY1QbgD#mTHJZW-_uNdD5GmNjeYAjkdWuZizvQvTL9gC7CLlRdc"
+                href="https://mega.nz/file/oPw1jTDJ#RHzYigSuEFTweGfgqMKMkq4pDBd-yX3oIepPcDBGnMw"
                 target="blank"
                 style={{ textDecoration: 'none', color: 'white' }}
               >
