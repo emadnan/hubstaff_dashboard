@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import CssBaseline from '@mui/material/CssBaseline'
 import Box from '@mui/material/Box'
@@ -21,6 +21,7 @@ import {
   useElements,
 } from '@stripe/react-stripe-js'
 import axios from 'axios'
+const BASE_URL = process.env.REACT_APP_BASE_URL
 
 const steps = ['Sign Up', 'Payment Details', 'Review']
 
@@ -31,6 +32,7 @@ function getStepContent(
   paymentDetails,
   selectedPlanTitle,
   selectedPlanAmount,
+  selectedPlanId,
 ) {
   switch (step) {
     case 0:
@@ -43,6 +45,7 @@ function getStepContent(
           paymentDetails={paymentDetails}
           selectedPlanTitle={selectedPlanTitle}
           selectedPlanAmount={selectedPlanAmount}
+          selectedPlanId={selectedPlanId}
         />
       )
     default:
@@ -53,7 +56,8 @@ function getStepContent(
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme()
 
-function SelectedPlan({ selectedPlanTitle, selectedPlanAmount }) {
+function SelectedPlan({ selectedPlanTitle, selectedPlanAmount, selectedPlanId }) {
+  const [company_id, setCompanyId] = useState()
   const [paymentDetails, setPaymentDetails] = useState()
   const stripe = useStripe()
   const elements = useElements()
@@ -93,7 +97,19 @@ function SelectedPlan({ selectedPlanTitle, selectedPlanAmount }) {
         password: signUpFormData.password,
         confirmPassword: signUpFormData.confirmPassword,
       }
-      console.log('signUpFormValues : ', signUpFormValues)
+      try {
+        const response = await fetch(`${BASE_URL}/api/register`, {
+          method: 'POST',
+          body: JSON.stringify(signUpFormValues),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        const result = await response.json()
+        setCompanyId(result.company.company_id)
+      } catch (error) {
+        console.error(error)
+      }
       setActiveStep(activeStep + 1)
     } else if (activeStep === 1) {
       const { error, paymentMethod } = await stripe.createPaymentMethod({
@@ -112,9 +128,11 @@ function SelectedPlan({ selectedPlanTitle, selectedPlanAmount }) {
     } else if (activeStep === 2) {
       try {
         const { id } = paymentDetails
-        const response = await axios.post('http://localhost:4000/payment', {
+        const response = await axios.post(`${BASE_URL}/api/addSubscriptionInvoice`, {
           amount: selectedPlanAmount,
-          id,
+          stripe_id: id,
+          company_id,
+          subscription_id: selectedPlanId,
         }) // Replace 'URL' with the actual endpoint URL
         if (response.data.success) {
           console.log('Successful Payment')
@@ -158,6 +176,7 @@ function SelectedPlan({ selectedPlanTitle, selectedPlanAmount }) {
                 paymentDetails,
                 selectedPlanTitle,
                 selectedPlanAmount,
+                selectedPlanId,
               )}
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 {activeStep !== 0 && (
@@ -181,6 +200,7 @@ function SelectedPlan({ selectedPlanTitle, selectedPlanAmount }) {
 SelectedPlan.propTypes = {
   selectedPlanAmount: PropTypes.number.isRequired,
   selectedPlanTitle: PropTypes.string.isRequired,
+  selectedPlanId: PropTypes.number.isRequired,
 }
 
 export default SelectedPlan

@@ -5,7 +5,12 @@ import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import PropTypes from 'prop-types'
 
-export default function Review({ paymentDetails, selectedPlanTitle, selectedPlanAmount }) {
+export default function Review({
+  paymentDetails,
+  selectedPlanTitle,
+  selectedPlanAmount,
+  selectedPlanId,
+}) {
   const { card } = paymentDetails
   const capitalizedCardBrand = card.brand.charAt(0).toUpperCase() + card.brand.slice(1)
 
@@ -70,4 +75,5 @@ Review.propTypes = {
   }).isRequired,
   selectedPlanAmount: PropTypes.number.isRequired,
   selectedPlanTitle: PropTypes.string.isRequired,
+  selectedPlanId: PropTypes.string.isRequired,
 }
