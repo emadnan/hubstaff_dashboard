@@ -52,7 +52,7 @@ const routes = [
   { path: '/', exact: true, name: 'Home', requiredRoles: [1, 3, 5, 6, 7] },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard, requiredRoles: [1, 3, 5, 6, 7] },
   {
-    path: '/activity_screenshots',
+    path: '/activity-screenshots',
     name: 'Screenshots',
     element: Screenshots,
     requiredRoles: [1, 3, 5, 6, 7],
