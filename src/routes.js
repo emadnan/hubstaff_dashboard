@@ -153,7 +153,7 @@ const routes = [
     element: Timenactivity,
     requiredRoles: [1, 3],
   },
-  { path: '/reports/monthly', name: 'Weekly', element: Monthly, requiredRoles: [1, 3] },
+  { path: '/reports_monthly', name: 'Weekly', element: Monthly, requiredRoles: [1, 3] },
   // { path: '/reports/weekly', name: 'Weekly', element: Weekly, requiredRoles: [1, 3, 5, 6, 7] },
   { path: '/teams', name: 'Teams', element: Teams, requiredRoles: [1, 3, 5, 6, 7] },
   {

@@ -42,6 +42,7 @@ function FSFform() {
   const [transaction_code, setTransactionCode] = useState('')
   const [authorization_role, setAuthorizationRole] = useState('')
   const [development_logic, setDevelopmentLogic] = useState('')
+  const [attachment, setAttachment] = useState(null)
 
   const [fsf_id, setFsfId] = useState('')
   const [description, setDescription] = useState('')
@@ -73,9 +74,21 @@ function FSFform() {
   const [imageError, setImageError] = useState(false);
   const [selectedImage2, setSelectedImage2] = useState(null);
   const [imageError2, setImageError2] = useState(false);
+  // const [selectedImage3, setSelectedImage3] = useState(null);
+  const [imageError3, setImageError3] = useState(false);
+
+  const getCurrentDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    return formattedDate;
+  };
 
   const fileInputRef = useRef(null);
   const fileInputRef2 = useRef(null);
+  const fileInputRef3 = useRef(null);
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -107,7 +120,24 @@ function FSFform() {
     }
   };
 
+  const handleFileUpload3 = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setAttachment(event.target.result);
+        setImageError3(false);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setAttachment(null);
+      setImageError3(true);
+    }
+  };
+
   useEffect(() => {
+    const currentDate = getCurrentDate();
+    setRequestedDate(currentDate);
     setWRicefId(`Biafo-${projectName}-${moduleName}`);
   }, [projectName, moduleName]);
 
@@ -1176,6 +1206,7 @@ function FSFform() {
       transaction_code,
       authorization_role,
       development_logic,
+      attachment,
     }
     console.log(data)
 
@@ -1639,7 +1670,7 @@ function FSFform() {
                   </Form.Item>
                 </div>
 
-                <div className="form-outline mb-3">
+                {/* <div className="form-outline mb-3">
                   <label>Requested Date</label>
                   <Form.Item
                     validateStatus={formErrors.requested_date ? 'error' : ''}
@@ -1653,7 +1684,7 @@ function FSFform() {
                       placeholder="Enter Requested Date"
                     />
                   </Form.Item>
-                </div>
+                </div> */}
 
                 <div className="form-outline mb-3">
                   <label>Priority</label>
@@ -1778,8 +1809,7 @@ function FSFform() {
                     validateStatus={formErrors.development_logic ? 'error' : ''}
                     help={formErrors.development_logic}
                   >
-                    <input
-                      type="text"
+                    <textarea
                       value={development_logic}
                       onChange={(e) => setDevelopmentLogic(e.target.value)}
                       className="form-control form-control-lg"
@@ -1787,6 +1817,37 @@ function FSFform() {
                     />
                   </Form.Item>
                 </div>
+
+                <div className="form-outline mb-3">
+                  <input
+                    type="file"
+                    onChange={handleFileUpload3}
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    ref={fileInputRef3}
+                  />
+                </div>
+
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button
+                    onClick={() => fileInputRef3.current.click()}
+                    style={primaryButtonStyle}
+                    onMouseEnter={handleMouseEnterSuccess}
+                    onMouseLeave={handleMouseLeaveSuccess}
+                  >
+                    Upload Image
+                  </Button>
+                </div>
+
+                {imageError && <p>Error: Please select a valid image file.</p>}
+
+                {attachment && (
+                  <div>
+                    {/* <h4>Selected Image:</h4> */}
+                    <img src={attachment} alt="Attachment" />
+                  </div>
+                )}
 
                 {/* <Editor
                   apiKey="46tu7q2m7kbsfpbdoc5mwnyn5hs97kdpefj8dnpuvz65aknl"
