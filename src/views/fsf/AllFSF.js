@@ -595,7 +595,7 @@ function AllFSF() {
                   ) : null
                 }
                 {
-                  local.Users.role === 7 ? (
+                  local.Users.role === 7 || local.Users.role === 6 ? (
                     <CTableHeaderCell className="text-center" style={mystyle}>View</CTableHeaderCell>
                   ) : null
                 }
@@ -638,7 +638,7 @@ function AllFSF() {
                     ) : null
                   }
                   {
-                    local.Users.role === 7 ? (
+                    local.Users.role === 7 || local.Users.role === 6 ? (
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         <IconButton aria-label="view" title='View FSF' onClick={() => showModal(fsf.id)}>
                           <VisibilityIcon htmlColor="#28B463" />
@@ -810,11 +810,18 @@ function AllFSF() {
                   readOnly={true}
                   /> */}
                   <p>{fsf.development_logic}</p>
+                  <div style={{ display: 'flex', justifyContent: 'left' }}>
+                    <a href={fsf.attachment}>
+                      <img src={fsf.attachment} alt="Attachment" style={{ width: '400px', height: '200px' }} />
+                    </a>
+                  </div>
                   <Divider></Divider>
                   <h6 style={perStyle2}>Input Screen</h6>
                   <br></br>
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <a href={fsf.input_screen}>
                     <img src={fsf.input_screen} alt="Input Screen" style={{ width: '800px', height: '400px' }} />
+                    </a>
                   </div>
                   <br></br>
                   <h6 style={perStyle2}>Input Parameters</h6>
@@ -857,7 +864,9 @@ function AllFSF() {
                   <h6 style={perStyle2}>Output Screen</h6>
                   <br></br>
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <a href={fsf.output_screen}>
                     <img src={fsf.output_screen} alt="Output Screen" style={{ width: '800px', height: '400px' }} />
+                    </a>
                   </div>
                   <br></br>
                   <h6 style={perStyle2}>Output Parameters</h6>

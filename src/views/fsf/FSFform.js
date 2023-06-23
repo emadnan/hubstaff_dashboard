@@ -42,6 +42,7 @@ function FSFform() {
   const [transaction_code, setTransactionCode] = useState('')
   const [authorization_role, setAuthorizationRole] = useState('')
   const [development_logic, setDevelopmentLogic] = useState('')
+  const [attachment, setAttachment] = useState(null)
 
   const [fsf_id, setFsfId] = useState('')
   const [description, setDescription] = useState('')
@@ -73,9 +74,12 @@ function FSFform() {
   const [imageError, setImageError] = useState(false);
   const [selectedImage2, setSelectedImage2] = useState(null);
   const [imageError2, setImageError2] = useState(false);
+  // const [selectedImage3, setSelectedImage3] = useState(null);
+  const [imageError3, setImageError3] = useState(false);
 
   const fileInputRef = useRef(null);
   const fileInputRef2 = useRef(null);
+  const fileInputRef3 = useRef(null);
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -104,6 +108,21 @@ function FSFform() {
     } else {
       setSelectedImage2(null);
       setImageError2(true);
+    }
+  };
+
+  const handleFileUpload3 = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setAttachment(event.target.result);
+        setImageError3(false);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setAttachment(null);
+      setImageError3(true);
     }
   };
 
@@ -1176,6 +1195,7 @@ function FSFform() {
       transaction_code,
       authorization_role,
       development_logic,
+      attachment,
     }
     console.log(data)
 
@@ -1787,6 +1807,26 @@ function FSFform() {
                     />
                   </Form.Item>
                 </div>
+
+                <div className="form-outline mb-3">
+                  <input
+                    type="file"
+                    onChange={handleFileUpload3}
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    ref={fileInputRef3}
+                  />
+                </div>
+
+
+                <Button
+                  onClick={() => fileInputRef3.current.click()}
+                  style={primaryButtonStyle}
+                  onMouseEnter={handleMouseEnterSuccess}
+                  onMouseLeave={handleMouseLeaveSuccess}
+                >
+                  Upload Image
+                </Button>
 
                 {/* <Editor
                   apiKey="46tu7q2m7kbsfpbdoc5mwnyn5hs97kdpefj8dnpuvz65aknl"
