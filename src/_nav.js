@@ -34,12 +34,12 @@ export const _navAdmin = [
       {
         component: CNavItem,
         name: 'View & Edit',
-        to: '/timesheets/viewedit',
+        to: '/timesheets-viewedit',
       },
       {
         component: CNavItem,
         name: 'Approvals',
-        to: '/timesheets/approvals',
+        to: '/timesheets-approvals',
       },
     ],
   },
@@ -52,17 +52,17 @@ export const _navAdmin = [
       {
         component: CNavItem,
         name: 'Screenshots',
-        to: '/activity/screenshots',
+        to: '/activity-screenshots',
       },
       {
         component: CNavItem,
         name: 'Apps',
-        to: '/activity/apps',
+        to: '/activity-apps',
       },
       {
         component: CNavItem,
         name: 'URLs',
-        to: '/activity/urls',
+        to: '/activity-urls',
       },
     ],
   },
@@ -74,48 +74,48 @@ export const _navAdmin = [
       {
         component: CNavItem,
         name: 'Projects',
-        to: '/projectmanagement/projects',
+        to: '/projectmanagement-projects',
       },
       {
         component: CNavItem,
         name: 'Assigned Projects',
-        to: '/projectmanagement/assigned',
+        to: '/projectmanagement-assigned',
       },
       {
         component: CNavItem,
         name: 'Clients',
-        to: '/projectmanagement/client',
+        to: '/projectmanagement-client',
       },
     ],
   },
   {
     component: CNavItem,
     name: 'Companies',
-    to: '/companies/Companies',
+    to: '/companies-Companies',
     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Departments',
-    to: '/departments/Departments',
+    to: '/departments-Departments',
     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Users',
-    to: '/users/Users',
+    to: '/users-Users',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Roles',
-    to: '/roles/Roles',
+    to: '/roles-Roles',
     icon: <CIcon icon={cilUserFollow} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Permissions',
-    to: '/permissions/Permission',
+    to: '/permissions-Permission',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {
@@ -126,12 +126,12 @@ export const _navAdmin = [
       {
         component: CNavItem,
         name: 'Schedules',
-        to: '/calendar/schedules',
+        to: '/calendar-schedules',
       },
       {
         component: CNavItem,
         name: 'Time off Requests',
-        to: '/calendar/timeoffrequests',
+        to: '/calendar-timeoffrequests',
       },
     ],
   },
@@ -143,7 +143,7 @@ export const _navAdmin = [
       {
         component: CNavItem,
         name: 'Time & Activity',
-        to: '/reports/timenactivity',
+        to: '/reports-timenactivity',
       },
       // {
       //   component: CNavItem,
@@ -153,17 +153,17 @@ export const _navAdmin = [
       {
         component: CNavItem,
         name: 'Accounts Owed',
-        to: '/reports/accountsowed',
+        to: '/reports-accountsowed',
       },
       {
         component: CNavItem,
         name: 'Payments',
-        to: '/reports/payments',
+        to: '/reports-payments',
       },
       {
         component: CNavItem,
         name: 'All Reports',
-        to: '/reports/allreports',
+        to: '/reports-allreports',
       },
     ],
   },
@@ -215,7 +215,7 @@ export const _navCompanyAdmin = [
       {
         component: CNavItem,
         name: 'Screenshots',
-        to: '/activity/screenshots',
+        to: '/activity-screenshots',
       },
     ],
   },
@@ -227,37 +227,37 @@ export const _navCompanyAdmin = [
       {
         component: CNavItem,
         name: 'Projects',
-        to: '/projectmanagement/projects',
+        to: '/projectmanagement-projects',
       },
       {
         component: CNavItem,
         name: 'Assigned Projects',
-        to: '/projectmanagement/assigned',
+        to: '/projectmanagement-assigned',
       },
     ],
   },
   {
     component: CNavItem,
     name: 'Companies',
-    to: '/companies/Companies',
+    to: '/companies-Companies',
     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Departments',
-    to: '/departments/Departments',
+    to: '/departments-Departments',
     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Users',
-    to: '/users/Users',
+    to: '/users-Users',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Clients',
-    to: '/projectmanagement/client',
+    to: '/projectmanagement-client',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {
@@ -268,7 +268,7 @@ export const _navCompanyAdmin = [
       {
         component: CNavItem,
         name: 'Monthly',
-        to: '/reports_monthly',
+        to: '/reports-monthly',
       },
     ],
   },
@@ -302,7 +302,7 @@ export const _navEmployee = [
       {
         component: CNavItem,
         name: 'Screenshots',
-        to: '/activity/screenshots',
+        to: '/activity-screenshots',
       },
     ],
   },
@@ -314,7 +314,7 @@ export const _navEmployee = [
       {
         component: CNavItem,
         name: 'Assigned Projects',
-        to: '/projectmanagement/assigned',
+        to: '/projectmanagement-assigned',
       },
     ],
   },
@@ -326,20 +326,20 @@ export const _navEmployee = [
       {
         component: CNavItem,
         name: 'Assigned Task',
-        to: '/taskmanagement/assignedtask',
+        to: '/taskmanagement-assignedtask',
       },
     ],
   },
   {
     component: CNavItem,
     name: 'Company',
-    to: '/companies/Companies',
+    to: '/companies-Companies',
     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'User',
-    to: '/users/Users',
+    to: '/users-Users',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {
@@ -372,7 +372,7 @@ export const _navFunctional = [
       {
         component: CNavItem,
         name: 'Screenshots',
-        to: '/activity/screenshots',
+        to: '/activity-screenshots',
       },
     ],
   },
@@ -384,20 +384,20 @@ export const _navFunctional = [
       {
         component: CNavItem,
         name: 'Assigned Projects',
-        to: '/projectmanagement/assigned',
+        to: '/projectmanagement-assigned',
       },
     ],
   },
   {
     component: CNavItem,
     name: 'Company',
-    to: '/companies/Companies',
+    to: '/companies-Companies',
     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'User',
-    to: '/users/Users',
+    to: '/users-Users',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {
@@ -430,7 +430,7 @@ export const _navTeamLead = [
       {
         component: CNavItem,
         name: 'Screenshots',
-        to: '/activity/screenshots',
+        to: '/activity-screenshots',
       },
     ],
   },
@@ -442,7 +442,7 @@ export const _navTeamLead = [
       {
         component: CNavItem,
         name: 'Assigned Projects',
-        to: '/projectmanagement/assigned',
+        to: '/projectmanagement-assigned',
       },
     ],
   },
@@ -454,20 +454,20 @@ export const _navTeamLead = [
       {
         component: CNavItem,
         name: 'Create New Task',
-        to: '/taskmanagement/createnewtask',
+        to: '/taskmanagement-createnewtask',
       },
     ],
   },
   {
     component: CNavItem,
     name: 'Company',
-    to: '/companies/Companies',
+    to: '/companies-Companies',
     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'User',
-    to: '/users/Users',
+    to: '/users-Users',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {
