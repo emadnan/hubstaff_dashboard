@@ -203,7 +203,7 @@ function TaskAssignment() {
     setUserId('')
     setProjectId('')
     setTaskDescription('')
-    setPriorities('')
+    setPriorities('LOW')
     setTaskManagementStartDate('')
     setTaskManagementDeadLine('')
     setTaskStatus('')
@@ -225,7 +225,7 @@ function TaskAssignment() {
     setUserId('')
     setProjectId('')
     setTaskDescription('')
-    setPriorities('')
+    setPriorities('LOW')
     setTaskManagementStartDate('')
     setTaskManagementDeadLine('')
     setTaskStatus('')
@@ -1018,7 +1018,7 @@ function TaskAssignment() {
             help={formErrors.user_id}
           >
             <Select
-              placeholder="Select Departments"
+              placeholder="Select Employee"
               onChange={handleUserChange}
               onFocus={handleFocus}
               name="user_id"
@@ -1132,10 +1132,10 @@ function TaskAssignment() {
           <label>User</label>
           <Form.Item validateStatus={formErrors.user_id ? 'error' : ''} help={formErrors.user_id}>
             <Select
-              placeholder="Select Departments"
+              placeholder="Select Employee"
               onChange={handleUserChange}
               onFocus={handleFocus}
-              value={user_id}
+              value={user_id} 
             >
               {users.map((user) => (
                 <Select.Option value={user.id} key={user.id}>
