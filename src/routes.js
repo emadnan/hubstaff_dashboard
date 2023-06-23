@@ -163,7 +163,7 @@ const routes = [
     requiredRoles: [1, 3],
   },
   { path: '/expenses', name: 'Expenses', element: Expenses, requiredRoles: [1] },
-  { path: '/allfsf', name: 'All FSF', element: AllFSF, requiredRoles: [1, 5, 6, 7] },
+  { path: '/fsf', name: 'All FSF', element: AllFSF, requiredRoles: [1, 5, 6, 7] },
   { path: '/allcrf', name: 'All CRF', element: AllCRF, requiredRoles: [1] },
   { path: '/fsfform', name: 'FSF Form', element: FSFform, requiredRoles: [1, 3, 6] },
   {
