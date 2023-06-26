@@ -200,6 +200,7 @@ function TaskAssignment() {
 
   const handleCancel = () => {
     setIsModalOpen(false)
+    form.resetFields()
     setUserId('')
     setProjectId('')
     setTaskDescription('')
@@ -222,6 +223,7 @@ function TaskAssignment() {
   }
   const updateCancel = () => {
     setIsModalOpenUpdate(false)
+    form.resetFields()
     setUserId('')
     setProjectId('')
     setTaskDescription('')
@@ -362,6 +364,7 @@ function TaskAssignment() {
       .then((response) => {
         if (response.ok) {
           getTasks()
+          form.resetFields()
           setUserId('')
           setProjectId('')
           setTaskDescription('')
@@ -423,10 +426,11 @@ function TaskAssignment() {
       .then((response) => {
         if (response.ok) {
           getTasks()
+          form.resetFields()
           setUserId('')
           setProjectId('')
           setTaskDescription('')
-          setPriorities('')
+          setPriorities('LOW')
           setTaskManagementStartDate('')
           setTaskManagementDeadLine('')
         }
@@ -1010,50 +1014,52 @@ function TaskAssignment() {
       >
         <br></br>
 
-        <div className="form-outline mt-3">
-          <label>User</label>
-          <Form.Item
-            name="user_id"
-            validateStatus={formErrors.user_id ? 'error' : ''}
-            help={formErrors.user_id}
-          >
-            <Select
-              placeholder="Select Employee"
-              onChange={handleUserChange}
-              onFocus={handleFocus}
+        <Form form={form}>
+          <div className="form-outline mt-3">
+            <label>User</label>
+            <Form.Item
               name="user_id"
-              value={user_id}
+              validateStatus={formErrors.user_id ? 'error' : ''}
+              help={formErrors.user_id}
             >
-              {users.map((user) => (
-                <Select.Option value={user.id} key={user.id}>
-                  {user.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </div>
+              <Select
+                placeholder="Select Employee"
+                onChange={handleUserChange}
+                onFocus={handleFocus}
+                name="user_id"
+                value={user_id}
+              >
+                {users.map((user) => (
+                  <Select.Option value={user.id} key={user.id}>
+                    {user.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </div>
 
-        <div className="form-outline mt-3">
-          <label>Project</label>
-          <Form.Item
-            name="project_id"
-            validateStatus={formErrors.project_id ? 'error' : ''}
-            help={formErrors.project_id}
-          >
-            <Select
-              placeholder="Select Project"
-              onChange={handleProjectChange}
-              onFocus={handleFocus}
-              value={project_id}
+          <div className="form-outline mt-3">
+            <label>Project</label>
+            <Form.Item
+              name="project_id"
+              validateStatus={formErrors.project_id ? 'error' : ''}
+              help={formErrors.project_id}
             >
-              {projects.map((pro) => (
-                <Select.Option value={pro.id} key={pro.id}>
-                  {pro.project_name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </div>
+              <Select
+                placeholder="Select Project"
+                onChange={handleProjectChange}
+                onFocus={handleFocus}
+                value={project_id}
+              >
+                {projects.map((pro) => (
+                  <Select.Option value={pro.id} key={pro.id}>
+                    {pro.project_name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </div>
+        </Form>
 
         <div className="form-outline mt-3">
           <label>Task Description</label>
@@ -1128,39 +1134,45 @@ function TaskAssignment() {
       >
         <br />
 
-        <div className="form-outline mt-3">
-          <label>User</label>
-          <Form.Item validateStatus={formErrors.user_id ? 'error' : ''} help={formErrors.user_id}>
-            <Select
-              placeholder="Select Employee"
-              onChange={handleUserChange}
-              onFocus={handleFocus}
-              value={user_id} 
-            >
-              {users.map((user) => (
-                <Select.Option value={user.id} key={user.id}>
-                  {user.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </div>
+        <Form form={form}>
+          <div className="form-outline mt-3">
+            <label>User</label>
+            <Form.Item validateStatus={formErrors.user_id ? 'error' : ''} help={formErrors.user_id}>
+              <Select
+                placeholder="Select Employee"
+                onChange={handleUserChange}
+                onFocus={handleFocus}
+                value={user_id}
+              >
+                {users.map((user) => (
+                  <Select.Option value={user.id} key={user.id}>
+                    {user.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </div>
 
-        <div className="form-outline mt-3">
-          <label>Project</label>
-          <Form.Item
-            validateStatus={formErrors.project_id ? 'error' : ''}
-            help={formErrors.project_id}
-          >
-            <Select placeholder="Select Project" onChange={handleProjectChange} value={project_id}>
-              {projects.map((pro) => (
-                <Select.Option value={pro.id} key={pro.id}>
-                  {pro.project_name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </div>
+          <div className="form-outline mt-3">
+            <label>Project</label>
+            <Form.Item
+              validateStatus={formErrors.project_id ? 'error' : ''}
+              help={formErrors.project_id}
+            >
+              <Select
+                placeholder="Select Project"
+                onChange={handleProjectChange}
+                value={project_id}
+              >
+                {projects.map((pro) => (
+                  <Select.Option value={pro.id} key={pro.id}>
+                    {pro.project_name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </div>
+        </Form>
 
         <div className="form-outline mt-3">
           <label>Task Description</label>
