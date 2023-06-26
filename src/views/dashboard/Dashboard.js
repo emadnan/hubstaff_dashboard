@@ -115,7 +115,7 @@ const Dashboard = () => {
   };
 
   function getProjects() {
-    fetch(`${BASE_URL}//10.3.3.80/api/getproject`)
+    fetch(`${BASE_URL}/api/getproject`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
@@ -146,7 +146,7 @@ const Dashboard = () => {
   };
 
   function getAssigns() {
-    fetch(`${BASE_URL}api/get_assign_projects`)
+    fetch(`${BASE_URL}/api/get_assign_projects`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
