@@ -195,9 +195,7 @@ const Screenshots = () => {
   const [isViewerOpen, setIsViewerOpen] = useState(false)
 
   const handleClick = useCallback((imageUrl) => {
-    let urls = imageUrl.map(function (url) {
-      return url['path_url']
-    })
+    let urls = imageUrl.map((url) => `${BASE_URL}/screenshots/${url.path_url}`)
     setImagesUrls(urls)
     setIsViewerOpen(true)
   }, [])
@@ -243,6 +241,11 @@ const Screenshots = () => {
     } catch (error) {
       console.error(error)
     }
+  }
+
+  const url = (imageUrl) => {
+    // Logic to concatenate the base URL with the image URL
+    return `${BASE_URL}/screenshots/${imageUrl}`
   }
 
   return (
@@ -318,7 +321,7 @@ const Screenshots = () => {
                               {timing.getattechments.map((attach) => (
                                 <div key={attach.id} style={{ position: 'relative' }}>
                                   <img
-                                    src={attach.path_url}
+                                    src={url(attach.path_url)}
                                     alt={attach.path_url}
                                     style={{ filter: 'blur(3px)' }}
                                   />
@@ -427,7 +430,7 @@ const Screenshots = () => {
                             {timing.getattechments.map((attach) => (
                               <div key={attach.id} style={{ position: 'relative' }}>
                                 <img
-                                  src={attach.path_url}
+                                  src={url(attach.path_url)}
                                   alt={attach.path_url}
                                   style={{ filter: 'blur(3px)' }}
                                 />
