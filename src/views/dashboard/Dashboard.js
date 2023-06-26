@@ -2,7 +2,7 @@ import { React, useEffect, useState } from 'react'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { Card, Divider, Button } from 'antd'
 import moment from 'moment';
-
+const BASE_URL = process.env.REACT_APP_BASE_URL
 const Dashboard = () => {
 
   //Local Storage data
@@ -97,7 +97,7 @@ const Dashboard = () => {
 
   //GET API calls
   function getCompanies() {
-    fetch("http://10.3.3.80/api/getcompany")
+    fetch(`${BASE_URL}/api/getcompany`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
@@ -115,7 +115,7 @@ const Dashboard = () => {
   };
 
   function getProjects() {
-    fetch("http://10.3.3.80/api/getproject")
+    fetch(`${BASE_URL}/api/getproject`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
@@ -131,7 +131,7 @@ const Dashboard = () => {
   };
 
   function getDepartment() {
-    fetch("http://10.3.3.80/api/getdepartment")
+    fetch(`${BASE_URL}/api/getdepartment`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
@@ -146,7 +146,7 @@ const Dashboard = () => {
   };
 
   function getAssigns() {
-    fetch("http://10.3.3.80/api/get_assign_projects")
+    fetch(`${BASE_URL}/api/get_assign_projects`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
@@ -165,14 +165,14 @@ const Dashboard = () => {
   };
 
   function getClients() {
-    fetch("http://10.3.3.80/api/get_client")
+    fetch(`${BASE_URL}/api/get_client`)
       .then((response) => response.json())
       .then((data) => setClients(data.Departments))
       .catch((error) => console.log(error));
   };
 
   function getWeeklyWorked() {
-    fetch("http://10.3.3.80/api/calculateWeeklyWork", {
+    fetch(`${BASE_URL}/api/calculateWeeklyWork`, {
       headers: {
         "Authorization": `Bearer ${session_token}`
       }
@@ -187,7 +187,7 @@ const Dashboard = () => {
   };
 
   function getTotalTimeUser(token) {
-    fetch("http://10.3.3.80/api/getSum", {
+    fetch(`${BASE_URL}/api/getSum`, {
       headers: {
         "Authorization": `Bearer ${token}`
       }
@@ -202,7 +202,7 @@ const Dashboard = () => {
   };
 
   function getTotalTime() {
-    fetch("http://10.3.3.80/api/get_Project_Screenshots")
+    fetch(`${BASE_URL}/api/get_Project_Screenshots`)
       .then((response) => response.json())
       .then((data) => {
         setHours(data.TotalHours);
@@ -213,7 +213,7 @@ const Dashboard = () => {
   };
 
   function getProjectScreenshots() {
-    fetch("http://10.3.3.80/api/get_Project_Screenshots")
+    fetch(`${BASE_URL}/api/get_Project_Screenshots`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
