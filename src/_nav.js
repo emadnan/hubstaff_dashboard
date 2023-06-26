@@ -280,8 +280,8 @@ export const _navCompanyAdmin = [
   },
   {
     component: CNavItem,
-    name: 'Subscriptions',
-    to: '/subscriptions',
+    name: 'Subscribed Plan',
+    to: '/subscribed-Plan',
     icon: <CIcon icon={cilDollar} customClassName="nav-icon" />,
   },
 ]
