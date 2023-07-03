@@ -567,6 +567,26 @@ function AllFSF() {
       })
   }
 
+  const urlAttachment = (imageUrl) => {
+    // Logic to concatenate the base URL with the image URL
+    const concatinatedImage = `${BASE_URL}/attachment/${imageUrl}`
+    return concatinatedImage
+  }
+
+  const urlInputScreens = (imageUrl) => {
+    // Logic to concatenate the base URL with the image URL
+    const concatinatedImage = `${BASE_URL}/input_screens/${imageUrl}`
+    return concatinatedImage
+  }
+
+  const urlOutputScreens = (imageUrl) => {
+    console.log('imageUrl: ', imageUrl)
+    const concatinatedImage = `${BASE_URL}/output_screens/${imageUrl}`
+    console.log('concatinatedImage: ', concatinatedImage)
+    // Logic to concatenate the base URL with the image URL
+    return concatinatedImage
+  }
+
   return (
     <>
       <div className="row">
@@ -854,7 +874,7 @@ function AllFSF() {
                   <div style={{ display: 'flex', justifyContent: 'left' }}>
                     <a href={fsf.attachment}>
                       <img
-                        src={fsf.attachment}
+                        src={urlAttachment(fsf.attachment)}
                         alt="Attachment"
                         style={{ width: '400px', height: '200px' }}
                       />
@@ -866,7 +886,7 @@ function AllFSF() {
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
                     <a href={fsf.input_screen}>
                       <img
-                        src={fsf.input_screen}
+                        src={urlInputScreens(fsf.input_screen)}
                         alt="Input Screen"
                         style={{ width: '800px', height: '400px' }}
                       />
@@ -954,7 +974,7 @@ function AllFSF() {
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
                     <a href={fsf.output_screen}>
                       <img
-                        src={fsf.output_screen}
+                        src={urlOutputScreens(fsf.output_screen)}
                         alt="Output Screen"
                         style={{ width: '800px', height: '400px' }}
                       />

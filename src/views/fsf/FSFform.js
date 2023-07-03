@@ -23,7 +23,6 @@ import CloseIcon from '@mui/icons-material/Close'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 function FSFform() {
-
   const local = JSON.parse(localStorage.getItem('user-info'))
 
   //Variable declarations
@@ -70,76 +69,76 @@ function FSFform() {
   const navigate = useNavigate()
 
   const [isFocused, setIsFocused] = useState(false)
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [imageError, setImageError] = useState(false);
-  const [selectedImage2, setSelectedImage2] = useState(null);
-  const [imageError2, setImageError2] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null)
+  const [imageError, setImageError] = useState(false)
+  const [selectedImage2, setSelectedImage2] = useState(null)
+  const [imageError2, setImageError2] = useState(false)
   // const [selectedImage3, setSelectedImage3] = useState(null);
-  const [imageError3, setImageError3] = useState(false);
+  const [imageError3, setImageError3] = useState(false)
 
   const getCurrentDate = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    const formattedDate = `${year}-${month}-${day}`;
-    return formattedDate;
-  };
+    const today = new Date()
+    const year = today.getFullYear()
+    const month = String(today.getMonth() + 1).padStart(2, '0')
+    const day = String(today.getDate()).padStart(2, '0')
+    const formattedDate = `${year}-${month}-${day}`
+    return formattedDate
+  }
 
-  const fileInputRef = useRef(null);
-  const fileInputRef2 = useRef(null);
-  const fileInputRef3 = useRef(null);
+  const fileInputRef = useRef(null)
+  const fileInputRef2 = useRef(null)
+  const fileInputRef3 = useRef(null)
 
   const handleFileUpload = (event) => {
-    const file = event.target.files[0];
+    const file = event.target.files[0]
     if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onload = (event) => {
-        setSelectedImage(event.target.result);
-        setImageError(false);
-      };
-      reader.readAsDataURL(file);
+        setSelectedImage(event.target.result)
+        setImageError(false)
+      }
+      reader.readAsDataURL(file)
     } else {
-      setSelectedImage(null);
-      setImageError(true);
+      setSelectedImage(null)
+      setImageError(true)
     }
-  };
+  }
 
   const handleFileUpload2 = (event) => {
-    const file = event.target.files[0];
+    const file = event.target.files[0]
     if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onload = (event) => {
-        setSelectedImage2(event.target.result);
-        setImageError2(false);
-      };
-      reader.readAsDataURL(file);
+        setSelectedImage2(event.target.result)
+        setImageError2(false)
+      }
+      reader.readAsDataURL(file)
     } else {
-      setSelectedImage2(null);
-      setImageError2(true);
+      setSelectedImage2(null)
+      setImageError2(true)
     }
-  };
+  }
 
   const handleFileUpload3 = (event) => {
-    const file = event.target.files[0];
+    const file = event.target.files[0]
     if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onload = (event) => {
-        setAttachment(event.target.result);
-        setImageError3(false);
-      };
-      reader.readAsDataURL(file);
+        setAttachment(event.target.result)
+        setImageError3(false)
+      }
+      reader.readAsDataURL(file)
     } else {
-      setAttachment(null);
-      setImageError3(true);
+      setAttachment(null)
+      setImageError3(true)
     }
-  };
+  }
 
   useEffect(() => {
-    const currentDate = getCurrentDate();
-    setRequestedDate(currentDate);
-    setWRicefId(`Biafo-${projectName}-${moduleName}`);
-  }, [projectName, moduleName]);
+    const currentDate = getCurrentDate()
+    setRequestedDate(currentDate)
+    setWRicefId(`Biafo-${projectName}-${moduleName}`)
+  }, [projectName, moduleName])
 
   const editorConfig = {
     height: 200,
@@ -171,17 +170,17 @@ function FSFform() {
   }
 
   const handleEditorChange = (content, editor) => {
-    console.log('content: ', content);
-    const regex = /<img.*?src="(.*?)"/g;
-    const matches = [...content.matchAll(regex)];
+    console.log('content: ', content)
+    const regex = /<img.*?src="(.*?)"/g
+    const matches = [...content.matchAll(regex)]
 
     const images = matches.map((match) => {
-      const base64Data = match[1].split(',')[1];
-      return `data:image/png;base64,${base64Data}`;
-    });
+      const base64Data = match[1].split(',')[1]
+      return `data:image/png;base64,${base64Data}`
+    })
 
-    imageToLink(content, images);
-  };
+    imageToLink(content, images)
+  }
 
   const [formErrors, setFormErrors] = useState({
     reference_id: '',
@@ -300,7 +299,7 @@ function FSFform() {
   const handleModuleChange = (value, option) => {
     setModuleId(value)
     setModuleName(option.module_name)
-  };
+  }
 
   const handleProjectChange = (value, option) => {
     setProjectId(value)
@@ -346,7 +345,6 @@ function FSFform() {
   }
 
   const handleOk = () => {
-
     const errors = {}
     if (!input_parameter_name) {
       errors.input_parameter_name = 'Input Parameter Name is required'
@@ -407,7 +405,6 @@ function FSFform() {
   }
 
   const handleOk2 = () => {
-
     const errors = {}
     if (!output_parameter_name) {
       errors.output_parameter_name = 'Output Parameter Name is required'
@@ -484,7 +481,6 @@ function FSFform() {
   }
 
   const handleOk4 = () => {
-
     const errors = {}
     if (!input_parameter_name) {
       errors.input_parameter_name = 'Input Parameter Name is required'
@@ -561,7 +557,6 @@ function FSFform() {
   }
 
   const handleOk6 = () => {
-
     const errors = {}
     if (!output_parameter_name) {
       errors.output_parameter_name = 'Output Parameter Name is required'
@@ -647,7 +642,6 @@ function FSFform() {
     setIsHoveredPrimary(false)
     setIsHoveredDanger(false)
   }
-
 
   const handleBack2 = () => {
     setShowLevel2(false)
@@ -762,7 +756,7 @@ function FSFform() {
     outputImagePost(id)
     handleButtonClick15()
     setTimeout(() => {
-      navigate('/allfsf')
+      navigate('/fsf')
     }, 2000)
   }
 
@@ -1411,7 +1405,7 @@ function FSFform() {
           getFSFOutputParameters()
           handleButtonClick11()
         } else {
-          handleButtonClick12();
+          handleButtonClick12()
         }
       })
       .catch((error) => {
@@ -1435,8 +1429,8 @@ function FSFform() {
         }
       })
       .catch((error) => {
-        console.error(error);
-      });
+        console.error(error)
+      })
   }
 
   // POST Output Image API call
@@ -1455,13 +1449,13 @@ function FSFform() {
         }
       })
       .catch((error) => {
-        console.error(error);
-      });
+        console.error(error)
+      })
   }
 
   // POST Image conversion API call
   async function imageToLink(content, images) {
-    let updatedContent = content;
+    let updatedContent = content
 
     await Promise.all(
       images.map(async (image) => {
@@ -1474,19 +1468,19 @@ function FSFform() {
             body: JSON.stringify({
               screenShots: image,
             }),
-          });
+          })
 
           if (response.ok) {
-            const imageUrl = await response.text();
-            updatedContent = updatedContent.replace(image, imageUrl);
+            const imageUrl = await response.text()
+            updatedContent = updatedContent.replace(image, imageUrl)
           }
         } catch (error) {
-          console.error(error);
+          console.error(error)
         }
-      })
-    );
+      }),
+    )
 
-    setDevelopmentLogic(updatedContent);
+    setDevelopmentLogic(updatedContent)
   }
 
   return (
@@ -1516,7 +1510,6 @@ function FSFform() {
           <div className="row justify-content-center">
             <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
               <CardContent>
-
                 <div className="form-outline mb-3">
                   <label>Reference Id</label>
                   <Form.Item
@@ -1530,7 +1523,9 @@ function FSFform() {
                       name="reference_id"
                       onFocus={handleFocus}
                     >
-                      <Select.Option value="0" key="none">None</Select.Option>
+                      <Select.Option value="0" key="none">
+                        None
+                      </Select.Option>
                       {fsfwricef.map((fsf) => (
                         <Select.Option value={fsf.id} key={fsf.id}>
                           {fsf.wricef_id}
@@ -1649,7 +1644,6 @@ function FSFform() {
           <div className="row justify-content-center">
             <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
               <CardContent>
-
                 <div className="form-outline mb-3">
                   <label>ABAP Team Lead</label>
                   <Form.Item
@@ -1775,7 +1769,6 @@ function FSFform() {
           <div className="row justify-content-center">
             <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
               <CardContent>
-
                 <div className="form-outline mb-3">
                   <label>Custom Transaction Code</label>
                   <input
@@ -1827,7 +1820,6 @@ function FSFform() {
                     ref={fileInputRef3}
                   />
                 </div>
-
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button
@@ -2246,7 +2238,6 @@ function FSFform() {
                     </Select>
                   </Form.Item>
                 </div>
-
               </Modal>
 
               {/* Modal for Update FSF Parameters */}
@@ -2447,7 +2438,6 @@ function FSFform() {
                   Are you sure you want to delete?
                 </Typography>
               </Modal>
-
             </CTableBody>
           </CTable>
           <Box
@@ -3044,7 +3034,6 @@ function FSFform() {
                   Are you sure you want to delete?
                 </Typography>
               </Modal>
-
             </CTableBody>
           </CTable>
 

@@ -245,7 +245,8 @@ const Screenshots = () => {
 
   const url = (imageUrl) => {
     // Logic to concatenate the base URL with the image URL
-    return `${BASE_URL}/screenshots/${imageUrl}`
+    const concatinatedImage = `${BASE_URL}/screenshots/${imageUrl}`
+    return concatinatedImage
   }
 
   return (
