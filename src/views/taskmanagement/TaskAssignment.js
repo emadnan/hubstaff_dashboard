@@ -233,8 +233,8 @@ function TaskAssignment() {
     setTaskStatus('')
   }
 
-  function getTasks() {
-    fetch(`${BASE_URL}/api/getTasks`)
+  async function getTasks() {
+    await fetch(`${BASE_URL}/api/getTasks`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 7) {
@@ -253,8 +253,8 @@ function TaskAssignment() {
       .catch((error) => console.log(error))
   }
 
-  function getTasksByUserId() {
-    fetch(`${BASE_URL}/api/getTaskByUserId/${selectedUser}`)
+  async function getTasksByUserId() {
+    await fetch(`${BASE_URL}/api/getTaskByUserId/${selectedUser}`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 7) {
@@ -273,8 +273,8 @@ function TaskAssignment() {
       .catch((error) => console.log(error))
   }
 
-  const getTaskByProjectId = () => {
-    fetch(`${BASE_URL}/api/getTaskByProjectId/${selectedProject}`)
+  const getTaskByProjectId = async () => {
+    await fetch(`${BASE_URL}/api/getTaskByProjectId/${selectedProject}`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 7) {
@@ -293,8 +293,8 @@ function TaskAssignment() {
       .catch((error) => console.log(error))
   }
 
-  const getTaskByProjectAndUserId = () => {
-    fetch(`${BASE_URL}/api/getTaskByUserIdAndProjectId/${selectedUser}/${selectedProject}`)
+  const getTaskByProjectAndUserId = async () => {
+    await fetch(`${BASE_URL}/api/getTaskByUserIdAndProjectId/${selectedUser}/${selectedProject}`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 7) {
@@ -313,9 +313,9 @@ function TaskAssignment() {
       .catch((error) => console.log(error))
   }
 
-  function getUsers() {
+  async function getUsers() {
     let filteredUsers = []
-    fetch(`${BASE_URL}/api/get_users`)
+    await fetch(`${BASE_URL}/api/get_users`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 7) {
@@ -328,9 +328,9 @@ function TaskAssignment() {
       .catch((error) => console.log(error))
   }
 
-  function getProjects() {
+  async function getProjects() {
     let filteredProjects = []
-    fetch(`${BASE_URL}/api/getproject`)
+    await fetch(`${BASE_URL}/api/getproject`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 7) {
@@ -384,7 +384,7 @@ function TaskAssignment() {
   }
 
   const getTaskById = async (id) => {
-    fetch(`${BASE_URL}/api/getTaskById/${id}`)
+    await fetch(`${BASE_URL}/api/getTaskById/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setUserId(data.task.user_id)
