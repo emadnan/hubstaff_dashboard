@@ -90,9 +90,9 @@ const TaskAssignmentUserSide = () => {
     setCurrentItemsCompleted(slicedItemsCompleted)
   }, [currentPageCompleted, completedTask])
 
-  const getProjects = () => {
+  const getProjects = async () => {
     let filteredProjects = []
-    fetch(`${BASE_URL}/api/getproject`)
+    await fetch(`${BASE_URL}/api/getproject`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 5) {
@@ -113,13 +113,13 @@ const TaskAssignmentUserSide = () => {
     getTasksById(id)
   }
 
-  const updateTaskStatus = (taskId, task_status, task_comment) => {
+  const updateTaskStatus = async (taskId, task_status, task_comment) => {
     let formData = new FormData()
     formData.append('id', taskId)
     formData.append('status', task_status)
     formData.append('comment', task_comment)
 
-    fetch(`${BASE_URL}/api/updateStatusByUserTask`, {
+    await fetch(`${BASE_URL}/api/updateStatusByUserTask`, {
       method: 'POST',
       body: formData,
     })
@@ -133,8 +133,8 @@ const TaskAssignmentUserSide = () => {
       })
   }
 
-  function getTasks() {
-    fetch(`${BASE_URL}/api/getTasks`)
+  async function getTasks() {
+    await fetch(`${BASE_URL}/api/getTasks`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 5) {
@@ -153,8 +153,8 @@ const TaskAssignmentUserSide = () => {
       .catch((error) => console.log(error))
   }
 
-  const getTasksById = (taskId) => {
-    fetch(`${BASE_URL}/api/getTaskById/${taskId}`)
+  const getTasksById = async (taskId) => {
+    await fetch(`${BASE_URL}/api/getTaskById/${taskId}`)
       .then((response) => response.json())
       .then((data) => {
         setProjectId(data.task.project_id)
@@ -171,8 +171,8 @@ const TaskAssignmentUserSide = () => {
       })
   }
 
-  const getTaskByProjectChange = (projectId) => {
-    fetch(`${BASE_URL}/api/getTaskByProjectId/${projectId}`)
+  const getTaskByProjectChange = async (projectId) => {
+    await fetch(`${BASE_URL}/api/getTaskByProjectId/${projectId}`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 5) {
@@ -191,7 +191,7 @@ const TaskAssignmentUserSide = () => {
       .catch((error) => console.log(error))
   }
 
-  const clearFilters = () => {
+  const clearFilters = async () => {
     form.resetFields()
     getTasks()
   }
@@ -212,12 +212,12 @@ const TaskAssignmentUserSide = () => {
     }
   }
 
-  const handleOkToTakeActionAgainstTask = () => {
+  const handleOkToTakeActionAgainstTask = async () => {
     updateTaskStatus(task_id, taskStatus, taskComment)
     setIsModalOpenToTakeAction(false)
   }
 
-  const handleCancelToTakeActionAgainstTask = () => {
+  const handleCancelToTakeActionAgainstTask = async () => {
     setTaskComment('')
     setIsModalOpenToTakeAction(false)
   }
