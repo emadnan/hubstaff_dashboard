@@ -12,6 +12,7 @@ import { Modal, Button, Form, Select, Radio, Space } from 'antd'
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
+import VisibilityIcon from '@mui/icons-material/Visibility'
 import Box from '@mui/material/Box'
 import moment from 'moment'
 
@@ -24,12 +25,16 @@ function TaskAssignment() {
   const session_token = session.token
 
   const [user_id, setUserId] = useState('')
+  const [user_name, setUserName] = useState('')
   const [project_id, setProjectId] = useState('')
+  const [project_name, setProjectName] = useState('')
   const [task_description, setTaskDescription] = useState('')
   const [task_managements_start_date, setTaskManagementStartDate] = useState('')
   const [task_managements_dead_line, setTaskManagementDeadLine] = useState('')
   const [taskStatus, setTaskStatus] = useState()
   const [priorities, setPriorities] = useState('LOW')
+  const [task_id, setTaskId] = useState()
+  const [taskComment, setTaskComment] = useState()
 
   // For Radio Buttons
   const radioOptions = [
@@ -133,10 +138,10 @@ function TaskAssignment() {
 
   const clearFilters = () => {
     setIsFilterApplied(false)
+    getTasks()
     form.resetFields()
     setSelectedUser(null)
     setSelectedProject(null)
-    getTasks()
   }
 
   const handleProjectChange = (value) => {
@@ -231,6 +236,23 @@ function TaskAssignment() {
     setTaskManagementStartDate('')
     setTaskManagementDeadLine('')
     setTaskStatus('')
+  }
+
+  // Functions for Show Task Modal
+  const [isModalOpenToTakeAction, setIsModalOpenToTakeAction] = useState(false)
+  const openModalToTakeActionAgainstTask = (id) => {
+    setIsModalOpenToTakeAction(true)
+    getTaskById(id)
+  }
+
+  const handleOkToTakeActionAgainstTask = async () => {
+    updateTaskStatus(task_id, taskStatus, taskComment)
+    setIsModalOpenToTakeAction(false)
+  }
+
+  const handleCancelToTakeActionAgainstTask = async () => {
+    setTaskComment('')
+    setIsModalOpenToTakeAction(false)
   }
 
   async function getTasks() {
@@ -388,9 +410,12 @@ function TaskAssignment() {
       .then((response) => response.json())
       .then((data) => {
         setUserId(data.task.user_id)
+        setUserName(data.task.user_name)
         setProjectId(data.task.project_id)
+        setProjectName(data.task.project_name)
         setTaskDescription(data.task.task_description)
         setPriorities(data.task.priorites)
+        setTaskId(data.task.task_managements_id)
         setTaskStatus(data.task.status)
         const formattedStartDate = moment(data.task.task_managements_start_date).format(
           'YYYY-MM-DD',
@@ -453,11 +478,33 @@ function TaskAssignment() {
       .then((response) => {
         if (response.ok) {
           getTasks()
+          form.resetFields()
           console.log('Task DELETED Successfully')
         }
       })
       .catch((error) => {
         console.error(error)
+      })
+  }
+
+  const updateTaskStatus = async (taskId, task_status, task_comment) => {
+    let formData = new FormData()
+    formData.append('id', taskId)
+    formData.append('status', task_status)
+    formData.append('comment', task_comment)
+
+    await fetch(`${BASE_URL}/api/updateStatusByUserTask`, {
+      method: 'POST',
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        getTasks()
+        form.resetFields()
+        setTaskComment('')
+      })
+      .catch((error) => {
+        console.error('Error:', error)
       })
   }
 
@@ -543,7 +590,7 @@ function TaskAssignment() {
             <Radio.Group onChange={changeTab}>
               <Radio.Button value="Pending">To Do</Radio.Button>
               <Radio.Button value="InProgress">In-Progress</Radio.Button>
-              <Radio.Button value="Completed">Completed</Radio.Button>
+              <Radio.Button value="Completed">Done</Radio.Button>
             </Radio.Group>
           </Space>
         </Box>
@@ -592,14 +639,7 @@ function TaskAssignment() {
           <div>
             <div className="row">
               <div className="col-md 6">
-                <h4>
-                  <b>To-Do</b>
-                </h4>
-              </div>
-              <div className="col-md 6">
-                <h3>
-                  Total <b>To-Do</b> Tasks: <b>{totalItemsPending}</b>
-                </h3>
+                <h4>To-Do Tasks: {totalItemsPending}</h4>
               </div>
             </div>
             <CTable
@@ -621,12 +661,12 @@ function TaskAssignment() {
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Project
                   </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
+                  {/* <CTableHeaderCell className="text-center" style={mystyle}>
                     Task Details
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Task Priority
-                  </CTableHeaderCell>
+                  </CTableHeaderCell> */}
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Task Status
                   </CTableHeaderCell>
@@ -654,10 +694,13 @@ function TaskAssignment() {
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {task.name}
                       </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                      <CTableHeaderCell
+                        className="text-center"
+                        style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                      >
                         {task.project_name}
                       </CTableHeaderCell>
-                      <CTableHeaderCell
+                      {/* <CTableHeaderCell
                         className="text-center"
                         style={{ ...mystyle2, width: '200px' }}
                       >
@@ -665,17 +708,35 @@ function TaskAssignment() {
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {task.priorites}
-                      </CTableHeaderCell>
+                      </CTableHeaderCell> */}
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {task.status}
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {new Date(task.task_managements_start_date).toLocaleDateString()}
+                        {new Date(task.task_managements_start_date)
+                          .toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                          })
+                          .replace(/\//g, '-')}
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {new Date(task.task_managements_dead_line).toLocaleDateString()}
+                        {new Date(task.task_managements_dead_line)
+                          .toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                          })
+                          .replace(/\//g, '-')}
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
+                        <IconButton
+                          aria-label="View"
+                          onClick={() => openModalToTakeActionAgainstTask(task.task_managements_id)}
+                        >
+                          <VisibilityIcon htmlColor="#0070ff" />
+                        </IconButton>
                         <IconButton aria-label="Update">
                           <EditIcon
                             htmlColor="#28B463"
@@ -730,14 +791,7 @@ function TaskAssignment() {
           <div>
             <div className="row">
               <div className="col-md 6">
-                <h4>
-                  <b>In-Progress</b>
-                </h4>
-              </div>
-              <div className="col-md 6">
-                <h3>
-                  Total <b>In-Progress</b> Tasks: <b>{totalItemsInProgress}</b>
-                </h3>
+                <h4>In-Progress Tasks: {totalItemsInProgress}</h4>
               </div>
             </div>
             <CTable
@@ -759,12 +813,12 @@ function TaskAssignment() {
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Project
                   </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
+                  {/* <CTableHeaderCell className="text-center" style={mystyle}>
                     Task Details
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Task Priority
-                  </CTableHeaderCell>
+                  </CTableHeaderCell> */}
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Task Status
                   </CTableHeaderCell>
@@ -783,16 +837,22 @@ function TaskAssignment() {
                 {inProgressTasks.length > 0 &&
                   currentItemsInProgress.map((task, index) => (
                     <CTableRow key={task.task_managements_id}>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                      <CTableHeaderCell
+                        className="text-center"
+                        style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                      >
                         {task.project_name} - {task.task_managements_id}
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {task.name}
                       </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                      <CTableHeaderCell
+                        className="text-center"
+                        style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                      >
                         {task.project_name}
                       </CTableHeaderCell>
-                      <CTableHeaderCell
+                      {/* <CTableHeaderCell
                         className="text-center"
                         style={{ ...mystyle2, width: '200px' }}
                       >
@@ -800,17 +860,35 @@ function TaskAssignment() {
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {task.priorites}
-                      </CTableHeaderCell>
+                      </CTableHeaderCell> */}
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {task.status}
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {new Date(task.task_managements_start_date).toLocaleDateString()}
+                        {new Date(task.task_managements_start_date)
+                          .toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                          })
+                          .replace(/\//g, '-')}
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {new Date(task.task_managements_dead_line).toLocaleDateString()}
+                        {new Date(task.task_managements_dead_line)
+                          .toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                          })
+                          .replace(/\//g, '-')}
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
+                        <IconButton
+                          aria-label="View"
+                          onClick={() => openModalToTakeActionAgainstTask(task.task_managements_id)}
+                        >
+                          <VisibilityIcon htmlColor="#0070ff" />
+                        </IconButton>
                         <IconButton aria-label="Update">
                           <EditIcon
                             htmlColor="#28B463"
@@ -870,14 +948,7 @@ function TaskAssignment() {
           <div>
             <div className="row">
               <div className="col-md 6">
-                <h4>
-                  <b>Completed</b>
-                </h4>
-              </div>
-              <div className="col-md 6">
-                <h3>
-                  Total <b>Completed</b> Tasks: <b>{totalItemsCompleted}</b>
-                </h3>
+                <h4>Done Tasks: {totalItemsCompleted}</h4>
               </div>
             </div>
             <CTable
@@ -899,12 +970,12 @@ function TaskAssignment() {
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Project
                   </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
+                  {/* <CTableHeaderCell className="text-center" style={mystyle}>
                     Task Details
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Task Priority
-                  </CTableHeaderCell>
+                  </CTableHeaderCell> */}
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Task Status
                   </CTableHeaderCell>
@@ -923,17 +994,23 @@ function TaskAssignment() {
                 {completedTask.length > 0 &&
                   currentItemsCompleted.map((task, index) => (
                     <CTableRow key={task.task_managements_id}>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                      <CTableHeaderCell
+                        className="text-center"
+                        style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                      >
                         {task.project_name} - {task.task_managements_id}
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {task.name}
                       </CTableHeaderCell>
 
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                      <CTableHeaderCell
+                        className="text-center"
+                        style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                      >
                         {task.project_name}
                       </CTableHeaderCell>
-                      <CTableHeaderCell
+                      {/* <CTableHeaderCell
                         className="text-center"
                         style={{ ...mystyle2, width: '200px' }}
                       >
@@ -941,17 +1018,35 @@ function TaskAssignment() {
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {task.priorites}
-                      </CTableHeaderCell>
+                      </CTableHeaderCell> */}
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {task.status}
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {new Date(task.task_managements_start_date).toLocaleDateString()}
+                        {new Date(task.task_managements_start_date)
+                          .toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                          })
+                          .replace(/\//g, '-')}
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {new Date(task.task_managements_dead_line).toLocaleDateString()}
+                        {new Date(task.task_managements_dead_line)
+                          .toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                          })
+                          .replace(/\//g, '-')}
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
+                        <IconButton
+                          aria-label="View"
+                          onClick={() => openModalToTakeActionAgainstTask(task.task_managements_id)}
+                        >
+                          <VisibilityIcon htmlColor="#0070ff" />
+                        </IconButton>
                         <IconButton aria-label="Update">
                           <EditIcon
                             htmlColor="#28B463"
@@ -1223,6 +1318,53 @@ function TaskAssignment() {
         )}
 
         <div className="form-outline mt-3">
+          <div>
+            <b>Select Priority of Task</b>
+          </div>
+          <Radio.Group
+            onChange={(e) => setPriorities(e.target.value)}
+            value={priorities}
+            placeholder="Select Priority of Task"
+          >
+            {radioOptions.map((option) => (
+              <Radio key={option.value} value={option.value} style={{ color: option.color }}>
+                {option.value}
+              </Radio>
+            ))}
+          </Radio.Group>
+        </div>
+      </Modal>
+
+      <Modal
+        title="Task Details"
+        open={isModalOpenToTakeAction}
+        centered
+        onOk={handleOkToTakeActionAgainstTask}
+        okButtonProps={{ style: { background: 'blue' } }}
+        onCancel={handleCancelToTakeActionAgainstTask}
+        maskClosable={false}
+      >
+        <h3>
+          Task : <b>{task_description}</b>
+        </h3>
+        <p>
+          Task Belongs to the Projects: <b>{project_name}</b>
+        </p>
+        <p>
+          Task Priority: <b>{priorities}</b>
+        </p>
+        <p>
+          Task Assigned By: <b>{user_name}</b>
+        </p>
+        <p>
+          Task Assigned Date: <b>{moment(task_managements_start_date).format('DD-MM-YYYY')}</b>
+        </p>
+        <p>
+          Task Completion Dead Line:{' '}
+          <b>{moment(task_managements_dead_line).format('DD-MM-YYYY')}</b>
+        </p>
+
+        <div className="form-outline mb-3">
           <label>Task Status</label>
           <Form.Item>
             <Select
@@ -1243,21 +1385,16 @@ function TaskAssignment() {
           </Form.Item>
         </div>
 
-        <div className="form-outline mt-3">
-          <div>
-            <b>Select Priority of Task</b>
-          </div>
-          <Radio.Group
-            onChange={(e) => setPriorities(e.target.value)}
-            value={priorities}
-            placeholder="Select Priority of Task"
-          >
-            {radioOptions.map((option) => (
-              <Radio key={option.value} value={option.value} style={{ color: option.color }}>
-                {option.value}
-              </Radio>
-            ))}
-          </Radio.Group>
+        <div className="form-outline mb-3">
+          <label>Add Comments Releted to Task</label>
+          <textarea
+            rows="2"
+            type="text"
+            className="form-control"
+            placeholder="Add Comments Releted to Task"
+            onChange={(event) => setTaskComment(event.target.value)}
+            value={taskComment != null ? taskComment : ''}
+          />
         </div>
       </Modal>
     </>

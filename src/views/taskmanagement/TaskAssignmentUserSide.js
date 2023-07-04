@@ -269,12 +269,7 @@ const TaskAssignmentUserSide = () => {
     <>
       <div className="row">
         <div className="col-md 6">
-          <h3>Assigned Tasks</h3>
-        </div>
-        <div className="col-md 6">
-          <h3>
-            Total Assigned Tasks: {totalItemsPending + totalItemsInProgress + totalItemsCompleted}
-          </h3>
+          <h3>Assigned Tasks: {totalItemsPending + totalItemsInProgress + totalItemsCompleted}</h3>
         </div>
       </div>
       <hr />
@@ -288,7 +283,7 @@ const TaskAssignmentUserSide = () => {
             <Radio.Group onChange={changeTab}>
               <Radio.Button value="Pending">To Do</Radio.Button>
               <Radio.Button value="InProgress">In-Progress</Radio.Button>
-              <Radio.Button value="Completed">Completed</Radio.Button>
+              <Radio.Button value="Completed">Done</Radio.Button>
             </Radio.Group>
           </Space>
         </Box>
@@ -316,14 +311,7 @@ const TaskAssignmentUserSide = () => {
           <div>
             <div className="row">
               <div className="col-md 6">
-                <h4>
-                  <b>To-Do</b>
-                </h4>
-              </div>
-              <div className="col-md 6">
-                <h3>
-                  Total <b>To-Do</b> Tasks: <b>{totalItemsPending}</b>
-                </h3>
+                <h4>To-Do Tasks: {totalItemsPending}</h4>
               </div>
             </div>
             <CTable
@@ -359,20 +347,38 @@ const TaskAssignmentUserSide = () => {
               <CTableBody>
                 {currentItemsPending.map((task, index) => (
                   <CTableRow key={task.task_managements_id}>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                    <CTableHeaderCell
+                      className="text-center"
+                      style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                    >
                       {task.project_name} - {task.task_managements_id}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       {task.team_lead_details.name}
                     </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                    <CTableHeaderCell
+                      className="text-center"
+                      style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                    >
                       {task.project_name}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.task_managements_start_date).toLocaleDateString()}
+                      {new Date(task.task_managements_start_date)
+                        .toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })
+                        .replace(/\//g, '-')}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.task_managements_dead_line).toLocaleDateString()}
+                      {new Date(task.task_managements_dead_line)
+                        .toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })
+                        .replace(/\//g, '-')}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       <IconButton
@@ -421,14 +427,7 @@ const TaskAssignmentUserSide = () => {
           <div>
             <div className="row">
               <div className="col-md 6">
-                <h4>
-                  <b>In-Progress</b>
-                </h4>
-              </div>
-              <div className="col-md 6">
-                <h3>
-                  Total <b>In-Progress</b> Tasks: <b>{totalItemsInProgress}</b>
-                </h3>
+                <h4>In-Progress Tasks: {totalItemsInProgress}</h4>
               </div>
             </div>
             <CTable
@@ -464,21 +463,39 @@ const TaskAssignmentUserSide = () => {
               <CTableBody>
                 {currentItemsInProgress.map((task, index) => (
                   <CTableRow key={task.task_managements_id}>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                    <CTableHeaderCell
+                      className="text-center"
+                      style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                    >
                       {task.project_name} - {task.task_managements_id}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       {task.team_lead_details.name}
                     </CTableHeaderCell>
 
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                    <CTableHeaderCell
+                      className="text-center"
+                      style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                    >
                       {task.project_name}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.task_managements_start_date).toLocaleDateString()}
+                      {new Date(task.task_managements_start_date)
+                        .toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })
+                        .replace(/\//g, '-')}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.task_managements_dead_line).toLocaleDateString()}
+                      {new Date(task.task_managements_dead_line)
+                        .toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })
+                        .replace(/\//g, '-')}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       <IconButton
@@ -532,14 +549,7 @@ const TaskAssignmentUserSide = () => {
           <div>
             <div className="row">
               <div className="col-md 6">
-                <h4>
-                  <b>Completed</b>
-                </h4>
-              </div>
-              <div className="col-md 6">
-                <h3>
-                  Total <b>Completed</b> Tasks: <b>{totalItemsCompleted}</b>
-                </h3>
+                <h4>Done Tasks: {totalItemsCompleted}</h4>
               </div>
             </div>
             <CTable
@@ -575,21 +585,39 @@ const TaskAssignmentUserSide = () => {
               <CTableBody>
                 {currentItemsCompleted.map((task, index) => (
                   <CTableRow key={task.task_managements_id}>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                    <CTableHeaderCell
+                      className="text-center"
+                      style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                    >
                       {task.project_name} - {task.task_managements_id}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       {task.team_lead_details.name}
                     </CTableHeaderCell>
 
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                    <CTableHeaderCell
+                      className="text-center"
+                      style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                    >
                       {task.project_name}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.task_managements_start_date).toLocaleDateString()}
+                      {new Date(task.task_managements_start_date)
+                        .toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })
+                        .replace(/\//g, '-')}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {new Date(task.task_managements_dead_line).toLocaleDateString()}
+                      {new Date(task.task_managements_dead_line)
+                        .toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })
+                        .replace(/\//g, '-')}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       <IconButton
