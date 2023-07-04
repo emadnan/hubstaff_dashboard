@@ -17,7 +17,7 @@ import Box from '@mui/material/Box'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 const TaskAssignmentUserSide = () => {
-  const ITEMS_PER_PAGE = 5
+  const ITEMS_PER_PAGE = 10
   //CSS Styling
   const mystyle = {
     color: 'white',
