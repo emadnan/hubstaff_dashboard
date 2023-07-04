@@ -1,5 +1,6 @@
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { React, useState, useEffect } from 'react';
+const BASE_URL = process.env.REACT_APP_BASE_URL
 
 const AssignedProjects = () => {
 
@@ -31,7 +32,7 @@ const AssignedProjects = () => {
 
     // Get API call
     function getAssigns() {
-        fetch("http://10.3.3.80/api/get_assign_projects")
+        fetch(`${BASE_URL}/api/get_assign_projects`)
             .then((response) => response.json())
             .then((data) => {
                 if (local.Users.role === 1) {
