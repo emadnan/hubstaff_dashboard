@@ -15,6 +15,7 @@ const Users = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [role, setRole] = useState('')
+  const [role2, setRole2] = useState('')
   const [team_id, setTeamId] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
@@ -143,6 +144,7 @@ const Users = () => {
 
   function handleButtonClick1() {
     setShowAlert1(true)
+    getList()
   }
 
   function handleCloseAlert1() {
@@ -280,7 +282,13 @@ const Users = () => {
 
   //Get calls handling
   const handleRoleChange = (value) => {
-    setRole(value)
+    if(value > 20 && value < 32){
+      setRole2(5)
+      setRole(value)
+    }else{
+      setRole(value)
+      setRole2(value)
+    }
   }
 
   const handleTeamChange = (value) => {
@@ -350,7 +358,7 @@ const Users = () => {
 
   // Add API call
   async function addUser() {
-    let adduser = { name, email, password, role, company_id: local.Users.company_id, team_id }
+    let adduser = { name : name, email: email, password: password, role: role2, company_id: local.Users.company_id, team_id: team_id }
     console.log(adduser)
 
     await fetch(`${BASE_URL}/api/add_user`, {
@@ -363,7 +371,7 @@ const Users = () => {
       .then((response) => {
         if (response.ok) {
           handleButtonClick1()
-          getList()
+          
         } else {
           handleButtonClick2()
         }

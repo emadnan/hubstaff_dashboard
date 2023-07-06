@@ -123,7 +123,7 @@ export default function Dashboard() {
 
   const getUsers = async () => {
     if (!local) {
-      console.log('Local variable is not available')
+      // console.log('Local variable is not available')
       return
     }
     let filteredUsers = []
@@ -138,7 +138,7 @@ export default function Dashboard() {
             (user) =>
               user.company_id === local.Users.company_id && user.role !== 3 && user.role !== 1,
           )
-          console.log('filteredUsers in getUsers: ', filteredUsers)
+          // console.log('filteredUsers in getUsers: ', filteredUsers)
         } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
           filteredUsers = data.Users.filter((user) => user.id === local.Users.id)
         }
@@ -167,7 +167,7 @@ export default function Dashboard() {
 
   const getMonthlyReport = async (userId) => {
     if (!local) {
-      console.log('Local variable is not available')
+      // console.log('Local variable is not available')
       return
     }
 
@@ -411,7 +411,7 @@ export default function Dashboard() {
 
   async function getAssignedProjects(userId) {
     if (!local) {
-      console.log('Local variable is not available')
+      // console.log('Local variable is not available')
       return
     }
     let filteredAssignedProjects = []
@@ -422,7 +422,7 @@ export default function Dashboard() {
         filteredAssignedProjects = data.Project_Assigns.filter(
           (project) => project.assign_projects_user_id === userId,
         )
-        console.log('filteredAssignedProjects: ', filteredAssignedProjects)
+        // console.log('filteredAssignedProjects: ', filteredAssignedProjects)
         setTotalProjects(filteredAssignedProjects)
         setTotalNumberOfProjects(filteredAssignedProjects.length)
       })
