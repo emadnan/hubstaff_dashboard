@@ -1085,8 +1085,8 @@ function FSFform() {
   }, [])
 
   //GET API calls
-  function getProjects() {
-    fetch(`${BASE_URL}/api/getproject`)
+  async function getProjects() {
+    await fetch(`${BASE_URL}/api/getproject`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
@@ -1101,8 +1101,8 @@ function FSFform() {
       .catch((error) => console.log(error))
   }
 
-  function getUsers() {
-    fetch(`${BASE_URL}/api/get_users`)
+  async function getUsers() {
+    await fetch(`${BASE_URL}/api/get_users`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
@@ -1115,43 +1115,43 @@ function FSFform() {
       .catch((error) => console.log(error))
   }
 
-  function getTeamLeads(id) {
-    fetch(`${BASE_URL}/api/getTeamLeadByCompanyId/${id}`)
+  async function getTeamLeads(id) {
+    await fetch(`${BASE_URL}/api/getTeamLeadByCompanyId/${id}`)
       .then((response) => response.json())
       .then((data) => setTeamLeads(data.Team_Leads))
       .catch((error) => console.log(error))
   }
 
-  function getProjectModules() {
-    fetch(`${BASE_URL}/api/getModules`)
+  async function getProjectModules() {
+    await fetch(`${BASE_URL}/api/getModules`)
       .then((response) => response.json())
       .then((data) => setProjectModule(data.Module))
       .catch((error) => console.log(error))
   }
 
-  function getFsfWricefId() {
-    fetch(`${BASE_URL}/api/getFunctionalSpecificationForm`)
+  async function getFsfWricefId() {
+    await fetch(`${BASE_URL}/api/getFunctionalSpecificationForm`)
       .then((response) => response.json())
       .then((data) => setFsfWricef(data.Functional))
       .catch((error) => console.log(error))
   }
 
-  function getFSFInputParameters() {
-    fetch(`${BASE_URL}/api/getFsfHasParameterByFsfId/${ref_id}`)
+  async function getFSFInputParameters() {
+    await fetch(`${BASE_URL}/api/getFsfHasParameterByFsfId/${ref_id}`)
       .then((response) => response.json())
       .then((data) => setFsfInput(data.fsf_has_parameter))
       .catch((error) => console.log(error))
   }
 
-  function getFSFOutputParameters() {
-    fetch(`${BASE_URL}/api/getFsfHasOutputParameters/${ref_id}`)
+  async function getFSFOutputParameters() {
+    await fetch(`${BASE_URL}/api/getFsfHasOutputParameters/${ref_id}`)
       .then((response) => response.json())
       .then((data) => setFsfOutput(data.fsf_has_output_parameters))
       .catch((error) => console.log(error))
   }
 
-  function getFsfHasParameterByFsfId(id) {
-    fetch(`${BASE_URL}/api/getFsfHasParameterById/${id}`)
+  async function getFsfHasParameterByFsfId(id) {
+    await fetch(`${BASE_URL}/api/getFsfHasParameterById/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setFsfHasInputParameter(data.fsf)
@@ -1167,8 +1167,8 @@ function FSFform() {
       .catch((error) => console.log(error))
   }
 
-  function getFsfHasOutputParameterByFsfId(id) {
-    fetch(`${BASE_URL}/api/getFsfHasOutputParameterById/${id}`)
+  async function getFsfHasOutputParameterByFsfId(id) {
+    await fetch(`${BASE_URL}/api/getFsfHasOutputParameterById/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setFsfHasOutputParameter(data.fsf_has_output_parameter)
