@@ -121,14 +121,14 @@ export default function Dashboard() {
     setMonth(dateRange)
   }
 
-  const getUsers = () => {
+  const getUsers = async () => {
     if (!local) {
       console.log('Local variable is not available')
       return
     }
     let filteredUsers = []
 
-    fetch(`${BASE_URL}/api/get_users`)
+    await fetch(`${BASE_URL}/api/get_users`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1) {
@@ -165,13 +165,13 @@ export default function Dashboard() {
     return months[monthIndex]
   }
 
-  const getMonthlyReport = (userId) => {
+  const getMonthlyReport = async (userId) => {
     if (!local) {
       console.log('Local variable is not available')
       return
     }
 
-    fetch(`${BASE_URL}/api/calculateMonthlyActivity/${userId}`)
+    await fetch(`${BASE_URL}/api/calculateMonthlyActivity/${userId}`)
       .then((response) => response.json())
       .then((data) => {
         const totalSeconds = data.project.reduce((total, project) => {
@@ -218,12 +218,12 @@ export default function Dashboard() {
       .catch((error) => console.log(error))
   }
 
-  const getMonthlyReportOnMonthSelection = (
+  const getMonthlyReportOnMonthSelection = async (
     selectedMonthStartDate,
     selectedMonthEndDate,
     selectedUserId,
   ) => {
-    fetch(
+    await fetch(
       `${BASE_URL}/api/getSumByDateWithUserId/${selectedMonthStartDate}/${selectedMonthEndDate}/${selectedUserId}`,
     )
       .then((response) => response.json())
@@ -409,14 +409,14 @@ export default function Dashboard() {
     setMonthlyReportData(Object.values(processedData))
   }
 
-  function getAssignedProjects(userId) {
+  async function getAssignedProjects(userId) {
     if (!local) {
       console.log('Local variable is not available')
       return
     }
     let filteredAssignedProjects = []
 
-    fetch(`${BASE_URL}/api/get_assign_projects`)
+    await fetch(`${BASE_URL}/api/get_assign_projects`)
       .then((response) => response.json())
       .then((data) => {
         filteredAssignedProjects = data.Project_Assigns.filter(
@@ -429,10 +429,10 @@ export default function Dashboard() {
       .catch((error) => console.log(error))
   }
 
-  function getCompanies(selectedUser) {
+  async function getCompanies(selectedUser) {
     const companyId = selectedUser[0].company_id
     let filteredCompanies = []
-    fetch(`${BASE_URL}/api/getcompany`)
+    await fetch(`${BASE_URL}/api/getcompany`)
       .then((response) => response.json())
       .then((data) => {
         filteredCompanies = data.companies.filter((company) => company.id === companyId)
