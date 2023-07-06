@@ -30,7 +30,6 @@ const AppHeaderDropdown = () => {
 
   const navigate = useNavigate();
   let user = JSON.parse(localStorage.getItem("user-info"))
-  console.warn(user)
 
   function logOut() {
     localStorage.clear();
