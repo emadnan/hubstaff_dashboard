@@ -414,116 +414,116 @@ const Screenshots = () => {
                   </>
                 )
               })
-          : null
-          // images.map((image) => {
-          //     return (
-          //       <>
-          //         {image.get_timings.map((timing) => (
-          //           <div key={timing.id} style={{ cursor: 'pointer' }}>
-          //             <Card
-          //               variant="outlined"
-          //               sx={{ width: 240, my: 1, mx: 1 }}
-          //               onClick={() => handleClick(timing.getattechments)}
-          //             >
-          //               <CardOverflow>
-          //                 <AspectRatio ratio="2">
-          //                   {timing.getattechments.map((attach) => (
-          //                     <div key={attach.id} style={{ position: 'relative' }}>
-          //                       <img
-          //                         src={url(attach.path_url)}
-          //                         alt={attach.path_url}
-          //                         style={{ filter: 'blur(3px)' }}
-          //                       />
-          //                       <div
-          //                         style={{
-          //                           position: 'absolute',
-          //                           top: '50%',
-          //                           left: '50%',
-          //                           transform: 'translate(-50%, -50%)',
-          //                           backdropFilter: 'blur(10px)',
-          //                           padding: '8px 18px',
-          //                           borderRadius: '50%',
-          //                           backgroundColor: 'rgba(255, 255, 255, 0.8)',
-          //                           border: '2px solid black',
-          //                         }}
-          //                       >
-          //                         {/* Replace the count with your desired value */}
-          //                         <span style={{ fontSize: '22px', fontWeight: 'bold' }}>
-          //                           {timing.getattechments.length}
-          //                         </span>
-          //                       </div>
-          //                     </div>
-          //                   ))}
-          //                 </AspectRatio>
-          //               </CardOverflow>
-          //               <Typography level="h2" sx={{ fontSize: 'md', mt: 1 }}>
-          //                 {image.project_name}
-          //               </Typography>
-          //               <Typography level="body2" sx={{ mt: 0.5, mb: 1 }}>
-          //                 {image.stream_name}
-          //               </Typography>
-          //               <Box
-          //                 sx={{
-          //                   display: 'flex',
-          //                   alignItems: 'center',
-          //                   gap: 0.5,
-          //                   mx: 'auto',
-          //                   my: 0.5,
-          //                 }}
-          //               >
-          //                 {timing.getattechments.map((_, index) => (
-          //                   <Box
-          //                     key={index}
-          //                     sx={{
-          //                       borderRadius: '50%',
-          //                       width: `max(${6 - index}px, 3px)`,
-          //                       height: `max(${6 - index}px, 3px)`,
-          //                       bgcolor: index === 0 ? 'primary.solidBg' : 'background.level3',
-          //                     }}
-          //                   />
-          //                 ))}
-          //               </Box>
-          //               <Divider />
-          //               <CardOverflow
-          //                 variant="soft"
-          //                 sx={{
-          //                   display: 'flex',
-          //                   flexDirection: 'row',
-          //                   gap: 1,
-          //                   py: 1,
-          //                   px: 'var(--Card-padding)',
-          //                   bgcolor: 'background.level1',
-          //                 }}
-          //               >
-          //                 <Typography
-          //                   level="body3"
-          //                   sx={{ fontWeight: 'md', color: 'text.secondary' }}
-          //                 >
-          //                   {new Date(timing.start_time)
-          //                     .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          //                     .substring(0, 11)}{' '}
-          //                   -
-          //                   {new Date(timing.end_time)
-          //                     .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          //                     .substring(0, 11)}
-          //                 </Typography>
-          //                 <Typography
-          //                   level="body3"
-          //                   sx={{ fontWeight: 'md', color: 'text.secondary' }}
-          //                 >
-          //                   {new Intl.DateTimeFormat('en-GB', {
-          //                     year: 'numeric',
-          //                     month: 'long',
-          //                     day: '2-digit',
-          //                   }).format(new Date(timing.created_at))}
-          //                 </Typography>
-          //               </CardOverflow>
-          //             </Card>
-          //           </div>
-          //         ))}
-          //       </>
-          //     )
-          //   })
+          : 
+          images.map((image) => {
+              return (
+                <>
+                  {image.get_timings.map((timing) => (
+                    <div key={timing.id} style={{ cursor: 'pointer' }}>
+                      <Card
+                        variant="outlined"
+                        sx={{ width: 240, my: 1, mx: 1 }}
+                        onClick={() => handleClick(timing.getattechments)}
+                      >
+                        <CardOverflow>
+                          <AspectRatio ratio="2">
+                            {timing.getattechments.map((attach) => (
+                              <div key={attach.id} style={{ position: 'relative' }}>
+                                <img
+                                  src={url(attach.path_url)}
+                                  alt={attach.path_url}
+                                  style={{ filter: 'blur(3px)' }}
+                                />
+                                <div
+                                  style={{
+                                    position: 'absolute',
+                                    top: '50%',
+                                    left: '50%',
+                                    transform: 'translate(-50%, -50%)',
+                                    backdropFilter: 'blur(10px)',
+                                    padding: '8px 18px',
+                                    borderRadius: '50%',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    border: '2px solid black',
+                                  }}
+                                >
+                                  {/* Replace the count with your desired value */}
+                                  <span style={{ fontSize: '22px', fontWeight: 'bold' }}>
+                                    {timing.getattechments.length}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </AspectRatio>
+                        </CardOverflow>
+                        <Typography level="h2" sx={{ fontSize: 'md', mt: 1 }}>
+                          {image.project_name}
+                        </Typography>
+                        <Typography level="body2" sx={{ mt: 0.5, mb: 1 }}>
+                          {image.stream_name}
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 0.5,
+                            mx: 'auto',
+                            my: 0.5,
+                          }}
+                        >
+                          {timing.getattechments.map((_, index) => (
+                            <Box
+                              key={index}
+                              sx={{
+                                borderRadius: '50%',
+                                width: `max(${6 - index}px, 3px)`,
+                                height: `max(${6 - index}px, 3px)`,
+                                bgcolor: index === 0 ? 'primary.solidBg' : 'background.level3',
+                              }}
+                            />
+                          ))}
+                        </Box>
+                        <Divider />
+                        <CardOverflow
+                          variant="soft"
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            gap: 1,
+                            py: 1,
+                            px: 'var(--Card-padding)',
+                            bgcolor: 'background.level1',
+                          }}
+                        >
+                          <Typography
+                            level="body3"
+                            sx={{ fontWeight: 'md', color: 'text.secondary' }}
+                          >
+                            {new Date(timing.start_time)
+                              .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                              .substring(0, 11)}{' '}
+                            -
+                            {new Date(timing.end_time)
+                              .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                              .substring(0, 11)}
+                          </Typography>
+                          <Typography
+                            level="body3"
+                            sx={{ fontWeight: 'md', color: 'text.secondary' }}
+                          >
+                            {new Intl.DateTimeFormat('en-GB', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: '2-digit',
+                            }).format(new Date(timing.created_at))}
+                          </Typography>
+                        </CardOverflow>
+                      </Card>
+                    </div>
+                  ))}
+                </>
+              )
+            })
             
             }
       </div>
