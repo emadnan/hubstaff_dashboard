@@ -8,6 +8,8 @@ import Alert from '@mui/material/Alert'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 const SubscribedPlan = () => {
+  const local = JSON.parse(localStorage.getItem('user-info'))
+
   //CSS Styling
   const mystyle = {
     color: 'white',
@@ -65,9 +67,16 @@ const SubscribedPlan = () => {
 
   //APIs
   function getSubscribedPlan() {
+    let filteredSubscribedPlan
     fetch(`${BASE_URL}/api/getAllSubscriptionInvoice`)
       .then((response) => response.json())
-      .then((data) => console.log('data: ', data))
+      .then((data) => {
+        console.log('data: ', data)
+        filteredSubscribedPlan = data.projects.filter(
+          (plan) => plan.company_id === local.Users.company_id,
+        )
+        console.log('filteredSubscribedPlan: ', filteredSubscribedPlan)
+      })
       .catch((error) => console.log(error))
   }
 

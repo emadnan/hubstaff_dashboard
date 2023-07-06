@@ -370,7 +370,7 @@ function TaskAssignment() {
       user_id,
       team_lead_id: local.Users.id,
       project_id,
-      priorities,
+      priorites: priorities,
       task_description,
       start_date: task_managements_start_date,
       dead_line: task_managements_dead_line,
