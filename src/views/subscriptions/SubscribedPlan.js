@@ -43,6 +43,11 @@ const SubscribedPlan = () => {
     getSubscribedPlan()
   }, [])
 
+  const [subscribed_plan, setSubscribedPlan] = useState()
+  const [subscribed_plan_amount, setSubscribedPlanAmount] = useState()
+  const [subscribed_plan_endDate, setSubscribedPlanEndDate] = useState()
+  const [subscribed_plan_startDate, setSubscribedPlanStartDate] = useState()
+
   const [showSubscribedPlanDeletedAlert, seShowSubscribedPlanDeletedAlert] = useState(false)
   const [showFailedToDeleteAlert, setShowFailedToDeleteAlert] = useState(false)
   const [showSubscribedPlanUpdatedAlert, setShowSubscribedPlanUpdatedAlert] = useState(false)
@@ -67,15 +72,22 @@ const SubscribedPlan = () => {
 
   //APIs
   function getSubscribedPlan() {
-    let filteredSubscribedPlan
     fetch(`${BASE_URL}/api/getAllSubscriptionInvoice`)
       .then((response) => response.json())
       .then((data) => {
-        console.log('data: ', data)
-        filteredSubscribedPlan = data.projects.filter(
+        const filteredSubscribedPlan = data.subscriptions.filter(
           (plan) => plan.company_id === local.Users.company_id,
         )
-        console.log('filteredSubscribedPlan: ', filteredSubscribedPlan)
+        if (filteredSubscribedPlan[0].subscription_id === 2) {
+          setSubscribedPlan('WorkLog Annual Plan')
+        } else if (filteredSubscribedPlan[0].subscription_id === 1) {
+          setSubscribedPlan('WorkLog Monthly Plan')
+        } else {
+          setSubscribedPlan('WorkLog Demo')
+        }
+        setSubscribedPlanAmount(filteredSubscribedPlan[0].amount)
+        setSubscribedPlanStartDate(filteredSubscribedPlan[0].start_date)
+        setSubscribedPlanEndDate(filteredSubscribedPlan[0].end_date)
       })
       .catch((error) => console.log(error))
   }
@@ -115,10 +127,16 @@ const SubscribedPlan = () => {
           {/* Subscribed Plans table heading */}
           <CTableRow>
             <CTableHeaderCell className="text-center" style={mystyle}>
-              Sr/No
+              Subscribed Plan
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
-              Subscribed Plan Name
+              Plan Fees
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Plan Subscription Date
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Plan Expiry Date
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
               Actions
@@ -129,10 +147,28 @@ const SubscribedPlan = () => {
 
           <CTableRow>
             <CTableHeaderCell className="text-center" style={mystyle2}>
-              01
+              {subscribed_plan}
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle2}>
-              PRO PLAN
+              $ {subscribed_plan_amount !== 0 ? subscribed_plan_amount / 100 : 0}
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle2}>
+              {new Date(subscribed_plan_startDate)
+                .toLocaleDateString('en-GB', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })
+                .replace(/\//g, '-')}
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle2}>
+              {new Date(subscribed_plan_endDate)
+                .toLocaleDateString('en-GB', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })
+                .replace(/\//g, '-')}
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle2}>
               <IconButton

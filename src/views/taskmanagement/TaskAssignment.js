@@ -365,7 +365,7 @@ function TaskAssignment() {
       .catch((error) => console.log(error))
   }
 
-  async function addTask() {
+  function addTask() {
     const taskData = {
       user_id,
       team_lead_id: local.Users.id,
@@ -375,7 +375,7 @@ function TaskAssignment() {
       start_date: task_managements_start_date,
       dead_line: task_managements_dead_line,
     }
-    await fetch(`${BASE_URL}/api/addTasks`, {
+    fetch(`${BASE_URL}/api/addTasks`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
