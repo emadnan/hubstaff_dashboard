@@ -390,7 +390,7 @@ function TaskAssignment() {
           setUserId('')
           setProjectId('')
           setTaskDescription('')
-          setPriorities('')
+          setPriorities('LOW')
           setTaskManagementStartDate('')
           setTaskManagementDeadLine('')
           setTaskStatus('')

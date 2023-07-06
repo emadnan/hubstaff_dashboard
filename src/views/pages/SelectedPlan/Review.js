@@ -30,7 +30,7 @@ export default function Review({
         <ListItem sx={{ py: 1, px: 0 }}>
           <ListItemText primary="Total Ammount: " />
           <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            $ {selectedPlanAmount}
+            $ {selectedPlanAmount !== 0 ? selectedPlanAmount / 100 : 0}
           </Typography>
         </ListItem>
       </List>

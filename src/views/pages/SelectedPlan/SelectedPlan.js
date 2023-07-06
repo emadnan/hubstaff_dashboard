@@ -96,6 +96,7 @@ function SelectedPlan({ selectedPlanTitle, selectedPlanAmount, selectedPlanId })
         email: signUpFormData.email,
         password: signUpFormData.password,
         confirmPassword: signUpFormData.confirmPassword,
+        role: 3,
       }
       try {
         const response = await fetch(`${BASE_URL}/api/register`, {

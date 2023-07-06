@@ -37,6 +37,10 @@ const SubscribedPlan = () => {
     left: '40%',
   }
 
+  useEffect(() => {
+    getSubscribedPlan()
+  }, [])
+
   const [showSubscribedPlanDeletedAlert, seShowSubscribedPlanDeletedAlert] = useState(false)
   const [showFailedToDeleteAlert, setShowFailedToDeleteAlert] = useState(false)
   const [showSubscribedPlanUpdatedAlert, setShowSubscribedPlanUpdatedAlert] = useState(false)
@@ -58,6 +62,36 @@ const SubscribedPlan = () => {
   const handleCloseFailedToDeleteAlert = () => {}
   const handleCloseSubscribedPlanUpdatedAlert = () => {}
   const handleCloseFailedToUpdateAlert = () => {}
+
+  //APIs
+  function getSubscribedPlan() {
+    fetch(`${BASE_URL}/api/getAllSubscriptionInvoice`)
+      .then((response) => response.json())
+      .then((data) => console.log('data: ', data))
+      .catch((error) => console.log(error))
+  }
+
+  function updateSubscribedPlan(subscriptionId) {
+    //code //3
+    let formData = new FormData()
+    formData.append('')
+
+    fetch(`${BASE_URL}/api/updateSubscriptionInvoice/${subscriptionId}`, {
+      method: 'POST',
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        getSubscribedPlan()
+      })
+      .catch((error) => {
+        console.error('Error:', error)
+      })
+  }
+
+  function cancelAndRefundOfSubscribedPlan() {
+    //code
+  }
 
   return (
     <>

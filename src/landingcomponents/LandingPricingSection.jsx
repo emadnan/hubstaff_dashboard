@@ -69,14 +69,14 @@ export default function Pricing() {
         <Grid container spacing={3}>
           <Grid item xs={12} md={4}>
             <Card variant="outlined" className={classes.card}>
-              <CardHeader title="Desk Free"></CardHeader>
+              <CardHeader title="WorkLog Demo"></CardHeader>
               <CardContent>
                 <Box px={1}>
                   <Typography variant="h3" component="h2" gutterBottom={true}>
                     $0
                     <Typography variant="h6" color="textSecondary" component="span">
                       {' '}
-                      / For one user only
+                      / Valid For 15 Days Only
                     </Typography>
                   </Typography>
                   <Typography
@@ -94,7 +94,7 @@ export default function Pricing() {
                     component="p"
                     className={classes.typography}
                   >
-                    &#10004; Timesheets
+                    &#10004; Screenshots of Company Employees
                   </Typography>
                   <Divider />
                   <Typography
@@ -103,435 +103,7 @@ export default function Pricing() {
                     component="p"
                     className={classes.typography}
                   >
-                    &#10004; Activity levels
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Limited screenshots
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Limited Reports
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Track apps & URLs
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Custom idle timeout
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Auto discard idle time
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Unlimited teams
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Payments & payroll
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Unlimited integration
-                  </Typography>
-
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Limited public API
-                  </Typography>
-
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Time off & holidays
-                  </Typography>
-
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Scheduling & attendance
-                  </Typography>
-
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Invoices
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Client & project budgets
-                  </Typography>
-
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Timesheet approvals
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Daily & weekly limits
-                  </Typography>
-
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Expense tracking
-                  </Typography>
-                </Box>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.primaryAction}
-                  onClick={() => gotoPlanSelection('Desk Free', 0, 1)}
-                >
-                  Select plan
-                </Button>
-                <Box mt={2}>
-                  <Link href="#" color="primary">
-                    Learn more
-                  </Link>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Card variant="outlined" className={classes.card}>
-              <CardHeader title="Desk Starter"></CardHeader>
-              <CardContent>
-                <Box px={1}>
-                  <Typography variant="h3" component="h2" gutterBottom={true}>
-                    $5
-                    <Typography variant="h6" color="textSecondary" component="span">
-                      {' '}
-                      / user / month
-                    </Typography>
-                  </Typography>
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Time tracking
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Timesheets
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Activity levels
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Unlimited screenshots
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Reports
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Track apps & URLs
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Custom idle timeout
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Auto discard idle time
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Unlimited teams
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Payments & payroll
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Unlimited integration
-                  </Typography>
-
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Limited public API
-                  </Typography>
-
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Time off & holidays
-                  </Typography>
-
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    Scheduling & attendance
-                  </Typography>
-
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Invoices
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Client & project budgets
-                  </Typography>
-
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Timesheet approvals
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10060; Daily & weekly limits
-                  </Typography>
-
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Expense tracking
-                  </Typography>
-                </Box>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.primaryAction}
-                  onClick={() => gotoPlanSelection('Desk Starter', 5000, 2)}
-                >
-                  Select plan
-                </Button>
-                <Box mt={2}>
-                  <Link href="#" color="primary">
-                    Learn more
-                  </Link>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Card variant="outlined" className={classes.card}>
-              <CardHeader title="Desk Pro"></CardHeader>
-              <CardContent>
-                <Box px={1}>
-                  <Typography variant="h3" component="h2" gutterBottom={true}>
-                    $8
-                    <Typography variant="h6" color="textSecondary" component="span">
-                      {' '}
-                      / user / month
-                    </Typography>
-                  </Typography>
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Time tracking
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Timesheets
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Activity levels
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Unlimited screenshots
-                  </Typography>
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Reports
+                    &#10004; Monthly Reports of Company Employees
                   </Typography>
                   <Divider />
                   <Typography
@@ -567,7 +139,7 @@ export default function Pricing() {
                     component="p"
                     className={classes.typography}
                   >
-                    &#10004; Unlimited teams
+                    &#10004; Teams Management
                   </Typography>
                   <Divider />
                   <Typography
@@ -576,7 +148,7 @@ export default function Pricing() {
                     component="p"
                     className={classes.typography}
                   >
-                    &#10004; Payments & payroll
+                    &#10004; Functional Specification Forms
                   </Typography>
                   <Divider />
                   <Typography
@@ -585,17 +157,7 @@ export default function Pricing() {
                     component="p"
                     className={classes.typography}
                   >
-                    &#10004; Unlimited integration
-                  </Typography>
-
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="subtitle1"
-                    component="p"
-                    className={classes.typography}
-                  >
-                    &#10004; Limited public API
+                    &#10004; Tasks Management
                   </Typography>
 
                   <Divider />
@@ -644,7 +206,44 @@ export default function Pricing() {
                     component="p"
                     className={classes.typography}
                   >
-                    &#10004; Timesheet approvals
+                    &#10004; Expense tracking
+                  </Typography>
+                </Box>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.primaryAction}
+                  onClick={() => gotoPlanSelection('WorkLog Demo', 0, 1)}
+                >
+                  Select plan
+                </Button>
+                <Box mt={2}>
+                  <Link href="#" color="primary">
+                    Learn more
+                  </Link>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Card variant="outlined" className={classes.card}>
+              <CardHeader title="WorkLog Monthly Plan"></CardHeader>
+              <CardContent>
+                <Box px={1}>
+                  <Typography variant="h3" component="h2" gutterBottom={true}>
+                    $3
+                    <Typography variant="h6" color="textSecondary" component="span">
+                      {' '}
+                      / Valid For 1 Month Only
+                    </Typography>
+                  </Typography>
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Time tracking
                   </Typography>
                   <Divider />
                   <Typography
@@ -653,7 +252,109 @@ export default function Pricing() {
                     component="p"
                     className={classes.typography}
                   >
-                    &#10004; Daily & weekly limits
+                    &#10004; Screenshots of Company Employees
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Monthly Reports of Company Employees
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Track apps & URLs
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Custom idle timeout
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Auto discard idle time
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Teams Management
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Functional Specification Forms
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Tasks Management
+                  </Typography>
+
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Time off & holidays
+                  </Typography>
+
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Scheduling & attendance
+                  </Typography>
+
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Invoices
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Client & project budgets
                   </Typography>
 
                   <Divider />
@@ -670,7 +371,165 @@ export default function Pricing() {
                   variant="contained"
                   color="primary"
                   className={classes.primaryAction}
-                  onClick={() => gotoPlanSelection('Desk Pro', 8000, 3)}
+                  onClick={() => gotoPlanSelection('WorkLog Monthly Plan', 300, 2)}
+                >
+                  Select plan
+                </Button>
+                <Box mt={2}>
+                  <Link href="#" color="primary">
+                    Learn more
+                  </Link>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Card variant="outlined" className={classes.card}>
+              <CardHeader title="WorkLog Annual Plan"></CardHeader>
+              <CardContent>
+                <Box px={1}>
+                  <Typography variant="h3" component="h2" gutterBottom={true}>
+                    $36
+                    <Typography variant="h6" color="textSecondary" component="span">
+                      {' '}
+                      / Valid For 1 Year Only
+                    </Typography>
+                  </Typography>
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Time tracking
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Screenshots of Company Employees
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Monthly Reports of Company Employees
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Track apps & URLs
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Custom idle timeout
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Auto discard idle time
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Teams Management
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Functional Specification Forms
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Tasks Management
+                  </Typography>
+
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Time off & holidays
+                  </Typography>
+
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Scheduling & attendance
+                  </Typography>
+
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Invoices
+                  </Typography>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Client & project budgets
+                  </Typography>
+
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle1"
+                    component="p"
+                    className={classes.typography}
+                  >
+                    &#10004; Expense tracking
+                  </Typography>
+                </Box>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.primaryAction}
+                  onClick={() => gotoPlanSelection('WorkLog Annual Plan', 3600, 3)}
                 >
                   Select plan
                 </Button>
