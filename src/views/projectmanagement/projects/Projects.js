@@ -689,6 +689,15 @@ const Projects = () => {
       })
   }
 
+  const handleFocus = (e) => {
+    const { name } = e.target
+
+    setFormErrors((prevFormErrors) => ({
+      ...prevFormErrors,
+      [name]: '',
+    }))
+  }
+
   return (
     <>
       <div className="row">
@@ -829,7 +838,9 @@ const Projects = () => {
                 help={formErrors.company_id}
               >
                 <Select
+                  name="company_id"
                   placeholder="Select Company"
+                  onFocus={handleFocus}
                   onChange={handleCompanyChange}
                   value={company_id}
                 >
@@ -851,8 +862,10 @@ const Projects = () => {
               >
                 <Select
                   placeholder="Select Departments"
+                  onFocus={handleFocus}
                   onChange={handleDepartmentChange}
                   value={department_id}
+                  name="department_id"
                 >
                   {department.map((count) => (
                     <Select.Option value={count.nnname} key={count.id}>
@@ -870,6 +883,7 @@ const Projects = () => {
                 type="text"
                 value={project_name}
                 onChange={(e) => setProjectName(e.target.value)}
+                onFocus={handleFocus}
                 className="form-control form-control-lg"
                 placeholder="Enter Project Name"
               />
@@ -882,7 +896,9 @@ const Projects = () => {
               <label>Description</label>
               <input
                 type="text"
+                name="description"
                 value={description}
+                onFocus={handleFocus}
                 onChange={(e) => setDescription(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Description"
@@ -894,7 +910,9 @@ const Projects = () => {
               <label>Start Date</label>
               <input
                 type="date"
+                name="start_date"
                 value={start_date}
+                onFocus={handleFocus}
                 onChange={(e) => setStartDate(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Start Date"
@@ -907,6 +925,8 @@ const Projects = () => {
               <input
                 type="date"
                 value={dead_line}
+                name="dead_line"
+                onFocus={handleFocus}
                 onChange={(e) => setDeadLine(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Dead Line"
@@ -937,7 +957,9 @@ const Projects = () => {
                   >
                     <Select
                       placeholder="Select Company"
+                      name="company_id"
                       onChange={handleCompanyChange}
+                      onFocus={handleFocus}
                       value={proj.company_id}
                     >
                       {company.map((count) => (
@@ -957,7 +979,9 @@ const Projects = () => {
                     help={formErrors.department_id}
                   >
                     <Select
+                      name="department_name"
                       placeholder="Select Departments"
+                      onFocus={handleFocus}
                       onChange={handleDepartmentChange}
                       value={proj.department_id}
                     >
@@ -975,6 +999,8 @@ const Projects = () => {
                   <input
                     type="text"
                     value={project_name}
+                    name="project_name"
+                    onFocus={handleFocus}
                     onChange={(e) => setProjectName(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Project Name"
@@ -989,6 +1015,8 @@ const Projects = () => {
                   <input
                     type="text"
                     value={description}
+                    name="description"
+                    onFocus={handleFocus}
                     onChange={(e) => setDescription(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Description"
@@ -1003,6 +1031,8 @@ const Projects = () => {
                   <input
                     type="date"
                     value={start_date}
+                    name="start_date"
+                    onFocus={handleFocus}
                     onChange={(e) => setStartDate(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Start Date"
@@ -1017,6 +1047,8 @@ const Projects = () => {
                   <input
                     type="date"
                     value={dead_line}
+                    name="dead_line"
+                    onFocus={handleFocus}
                     onChange={(e) => setDeadLine(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Dead Line"

@@ -423,6 +423,15 @@ const Departments = () => {
       })
   }
 
+  const handleFocus = (e) => {
+    const { name } = e.target
+
+    setFormErrors((prevFormErrors) => ({
+      ...prevFormErrors,
+      [name]: '',
+    }))
+  }
+
   return (
     <>
       <div className="row">
@@ -514,8 +523,10 @@ const Departments = () => {
                 help={formErrors.company_id}
               >
                 <Select
+                  name="company_name"
                   placeholder="Select Company"
                   onChange={handleCompanyChange}
+                  onFocus={handleFocus}
                   value={company_id}
                 >
                   {company.map((count) => (
@@ -530,8 +541,10 @@ const Departments = () => {
             <div className="form-outline mt-3">
               <label>Department</label>
               <input
+                name="department_name"
                 type="text"
                 value={department_name}
+                onFocus={handleFocus}
                 onChange={(e) => setDepartmentName(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Department Name"
@@ -546,6 +559,8 @@ const Departments = () => {
               <input
                 type="text"
                 value={description}
+                name="description"
+                onFocus={handleFocus}
                 onChange={(e) => setDescription(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Description"
@@ -575,8 +590,10 @@ const Departments = () => {
                     help={formErrors.company_name}
                   >
                     <Select
+                      name="company_name"
                       placeholder="Select Company"
                       onChange={handleCompanyChange}
+                      onFocus={handleFocus}
                       defaultValue={dept.company_name}
                     >
                       {company.map((count) => (
@@ -591,8 +608,10 @@ const Departments = () => {
                 <div className="form-outline mt-3">
                   <label>Department</label>
                   <input
+                    name="department_name"
                     type="text"
                     defaultValue={dept.department_name}
+                    onFocus={handleFocus}
                     onChange={(e) => setDepartmentName(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Department Name"
@@ -605,8 +624,10 @@ const Departments = () => {
                 <div className="form-outline mt-3">
                   <label>Description</label>
                   <input
+                    name="descrition"
                     type="text"
                     defaultValue={dept.description}
+                    onFocus={handleFocus}
                     onChange={(e) => setDescription(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Description"

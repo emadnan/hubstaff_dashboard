@@ -476,6 +476,15 @@ const Users = () => {
       })
   }
 
+  const handleFocus = (e) => {
+    const { name } = e.target
+
+    setFormErrors((prevFormErrors) => ({
+      ...prevFormErrors,
+      [name]: '',
+    }))
+  }
+
   return (
     <>
       <div className="row">
@@ -569,6 +578,8 @@ const Users = () => {
               <input
                 type="text"
                 value={name}
+                name="name"
+                onFocus={handleFocus}
                 onChange={(e) => setName(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter User Name"
@@ -581,6 +592,8 @@ const Users = () => {
               <input
                 type="email"
                 value={email}
+                name="email"
+                onFocus={handleFocus}
                 onChange={(e) => setEmail(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Email"
@@ -594,6 +607,8 @@ const Users = () => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
+                  name="password"
+                  onFocus={handleFocus}
                   onChange={handlePasswordChange}
                   className="form-control form-control-lg"
                   placeholder="Enter Password"
@@ -622,7 +637,13 @@ const Users = () => {
                 validateStatus={formErrors.role ? 'error' : ''}
                 help={formErrors.role}
               >
-                <Select placeholder="Select Role Id" onChange={handleRoleChange} value={role}>
+                <Select
+                  placeholder="Select Role Id"
+                  onChange={handleRoleChange}
+                  onFocus={handleFocus}
+                  name="role"
+                  value={role}
+                >
                   {roles.map((user) => (
                     <Select.Option value={user.id} key={user.id}>
                       {user.name}
@@ -635,7 +656,13 @@ const Users = () => {
             <div className="form-outline mt-3">
               <label>Team</label>
               <Form.Item>
-                <Select placeholder="Select Team" onChange={handleTeamChange} value={team_id}>
+                <Select
+                  placeholder="Select Team"
+                  name="team"
+                  onChange={handleTeamChange}
+                  onFocus={handleFocus}
+                  value={team_id}
+                >
                   {team.map((tem) => (
                     <Select.Option value={tem.id} key={tem.id}>
                       {tem.team_name}
@@ -663,7 +690,9 @@ const Users = () => {
                   <label>Username</label>
                   <input
                     type="text"
+                    name="name"
                     defaultValue={user.name}
+                    onFocus={handleFocus}
                     onChange={(e) => setName(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter User Name"
@@ -680,8 +709,10 @@ const Users = () => {
                   >
                     <Select
                       placeholder="Select Role"
+                      onFocus={handleFocus}
                       onChange={handleRoleChange}
                       defaultValue={user.role}
+                      name="role"
                     >
                       {roles.map((user) => (
                         <Select.Option value={user.id} key={user.id}>
@@ -698,7 +729,9 @@ const Users = () => {
                     <Select
                       placeholder="Select Team"
                       onChange={handleTeamChange}
+                      onFocus={handleFocus}
                       defaultValue={user.team_id}
+                      name="team"
                     >
                       {team.map((tem) => (
                         <Select.Option value={tem.id} key={tem.id}>
