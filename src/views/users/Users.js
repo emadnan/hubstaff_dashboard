@@ -19,6 +19,13 @@ const Users = () => {
   const [team_id, setTeamId] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
+  const [formErrors, setFormErrors] = useState({
+    name,
+    email,
+    password,
+    role,
+  })
+
   const handlePasswordChange = (e) => {
     setPassword(e.target.value)
   }
@@ -80,15 +87,39 @@ const Users = () => {
   const showModal = () => {
     setIsModalOpen(true)
   }
+
   const handleOk = () => {
-    addUser()
-    setIsModalOpen(false)
-    setName('')
-    setEmail('')
-    setPassword('')
-    setRole('')
-    setTeamId('')
+    if (name && email && password && role) {
+      addUser()
+      setIsModalOpen(false)
+      setName('')
+      setEmail('')
+      setPassword('')
+      setRole('')
+      setTeamId('')
+    } else {
+      callErrors(name, email, password, role)
+    }
   }
+
+  const callErrors = (name, email, password, role) => {
+    const errors = {}
+    if (!name) {
+      errors.name = 'Enter the User Name'
+    }
+    if (!email) {
+      errors.email = 'Enter the User Email'
+    }
+    if (!password) {
+      errors.password = 'Enter the User Password'
+    }
+    if (!role) {
+      errors.role = 'Select the User Role'
+    }
+
+    setFormErrors(errors)
+  }
+
   const handleCancel = () => {
     setIsModalOpen(false)
     setName('')
@@ -121,13 +152,18 @@ const Users = () => {
   }
 
   const handleOk3 = () => {
-    updateUser(isModalOpen3)
-    setIsModalOpen3(false)
-    setName('')
-    setEmail('')
-    setPassword('')
-    setRole('')
-    setTeamId('')
+    console.log('name', name, 'role', role)
+    if (name && role) {
+      updateUser(isModalOpen3)
+      setIsModalOpen3(false)
+      setName('')
+      setEmail('')
+      setPassword('')
+      setRole('')
+      setTeamId('')
+    } else {
+      callErrors(name, email, password, role)
+    }
   }
 
   const handleCancel3 = () => {
@@ -282,10 +318,10 @@ const Users = () => {
 
   //Get calls handling
   const handleRoleChange = (value) => {
-    if(value > 20 && value < 32){
+    if (value > 20 && value < 32) {
       setRole2(5)
       setRole(value)
-    }else{
+    } else {
       setRole(value)
       setRole2(value)
     }
@@ -324,7 +360,7 @@ const Users = () => {
       .then((response) => response.json())
       .then((data) => {
         // Filter the roles based on the condition
-        const filteredRoles = data.roles.filter((role) => role.id !== 1 && role.id !== 3)
+        const filteredRoles = data.roles.filter((role) => role.id !== 1)
         setRoles(filteredRoles)
       })
       .catch((error) => console.log(error))
@@ -358,7 +394,14 @@ const Users = () => {
 
   // Add API call
   async function addUser() {
-    let adduser = { name : name, email: email, password: password, role: role2, company_id: local.Users.company_id, team_id: team_id }
+    let adduser = {
+      name: name,
+      email: email,
+      password: password,
+      role: role2,
+      company_id: local.Users.company_id,
+      team_id: team_id,
+    }
     console.log(adduser)
 
     await fetch(`${BASE_URL}/api/add_user`, {
@@ -371,7 +414,6 @@ const Users = () => {
       .then((response) => {
         if (response.ok) {
           handleButtonClick1()
-          
         } else {
           handleButtonClick2()
         }
@@ -522,7 +564,7 @@ const Users = () => {
           >
             <br></br>
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Username</label>
               <input
                 type="text"
@@ -532,8 +574,9 @@ const Users = () => {
                 placeholder="Enter User Name"
               />
             </div>
+            {formErrors.name && <div className="text-danger">{formErrors.name}</div>}
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Email</label>
               <input
                 type="email"
@@ -543,8 +586,9 @@ const Users = () => {
                 placeholder="Enter Email"
               />
             </div>
+            {formErrors.email && <div className="text-danger">{formErrors.email}</div>}
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Password</label>
               <div className="position-relative">
                 <input
@@ -569,10 +613,15 @@ const Users = () => {
                 </IconButton>
               </div>
             </div>
+            {formErrors.password && <div className="text-danger">{formErrors.password}</div>}
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Role</label>
-              <Form.Item>
+              <Form.Item
+                name="role"
+                validateStatus={formErrors.role ? 'error' : ''}
+                help={formErrors.role}
+              >
                 <Select placeholder="Select Role Id" onChange={handleRoleChange} value={role}>
                   {roles.map((user) => (
                     <Select.Option value={user.id} key={user.id}>
@@ -583,7 +632,7 @@ const Users = () => {
               </Form.Item>
             </div>
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Team</label>
               <Form.Item>
                 <Select placeholder="Select Team" onChange={handleTeamChange} value={team_id}>
@@ -610,7 +659,7 @@ const Users = () => {
 
             {byuser.map((user) => (
               <div key={user.id}>
-                <div className="form-outline mb-3">
+                <div className="form-outline mt-3">
                   <label>Username</label>
                   <input
                     type="text"
@@ -620,10 +669,15 @@ const Users = () => {
                     placeholder="Enter User Name"
                   />
                 </div>
+                {formErrors.name && <div className="text-danger">{formErrors.name}</div>}
 
-                <div className="form-outline mb-3">
+                <div className="form-outline mt-3">
                   <label>Role</label>
-                  <Form.Item>
+                  <Form.Item
+                    name="role"
+                    validateStatus={formErrors.role ? 'error' : ''}
+                    help={formErrors.role}
+                  >
                     <Select
                       placeholder="Select Role"
                       onChange={handleRoleChange}
@@ -638,7 +692,7 @@ const Users = () => {
                   </Form.Item>
                 </div>
 
-                <div className="form-outline mb-3">
+                <div className="form-outline mt-3">
                   <label>Team</label>
                   <Form.Item>
                     <Select

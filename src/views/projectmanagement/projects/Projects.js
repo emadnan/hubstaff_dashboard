@@ -36,6 +36,15 @@ const Projects = () => {
   const isDeleteButtonEnabled = perm.some((item) => item.name === 'Delete_Project')
   const isAssignProjectEnabled = perm.some((item) => item.name === 'Assign_Project')
 
+  const [formErrors, setFormErrors] = useState({
+    company_id,
+    department_id,
+    project_name,
+    description,
+    start_date,
+    dead_line,
+  })
+
   // CSS Styling
   const modalStyle = {
     position: 'fixed',
@@ -98,15 +107,50 @@ const Projects = () => {
     setIsModalOpen(true)
   }
   const handleOk = () => {
-    addProject()
-    setIsModalOpen(false)
-    setDepartmentId('')
-    setCompanyId('')
-    setProjectName('')
-    setDescription('')
-    setStartDate('')
-    setDeadLine('')
+    if (company_id && department_id && project_name && description && start_date && dead_line) {
+      addProject()
+      setIsModalOpen(false)
+      setDepartmentId('')
+      setCompanyId('')
+      setProjectName('')
+      setDescription('')
+      setStartDate('')
+      setDeadLine('')
+    } else {
+      callErrors(company_id, department_id, project_name, description, start_date, dead_line)
+    }
   }
+
+  const callErrors = (
+    company_id,
+    department_id,
+    project_name,
+    description,
+    start_date,
+    dead_line,
+  ) => {
+    const errors = {}
+    if (!company_id) {
+      errors.company_id = 'Select a Company'
+    }
+    if (!department_id) {
+      errors.department_id = 'Select a department'
+    }
+    if (!project_name) {
+      errors.project_name = 'Enter the Project name'
+    }
+    if (!description) {
+      errors.description = 'Enter the Description'
+    }
+    if (!start_date) {
+      errors.start_date = 'Select Start Date'
+    }
+    if (!dead_line) {
+      errors.dead_line = 'Select End Date'
+    }
+    setFormErrors(errors)
+  }
+
   const handleCancel = () => {
     setIsModalOpen(false)
     setDepartmentId('')
@@ -140,14 +184,18 @@ const Projects = () => {
   }
 
   const handleOk3 = () => {
-    updateProject(isModalOpen3)
-    setIsModalOpen3(false)
-    setDepartmentId('')
-    setCompanyId('')
-    setProjectName('')
-    setDescription('')
-    setStartDate('')
-    setDeadLine('')
+    if (department_id && company_id && project_name && description && start_date && dead_line) {
+      updateProject(isModalOpen3)
+      setIsModalOpen3(false)
+      setDepartmentId('')
+      setCompanyId('')
+      setProjectName('')
+      setDescription('')
+      setStartDate('')
+      setDeadLine('')
+    } else {
+      callErrors(company_id, department_id, project_name, description, start_date, dead_line)
+    }
   }
 
   const handleCancel3 = () => {
@@ -514,7 +562,9 @@ const Projects = () => {
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 3) {
-          filteredUsers = data.Streams.filter((stream) => stream.company_id === local.Users.company_id)
+          filteredUsers = data.Streams.filter(
+            (stream) => stream.company_id === local.Users.company_id,
+          )
         }
         setStream(filteredUsers)
       })
@@ -771,9 +821,13 @@ const Projects = () => {
           >
             <br></br>
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Company</label>
-              <Form.Item>
+              <Form.Item
+                name="company_name"
+                validateStatus={formErrors.company_id ? 'error' : ''}
+                help={formErrors.company_id}
+              >
                 <Select
                   placeholder="Select Company"
                   onChange={handleCompanyChange}
@@ -788,9 +842,13 @@ const Projects = () => {
               </Form.Item>
             </div>
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Department</label>
-              <Form.Item>
+              <Form.Item
+                name="department_name"
+                validateStatus={formErrors.department_id ? 'error' : ''}
+                help={formErrors.department_id}
+              >
                 <Select
                   placeholder="Select Departments"
                   onChange={handleDepartmentChange}
@@ -805,9 +863,10 @@ const Projects = () => {
               </Form.Item>
             </div>
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Project Name</label>
               <input
+                name="project_name"
                 type="text"
                 value={project_name}
                 onChange={(e) => setProjectName(e.target.value)}
@@ -815,8 +874,11 @@ const Projects = () => {
                 placeholder="Enter Project Name"
               />
             </div>
+            {formErrors.project_name && (
+              <div className="text-danger">{formErrors.project_name}</div>
+            )}
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Description</label>
               <input
                 type="text"
@@ -826,8 +888,9 @@ const Projects = () => {
                 placeholder="Enter Description"
               />
             </div>
+            {formErrors.description && <div className="text-danger">{formErrors.description}</div>}
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Start Date</label>
               <input
                 type="date"
@@ -837,8 +900,9 @@ const Projects = () => {
                 placeholder="Enter Start Date"
               />
             </div>
+            {formErrors.start_date && <div className="text-danger">{formErrors.start_date}</div>}
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>End Date</label>
               <input
                 type="date"
@@ -848,6 +912,7 @@ const Projects = () => {
                 placeholder="Enter Dead Line"
               />
             </div>
+            {formErrors.dead_line && <div className="text-danger">{formErrors.dead_line}</div>}
           </Modal>
 
           {/* Modal for Update Projects */}
@@ -863,16 +928,20 @@ const Projects = () => {
 
             {byproject2.map((proj) => (
               <div key={proj.id}>
-                <div className="form-outline mb-3">
+                <div className="form-outline mt-3">
                   <label>Company</label>
-                  <Form.Item>
+                  <Form.Item
+                    name="company_name"
+                    validateStatus={formErrors.company_id ? 'error' : ''}
+                    help={formErrors.company_id}
+                  >
                     <Select
                       placeholder="Select Company"
                       onChange={handleCompanyChange}
-                      value={proj.company_name}
+                      value={proj.company_id}
                     >
                       {company.map((count) => (
-                        <Select.Option value={count.name} key={count.id}>
+                        <Select.Option value={company_id} key={count.id}>
                           {count.company_name}
                         </Select.Option>
                       ))}
@@ -880,16 +949,20 @@ const Projects = () => {
                   </Form.Item>
                 </div>
 
-                <div className="form-outline mb-3">
+                <div className="form-outline mt-3">
                   <label>Department</label>
-                  <Form.Item>
+                  <Form.Item
+                    name="department_name"
+                    validateStatus={formErrors.department_id ? 'error' : ''}
+                    help={formErrors.department_id}
+                  >
                     <Select
                       placeholder="Select Departments"
                       onChange={handleDepartmentChange}
-                      value={proj.department_name}
+                      value={proj.department_id}
                     >
                       {department.map((count) => (
-                        <Select.Option value={count.name} key={count.id}>
+                        <Select.Option value={department_id} key={count.id}>
                           {count.department_name}
                         </Select.Option>
                       ))}
@@ -897,7 +970,7 @@ const Projects = () => {
                   </Form.Item>
                 </div>
 
-                <div className="form-outline mb-3">
+                <div className="form-outline mt-3">
                   <label>Project Name</label>
                   <input
                     type="text"
@@ -907,8 +980,11 @@ const Projects = () => {
                     placeholder="Enter Project Name"
                   />
                 </div>
+                {formErrors.project_name && (
+                  <div className="text-danger">{formErrors.project_name}</div>
+                )}
 
-                <div className="form-outline mb-3">
+                <div className="form-outline mt-3">
                   <label>Description</label>
                   <input
                     type="text"
@@ -918,8 +994,11 @@ const Projects = () => {
                     placeholder="Enter Description"
                   />
                 </div>
+                {formErrors.description && (
+                  <div className="text-danger">{formErrors.description}</div>
+                )}
 
-                <div className="form-outline mb-3">
+                <div className="form-outline mt-3">
                   <label>Start Date</label>
                   <input
                     type="date"
@@ -929,8 +1008,11 @@ const Projects = () => {
                     placeholder="Enter Start Date"
                   />
                 </div>
+                {formErrors.start_date && (
+                  <div className="text-danger">{formErrors.start_date}</div>
+                )}
 
-                <div className="form-outline mb-3">
+                <div className="form-outline mt-3">
                   <label>End Date</label>
                   <input
                     type="date"
@@ -940,6 +1022,7 @@ const Projects = () => {
                     placeholder="Enter Dead Line"
                   />
                 </div>
+                {formErrors.dead_line && <div className="text-danger">{formErrors.dead_line}</div>}
               </div>
             ))}
           </Modal>

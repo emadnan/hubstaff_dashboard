@@ -13,6 +13,11 @@ const Departments = () => {
   const [company_id, setCompanyId] = useState('')
   const [department_name, setDepartmentName] = useState('')
   const [description, setDescription] = useState('')
+  const [formErrors, setFormErrors] = useState({
+    company_id,
+    department_name,
+    description,
+  })
 
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'))
@@ -78,12 +83,31 @@ const Departments = () => {
     setIsModalOpen(true)
   }
   const handleOk = () => {
-    addDepartment()
-    setIsModalOpen(false)
-    setCompanyId('')
-    setDepartmentName('')
-    setDescription('')
+    if (company_id && department_name && description) {
+      addDepartment()
+      setIsModalOpen(false)
+      setCompanyId('')
+      setDepartmentName('')
+      setDescription('')
+    } else {
+      callErrors(company_id, department_name, description)
+    }
   }
+
+  const callErrors = (company_id, department_name, description) => {
+    const errors = {}
+    if (!company_id) {
+      errors.company_id = 'Select a Company'
+    }
+    if (!department_name) {
+      errors.department_name = 'Select a department'
+    }
+    if (!description) {
+      errors.description = 'Enter the Description'
+    }
+    setFormErrors(errors)
+  }
+
   const handleCancel = () => {
     setIsModalOpen(false)
     setCompanyId('')
@@ -114,11 +138,15 @@ const Departments = () => {
   }
 
   const handleOk3 = () => {
-    updateDepartment(isModalOpen3)
-    setIsModalOpen3(false)
-    setCompanyId('')
-    setDepartmentName('')
-    setDescription('')
+    if (company_id && department_name && description) {
+      updateDepartment(isModalOpen3)
+      setIsModalOpen3(false)
+      setCompanyId('')
+      setDepartmentName('')
+      setDescription('')
+    } else {
+      callErrors(company_id, department_name, description)
+    }
   }
 
   const handleCancel3 = () => {
@@ -478,9 +506,13 @@ const Departments = () => {
           >
             <br></br>
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Company</label>
-              <Form.Item>
+              <Form.Item
+                name="company_name"
+                validateStatus={formErrors.company_id ? 'error' : ''}
+                help={formErrors.company_id}
+              >
                 <Select
                   placeholder="Select Company"
                   onChange={handleCompanyChange}
@@ -495,7 +527,7 @@ const Departments = () => {
               </Form.Item>
             </div>
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Department</label>
               <input
                 type="text"
@@ -505,8 +537,11 @@ const Departments = () => {
                 placeholder="Enter Department Name"
               />
             </div>
+            {formErrors.department_name && (
+              <div className="text-danger">{formErrors.department_name}</div>
+            )}
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Description</label>
               <input
                 type="text"
@@ -516,6 +551,7 @@ const Departments = () => {
                 placeholder="Enter Description"
               />
             </div>
+            {formErrors.description && <div className="text-danger">{formErrors.description}</div>}
           </Modal>
 
           {/* Modal for Update Department */}
@@ -531,9 +567,13 @@ const Departments = () => {
 
             {bydepartment.map((dept) => (
               <div key={dept.id}>
-                <div className="form-outline mb-3">
+                <div className="form-outline mt-3">
                   <label>Company</label>
-                  <Form.Item>
+                  <Form.Item
+                    name="company_name"
+                    validateStatus={formErrors.company_name ? 'error' : ''}
+                    help={formErrors.company_name}
+                  >
                     <Select
                       placeholder="Select Company"
                       onChange={handleCompanyChange}
@@ -548,7 +588,7 @@ const Departments = () => {
                   </Form.Item>
                 </div>
 
-                <div className="form-outline mb-3">
+                <div className="form-outline mt-3">
                   <label>Department</label>
                   <input
                     type="text"
@@ -558,8 +598,11 @@ const Departments = () => {
                     placeholder="Enter Department Name"
                   />
                 </div>
+                {formErrors.department_name && (
+                  <div className="text-danger">{formErrors.department_name}</div>
+                )}
 
-                <div className="form-outline mb-3">
+                <div className="form-outline mt-3">
                   <label>Description</label>
                   <input
                     type="text"
@@ -569,6 +612,9 @@ const Departments = () => {
                     placeholder="Enter Description"
                   />
                 </div>
+                {formErrors.description && (
+                  <div className="text-danger">{formErrors.description}</div>
+                )}
               </div>
             ))}
           </Modal>
