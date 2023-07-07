@@ -49,24 +49,42 @@ const Screenshots = () => {
   const [isEmployeeSelected, setIsEmployeeSelected] = useState(false)
 
   //Functions for Date handling
-  function onRangeChange(dates, dateStrings) {
-    if (dates) {
-      console.log('From: ', dates[0], ', to: ', dates[1])
-      console.log('From: ', dateStrings[0], ', to: ', dateStrings[1])
+  // function onRangeChange(dates, dateStrings) {
+  //   if (dates) {
+  //     console.log('From: ', dates[0], ', to: ', dates[1])
+  //     console.log('From: ', dateStrings[0], ', to: ', dateStrings[1])
+  //     if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+  //       getDateWiseScreenshots(dateStrings[0], dateStrings[1], local.Users.user_id)
+  //       getAllWorkedTimeByInterval(dateStrings[0], dateStrings[1], local.Users.user_id)
+  //     } else if (local.Users.role === 3) {
+  //       getDateWiseScreenshotsCompany(dateStrings[0], dateStrings[1], local.Users.company_id)
+  //       getAllWorkedTimeByInterval(dateStrings[0], dateStrings[1], user_id)
+  //     }
+  //   } else {
+  //     // console.log('Clear')
+  //   }
+  // }
+
+  function onDateChange(date, dateString) {
+    if (date) {
+      console.log('Selected date:', date);
+      console.log('Selected date string:', dateString);
+      
       if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
-        getDateWiseScreenshots(dateStrings[0], dateStrings[1], local.Users.user_id)
-        getAllWorkedTimeByInterval(dateStrings[0], dateStrings[1], local.Users.user_id)
+        getDateWiseScreenshots(dateString, local.Users.user_id);
+        getAllWorkedTimeByInterval(dateString, local.Users.user_id);
       } else if (local.Users.role === 3) {
-        getDateWiseScreenshotsCompany(dateStrings[0], dateStrings[1], local.Users.company_id)
-        getAllWorkedTimeByInterval(dateStrings[0], dateStrings[1], user_id)
+        getDateWiseScreenshotsCompany(dateString, local.Users.company_id);
+        getAllWorkedTimeByInterval(dateString, user_id);
       }
     } else {
       // console.log('Clear')
     }
   }
+  
 
   const handleClearAction = () => {
-    onRangeChange('')
+    onDateChange('')
   }
 
   //Array declaration for API calls
@@ -98,8 +116,7 @@ const Screenshots = () => {
   }, [])
 
   // Get API calls
-  async function getScreenshots() {
-    handleClearAction()
+  async function getScreenshots() { 
     await fetch(`${BASE_URL}/api/get_Project_Screenshots`)
       .then((response) => response.json())
       .then((data) => {
@@ -118,6 +135,7 @@ const Screenshots = () => {
           )
         }
         setImages(screenfilter)
+        onDateChange('');
       })
       .catch((error) => console.log(error))
   }
@@ -138,8 +156,8 @@ const Screenshots = () => {
       .catch((error) => console.log(error))
   }
 
-  function getDateWiseScreenshots(a, b, c) {
-    fetch(`${BASE_URL}/api/get_projectscreenshot_by_date/${a}/${b}/${c}`)
+  function getDateWiseScreenshots(a, b) {
+    fetch(`${BASE_URL}/api/get_projectscreenshot_by_date/${a}/${b}`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1 || local.Users.role === 3) {
@@ -154,8 +172,8 @@ const Screenshots = () => {
       .catch((error) => console.log(error))
   }
 
-  function getDateWiseScreenshotsCompany(a, b, c) {
-    fetch(`${BASE_URL}/api/get_projectscreenshot_by_compny_id/${a}/${b}/${c}`)
+  function getDateWiseScreenshotsCompany(a, b) {
+    fetch(`${BASE_URL}/api/get_projectscreenshot_by_compny_id/${a}/${b}`)
       .then((response) => response.json())
       .then((data) => {
         screenfilter = data
@@ -189,8 +207,8 @@ const Screenshots = () => {
       .catch((error) => console.log(error))
   }
 
-  function getAllWorkedTimeByInterval(a, b, c) {
-    fetch(`${BASE_URL}/api/getSumByDateWithUserId/${a}/${b}/${c}`)
+  function getAllWorkedTimeByInterval(a, b) {
+    fetch(`${BASE_URL}/api/getSumByDateWithUserId/${a}/${b}`)
       .then((response) => response.json())
       .then((data) => {
         setAllTotalHours(data.hours)
@@ -280,9 +298,9 @@ const Screenshots = () => {
         <div>
           <h3>Location {addresses.length > 0 && <h3 style={userStyle}>{addresses}</h3>}</h3>
           <br></br>
-          <h3>
+          {/* <h3>
             Today Worked {totalhours}:{totalminutes}:{totalseconds}
-          </h3>
+          </h3> */}
           <h3>
             Total Worked {alltotalhours}:{alltotalminutes}:{alltotalseconds}
           </h3>
@@ -302,7 +320,15 @@ const Screenshots = () => {
       <div className="row">
         <div className="col-md-4">
           <br></br>
-          <RangePicker format="YYYY-MM-DD" onChange={onRangeChange} />
+          {local.Users.role === 1 || local.Users.role === 3 ? 
+          (
+            <div>
+          {
+            user_id ? (<DatePicker  format="YYYY-MM-DD" onChange={onDateChange} />) : (<DatePicker  format="YYYY-MM-DD" onChange={onDateChange} disabled />)
+          }
+          </div>
+          ) : (<DatePicker  format="YYYY-MM-DD" onChange={onDateChange} />)
+        }
           <Button type="default" onClick={getScreenshots}>
             Today
           </Button>
