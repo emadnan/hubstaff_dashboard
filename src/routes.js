@@ -185,7 +185,7 @@ const routes = [
     element: TaskAssignmentUserSide,
     requiredRoles: [1, 3, 5],
   },
-  // { path: '*', name: '404 Page', element: NotFound, requiredRoles: [1, 3, 5, 6, 7] },
+  { path: '/404', name: '404 Page', element: NotFound, requiredRoles: [1, 3, 5, 6, 7] },
 ]
 
 export const filteredRoutes = routes.filter((route) => {

@@ -58,12 +58,12 @@ const Login = () => {
   }
 
   useEffect(() => {
-    const sessionToken = JSON.parse(sessionStorage.getItem('user-info'))?.token;
+    const sessionToken = JSON.parse(sessionStorage.getItem('user-info'))?.token
 
     if (sessionToken) {
       navigate('/Dashboard')
     }
-  },);
+  })
 
   const handleFocus = (e) => {
     const { name } = e.target
@@ -111,7 +111,8 @@ const Login = () => {
         handleButtonClick2()
         setTimeout(async () => {
           await navigate('/Dashboard')
-        }, 2000)
+          window.location.reload()
+        }, 100)
       }
     } catch (error) {
       if (Object.keys(errors).length === 0) {
