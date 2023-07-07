@@ -322,11 +322,11 @@ const Screenshots = () => {
           <br></br>
           {local.Users.role === 1 || local.Users.role === 3 ? 
           (
-            <div>
+            <>
           {
             user_id ? (<DatePicker  format="YYYY-MM-DD" onChange={onDateChange} />) : (<DatePicker  format="YYYY-MM-DD" onChange={onDateChange} disabled />)
           }
-          </div>
+          </>
           ) : (<DatePicker  format="YYYY-MM-DD" onChange={onDateChange} />)
         }
           <Button type="default" onClick={getScreenshots}>
