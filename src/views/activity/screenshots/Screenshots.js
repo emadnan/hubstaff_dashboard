@@ -49,21 +49,21 @@ const Screenshots = () => {
   const [isEmployeeSelected, setIsEmployeeSelected] = useState(false)
 
   //Functions for Date handling
-  function onRangeChange(dates, dateStrings) {
-    if (dates) {
-      console.log('From: ', dates[0], ', to: ', dates[1])
-      console.log('From: ', dateStrings[0], ', to: ', dateStrings[1])
-      if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
-        getDateWiseScreenshots(dateStrings[0], dateStrings[1], local.Users.user_id)
-        getAllWorkedTimeByInterval(dateStrings[0], dateStrings[1], local.Users.user_id)
-      } else if (local.Users.role === 3) {
-        getDateWiseScreenshotsCompany(dateStrings[0], dateStrings[1], local.Users.company_id)
-        getAllWorkedTimeByInterval(dateStrings[0], dateStrings[1], user_id)
-      }
-    } else {
-      // console.log('Clear')
-    }
-  }
+  // function onRangeChange(dates, dateStrings) {
+  //   if (dates) {
+  //     console.log('From: ', dates[0], ', to: ', dates[1])
+  //     console.log('From: ', dateStrings[0], ', to: ', dateStrings[1])
+  //     if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+  //       getDateWiseScreenshots(dateStrings[0], dateStrings[1], local.Users.user_id)
+  //       getAllWorkedTimeByInterval(dateStrings[0], dateStrings[1], local.Users.user_id)
+  //     } else if (local.Users.role === 3) {
+  //       getDateWiseScreenshotsCompany(dateStrings[0], dateStrings[1], local.Users.company_id)
+  //       getAllWorkedTimeByInterval(dateStrings[0], dateStrings[1], user_id)
+  //     }
+  //   } else {
+  //     // console.log('Clear')
+  //   }
+  // }
 
   function onDateChange(date, dateString) {
     if (date) {
@@ -72,10 +72,10 @@ const Screenshots = () => {
       
       if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
         getDateWiseScreenshots(dateString, local.Users.user_id);
-        // getAllWorkedTimeByInterval(dateString, dateString, local.Users.user_id);
+        getAllWorkedTimeByInterval(dateString, local.Users.user_id);
       } else if (local.Users.role === 3) {
         getDateWiseScreenshotsCompany(dateString, local.Users.company_id);
-        // getAllWorkedTimeByInterval(dateString, dateString, user_id);
+        getAllWorkedTimeByInterval(dateString, user_id);
       }
     } else {
       // console.log('Clear')
@@ -84,7 +84,7 @@ const Screenshots = () => {
   
 
   const handleClearAction = () => {
-    onRangeChange('')
+    onDateChange('')
   }
 
   //Array declaration for API calls
@@ -207,8 +207,8 @@ const Screenshots = () => {
       .catch((error) => console.log(error))
   }
 
-  function getAllWorkedTimeByInterval(a, b, c) {
-    fetch(`${BASE_URL}/api/getSumByDateWithUserId/${a}/${b}/${c}`)
+  function getAllWorkedTimeByInterval(a, b) {
+    fetch(`${BASE_URL}/api/getSumByDateWithUserId/${a}/${b}`)
       .then((response) => response.json())
       .then((data) => {
         setAllTotalHours(data.hours)
@@ -298,12 +298,12 @@ const Screenshots = () => {
         <div>
           <h3>Location {addresses.length > 0 && <h3 style={userStyle}>{addresses}</h3>}</h3>
           <br></br>
-          <h3>
-            Today Worked {totalhours}:{totalminutes}:{totalseconds}
-          </h3>
           {/* <h3>
-            Total Worked {alltotalhours}:{alltotalminutes}:{alltotalseconds}
+            Today Worked {totalhours}:{totalminutes}:{totalseconds}
           </h3> */}
+          <h3>
+            Total Worked {alltotalhours}:{alltotalminutes}:{alltotalseconds}
+          </h3>
         </div>
       ) : null}
       {local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7 ? (
