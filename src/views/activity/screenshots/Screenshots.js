@@ -116,8 +116,7 @@ const Screenshots = () => {
   }, [])
 
   // Get API calls
-  async function getScreenshots() {
-    handleClearAction()
+  async function getScreenshots() { 
     await fetch(`${BASE_URL}/api/get_Project_Screenshots`)
       .then((response) => response.json())
       .then((data) => {
@@ -136,6 +135,7 @@ const Screenshots = () => {
           )
         }
         setImages(screenfilter)
+        onDateChange('');
       })
       .catch((error) => console.log(error))
   }
@@ -320,7 +320,15 @@ const Screenshots = () => {
       <div className="row">
         <div className="col-md-4">
           <br></br>
-          <DatePicker  format="YYYY-MM-DD" onChange={onDateChange} />
+          {local.Users.role === 1 || local.Users.role === 3 ? 
+          (
+            <div>
+          {
+            user_id ? (<DatePicker  format="YYYY-MM-DD" onChange={onDateChange} />) : (<DatePicker  format="YYYY-MM-DD" onChange={onDateChange} disabled />)
+          }
+          </div>
+          ) : (<DatePicker  format="YYYY-MM-DD" onChange={onDateChange} />)
+        }
           <Button type="default" onClick={getScreenshots}>
             Today
           </Button>
