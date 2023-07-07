@@ -65,6 +65,24 @@ const Screenshots = () => {
     }
   }
 
+  function onDateChange(date, dateString) {
+    if (date) {
+      console.log('Selected date:', date);
+      console.log('Selected date string:', dateString);
+      
+      if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+        getDateWiseScreenshots(dateString, local.Users.user_id);
+        // getAllWorkedTimeByInterval(dateString, dateString, local.Users.user_id);
+      } else if (local.Users.role === 3) {
+        getDateWiseScreenshotsCompany(dateString, local.Users.company_id);
+        // getAllWorkedTimeByInterval(dateString, dateString, user_id);
+      }
+    } else {
+      // console.log('Clear')
+    }
+  }
+  
+
   const handleClearAction = () => {
     onRangeChange('')
   }
@@ -138,8 +156,8 @@ const Screenshots = () => {
       .catch((error) => console.log(error))
   }
 
-  function getDateWiseScreenshots(a, b, c) {
-    fetch(`${BASE_URL}/api/get_projectscreenshot_by_date/${a}/${b}/${c}`)
+  function getDateWiseScreenshots(a, b) {
+    fetch(`${BASE_URL}/api/get_projectscreenshot_by_date/${a}/${b}`)
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 1 || local.Users.role === 3) {
@@ -154,8 +172,8 @@ const Screenshots = () => {
       .catch((error) => console.log(error))
   }
 
-  function getDateWiseScreenshotsCompany(a, b, c) {
-    fetch(`${BASE_URL}/api/get_projectscreenshot_by_compny_id/${a}/${b}/${c}`)
+  function getDateWiseScreenshotsCompany(a, b) {
+    fetch(`${BASE_URL}/api/get_projectscreenshot_by_compny_id/${a}/${b}`)
       .then((response) => response.json())
       .then((data) => {
         screenfilter = data
@@ -283,9 +301,9 @@ const Screenshots = () => {
           <h3>
             Today Worked {totalhours}:{totalminutes}:{totalseconds}
           </h3>
-          <h3>
+          {/* <h3>
             Total Worked {alltotalhours}:{alltotalminutes}:{alltotalseconds}
-          </h3>
+          </h3> */}
         </div>
       ) : null}
       {local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7 ? (
@@ -302,7 +320,7 @@ const Screenshots = () => {
       <div className="row">
         <div className="col-md-4">
           <br></br>
-          <RangePicker format="YYYY-MM-DD" onChange={onRangeChange} />
+          <DatePicker  format="YYYY-MM-DD" onChange={onDateChange} />
           <Button type="default" onClick={getScreenshots}>
             Today
           </Button>
