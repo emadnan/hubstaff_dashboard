@@ -296,14 +296,19 @@ const Screenshots = () => {
     <>
       {local.Users.role === 3 ? (
         <div>
-          <h3>Location {addresses.length > 0 && <h3 style={userStyle}>{addresses}</h3>}</h3>
+          {
+            addresses.length > 0 ? (
+              <h3>Location {addresses.length > 0 && <h3 style={userStyle}>{addresses}</h3>}</h3>
+            ) : null
+          }
           <br></br>
-          {/* <h3>
-            Today Worked {totalhours}:{totalminutes}:{totalseconds}
-          </h3> */}
-          <h3>
-            Total Worked {alltotalhours}:{alltotalminutes}:{alltotalseconds}
-          </h3>
+          {
+            alltotalhours || alltotalminutes || alltotalseconds ? (
+              <h3>
+                Total Worked {alltotalhours}:{alltotalminutes}:{alltotalseconds}
+              </h3>
+            ) : null
+          }
         </div>
       ) : null}
       {local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7 ? (
@@ -312,9 +317,8 @@ const Screenshots = () => {
             <h3>
               Total Worked {alltotalhours}:{alltotalminutes}:{alltotalseconds}
             </h3>
-          ) : (
-            <h3>Total Worked 0:0:0</h3>
-          )}
+          ) : null
+          }
         </div>
       ) : null}
       <div className="row">
