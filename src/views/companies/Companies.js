@@ -28,6 +28,8 @@ const Companies = () => {
   const isDeleteButtonEnabled = perm.some((item) => item.name === 'Delete_Company')
   const isCreateButtonEnabled = perm.some((item) => item.name === 'Create_Company')
 
+  const [enableChangeCity, setEnableChangeCity] = useState(false)
+
   let [form] = Form.useForm()
 
   // CSS Styling
@@ -91,6 +93,7 @@ const Companies = () => {
   }
 
   const handleOk = () => {
+    setEnableChangeCity(false)
     if (company_name && address && company_email && city && country && contact_no) {
       addCompany()
       setIsModalOpen(false)
@@ -147,6 +150,7 @@ const Companies = () => {
   }
 
   const handleCancel = () => {
+    setEnableChangeCity(false)
     setIsModalOpen(false)
     form.resetFields()
     setCompanyName('')
@@ -183,6 +187,7 @@ const Companies = () => {
     if (company_name && address && company_email && city && country && contact_no) {
       updateCompany(isModalOpen3)
       setIsModalOpen3(false)
+      setEnableChangeCity(false)
       form.resetFields()
     } else {
       callErrors(company_name, address, company_email, city, country, contact_no)
@@ -191,6 +196,7 @@ const Companies = () => {
 
   const handleCancel3 = () => {
     setIsModalOpen3(false)
+    setEnableChangeCity(false)
     form.resetFields()
   }
 
@@ -337,10 +343,10 @@ const Companies = () => {
 
   //Get calls handling
   const handleCountryChange = (value) => {
+    setEnableChangeCity(true)
     setCountry(value)
-    const selectedCountry = countries.find((country) => country.name === value)
-    getCity(selectedCountry.id)
-    setCity('')
+    setCity('') // Reset the city value
+    form.setFieldsValue({ city: null })
   }
 
   const handleCityChange = (value) => {
@@ -483,6 +489,13 @@ const Companies = () => {
         console.error(error)
       })
   }
+
+  useEffect(() => {
+    if (country) {
+      const selectedCountry = countries.find((countryItem) => countryItem.name === country)
+      getCity(selectedCountry.id)
+    }
+  }, [country])
 
   return (
     <>
@@ -634,13 +647,13 @@ const Companies = () => {
             <div className="form-outline mt-3">
               <label>Contact</label>
               <input
-                type="text"
+                type="number"
                 name="contact_no"
                 value={contact_no}
                 onFocus={handleFocus}
                 onChange={(e) => setContactNo(e.target.value)}
                 className="form-control form-control-lg"
-                placeholder="Enter Contact No"
+                placeholder="03XXXXXXXXX"
               />
             </div>
             {formErrors.contact_no && <div className="text-danger">{formErrors.contact_no}</div>}
@@ -682,10 +695,11 @@ const Companies = () => {
                     onFocus={handleFocus}
                     onChange={handleCityChange}
                     value={city}
+                    disabled={!enableChangeCity}
                   >
-                    {cities.map((citi) => (
-                      <Select.Option value={citi.name} key={citi.id}>
-                        {citi.name}
+                    {cities.map((city) => (
+                      <Select.Option value={city.name} key={city.id}>
+                        {city.name}
                       </Select.Option>
                     ))}
                   </Select>
@@ -765,13 +779,13 @@ const Companies = () => {
                 <div className="form-outline mt-3">
                   <label>Contact</label>
                   <input
-                    type="text"
+                    type="number"
                     name="contact_no"
                     defaultValue={company.contact_no}
                     onFocus={handleFocus}
                     onChange={(e) => setContactNo(e.target.value)}
                     className="form-control form-control-lg"
-                    placeholder="Enter Contact No"
+                    placeholder="03XXXXXXXXX"
                   />
                 </div>
                 {formErrors.contact_no && (
@@ -791,7 +805,7 @@ const Companies = () => {
                         showSearch={true}
                         onFocus={handleFocus}
                         onChange={handleCountryChange}
-                        defaultValue={company.country}
+                        defaultValue={country}
                       >
                         {countries.map((count) => (
                           <Select.Option value={count.name} key={count.id}>
@@ -814,7 +828,8 @@ const Companies = () => {
                         showSearch={true}
                         onFocus={handleFocus}
                         onChange={handleCityChange}
-                        defaultValue={company.city}
+                        defaultValue={city}
+                        disabled={!enableChangeCity}
                       >
                         {cities.map((citi) => (
                           <Select.Option value={citi.name} key={citi.id}>
