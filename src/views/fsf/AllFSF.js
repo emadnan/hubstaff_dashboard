@@ -485,6 +485,8 @@ function AllFSF() {
       .then((response) => {
         if (response.ok) {
           getFsf()
+          getFsfonTeamLeadId(local.token)
+          getAssignedFsfToUser(local.token)
           handleButtonClick1()
         } else {
           handleButtonClick2()
