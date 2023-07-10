@@ -484,8 +484,8 @@ function AllFSF() {
     })
       .then((response) => {
         if (response.ok) {
-          handleButtonClick1()
           getFsf()
+          handleButtonClick1()
         } else {
           handleButtonClick2()
         }
@@ -836,7 +836,7 @@ function AllFSF() {
             onOk={handleOk}
             okButtonProps={{ style: { background: 'blue' } }}
             onCancel={handleCancel}
-            width={1000}
+            width={800}
           >
             {fsfbyid.map((fsf) => {
               return (

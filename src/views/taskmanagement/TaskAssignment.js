@@ -342,7 +342,8 @@ function TaskAssignment() {
       .then((data) => {
         if (local.Users.role === 7) {
           filteredUsers = data.Users.filter(
-            (user) => user.company_id === local.Users.company_id && user.role === 5,
+            (user) =>
+              (user.company_id === local.Users.company_id && user.role === 5) || user.role === 7,
           )
         }
         setAllUsers(filteredUsers)
