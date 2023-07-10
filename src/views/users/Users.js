@@ -46,6 +46,8 @@ const Users = () => {
   const isEditButtonEnabled = perm.some((item) => item.name === 'Update_User')
   const isDeleteButtonEnabled = perm.some((item) => item.name === 'Delete_User')
 
+  let [form] = Form.useForm()
+
   // CSS Stylings
   const modalStyle = {
     position: 'fixed',
@@ -92,6 +94,7 @@ const Users = () => {
     if (name && email && password && role) {
       addUser()
       setIsModalOpen(false)
+      form.resetFields()
       setName('')
       setEmail('')
       setPassword('')
@@ -128,6 +131,7 @@ const Users = () => {
 
   const handleCancel = () => {
     setIsModalOpen(false)
+    form.resetFields()
     setName('')
     setEmail('')
     setPassword('')
@@ -162,6 +166,7 @@ const Users = () => {
     if (name && role) {
       updateUser(isModalOpen3)
       setIsModalOpen3(false)
+      form.resetFields()
       setName('')
       setEmail('')
       setPassword('')
@@ -174,6 +179,7 @@ const Users = () => {
 
   const handleCancel3 = () => {
     setIsModalOpen3(false)
+    form.resetFields()
     setName('')
     setEmail('')
     setPassword('')
@@ -636,47 +642,49 @@ const Users = () => {
             </div>
             {formErrors.password && <div className="text-danger">{formErrors.password}</div>}
 
-            <div className="form-outline mt-3">
-              <label>Role</label>
-              <Form.Item
-                name="role"
-                validateStatus={formErrors.role ? 'error' : ''}
-                help={formErrors.role}
-              >
-                <Select
-                  placeholder="Select Role Id"
-                  onChange={handleRoleChange}
-                  onFocus={handleFocus}
+            <Form form={form}>
+              <div className="form-outline mt-3">
+                <label>Role</label>
+                <Form.Item
                   name="role"
-                  value={role}
+                  validateStatus={formErrors.role ? 'error' : ''}
+                  help={formErrors.role}
                 >
-                  {roles.map((user) => (
-                    <Select.Option value={user.id} key={user.id}>
-                      {user.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
+                  <Select
+                    placeholder="Select Role Id"
+                    onChange={handleRoleChange}
+                    onFocus={handleFocus}
+                    name="role"
+                    value={role}
+                  >
+                    {roles.map((user) => (
+                      <Select.Option value={user.id} key={user.id}>
+                        {user.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
 
-            <div className="form-outline mt-3">
-              <label>Team</label>
-              <Form.Item>
-                <Select
-                  placeholder="Select Team"
-                  name="team"
-                  onChange={handleTeamChange}
-                  onFocus={handleFocus}
-                  value={team_id}
-                >
-                  {team.map((tem) => (
-                    <Select.Option value={tem.id} key={tem.id}>
-                      {tem.team_name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
+              <div className="form-outline mt-3">
+                <label>Team</label>
+                <Form.Item>
+                  <Select
+                    placeholder="Select Team"
+                    name="team"
+                    onChange={handleTeamChange}
+                    onFocus={handleFocus}
+                    value={team_id}
+                  >
+                    {team.map((tem) => (
+                      <Select.Option value={tem.id} key={tem.id}>
+                        {tem.team_name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+            </Form>
           </Modal>
 
           {/* Modal for Update User */}
@@ -706,47 +714,49 @@ const Users = () => {
                 </div>
                 {formErrors.name && <div className="text-danger">{formErrors.name}</div>}
 
-                <div className="form-outline mt-3">
-                  <label>Role</label>
-                  <Form.Item
-                    name="role"
-                    validateStatus={formErrors.role ? 'error' : ''}
-                    help={formErrors.role}
-                  >
-                    <Select
-                      placeholder="Select Role"
-                      onFocus={handleFocus}
-                      onChange={handleRoleChange}
-                      defaultValue={user.role}
+                <Form form={form}>
+                  <div className="form-outline mt-3">
+                    <label>Role</label>
+                    <Form.Item
                       name="role"
+                      validateStatus={formErrors.role ? 'error' : ''}
+                      help={formErrors.role}
                     >
-                      {roles.map((user) => (
-                        <Select.Option value={user.id} key={user.id}>
-                          {user.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
+                      <Select
+                        placeholder="Select Role"
+                        onFocus={handleFocus}
+                        onChange={handleRoleChange}
+                        defaultValue={user.role}
+                        name="role"
+                      >
+                        {roles.map((user) => (
+                          <Select.Option value={user.id} key={user.id}>
+                            {user.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </div>
 
-                <div className="form-outline mt-3">
-                  <label>Team</label>
-                  <Form.Item>
-                    <Select
-                      placeholder="Select Team"
-                      onChange={handleTeamChange}
-                      onFocus={handleFocus}
-                      defaultValue={user.team_id}
-                      name="team"
-                    >
-                      {team.map((tem) => (
-                        <Select.Option value={tem.id} key={tem.id}>
-                          {tem.team_name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
+                  <div className="form-outline mt-3">
+                    <label>Team</label>
+                    <Form.Item>
+                      <Select
+                        placeholder="Select Team"
+                        onChange={handleTeamChange}
+                        onFocus={handleFocus}
+                        defaultValue={user.team_id}
+                        name="team"
+                      >
+                        {team.map((tem) => (
+                          <Select.Option value={tem.id} key={tem.id}>
+                            {tem.team_name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </div>
+                </Form>
               </div>
             ))}
           </Modal>

@@ -837,52 +837,6 @@ const Projects = () => {
           >
             <br></br>
 
-            {/* <div className="form-outline mt-3">
-              <label>Company</label>
-              <Form.Item
-                name="company_name"
-                validateStatus={formErrors.company_id ? 'error' : ''}
-                help={formErrors.company_id}
-              >
-                <Select
-                  name="company_id"
-                  placeholder="Select Company"
-                  onFocus={handleFocus}
-                  onChange={handleCompanyChange}
-                  value={company_id}
-                >
-                  {company.map((count) => (
-                    <Select.Option value={count.name} key={count.id}>
-                      {count.company_name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
-
-            <div className="form-outline mt-3">
-              <label>Department</label>
-              <Form.Item
-                name="department_name"
-                validateStatus={formErrors.department_id ? 'error' : ''}
-                help={formErrors.department_id}
-              >
-                <Select
-                  placeholder="Select Departments"
-                  onFocus={handleFocus}
-                  onChange={handleDepartmentChange}
-                  value={department_id}
-                  name="department_id"
-                >
-                  {department.map((count) => (
-                    <Select.Option value={count.nnname} key={count.id}>
-                      {count.department_name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div> */}
-
             <Form form={form}>
               <div className="form-outline mt-3">
                 <label>Company</label>

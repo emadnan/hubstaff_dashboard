@@ -76,7 +76,7 @@ function TaskAssignment() {
 
   let [form] = Form.useForm()
 
-  //CSS Styling
+  // CSS Styling
   const mystyle = {
     color: 'white',
     backgroundColor: '#0070FF ',
@@ -417,6 +417,7 @@ function TaskAssignment() {
         setPriorities(data.task.priorites)
         setTaskId(data.task.task_managements_id)
         setTaskStatus(data.task.status)
+        setTaskComment(data.task.comment)
         const formattedStartDate = moment(data.task.task_managements_start_date).format(
           'YYYY-MM-DD',
         )
@@ -1393,7 +1394,7 @@ function TaskAssignment() {
             className="form-control"
             placeholder="Add Comments Releted to Task"
             onChange={(event) => setTaskComment(event.target.value)}
-            value={taskComment != null ? taskComment : ''}
+            value={taskComment != undefined ? taskComment : ''}
           />
         </div>
       </Modal>
