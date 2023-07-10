@@ -463,49 +463,53 @@ const Dashboard = () => {
           {/* Card for Projects Modal Ends */}
 
           {/* Card for Assigned Project Modal Starts */}
-          <Card style={cardStyle2}>
-            <h5 style={head}>ASSIGNED PROJECTS</h5>
-            <CTable
-              align="middle"
-              className="mb-0 border"
-              hover
-              responsive
-              style={{ marginTop: '20px' }}
-            >
-              <CTableHead color="light">
-                <CTableRow>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Project Name
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Stream Name
-                  </CTableHeaderCell>
-                </CTableRow>
+          {local.Users.role === 3 || local.Users.role === 1 ? (
+            ''
+          ) : (
+            <Card style={cardStyle2}>
+              <h5 style={head}>ASSIGNED PROJECTS</h5>
+              <CTable
+                align="middle"
+                className="mb-0 border"
+                hover
+                responsive
+                style={{ marginTop: '20px' }}
+              >
+                <CTableHead color="light">
+                  <CTableRow>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Project Name
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Stream Name
+                    </CTableHeaderCell>
+                  </CTableRow>
 
-                {assigned.slice(0, 4).map((assign) => {
-                  return (
-                    <CTableRow key={assign.id}>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {assign.project_name}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {assign.stream_name}
-                      </CTableHeaderCell>
-                    </CTableRow>
-                  )
-                })}
-              </CTableHead>
+                  {assigned.slice(0, 4).map((assign) => {
+                    return (
+                      <CTableRow key={assign.id}>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          {assign.project_name}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          {assign.stream_name}
+                        </CTableHeaderCell>
+                      </CTableRow>
+                    )
+                  })}
+                </CTableHead>
 
-              <CTableBody></CTableBody>
-            </CTable>
+                <CTableBody></CTableBody>
+              </CTable>
 
-            <Divider></Divider>
-            <div className="text-center">
-              <Button type="link" href="/projectmanagement-assigned">
-                View assigned projects &gt;
-              </Button>
-            </div>
-          </Card>
+              <Divider></Divider>
+              <div className="text-center">
+                <Button type="link" href="/projectmanagement-assigned">
+                  View assigned projects &gt;
+                </Button>
+              </div>
+            </Card>
+          )}
           {/* Card for Assigned Project Modal Ends */}
 
           <br></br>
