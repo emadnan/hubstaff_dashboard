@@ -31,6 +31,8 @@ const Departments = () => {
   const isEditButtonEnabled = perm.some((item) => item.name === 'Update_Department')
   const isDeleteButtonEnabled = perm.some((item) => item.name === 'Delete_Department')
 
+  let [form] = Form.useForm()
+
   // CSS Stylings
   const modalStyle = {
     position: 'fixed',
@@ -86,6 +88,7 @@ const Departments = () => {
     if (company_id && department_name && description) {
       addDepartment()
       setIsModalOpen(false)
+      form.resetFields()
       setCompanyId('')
       setDepartmentName('')
       setDescription('')
@@ -110,6 +113,7 @@ const Departments = () => {
 
   const handleCancel = () => {
     setIsModalOpen(false)
+    form.resetFields()
     setCompanyId('')
     setDepartmentName('')
     setDescription('')
@@ -141,6 +145,7 @@ const Departments = () => {
     if (company_id && department_name && description) {
       updateDepartment(isModalOpen3)
       setIsModalOpen3(false)
+      form.resetFields()
       setCompanyId('')
       setDepartmentName('')
       setDescription('')
@@ -151,6 +156,7 @@ const Departments = () => {
 
   const handleCancel3 = () => {
     setIsModalOpen3(false)
+    form.resetFields()
     setCompanyId('')
     setDepartmentName('')
     setDescription('')
@@ -515,28 +521,30 @@ const Departments = () => {
           >
             <br></br>
 
-            <div className="form-outline mt-3">
-              <label>Company</label>
-              <Form.Item
-                name="company_name"
-                validateStatus={formErrors.company_id ? 'error' : ''}
-                help={formErrors.company_id}
-              >
-                <Select
+            <Form form={form}>
+              <div className="form-outline mt-3">
+                <label>Company</label>
+                <Form.Item
                   name="company_name"
-                  placeholder="Select Company"
-                  onChange={handleCompanyChange}
-                  onFocus={handleFocus}
-                  value={company_id}
+                  validateStatus={formErrors.company_id ? 'error' : ''}
+                  help={formErrors.company_id}
                 >
-                  {company.map((count) => (
-                    <Select.Option value={count.name} key={count.id}>
-                      {count.company_name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
+                  <Select
+                    name="company_name"
+                    placeholder="Select Company"
+                    onChange={handleCompanyChange}
+                    onFocus={handleFocus}
+                    value={company_id}
+                  >
+                    {company.map((count) => (
+                      <Select.Option value={count.name} key={count.id}>
+                        {count.company_name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+            </Form>
 
             <div className="form-outline mt-3">
               <label>Department</label>
@@ -582,28 +590,30 @@ const Departments = () => {
 
             {bydepartment.map((dept) => (
               <div key={dept.id}>
-                <div className="form-outline mt-3">
-                  <label>Company</label>
-                  <Form.Item
-                    name="company_name"
-                    validateStatus={formErrors.company_name ? 'error' : ''}
-                    help={formErrors.company_name}
-                  >
-                    <Select
+                <Form form={form}>
+                  <div className="form-outline mt-3">
+                    <label>Company</label>
+                    <Form.Item
                       name="company_name"
-                      placeholder="Select Company"
-                      onChange={handleCompanyChange}
-                      onFocus={handleFocus}
-                      defaultValue={dept.company_name}
+                      validateStatus={formErrors.company_name ? 'error' : ''}
+                      help={formErrors.company_name}
                     >
-                      {company.map((count) => (
-                        <Select.Option value={count.name} key={count.id}>
-                          {count.company_name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
+                      <Select
+                        name="company_name"
+                        placeholder="Select Company"
+                        onChange={handleCompanyChange}
+                        onFocus={handleFocus}
+                        defaultValue={dept.company_name}
+                      >
+                        {company.map((count) => (
+                          <Select.Option value={count.name} key={count.id}>
+                            {count.company_name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </div>
+                </Form>
 
                 <div className="form-outline mt-3">
                   <label>Department</label>
