@@ -54,6 +54,11 @@ const Register = () => {
     transform: 'translateX(-50%)',
   }
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return re.test(email)
+  }
+
   //Register API call
   async function signUp() {
     const errors = {}
@@ -62,6 +67,8 @@ const Register = () => {
     }
     if (!email) {
       errors.email = 'Email is required'
+    } else if (!validateEmail(email)) {
+      errors.email = 'Invalid Email'
     }
     if (!password) {
       errors.password = 'Password is required'

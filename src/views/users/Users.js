@@ -101,6 +101,10 @@ const Users = () => {
       callErrors(name, email, password, role)
     }
   }
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return re.test(email)
+  }
 
   const callErrors = (name, email, password, role) => {
     const errors = {}
@@ -109,6 +113,8 @@ const Users = () => {
     }
     if (!email) {
       errors.email = 'Enter the User Email'
+    } else if (!validateEmail(email)) {
+      errors.email = 'Invalid Email'
     }
     if (!password) {
       errors.password = 'Enter the User Password'

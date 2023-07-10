@@ -74,6 +74,11 @@ const Login = () => {
     }))
   }
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return re.test(email)
+  }
+
   //Login API call
   async function login() {
     let item = { email, password, rememberMe }
@@ -82,6 +87,8 @@ const Login = () => {
     const errors = {}
     if (!email) {
       errors.email = 'Email is required'
+    } else if (!validateEmail(email)) {
+      errors.email = 'Invalid Email'
     }
     if (!password) {
       errors.password = 'Password is required'
