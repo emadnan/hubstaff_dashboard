@@ -224,7 +224,7 @@ export default function Dashboard() {
     selectedUserId,
   ) => {
     await fetch(
-      `${BASE_URL}/api/getSumByDateWithUserId/${selectedMonthStartDate}/${selectedMonthEndDate}/${selectedUserId}`,
+      `${BASE_URL}/api/getSumByDatesWithUserId/${selectedMonthStartDate}/${selectedMonthEndDate}/${selectedUserId}`,
     )
       .then((response) => response.json())
       .then((data) => {
