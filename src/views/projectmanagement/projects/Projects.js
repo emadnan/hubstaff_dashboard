@@ -36,14 +36,17 @@ const Projects = () => {
   const isDeleteButtonEnabled = perm.some((item) => item.name === 'Delete_Project')
   const isAssignProjectEnabled = perm.some((item) => item.name === 'Assign_Project')
 
+  // Separate initial state values for formErrors
   const [formErrors, setFormErrors] = useState({
-    company_id,
-    department_id,
-    project_name,
-    description,
-    start_date,
-    dead_line,
+    company_id: '',
+    department_id: '',
+    project_name: '',
+    description: '',
+    start_date: '',
+    dead_line: '',
   })
+
+  let [form] = Form.useForm()
 
   // CSS Styling
   const modalStyle = {
@@ -110,6 +113,7 @@ const Projects = () => {
     if (company_id && department_id && project_name && description && start_date && dead_line) {
       addProject()
       setIsModalOpen(false)
+      form.resetFields()
       setDepartmentId('')
       setCompanyId('')
       setProjectName('')
@@ -153,6 +157,7 @@ const Projects = () => {
 
   const handleCancel = () => {
     setIsModalOpen(false)
+    form.resetFields()
     setDepartmentId('')
     setCompanyId('')
     setProjectName('')
@@ -187,6 +192,7 @@ const Projects = () => {
     if (department_id && company_id && project_name && description && start_date && dead_line) {
       updateProject(isModalOpen3)
       setIsModalOpen3(false)
+      form.resetFields()
       setDepartmentId('')
       setCompanyId('')
       setProjectName('')
@@ -200,6 +206,7 @@ const Projects = () => {
 
   const handleCancel3 = () => {
     setIsModalOpen3(false)
+    form.resetFields()
     setDepartmentId('')
     setCompanyId('')
     setProjectName('')
@@ -830,7 +837,7 @@ const Projects = () => {
           >
             <br></br>
 
-            <div className="form-outline mt-3">
+            {/* <div className="form-outline mt-3">
               <label>Company</label>
               <Form.Item
                 name="company_name"
@@ -874,7 +881,53 @@ const Projects = () => {
                   ))}
                 </Select>
               </Form.Item>
-            </div>
+            </div> */}
+
+            <Form form={form}>
+              <div className="form-outline mt-3">
+                <label>Company</label>
+                <Form.Item
+                  validateStatus={formErrors.company_id ? 'error' : ''}
+                  help={formErrors.company_id}
+                >
+                  <Select
+                    name="company_id"
+                    placeholder="Select Company"
+                    onChange={handleCompanyChange}
+                    onFocus={handleFocus}
+                    value={company_id}
+                  >
+                    {company.map((company) => (
+                      <Select.Option value={company.id} key={company.id}>
+                        {company.company_name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+
+              <div className="form-outline mt-3">
+                <label>Department</label>
+                <Form.Item
+                  validateStatus={formErrors.department_id ? 'error' : ''}
+                  help={formErrors.department_id}
+                >
+                  <Select
+                    name="department_id"
+                    placeholder="Select Department"
+                    onChange={handleDepartmentChange}
+                    onFocus={handleFocus}
+                    value={department_id}
+                  >
+                    {department.map((department) => (
+                      <Select.Option value={department.id} key={department.id}>
+                        {department.department_name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+            </Form>
 
             <div className="form-outline mt-3">
               <label>Project Name</label>
@@ -948,51 +1001,51 @@ const Projects = () => {
 
             {byproject2.map((proj) => (
               <div key={proj.id}>
-                <div className="form-outline mt-3">
-                  <label>Company</label>
-                  <Form.Item
-                    name="company_name"
-                    validateStatus={formErrors.company_id ? 'error' : ''}
-                    help={formErrors.company_id}
-                  >
-                    <Select
-                      placeholder="Select Company"
-                      name="company_id"
-                      onChange={handleCompanyChange}
-                      onFocus={handleFocus}
-                      value={proj.company_id}
+                <Form form={form}>
+                  <div className="form-outline mt-3">
+                    <label>Company</label>
+                    <Form.Item
+                      validateStatus={formErrors.company_id ? 'error' : ''}
+                      help={formErrors.company_id}
                     >
-                      {company.map((count) => (
-                        <Select.Option value={company_id} key={count.id}>
-                          {count.company_name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
+                      <Select
+                        placeholder="Select Company"
+                        name="company_id"
+                        onChange={handleCompanyChange}
+                        onFocus={handleFocus}
+                        value={company_id}
+                      >
+                        {company.map((company) => (
+                          <Select.Option value={company.id} key={company.id}>
+                            {company.company_name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </div>
 
-                <div className="form-outline mt-3">
-                  <label>Department</label>
-                  <Form.Item
-                    name="department_name"
-                    validateStatus={formErrors.department_id ? 'error' : ''}
-                    help={formErrors.department_id}
-                  >
-                    <Select
-                      name="department_name"
-                      placeholder="Select Departments"
-                      onFocus={handleFocus}
-                      onChange={handleDepartmentChange}
-                      value={proj.department_id}
+                  <div className="form-outline mt-3">
+                    <label>Department</label>
+                    <Form.Item
+                      validateStatus={formErrors.department_id ? 'error' : ''}
+                      help={formErrors.department_id}
                     >
-                      {department.map((count) => (
-                        <Select.Option value={department_id} key={count.id}>
-                          {count.department_name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
+                      <Select
+                        name="department_name"
+                        placeholder="Select Departments"
+                        onFocus={handleFocus}
+                        onChange={handleDepartmentChange}
+                        value={department_id}
+                      >
+                        {department.map((department) => (
+                          <Select.Option value={department.id} key={department.id}>
+                            {department.department_name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </div>
+                </Form>
 
                 <div className="form-outline mt-3">
                   <label>Project Name</label>
