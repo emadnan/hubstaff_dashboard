@@ -353,7 +353,7 @@ const Dashboard = () => {
 
             <Divider></Divider>
             <div className="text-center">
-              <Button type="link" href="/companies/Companies">
+              <Button type="link" href="/companies-Companies">
                 View companies &gt;
               </Button>
             </div>
@@ -400,7 +400,7 @@ const Dashboard = () => {
 
               <Divider></Divider>
               <div className="text-center">
-                <Button type="link" href="/departments/Departments">
+                <Button type="link" href="/departments-Departments">
                   View departments &gt;
                 </Button>
               </div>
@@ -454,7 +454,7 @@ const Dashboard = () => {
 
                 <Divider></Divider>
                 <div className="text-center">
-                  <Button type="link" href="/projectmanagement/projects">
+                  <Button type="link" href="/projectmanagement-projects">
                     View projects &gt;
                   </Button>
                 </div>
@@ -501,7 +501,7 @@ const Dashboard = () => {
 
             <Divider></Divider>
             <div className="text-center">
-              <Button type="link" href="/projectmanagement/assigned">
+              <Button type="link" href="/projectmanagement-assigned">
                 View assigned projects &gt;
               </Button>
             </div>
