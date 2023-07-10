@@ -28,6 +28,8 @@ const Companies = () => {
   const isDeleteButtonEnabled = perm.some((item) => item.name === 'Delete_Company')
   const isCreateButtonEnabled = perm.some((item) => item.name === 'Create_Company')
 
+  let [form] = Form.useForm()
+
   // CSS Styling
   const modalStyle = {
     position: 'fixed',
@@ -73,6 +75,15 @@ const Companies = () => {
     color: '#0070ff',
   }
 
+  const [formErrors, setFormErrors] = useState({
+    company_name,
+    address,
+    company_email,
+    city,
+    country,
+    contact_no,
+  })
+
   // Functions of Add Company Modal
   const [isModalOpen, setIsModalOpen] = useState(false)
   const showModal = () => {
@@ -80,18 +91,64 @@ const Companies = () => {
   }
 
   const handleOk = () => {
-    addCompany()
-    setIsModalOpen(false)
-    setCompanyName('')
-    setAddress('')
-    setCompanyEmail('')
-    setContactNo('')
-    setCity('')
-    setCountry('')
+    if (company_name && address && company_email && city && country && contact_no) {
+      addCompany()
+      setIsModalOpen(false)
+      form.resetFields()
+      setCompanyName('')
+      setAddress('')
+      setCompanyEmail('')
+      setContactNo('')
+      setCity('')
+      setCountry('')
+    } else {
+      callErrors(company_name, address, company_email, city, country, contact_no)
+    }
+  }
+
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return re.test(email)
+  }
+
+  const callErrors = (company_name, address, company_email, city, country, contact_no) => {
+    const errors = {}
+    if (!company_name) {
+      errors.company_name = 'Enter the Company Name'
+    }
+    if (!company_email) {
+      errors.company_email = 'Enter the Company Email'
+    } else if (!validateEmail(company_email)) {
+      errors.company_email = 'Invalid Email'
+    }
+    if (!address) {
+      errors.address = 'Address is Required'
+    }
+    if (!contact_no) {
+      errors.contact_no = 'Company Contact No. is Required'
+    }
+    if (!city) {
+      errors.city = 'City Field is Required'
+    }
+    if (!country) {
+      errors.country = 'Country Field is Required'
+    }
+
+    setFormErrors(errors)
+  }
+
+  const handleFocus = (e) => {
+    const { name } = e.target
+
+    setFormErrors((prevFormErrors) => ({
+      ...prevFormErrors,
+      [name]: '',
+    }))
   }
 
   const handleCancel = () => {
     setIsModalOpen(false)
+    form.resetFields()
     setCompanyName('')
     setAddress('')
     setCompanyEmail('')
@@ -123,12 +180,18 @@ const Companies = () => {
   }
 
   const handleOk3 = () => {
-    updateCompany(isModalOpen3)
-    setIsModalOpen3(false)
+    if (company_name && address && company_email && city && country && contact_no) {
+      updateCompany(isModalOpen3)
+      setIsModalOpen3(false)
+      form.resetFields()
+    } else {
+      callErrors(company_name, address, company_email, city, country, contact_no)
+    }
   }
 
   const handleCancel3 = () => {
     setIsModalOpen3(false)
+    form.resetFields()
   }
 
   // Functions for Show Details Modal
@@ -522,85 +585,113 @@ const Companies = () => {
           >
             <br></br>
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Company</label>
               <input
                 type="text"
+                name="company_name"
                 value={company_name}
+                onFocus={handleFocus}
                 onChange={(e) => setCompanyName(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Company Name"
               />
             </div>
+            {formErrors.company_name && (
+              <div className="text-danger">{formErrors.company_name}</div>
+            )}
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Address</label>
               <input
                 type="text"
+                name="address"
                 value={address}
+                onFocus={handleFocus}
                 onChange={(e) => setAddress(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Address"
               />
             </div>
+            {formErrors.address && <div className="text-danger">{formErrors.address}</div>}
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Email</label>
               <input
                 type="text"
+                name="company_email"
                 value={company_email}
+                onFocus={handleFocus}
                 onChange={(e) => setCompanyEmail(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Email"
               />
             </div>
+            {formErrors.company_email && (
+              <div className="text-danger">{formErrors.company_email}</div>
+            )}
 
-            <div className="form-outline mb-3">
+            <div className="form-outline mt-3">
               <label>Contact</label>
               <input
                 type="text"
+                name="contact_no"
                 value={contact_no}
+                onFocus={handleFocus}
                 onChange={(e) => setContactNo(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Contact No"
               />
             </div>
+            {formErrors.contact_no && <div className="text-danger">{formErrors.contact_no}</div>}
 
-            <div className="form-outline mb-3">
-              <label>Country</label>
-              <Form.Item>
-                <Select
-                  placeholder="Select Country"
-                  showSearch={true}
-                  onChange={handleCountryChange}
-                  value={country}
+            <Form form={form}>
+              <div className="form-outline mt-3">
+                <label>Country</label>
+                <Form.Item
+                  name="country"
+                  validateStatus={formErrors.country ? 'error' : ''}
+                  help={formErrors.country}
                 >
-                  {countries.map((count) => (
-                    <Select.Option value={count.name} key={count.id}>
-                      {count.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
+                  <Select
+                    placeholder="Select Country"
+                    showSearch={true}
+                    onFocus={handleFocus}
+                    onChange={handleCountryChange}
+                    value={country}
+                  >
+                    {countries.map((count) => (
+                      <Select.Option value={count.name} key={count.id}>
+                        {count.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
 
-            <div className="form-outline mb-3">
-              <label>City</label>
-              <Form.Item>
-                <Select
-                  placeholder="Select City"
-                  showSearch={true}
-                  onChange={handleCityChange}
-                  value={city}
+              <div className="form-outline mt-3">
+                <label>City</label>
+                <Form.Item
+                  name="city"
+                  validateStatus={formErrors.city ? 'error' : ''}
+                  help={formErrors.city}
                 >
-                  {cities.map((citi) => (
-                    <Select.Option value={citi.name} key={citi.id}>
-                      {citi.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
+                  <Select
+                    placeholder="Select City"
+                    showSearch={true}
+                    onFocus={handleFocus}
+                    onChange={handleCityChange}
+                    value={city}
+                  >
+                    {cities.map((citi) => (
+                      <Select.Option value={citi.name} key={citi.id}>
+                        {citi.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+            </Form>
           </Modal>
 
           {/* Modal for deletion confirmation */}
@@ -625,85 +716,115 @@ const Companies = () => {
             <br></br>
             {bycompany.map((company) => (
               <div key={company.id}>
-                <div className="form-outline mb-3">
+                <div className="form-outline mt-3">
                   <label>Company</label>
                   <input
                     type="text"
+                    name="company_name"
                     defaultValue={company.company_name}
+                    onFocus={handleFocus}
                     onChange={(e) => setCompanyName(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Company Name"
                   />
                 </div>
+                {formErrors.company_name && (
+                  <div className="text-danger">{formErrors.company_name}</div>
+                )}
 
-                <div className="form-outline mb-3">
+                <div className="form-outline mt-3">
                   <label>Address</label>
                   <input
                     type="text"
+                    name="address"
                     defaultValue={company.address}
+                    onFocus={handleFocus}
                     onChange={(e) => setAddress(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Address"
                   />
                 </div>
+                {formErrors.address && <div className="text-danger">{formErrors.address}</div>}
 
-                <div className="form-outline mb-3">
+                <div className="form-outline mt-3">
                   <label>Company</label>
                   <input
                     type="text"
+                    name="company_email"
                     defaultValue={company.company_email}
+                    onFocus={handleFocus}
                     onChange={(e) => setCompanyEmail(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Email"
                   />
                 </div>
+                {formErrors.company_email && (
+                  <div className="text-danger">{formErrors.company_email}</div>
+                )}
 
-                <div className="form-outline mb-3">
+                <div className="form-outline mt-3">
                   <label>Contact</label>
                   <input
                     type="text"
+                    name="contact_no"
                     defaultValue={company.contact_no}
+                    onFocus={handleFocus}
                     onChange={(e) => setContactNo(e.target.value)}
                     className="form-control form-control-lg"
                     placeholder="Enter Contact No"
                   />
                 </div>
+                {formErrors.contact_no && (
+                  <div className="text-danger">{formErrors.contact_no}</div>
+                )}
 
-                <div className="form-outline mb-3">
-                  <label>Country</label>
-                  <Form.Item>
-                    <Select
-                      placeholder="Select Country"
-                      showSearch={true}
-                      onChange={handleCountryChange}
-                      defaultValue={company.country}
+                <Form form={form}>
+                  <div className="form-outline mt-3">
+                    <label>Country</label>
+                    <Form.Item
+                      name="country"
+                      validateStatus={formErrors.country ? 'error' : ''}
+                      help={formErrors.country}
                     >
-                      {countries.map((count) => (
-                        <Select.Option value={count.name} key={count.id}>
-                          {count.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
+                      <Select
+                        placeholder="Select Country"
+                        showSearch={true}
+                        onFocus={handleFocus}
+                        onChange={handleCountryChange}
+                        defaultValue={company.country}
+                      >
+                        {countries.map((count) => (
+                          <Select.Option value={count.name} key={count.id}>
+                            {count.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </div>
 
-                <div className="form-outline mb-3">
-                  <label>City</label>
-                  <Form.Item>
-                    <Select
-                      placeholder="Select City"
-                      showSearch={true}
-                      onChange={handleCityChange}
-                      defaultValue={company.city}
+                  <div className="form-outline mt-3">
+                    <label>City</label>
+                    <Form.Item
+                      name="city"
+                      validateStatus={formErrors.city ? 'error' : ''}
+                      help={formErrors.city}
                     >
-                      {cities.map((citi) => (
-                        <Select.Option value={citi.name} key={citi.id}>
-                          {citi.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
+                      <Select
+                        placeholder="Select City"
+                        showSearch={true}
+                        onFocus={handleFocus}
+                        onChange={handleCityChange}
+                        defaultValue={company.city}
+                      >
+                        {cities.map((citi) => (
+                          <Select.Option value={citi.name} key={citi.id}>
+                            {citi.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </div>
+                </Form>
               </div>
             ))}
           </Modal>
