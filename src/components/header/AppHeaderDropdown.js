@@ -16,7 +16,8 @@ import {
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { useNavigate } from 'react-router-dom';
-import grey from './../../assets/images/grey.png'
+import user from './../../assets/images/user.png'
+import company from './../../assets/images/company.png'
 
 const AppHeaderDropdown = () => {
 
@@ -29,7 +30,8 @@ const AppHeaderDropdown = () => {
   };
 
   const navigate = useNavigate();
-  let user = JSON.parse(localStorage.getItem("user-info"))
+  const local = JSON.parse(localStorage.getItem('user-info'))
+  // let user = JSON.parse(localStorage.getItem("user-info"))
 
   function logOut() {
     localStorage.clear();
@@ -51,30 +53,22 @@ const AppHeaderDropdown = () => {
     setIsModalOpen(false);
   };
 
-  // useEffect(() => {
-  //   const checkSessionExpiration = () => {
-  //     const currentTime = new Date().getTime();
-  //     if (currentTime > sessionExpirationTime) {
-  //       logOut(); // Call the logout function or perform logout actions
-  //     }
-  //   };
-
-  //   const interval = setInterval(checkSessionExpiration, 1000); // Adjust the interval as needed
-
-  //   return () => clearInterval(interval);
-  // }, []);
-
   return (
     <>
       <CDropdown variant="nav-item">
 
         <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
-          <CAvatar src={grey} size="col-md-6" />
+          {
+            local.Users.role === 3 ? <CAvatar src={company} size="col-md-8" /> : <CAvatar src={user} size="col-md-4" />
+          }
         </CDropdownToggle>
 
         <CDropdownMenu className="pt-0" placement="bottom-end">
 
-          <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
+          <CDropdownHeader className="bg-light fw-semibold py-2">{
+            local.Users.role === 3 ? (local.Users.company_name) : (local.Users.name)
+          }
+          </CDropdownHeader>
 
           {/* <CDropdownItem href="#">
             <CIcon icon={cilUser} className="me-2" />
