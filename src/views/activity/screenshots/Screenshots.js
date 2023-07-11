@@ -67,21 +67,20 @@ const Screenshots = () => {
 
   function onDateChange(date, dateString) {
     if (date) {
-      console.log('Selected date:', date);
-      console.log('Selected date string:', dateString);
-      
+      console.log('Selected date:', date)
+      console.log('Selected date string:', dateString)
+
       if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
-        getDateWiseScreenshots(dateString, local.Users.user_id);
-        getAllWorkedTimeByInterval(dateString, local.Users.user_id);
+        getDateWiseScreenshots(dateString, local.Users.user_id)
+        getAllWorkedTimeByInterval(dateString, local.Users.user_id)
       } else if (local.Users.role === 3) {
-        getDateWiseScreenshotsCompany(dateString, local.Users.company_id);
-        getAllWorkedTimeByInterval(dateString, user_id);
+        getDateWiseScreenshotsCompany(dateString, local.Users.company_id)
+        getAllWorkedTimeByInterval(dateString, user_id)
       }
     } else {
       // console.log('Clear')
     }
   }
-  
 
   const handleClearAction = () => {
     onDateChange('')
@@ -116,7 +115,7 @@ const Screenshots = () => {
   }, [])
 
   // Get API calls
-  async function getScreenshots() { 
+  async function getScreenshots() {
     await fetch(`${BASE_URL}/api/get_Project_Screenshots`)
       .then((response) => response.json())
       .then((data) => {
@@ -135,7 +134,7 @@ const Screenshots = () => {
           )
         }
         setImages(screenfilter)
-        onDateChange('');
+        onDateChange('')
       })
       .catch((error) => console.log(error))
   }
@@ -296,19 +295,15 @@ const Screenshots = () => {
     <>
       {local.Users.role === 3 ? (
         <div>
-          {
-            addresses.length > 0 ? (
-              <h3>Location {addresses.length > 0 && <h3 style={userStyle}>{addresses}</h3>}</h3>
-            ) : null
-          }
+          {addresses.length > 0 ? (
+            <h3>Location {addresses.length > 0 && <h3 style={userStyle}>{addresses}</h3>}</h3>
+          ) : null}
           <br></br>
-          {
-            alltotalhours || alltotalminutes || alltotalseconds ? (
-              <h3>
-                Total Worked {alltotalhours}:{alltotalminutes}:{alltotalseconds}
-              </h3>
-            ) : null
-          }
+          {alltotalhours || alltotalminutes || alltotalseconds ? (
+            <h3>
+              Total Worked {alltotalhours}:{alltotalminutes}:{alltotalseconds}
+            </h3>
+          ) : null}
         </div>
       ) : null}
       {local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7 ? (
@@ -317,22 +312,23 @@ const Screenshots = () => {
             <h3>
               Total Worked {alltotalhours}:{alltotalminutes}:{alltotalseconds}
             </h3>
-          ) : null
-          }
+          ) : null}
         </div>
       ) : null}
       <div className="row">
         <div className="col-md-4">
           <br></br>
-          {local.Users.role === 1 || local.Users.role === 3 ? 
-          (
+          {local.Users.role === 1 || local.Users.role === 3 ? (
             <>
-          {
-            user_id ? (<DatePicker  format="YYYY-MM-DD" onChange={onDateChange} />) : (<DatePicker  format="YYYY-MM-DD" onChange={onDateChange} disabled />)
-          }
-          </>
-          ) : (<DatePicker  format="YYYY-MM-DD" onChange={onDateChange} />)
-        }
+              {user_id ? (
+                <DatePicker format="YYYY-MM-DD" onChange={onDateChange} />
+              ) : (
+                <DatePicker format="YYYY-MM-DD" onChange={onDateChange} disabled />
+              )}
+            </>
+          ) : (
+            <DatePicker format="YYYY-MM-DD" onChange={onDateChange} />
+          )}
           <Button type="default" onClick={getScreenshots}>
             Today
           </Button>

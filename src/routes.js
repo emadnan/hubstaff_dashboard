@@ -82,7 +82,7 @@ const routes = [
     path: '/projectmanagement-assigned',
     name: 'Assigned Projects',
     element: AssignedProjects,
-    requiredRoles: [1, 5, 6, 7],
+    requiredRoles: [1, 3, 5, 6, 7],
   },
   {
     path: '/companies-Companies',
@@ -183,7 +183,7 @@ const routes = [
     path: '/taskmanagement-assignedtask',
     name: 'Task Assignment',
     element: TaskAssignmentUserSide,
-    requiredRoles: [1, 3, 5],
+    requiredRoles: [5],
   },
   { path: '/404', name: '404 Page', element: NotFound, requiredRoles: [1, 3, 5, 6, 7] },
 ]

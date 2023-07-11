@@ -229,7 +229,6 @@ function AllFSF() {
       .then((data) => {
         const temp_array = data.fsf_Assign_to_users.map((element) => element.user_id)
         setHasMembers(temp_array)
-        console.log(temp_array)
       })
       .catch((error) => console.log(error))
   }
@@ -582,9 +581,7 @@ function AllFSF() {
   }
 
   const urlOutputScreens = (imageUrl) => {
-    console.log('imageUrl: ', imageUrl)
     const concatinatedImage = `${BASE_URL}/output_screens/${imageUrl}`
-    console.log('concatinatedImage: ', concatinatedImage)
     // Logic to concatenate the base URL with the image URL
     return concatinatedImage
   }
