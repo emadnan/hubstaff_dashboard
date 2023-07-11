@@ -47,7 +47,6 @@ const Screenshots = () => {
   }
 
   const [isEmployeeSelected, setIsEmployeeSelected] = useState(false)
-  const [selectedDate, setSelectedDate] = useState(null)
 
   //Functions for Date handling
   // function onRangeChange(dates, dateStrings) {
@@ -67,7 +66,6 @@ const Screenshots = () => {
   // }
 
   function onDateChange(date, dateString) {
-    setSelectedDate(dateString)
     if (date) {
       console.log('Selected date:', date)
       console.log('Selected date string:', dateString)
@@ -136,7 +134,7 @@ const Screenshots = () => {
           )
         }
         setImages(screenfilter)
-        setSelectedDate(null)
+        onDateChange('')
       })
       .catch((error) => console.log(error))
   }
@@ -320,26 +318,17 @@ const Screenshots = () => {
       <div className="row">
         <div className="col-md-4">
           <br></br>
-          {/* {local.Users.role === 1 || local.Users.role === 3 ? (
+          {local.Users.role === 1 || local.Users.role === 3 ? (
             <>
-              <DatePicker
-                value={selectedDate ? dayjs(selectedDate, 'YYYY-MM-DD') : null}
-                onChange={onDateChange}
-                disabled={!user_id}
-              />
+              {user_id ? (
+                <DatePicker format="YYYY-MM-DD" onChange={onDateChange} />
+              ) : (
+                <DatePicker format="YYYY-MM-DD" onChange={onDateChange} disabled />
+              )}
             </>
           ) : (
-            <DatePicker
-              value={selectedDate ? dayjs(selectedDate, 'YYYY-MM-DD') : null}
-              onChange={onDateChange}
-            />
-          )} */}
-          <DatePicker
-            value={selectedDate ? dayjs(selectedDate, 'YYYY-MM-DD') : null}
-            onChange={onDateChange}
-            disabled={!user_id}
-          />
-
+            <DatePicker format="YYYY-MM-DD" onChange={onDateChange} />
+          )}
           <Button type="default" onClick={getScreenshots}>
             Today
           </Button>

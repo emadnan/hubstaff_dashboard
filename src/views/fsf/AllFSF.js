@@ -229,7 +229,6 @@ function AllFSF() {
       .then((data) => {
         const temp_array = data.fsf_Assign_to_users.map((element) => element.user_id)
         setHasMembers(temp_array)
-        console.log(temp_array)
       })
       .catch((error) => console.log(error))
   }
