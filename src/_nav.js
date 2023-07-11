@@ -229,6 +229,11 @@ export const _navCompanyAdmin = [
         name: 'Projects',
         to: '/projectmanagement-projects',
       },
+      {
+        component: CNavItem,
+        name: 'Assigned Projects',
+        to: '/projectmanagement-assigned',
+      },
     ],
   },
   {
