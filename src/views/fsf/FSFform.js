@@ -170,7 +170,6 @@ function FSFform() {
   }
 
   const handleEditorChange = (content, editor) => {
-    console.log('content: ', content)
     const regex = /<img.*?src="(.*?)"/g
     const matches = [...content.matchAll(regex)]
 
@@ -1202,7 +1201,6 @@ function FSFform() {
       development_logic,
       attachment,
     }
-    console.log(data)
 
     await fetch(`${BASE_URL}/api/addFunctionalSpecificationForm`, {
       method: 'POST',

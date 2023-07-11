@@ -582,9 +582,7 @@ function AllFSF() {
   }
 
   const urlOutputScreens = (imageUrl) => {
-    console.log('imageUrl: ', imageUrl)
     const concatinatedImage = `${BASE_URL}/output_screens/${imageUrl}`
-    console.log('concatinatedImage: ', concatinatedImage)
     // Logic to concatenate the base URL with the image URL
     return concatinatedImage
   }
