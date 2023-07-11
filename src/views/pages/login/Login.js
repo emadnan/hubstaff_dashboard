@@ -118,7 +118,6 @@ const Login = () => {
         handleButtonClick2()
         setTimeout(async () => {
           await navigate('/Dashboard')
-          window.location.reload()
         }, 100)
       }
     } catch (error) {
