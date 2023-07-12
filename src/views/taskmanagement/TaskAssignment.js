@@ -411,7 +411,7 @@ function TaskAssignment() {
       .then((response) => response.json())
       .then((data) => {
         setUserId(data.task.user_id)
-        setUserName(data.task.user_name)
+        setUserName(data.task.name)
         setProjectId(data.task.project_id)
         setProjectName(data.task.project_name)
         setTaskDescription(data.task.task_description)
@@ -810,7 +810,7 @@ function TaskAssignment() {
                     Task No.
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
-                    Assigned by
+                    Assigned To
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Project
@@ -967,7 +967,7 @@ function TaskAssignment() {
                     Task No.
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
-                    Assigned by
+                    Assigned To
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Project
@@ -1338,7 +1338,7 @@ function TaskAssignment() {
       </Modal>
 
       <Modal
-        title="Task Details"
+        title={<div style={{ textAlign: 'center' }}>Task Details</div>}
         open={isModalOpenToTakeAction}
         centered
         onOk={handleOkToTakeActionAgainstTask}
@@ -1346,57 +1346,80 @@ function TaskAssignment() {
         onCancel={handleCancelToTakeActionAgainstTask}
         maskClosable={false}
       >
-        <h3>
-          Task : <b>{task_description}</b>
-        </h3>
-        <p>
-          Task Belongs to the Projects: <b>{project_name}</b>
-        </p>
-        <p>
-          Task Priority: <b>{priorities}</b>
-        </p>
-        <p>
-          Task Assigned By: <b>{user_name}</b>
-        </p>
-        <p>
-          Task Assigned Date: <b>{moment(task_managements_start_date).format('DD-MM-YYYY')}</b>
-        </p>
-        <p>
-          Task Completion Dead Line:{' '}
-          <b>{moment(task_managements_dead_line).format('DD-MM-YYYY')}</b>
-        </p>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gap: '20px',
+          }}
+        >
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '5px 20px' }}>
+              <div>
+                <b>Details:</b>
+                <p>{task_description}</p>
+              </div>
+              <div>
+                <b>Projects:</b>
+                <p>{project_name}</p>
+              </div>
+              <div>
+                <b>Priority:</b>
+                <p>{priorities}</p>
+              </div>
+              <div>
+                <b>Assigned To:</b>
+                <p>{user_name}</p>
+              </div>
+              <div>
+                <b>Assigned Date:</b>
+                <p>{moment(task_managements_start_date).format('DD-MM-YYYY')}</p>
+              </div>
+              <div>
+                <b>Completion Dead Line:</b>
+                <p>{moment(task_managements_dead_line).format('DD-MM-YYYY')}</p>
+              </div>
+            </div>
 
-        <div className="form-outline mb-3">
-          <label>Task Status</label>
-          <Form.Item>
-            <Select
-              placeholder="Select Task Status"
-              onChange={(value) => setTaskStatus(value)}
-              value={taskStatus}
-            >
-              <Select.Option value="Pending" key="Pending">
-                Pending
-              </Select.Option>
-              <Select.Option value="InProgress" key="InProgress">
-                In-Progress
-              </Select.Option>
-              <Select.Option value="Completed" key="Completed">
-                Completed
-              </Select.Option>
-            </Select>
-          </Form.Item>
-        </div>
-
-        <div className="form-outline mb-3">
-          <label>Add Comments Releted to Task</label>
-          <textarea
-            rows="2"
-            type="text"
-            className="form-control"
-            placeholder="Add Comments Releted to Task"
-            onChange={(event) => setTaskComment(event.target.value)}
-            value={taskComment != undefined ? taskComment : ''}
-          />
+            <hr />
+            <div style={{ width: '100%' }}>
+              <div style={{ marginBottom: '10px' }}>
+                <label>Status:</label>
+                <Form.Item>
+                  <Select
+                    style={{ width: '100%' }}
+                    placeholder="Select Task Status"
+                    onChange={(value) => setTaskStatus(value)}
+                    value={taskStatus}
+                  >
+                    <Select.Option value="Pending" key="Pending">
+                      Pending
+                    </Select.Option>
+                    <Select.Option value="InProgress" key="InProgress">
+                      In-Progress
+                    </Select.Option>
+                    <Select.Option value="Completed" key="Completed">
+                      Completed
+                    </Select.Option>
+                  </Select>
+                </Form.Item>
+              </div>
+              <div>
+                <label>Add Comments Related to Task:</label>
+                <textarea
+                  rows="2"
+                  style={{ width: '100%' }}
+                  type="text"
+                  className="form-control"
+                  placeholder="Add Comments Related to Task"
+                  onChange={(event) => setTaskComment(event.target.value)}
+                  value={
+                    taskComment === (undefined || null || 'null' || 'undefined') ? '' : taskComment
+                  }
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </Modal>
     </>
