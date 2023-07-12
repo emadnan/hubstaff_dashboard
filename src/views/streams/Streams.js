@@ -116,10 +116,12 @@ function Streams() {
     const handleOk2 = () => {
         updateStream(isModalOpen2)
         setIsModalOpen2(false)
+        setStreamName('')
     }
 
     const handleCancel2 = () => {
         setIsModalOpen2(false)
+        setStreamName('')
     }
 
     // Functions for Delete Stream Modal
