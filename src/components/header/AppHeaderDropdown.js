@@ -31,9 +31,9 @@ const AppHeaderDropdown = () => {
 
   function logOut() {
     if (loggedOut === true) {
-      localStorage.clear()
-      sessionStorage.clear()
       setTimeout(async () => {
+        localStorage.clear()
+        sessionStorage.clear()
         await navigate('/Login')
         window.location.reload()
       }, 100)
