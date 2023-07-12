@@ -177,7 +177,7 @@ export const _navAdmin = [
     component: CNavItem,
     name: 'Streams',
     to: '/streams',
-    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
@@ -270,7 +270,7 @@ export const _navCompanyAdmin = [
     component: CNavItem,
     name: 'Streams',
     to: '/streams',
-    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
   },
   {
     component: CNavGroup,
