@@ -47,6 +47,7 @@ const Screenshots = () => {
   }
 
   const [isEmployeeSelected, setIsEmployeeSelected] = useState(false)
+  const [selectedDate, setSelectedDate] = useState(null)
 
   //Functions for Date handling
   // function onRangeChange(dates, dateStrings) {
@@ -66,24 +67,22 @@ const Screenshots = () => {
   // }
 
   function onDateChange(date, dateString) {
-    if (date) {
-      console.log('Selected date:', date)
-      console.log('Selected date string:', dateString)
-
-      if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
-        getDateWiseScreenshots(dateString, local.Users.user_id)
-        getAllWorkedTimeByInterval(dateString, local.Users.user_id)
-      } else if (local.Users.role === 3) {
-        getDateWiseScreenshotsCompany(dateString, local.Users.company_id)
-        getAllWorkedTimeByInterval(dateString, user_id)
-      }
-    } else {
-      // console.log('Clear')
+    setSelectedDate(dateString)
+    if (date && (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7)) {
+      getDateWiseScreenshots(dateString, local.Users.user_id)
+      getAllWorkedTimeByInterval(dateString, local.Users.user_id)
+    } else if (date && local.Users.role === 3) {
+      getDateWiseScreenshotsCompany(dateString, local.Users.company_id)
+      getAllWorkedTimeByInterval(dateString, user_id)
     }
+    return
   }
 
-  const handleClearAction = () => {
-    onDateChange('')
+  function onTodayButtonClicked() {
+    setAllTotalHours(null)
+    setAllTotalMinutes(null)
+    setAllTotalSeconds(null)
+    getScreenshots()
   }
 
   //Array declaration for API calls
@@ -132,9 +131,11 @@ const Screenshots = () => {
           screenfilter = data.projectscreenshot.filter(
             (screenshot) => screenshot.user_id === local.Users.user_id,
           )
+          const employeeId = screenfilter[0].user_id
+          setUserId(employeeId)
         }
         setImages(screenfilter)
-        onDateChange('')
+        setSelectedDate(null)
       })
       .catch((error) => console.log(error))
   }
@@ -188,13 +189,6 @@ const Screenshots = () => {
       .catch((error) => console.log(error))
   }
 
-  function getTodayWorkedTime() {
-    setTotalHours('')
-    setTotalMinutes('')
-    setTotalSeconds('')
-    getTodayWorked(user_id)
-  }
-
   function getTodayWorked(id) {
     fetch(`${BASE_URL}/api/getTotalWorkbyUserId/${id}`)
       .then((response) => response.json())
@@ -242,7 +236,6 @@ const Screenshots = () => {
         return locate.user_id === value
       }
     })
-    // getTodayWorkedTime();
     getAddresses(locations[0].latitude, locations[0].longitude)
   }
 
@@ -315,45 +308,49 @@ const Screenshots = () => {
           ) : null}
         </div>
       ) : null}
-      <div className="row">
+
+      <div className="row mt-2 mb-2 justify-content-between">
         <div className="col-md-4">
-          <br></br>
-          {local.Users.role === 1 || local.Users.role === 3 ? (
-            <>
-              {user_id ? (
-                <DatePicker format="YYYY-MM-DD" onChange={onDateChange} />
-              ) : (
-                <DatePicker format="YYYY-MM-DD" onChange={onDateChange} disabled />
-              )}
-            </>
-          ) : (
-            <DatePicker format="YYYY-MM-DD" onChange={onDateChange} />
-          )}
-          <Button type="default" onClick={getScreenshots}>
-            Today
-          </Button>
-        </div>
-        <div className="col-md-4"></div>
-        {local.Users.role === 1 || local.Users.role === 3 ? (
-          <div className="col-md-4 mt-4">
-            <div className="row">
-              <div className="col-md-4"></div>
-              <div className="col-md-8">
-                <Form.Item name="select" hasFeedback>
-                  <Select placeholder="Members" onChange={handleUserChange} value={user_id}>
-                    {users.map((user) => (
-                      <Select.Option value={user.id} key={user.id}>
-                        {user.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </div>
-            </div>
+          <div className="d-flex align-items-center">
+            <DatePicker
+              value={selectedDate ? dayjs(selectedDate, 'YYYY-MM-DD') : null}
+              onChange={onDateChange}
+              disabled={!user_id}
+              clearIcon={null}
+              style={{
+                width: '100%',
+              }}
+            />
+            <Button type="default" onClick={onTodayButtonClicked} className="ml-2">
+              Today
+            </Button>
           </div>
-        ) : null}
+        </div>
+
+        <div className="col-md-4">
+          {local.Users.role === 1 || local.Users.role === 3 ? (
+            <div className="d-flex align-items-center">
+              <Form.Item
+                name="select"
+                hasFeedback
+                style={{
+                  width: '100%',
+                }}
+              >
+                <Select placeholder="Members" onChange={handleUserChange} value={user_id}>
+                  {users.map((user) => (
+                    <Select.Option value={user.id} key={user.id}>
+                      {user.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
+          ) : null}
+        </div>
       </div>
-      <Divider></Divider>
+
+      <Divider />
       <div style={imageContainer}>
         {user_id
           ? images
