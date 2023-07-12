@@ -578,7 +578,7 @@ function TaskAssignment() {
         <div className="col-md 6">
           {/* Assign a Task Button */}
           <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>
-            Assign Task
+            Create Task
           </Button>
         </div>
       </div>
