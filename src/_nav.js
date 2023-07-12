@@ -175,6 +175,12 @@ export const _navAdmin = [
   },
   {
     component: CNavItem,
+    name: 'Streams',
+    to: '/streams',
+    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
     name: 'Subscriptions',
     to: '/subscriptions',
     icon: <CIcon icon={cilDollar} customClassName="nav-icon" />,
@@ -229,6 +235,11 @@ export const _navCompanyAdmin = [
         name: 'Projects',
         to: '/projectmanagement-projects',
       },
+      {
+        component: CNavItem,
+        name: 'Assigned Projects',
+        to: '/projectmanagement-assigned',
+      },
     ],
   },
   {
@@ -253,6 +264,12 @@ export const _navCompanyAdmin = [
     component: CNavItem,
     name: 'Clients',
     to: '/projectmanagement-client',
+    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Streams',
+    to: '/streams',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {

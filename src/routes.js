@@ -33,6 +33,7 @@ const Daily = React.lazy(() => import('./views/reports/daily/Daily'))
 const Teams = React.lazy(() => import('./views/teams/Teams'))
 const Subscriptions = React.lazy(() => import('./views/subscriptions/Subscriptions'))
 const SubscribedPlan = React.lazy(() => import('./views/subscriptions/SubscribedPlan'))
+const Streams = React.lazy(() => import('./views/streams/Streams'))
 const Expenses = React.lazy(() => import('./views/expenses/Expenses'))
 const AllFSF = React.lazy(() => import('./views/fsf/AllFSF'))
 const FSFform = React.lazy(() => import('./views/fsf/FSFform'))
@@ -167,6 +168,12 @@ const routes = [
     path: '/subscribed-Plan',
     name: 'Subscribed Plan',
     element: SubscribedPlan,
+    requiredRoles: [1, 3],
+  },
+  {
+    path: '/streams',
+    name: 'Streams',
+    element: Streams,
     requiredRoles: [1, 3],
   },
   { path: '/expenses', name: 'Expenses', element: Expenses, requiredRoles: [1] },
