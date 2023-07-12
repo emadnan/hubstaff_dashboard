@@ -621,8 +621,8 @@ function TaskAssignment() {
           </Box>
         </Form>
         <Box
-          className="col-md-3"
-          sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly' }}
+          className="col-md-3 d-flex justify-content-end"
+          sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}
         >
           <Button type="default" onClick={applyFilters}>
             Apply Filter
