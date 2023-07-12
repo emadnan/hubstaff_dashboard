@@ -48,6 +48,7 @@ const Screenshots = () => {
 
   const [isEmployeeSelected, setIsEmployeeSelected] = useState(false)
   const [selectedDate, setSelectedDate] = useState(null)
+  const [isRecordNotFound, setIsRecordNotFound] = useState(false)
 
   //Functions for Date handling
   // function onRangeChange(dates, dateStrings) {
@@ -131,8 +132,12 @@ const Screenshots = () => {
           screenfilter = data.projectscreenshot.filter(
             (screenshot) => screenshot.user_id === local.Users.user_id,
           )
-          const employeeId = screenfilter[0].user_id
-          setUserId(employeeId)
+          if (screenfilter.length === 0) {
+            setIsRecordNotFound(true)
+          } else {
+            const employeeId = screenfilter[0].user_id
+            setUserId(employeeId)
+          }
         }
         setImages(screenfilter)
         setSelectedDate(null)
@@ -282,6 +287,20 @@ const Screenshots = () => {
       )
     }
     return null
+  }
+
+  const renderNoRecordFoundMessage = () => {
+    return (
+      <Box mt={2}>
+        <Card style={cardStyle}>
+          <Box className="row">
+            <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }}>
+              NO RECORDS FOUND
+            </Typography>
+          </Box>
+        </Card>
+      </Box>
+    )
   }
 
   return (
@@ -577,6 +596,7 @@ const Screenshots = () => {
             })}
       </div>
       {!user_id && isEmployeeSelected === false ? renderEmployeeSelectionText() : ''}
+      {!user_id && isRecordNotFound === true ? renderNoRecordFoundMessage() : ''}
       <div style={imageViewerStyle}>
         {isViewerOpen && imagesUrls && (
           <ImageViewer
