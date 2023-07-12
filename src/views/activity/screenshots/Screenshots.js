@@ -83,6 +83,7 @@ const Screenshots = () => {
     setAllTotalHours(null)
     setAllTotalMinutes(null)
     setAllTotalSeconds(null)
+    setSelectedDate(null)
     getScreenshots()
   }
 
@@ -140,7 +141,6 @@ const Screenshots = () => {
           }
         }
         setImages(screenfilter)
-        setSelectedDate(null)
       })
       .catch((error) => console.log(error))
   }
