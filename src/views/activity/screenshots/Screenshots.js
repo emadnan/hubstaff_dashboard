@@ -1,6 +1,5 @@
 import { React, useState, useEffect, useCallback } from 'react'
 import { Button, DatePicker, Select, Form } from 'antd'
-import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import ImageViewer from 'react-simple-image-viewer'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import AspectRatio from '@mui/joy/AspectRatio'
@@ -12,7 +11,6 @@ import Typography from '@mui/joy/Typography'
 import dayjs from 'dayjs'
 import Geocode from 'react-geocode'
 const BASE_URL = process.env.REACT_APP_BASE_URL
-const { RangePicker } = DatePicker
 dayjs.extend(customParseFormat)
 
 const Screenshots = () => {
@@ -141,6 +139,7 @@ const Screenshots = () => {
           }
         }
         setImages(screenfilter)
+        getAddresses(screenfilter[0].latitude, screenfilter[0].longitude)
       })
       .catch((error) => console.log(error))
   }
@@ -198,9 +197,9 @@ const Screenshots = () => {
     fetch(`${BASE_URL}/api/getTotalWorkbyUserId/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        setTotalHours(data.hours)
-        setTotalMinutes(data.minutes)
-        setTotalSeconds(data.seconds)
+        setAllTotalHours(data.hours)
+        setAllTotalMinutes(data.minutes)
+        setAllTotalSeconds(data.seconds)
       })
       .catch((error) => console.log(error))
   }
@@ -212,6 +211,7 @@ const Screenshots = () => {
         setAllTotalHours(data.hours)
         setAllTotalMinutes(data.minutes)
         setAllTotalSeconds(data.seconds)
+        getAddresses(data.projects[0].latitude, data.projects[0].longitude)
       })
       .catch((error) => console.log(error))
   }
@@ -233,15 +233,13 @@ const Screenshots = () => {
   const handleUserChange = (value) => {
     setIsEmployeeSelected(true)
     setUserId(value)
-    getTodayWorked(value)
-    const locations = images.filter((locate) => {
-      if (local.Users.role === 3) {
-        return locate.user_id === value
-      } else {
-        return locate.user_id === value
-      }
-    })
-    getAddresses(locations[0].latitude, locations[0].longitude)
+    if (selectedDate) {
+      getAllWorkedTimeByInterval(selectedDate, value)
+    } else {
+      getTodayWorked(value)
+      const locations = images.filter((locate) => locate.user_id === value)
+      getAddresses(locations[0].latitude, locations[0].longitude)
+    }
   }
 
   //Geolocation get using Google
