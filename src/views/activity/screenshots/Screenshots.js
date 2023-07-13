@@ -49,8 +49,16 @@ const Screenshots = () => {
   const [selectedDate, setSelectedDate] = useState(null)
   const [isRecordNotFound, setIsRecordNotFound] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isAdminLogin, setIsAdminLogin] = useState(true)
+
+  useEffect(() => {
+    if (local.Users.role === 3) {
+      setIsAdminLogin(false)
+    }
+  }, [])
 
   function onDateChange(date, dateString) {
+    setIsAdminLogin(true)
     setSelectedDate(dateString)
     if (date && (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7)) {
       getAllWorkedTimeByInterval(dateString, local.Users.user_id)
@@ -62,6 +70,7 @@ const Screenshots = () => {
   }
 
   function onTodayButtonClicked() {
+    setIsAdminLogin(true)
     setAllTotalHours(null)
     setAllTotalMinutes(null)
     setAllTotalSeconds(null)
@@ -245,6 +254,7 @@ const Screenshots = () => {
 
   const handleUserChange = (value) => {
     setIsEmployeeSelected(true)
+    setIsAdminLogin(true)
     setUserId(value)
     if (selectedDate) {
       getAllWorkedTimeByInterval(selectedDate, value)
@@ -386,7 +396,7 @@ const Screenshots = () => {
       </div>
 
       <Divider />
-      {user_id && isLoading ? (
+      {isAdminLogin && isLoading ? (
         <LoadingSpinner />
       ) : (
         <div style={imageContainer}>
