@@ -9,15 +9,16 @@ import CardOverflow from '@mui/joy/CardOverflow'
 import Divider from '@mui/joy/Divider'
 import Typography from '@mui/joy/Typography'
 import dayjs from 'dayjs'
-import Geocode from 'react-geocode'
+// import Geocode from 'react-geocode'
+import LoadingSpinner from 'src/components/Loader/Loader'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 dayjs.extend(customParseFormat)
 
 const Screenshots = () => {
-  //Local Storage data
+  // Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'))
 
-  //CSS Styling
+  // CSS Styling
   const imageContainer = {
     display: 'flex',
     flexWrap: 'wrap',
@@ -47,34 +48,17 @@ const Screenshots = () => {
   const [isEmployeeSelected, setIsEmployeeSelected] = useState(false)
   const [selectedDate, setSelectedDate] = useState(null)
   const [isRecordNotFound, setIsRecordNotFound] = useState(false)
-
-  //Functions for Date handling
-  // function onRangeChange(dates, dateStrings) {
-  //   if (dates) {
-  //     console.log('From: ', dates[0], ', to: ', dates[1])
-  //     console.log('From: ', dateStrings[0], ', to: ', dateStrings[1])
-  //     if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
-  //       getDateWiseScreenshots(dateStrings[0], dateStrings[1], local.Users.user_id)
-  //       getAllWorkedTimeByInterval(dateStrings[0], dateStrings[1], local.Users.user_id)
-  //     } else if (local.Users.role === 3) {
-  //       getDateWiseScreenshotsCompany(dateStrings[0], dateStrings[1], local.Users.company_id)
-  //       getAllWorkedTimeByInterval(dateStrings[0], dateStrings[1], user_id)
-  //     }
-  //   } else {
-  //     // console.log('Clear')
-  //   }
-  // }
+  const [isLoading, setIsLoading] = useState(false)
 
   function onDateChange(date, dateString) {
     setSelectedDate(dateString)
     if (date && (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7)) {
-      getDateWiseScreenshots(dateString, local.Users.user_id)
       getAllWorkedTimeByInterval(dateString, local.Users.user_id)
+      getDateWiseScreenshots(dateString, local.Users.user_id)
     } else if (date && local.Users.role === 3) {
-      getDateWiseScreenshotsCompany(dateString, local.Users.company_id)
       getAllWorkedTimeByInterval(dateString, user_id)
+      getDateWiseScreenshotsCompany(dateString, local.Users.company_id)
     }
-    return
   }
 
   function onTodayButtonClicked() {
@@ -85,69 +69,34 @@ const Screenshots = () => {
     getScreenshots()
   }
 
-  //Array declaration for API calls
+  // Array Declaration for API Calls
   const [images, setImages] = useState([])
   const [users, setUsers] = useState([])
-  const [project, setProject] = useState([])
   const [addresses, setAddresses] = useState([])
   const [user_id, setUserId] = useState('')
-  const [project_id, setProjectId] = useState('')
-  const userdata = local.Users
-  const [address, setAddress] = useState('')
-  const [todayWork, setTodayWork] = useState([])
-  const [totalhours, setTotalHours] = useState('')
-  const [totalminutes, setTotalMinutes] = useState('')
-  const [totalseconds, setTotalSeconds] = useState('')
   const [alltotalhours, setAllTotalHours] = useState('')
   const [alltotalminutes, setAllTotalMinutes] = useState('')
   const [alltotalseconds, setAllTotalSeconds] = useState('')
-  var filteredUsers = []
-  var screenfilter = []
-  var addressLocate = ''
 
+  // Images URLs State
   const [imagesUrls, setImagesUrls] = useState([])
-  //Initial rendering through useEffect
+
+  // Initial rendering through useEffect
   useEffect(() => {
     getUsers()
-    getProjects()
     getScreenshots()
-  }, [])
+  }, [user_id])
 
-  // Get API calls
-  async function getScreenshots() {
-    await fetch(`${BASE_URL}/api/get_Project_Screenshots`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (local.Users.role === 1) {
-          setIsEmployeeSelected(false)
-          screenfilter = data.projectscreenshot
-        } else if (local.Users.role === 3) {
-          setIsEmployeeSelected(false)
-          screenfilter = data.projectscreenshot.filter(
-            (screenshot) => screenshot.company_id === local.Users.company_id,
-          )
-        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
-          setIsEmployeeSelected(true)
-          screenfilter = data.projectscreenshot.filter(
-            (screenshot) => screenshot.user_id === local.Users.user_id,
-          )
-          if (screenfilter.length === 0) {
-            setIsRecordNotFound(true)
-          } else {
-            const employeeId = screenfilter[0].user_id
-            setUserId(employeeId)
-          }
-        }
-        setImages(screenfilter)
-        getAddresses(screenfilter[0].latitude, screenfilter[0].longitude)
-      })
-      .catch((error) => console.log(error))
-  }
+  //----------------------------
+  // Get API Calls
+  //----------------------------
 
+  // User API Call
   function getUsers() {
-    fetch(`${BASE_URL}/api/get_users`)
+    fetchPromise(`${BASE_URL}/api/get_users`)
       .then((response) => response.json())
       .then((data) => {
+        let filteredUsers = []
         if (local.Users.role === 1) {
           filteredUsers = data.Users
         } else if (local.Users.role === 3) {
@@ -160,63 +109,125 @@ const Screenshots = () => {
       .catch((error) => console.log(error))
   }
 
-  function getDateWiseScreenshots(a, b) {
-    fetch(`${BASE_URL}/api/get_projectscreenshot_by_date/${a}/${b}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (local.Users.role === 1 || local.Users.role === 3) {
-          screenfilter = data.projectscreenshot
+  // Screen-Shots APIs
+  async function getScreenshots() {
+    setIsLoading(true)
+    try {
+      const response = await fetchPromise(`${BASE_URL}/api/get_Project_Screenshots`)
+      const data = await response.json()
+
+      let screenfilter = []
+
+      if (local.Users.role === 1) {
+        setIsEmployeeSelected(false)
+        screenfilter = data.projectscreenshot
+      } else if (local.Users.role === 3) {
+        setIsEmployeeSelected(false)
+        screenfilter = data.projectscreenshot.filter(
+          (screenshot) => screenshot.company_id === local.Users.company_id,
+        )
+      } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+        setIsEmployeeSelected(true)
+        screenfilter = data.projectscreenshot.filter(
+          (screenshot) => screenshot.user_id === local.Users.user_id,
+        )
+        if (screenfilter.length === 0) {
+          setIsRecordNotFound(true)
         } else {
-          screenfilter = data.projectscreenshot.filter(
-            (screenshot) => screenshot.user_id === local.Users.user_id,
-          )
+          const employeeId = screenfilter[0].user_id
+          setUserId(employeeId)
         }
-        setImages(screenfilter)
-      })
-      .catch((error) => console.log(error))
+      }
+
+      setImages(screenfilter)
+      getAddresses(screenfilter[0].latitude, screenfilter[0].longitude)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  function getDateWiseScreenshotsCompany(a, b) {
-    fetch(`${BASE_URL}/api/get_projectscreenshot_by_compny_id/${a}/${b}`)
-      .then((response) => response.json())
-      .then((data) => {
-        screenfilter = data
-        setImages(screenfilter)
-      })
-      .catch((error) => console.log(error))
+  async function getDateWiseScreenshots(a, b) {
+    setIsLoading(true)
+    try {
+      const response = await fetchPromise(`${BASE_URL}/api/get_projectscreenshot_by_date/${a}/${b}`)
+      const data = await response.json()
+
+      let screenfilter = []
+
+      if (local.Users.role === 1 || local.Users.role === 3) {
+        screenfilter = data.projectscreenshot
+      } else {
+        screenfilter = data.projectscreenshot.filter(
+          (screenshot) => screenshot.user_id === local.Users.user_id,
+        )
+      }
+
+      setImages(screenfilter)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  function getProjects() {
-    fetch(`${BASE_URL}/api/getproject`)
-      .then((response) => response.json())
-      .then((data) => setProject(data.projects))
-      .catch((error) => console.log(error))
+  async function getDateWiseScreenshotsCompany(a, b) {
+    setIsLoading(true)
+    try {
+      const response = await fetchPromise(
+        `${BASE_URL}/api/get_projectscreenshot_by_compny_id/${a}/${b}`,
+      )
+      const data = await response.json()
+
+      const screenfilter = data
+
+      setImages(screenfilter)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  function getTodayWorked(id) {
-    fetch(`${BASE_URL}/api/getTotalWorkbyUserId/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllTotalHours(data.hours)
-        setAllTotalMinutes(data.minutes)
-        setAllTotalSeconds(data.seconds)
-      })
-      .catch((error) => console.log(error))
+  // Time-Interval APIs
+  async function getTodayWorked(id) {
+    try {
+      const response = await fetchPromise(`${BASE_URL}/api/getTotalWorkbyUserId/${id}`)
+      const data = await response.json()
+
+      setAllTotalHours(data.hours)
+      setAllTotalMinutes(data.minutes)
+      setAllTotalSeconds(data.seconds)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  function getAllWorkedTimeByInterval(a, b) {
-    fetch(`${BASE_URL}/api/getSumByDateWithUserId/${a}/${b}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllTotalHours(data.hours)
-        setAllTotalMinutes(data.minutes)
-        setAllTotalSeconds(data.seconds)
-        getAddresses(data.projects[0].latitude, data.projects[0].longitude)
-      })
-      .catch((error) => console.log(error))
+  async function getAllWorkedTimeByInterval(a, b) {
+    try {
+      const response = await fetchPromise(`${BASE_URL}/api/getSumByDateWithUserId/${a}/${b}`)
+      const data = await response.json()
+
+      setAllTotalHours(data.hours)
+      setAllTotalMinutes(data.minutes)
+      setAllTotalSeconds(data.seconds)
+      getAddresses(data.projects[0].latitude, data.projects[0].longitude)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  //Functions for Selected image
+  // Helper function to wrap fetch in a Promise
+  function fetchPromise(url) {
+    return new Promise((resolve, reject) => {
+      fetch(url)
+        .then((response) => resolve(response))
+        .catch((error) => reject(error))
+    })
+  }
+
+  // Functions for Selected image
   const [isViewerOpen, setIsViewerOpen] = useState(false)
 
   const handleClick = useCallback((imageUrl) => {
@@ -242,8 +253,7 @@ const Screenshots = () => {
     }
   }
 
-  //Geolocation get using Google
-
+  // Geolocation get using Google
   const getAddresses = async (lat, long) => {
     const apiKey = 'AIzaSyBSBflGv5OULqd9TPMLKecXIig07YXKW2A' // Replace with your own API key
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${apiKey}`
@@ -264,12 +274,13 @@ const Screenshots = () => {
     }
   }
 
+  // Logic to concatenate the base URL with the image URL
   const url = (imageUrl) => {
-    // Logic to concatenate the base URL with the image URL
     const concatinatedImage = `${BASE_URL}/screenshots/${imageUrl}`
     return concatinatedImage
   }
 
+  // Static Messeges
   const renderEmployeeSelectionText = () => {
     if (local.Users.role !== 5 && local.Users.role !== 6 && local.Users.role !== 7) {
       return (
@@ -368,124 +379,17 @@ const Screenshots = () => {
       </div>
 
       <Divider />
-      <div style={imageContainer}>
-        {user_id
-          ? images
-              .filter((image) => image.user_id === user_id)
-              .map((image) => {
-                return (
-                  <>
-                    {image.get_timings.map((timing) => (
-                      <div key={timing.id} style={{ cursor: 'pointer' }}>
-                        <Card
-                          variant="outlined"
-                          sx={{ width: 240, my: 1, mx: 1 }}
-                          onClick={() => handleClick(timing.getattechments)}
-                        >
-                          <CardOverflow>
-                            <AspectRatio ratio="2">
-                              {timing.getattechments.map((attach) => (
-                                <div key={attach.id} style={{ position: 'relative' }}>
-                                  <img
-                                    src={url(attach.path_url)}
-                                    alt={attach.path_url}
-                                    style={{ filter: 'blur(3px)' }}
-                                  />
-                                  <div
-                                    style={{
-                                      position: 'absolute',
-                                      top: '50%',
-                                      left: '50%',
-                                      transform: 'translate(-50%, -50%)',
-                                      backdropFilter: 'blur(10px)',
-                                      padding: '8px 18px',
-                                      borderRadius: '4px',
-                                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                                      border: '2px solid black',
-                                    }}
-                                  >
-                                    {/* Replace the count with your desired value */}
-                                    <span style={{ fontSize: '24px', fontWeight: 'bold' }}>
-                                      {timing.getattechments.length}
-                                    </span>
-                                  </div>
-                                </div>
-                              ))}
-                            </AspectRatio>
-                          </CardOverflow>
-                          <Typography level="h2" sx={{ fontSize: 'md', mt: 1 }}>
-                            {image.project_name}
-                          </Typography>
-                          <Typography level="body2" sx={{ mt: 0.5, mb: 1 }}>
-                            {image.stream_name}
-                          </Typography>
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 0.5,
-                              mx: 'auto',
-                              my: 0.5,
-                            }}
-                          >
-                            {timing.getattechments.map((_, index) => (
-                              <Box
-                                key={index}
-                                sx={{
-                                  borderRadius: '50%',
-                                  width: `max(${6 - index}px, 3px)`,
-                                  height: `max(${6 - index}px, 3px)`,
-                                  bgcolor: index === 0 ? 'primary.solidBg' : 'background.level3',
-                                }}
-                              />
-                            ))}
-                          </Box>
-                          <Divider />
-                          <CardOverflow
-                            variant="soft"
-                            sx={{
-                              display: 'flex',
-                              flexDirection: 'row',
-                              gap: 1,
-                              py: 1,
-                              px: 'var(--Card-padding)',
-                              bgcolor: 'background.level1',
-                            }}
-                          >
-                            <Typography
-                              level="body3"
-                              sx={{ fontWeight: 'md', color: 'text.secondary' }}
-                            >
-                              {new Date(timing.start_time)
-                                .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                                .substring(0, 11)}{' '}
-                              -
-                              {new Date(timing.end_time)
-                                .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                                .substring(0, 11)}
-                            </Typography>
-                            <Typography
-                              level="body3"
-                              sx={{ fontWeight: 'md', color: 'text.secondary' }}
-                            >
-                              {new Intl.DateTimeFormat('en-GB', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: '2-digit',
-                              }).format(new Date(timing.created_at))}
-                            </Typography>
-                          </CardOverflow>
-                        </Card>
-                      </div>
-                    ))}
-                  </>
-                )
-              })
-          : images.map((image) => {
-              return (
-                <>
-                  {isEmployeeSelected === true
-                    ? image.get_timings.map((timing) => (
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <div style={imageContainer}>
+          {user_id
+            ? images
+                .filter((image) => image.user_id === user_id)
+                .map((image) => {
+                  return (
+                    <>
+                      {image.get_timings.map((timing) => (
                         <div key={timing.id} style={{ cursor: 'pointer' }}>
                           <Card
                             variant="outlined"
@@ -509,13 +413,13 @@ const Screenshots = () => {
                                         transform: 'translate(-50%, -50%)',
                                         backdropFilter: 'blur(10px)',
                                         padding: '8px 18px',
-                                        borderRadius: '50%',
+                                        borderRadius: '4px',
                                         backgroundColor: 'rgba(255, 255, 255, 0.8)',
                                         border: '2px solid black',
                                       }}
                                     >
                                       {/* Replace the count with your desired value */}
-                                      <span style={{ fontSize: '22px', fontWeight: 'bold' }}>
+                                      <span style={{ fontSize: '24px', fontWeight: 'bold' }}>
                                         {timing.getattechments.length}
                                       </span>
                                     </div>
@@ -587,12 +491,124 @@ const Screenshots = () => {
                             </CardOverflow>
                           </Card>
                         </div>
-                      ))
-                    : ''}
-                </>
-              )
-            })}
-      </div>
+                      ))}
+                    </>
+                  )
+                })
+            : images.map((image) => {
+                return (
+                  <>
+                    {isEmployeeSelected === true
+                      ? image.get_timings.map((timing) => (
+                          <div key={timing.id} style={{ cursor: 'pointer' }}>
+                            <Card
+                              variant="outlined"
+                              sx={{ width: 240, my: 1, mx: 1 }}
+                              onClick={() => handleClick(timing.getattechments)}
+                            >
+                              <CardOverflow>
+                                <AspectRatio ratio="2">
+                                  {timing.getattechments.map((attach) => (
+                                    <div key={attach.id} style={{ position: 'relative' }}>
+                                      <img
+                                        src={url(attach.path_url)}
+                                        alt={attach.path_url}
+                                        style={{ filter: 'blur(3px)' }}
+                                      />
+                                      <div
+                                        style={{
+                                          position: 'absolute',
+                                          top: '50%',
+                                          left: '50%',
+                                          transform: 'translate(-50%, -50%)',
+                                          backdropFilter: 'blur(10px)',
+                                          padding: '8px 18px',
+                                          borderRadius: '50%',
+                                          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                          border: '2px solid black',
+                                        }}
+                                      >
+                                        {/* Replace the count with your desired value */}
+                                        <span style={{ fontSize: '22px', fontWeight: 'bold' }}>
+                                          {timing.getattechments.length}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </AspectRatio>
+                              </CardOverflow>
+                              <Typography level="h2" sx={{ fontSize: 'md', mt: 1 }}>
+                                {image.project_name}
+                              </Typography>
+                              <Typography level="body2" sx={{ mt: 0.5, mb: 1 }}>
+                                {image.stream_name}
+                              </Typography>
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 0.5,
+                                  mx: 'auto',
+                                  my: 0.5,
+                                }}
+                              >
+                                {timing.getattechments.map((_, index) => (
+                                  <Box
+                                    key={index}
+                                    sx={{
+                                      borderRadius: '50%',
+                                      width: `max(${6 - index}px, 3px)`,
+                                      height: `max(${6 - index}px, 3px)`,
+                                      bgcolor:
+                                        index === 0 ? 'primary.solidBg' : 'background.level3',
+                                    }}
+                                  />
+                                ))}
+                              </Box>
+                              <Divider />
+                              <CardOverflow
+                                variant="soft"
+                                sx={{
+                                  display: 'flex',
+                                  flexDirection: 'row',
+                                  gap: 1,
+                                  py: 1,
+                                  px: 'var(--Card-padding)',
+                                  bgcolor: 'background.level1',
+                                }}
+                              >
+                                <Typography
+                                  level="body3"
+                                  sx={{ fontWeight: 'md', color: 'text.secondary' }}
+                                >
+                                  {new Date(timing.start_time)
+                                    .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                                    .substring(0, 11)}{' '}
+                                  -
+                                  {new Date(timing.end_time)
+                                    .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                                    .substring(0, 11)}
+                                </Typography>
+                                <Typography
+                                  level="body3"
+                                  sx={{ fontWeight: 'md', color: 'text.secondary' }}
+                                >
+                                  {new Intl.DateTimeFormat('en-GB', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: '2-digit',
+                                  }).format(new Date(timing.created_at))}
+                                </Typography>
+                              </CardOverflow>
+                            </Card>
+                          </div>
+                        ))
+                      : ''}
+                  </>
+                )
+              })}
+        </div>
+      )}
       {!user_id && isEmployeeSelected === false ? renderEmployeeSelectionText() : ''}
       {!user_id && isRecordNotFound === true ? renderNoRecordFoundMessage() : ''}
       <div style={imageViewerStyle}>
