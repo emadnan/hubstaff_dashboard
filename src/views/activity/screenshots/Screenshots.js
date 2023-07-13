@@ -386,7 +386,7 @@ const Screenshots = () => {
       </div>
 
       <Divider />
-      {isLoading ? (
+      {user_id && isLoading ? (
         <LoadingSpinner />
       ) : (
         <div style={imageContainer}>
@@ -415,20 +415,19 @@ const Screenshots = () => {
                                     <div
                                       style={{
                                         position: 'absolute',
-                                        top: '50%',
-                                        left: '50%',
-                                        transform: 'translate(-50%, -50%)',
-                                        backdropFilter: 'blur(10px)',
+                                        top: '32px',
+                                        right: '84px',
                                         padding: '8px 18px',
-                                        borderRadius: '4px',
+                                        borderRadius: '50%',
                                         backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                                        border: '2px solid black',
+                                        border: '4px solid black',
+                                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                        color: '#fff',
+                                        fontSize: '24px',
+                                        fontWeight: 'bold',
                                       }}
                                     >
-                                      {/* Replace the count with your desired value */}
-                                      <span style={{ fontSize: '24px', fontWeight: 'bold' }}>
-                                        {timing.getattechments.length}
-                                      </span>
+                                      {timing.getattechments.length}
                                     </div>
                                   </div>
                                 ))}
@@ -525,20 +524,19 @@ const Screenshots = () => {
                                       <div
                                         style={{
                                           position: 'absolute',
-                                          top: '50%',
-                                          left: '50%',
-                                          transform: 'translate(-50%, -50%)',
-                                          backdropFilter: 'blur(10px)',
+                                          top: '32px',
+                                          right: '84px',
                                           padding: '8px 18px',
                                           borderRadius: '50%',
                                           backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                                          border: '2px solid black',
+                                          border: '4px solid black',
+                                          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                          color: '#fff',
+                                          fontSize: '24px',
+                                          fontWeight: 'bold',
                                         }}
                                       >
-                                        {/* Replace the count with your desired value */}
-                                        <span style={{ fontSize: '22px', fontWeight: 'bold' }}>
-                                          {timing.getattechments.length}
-                                        </span>
+                                        {timing.getattechments.length}
                                       </div>
                                     </div>
                                   ))}
