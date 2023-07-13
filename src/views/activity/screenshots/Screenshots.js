@@ -85,7 +85,7 @@ const Screenshots = () => {
   useEffect(() => {
     getUsers()
     getScreenshots()
-  }, [user_id])
+  }, [])
 
   //----------------------------
   // Get API Calls
@@ -126,6 +126,9 @@ const Screenshots = () => {
         screenfilter = data.projectscreenshot.filter(
           (screenshot) => screenshot.company_id === local.Users.company_id,
         )
+        if (user_id) {
+          getAddresses(screenfilter[0].latitude, screenfilter[0].longitude)
+        }
       } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
         setIsEmployeeSelected(true)
         screenfilter = data.projectscreenshot.filter(
@@ -140,7 +143,6 @@ const Screenshots = () => {
       }
 
       setImages(screenfilter)
-      getAddresses(screenfilter[0].latitude, screenfilter[0].longitude)
     } catch (error) {
       console.log(error)
     } finally {
@@ -246,10 +248,15 @@ const Screenshots = () => {
     setUserId(value)
     if (selectedDate) {
       getAllWorkedTimeByInterval(selectedDate, value)
+      getDateWiseScreenshots(selectedDate, value)
     } else {
       getTodayWorked(value)
-      const locations = images.filter((locate) => locate.user_id === value)
-      getAddresses(locations[0].latitude, locations[0].longitude)
+      const today = new Date()
+      const day = today.getDate()
+      const month = today.getMonth() + 1
+      const year = today.getFullYear()
+      const todayDate = `${year}-${month}-${day}`
+      getDateWiseScreenshots(todayDate, value)
     }
   }
 
