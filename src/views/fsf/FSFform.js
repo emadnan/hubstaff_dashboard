@@ -135,10 +135,14 @@ function FSFform() {
   }
 
   useEffect(() => {
-    const currentDate = getCurrentDate()
-    setRequestedDate(currentDate)
-    setWRicefId(`Biafo-${projectName}-${moduleName}`)
-  }, [projectName, moduleName])
+    const currentDate = getCurrentDate();
+    setRequestedDate(currentDate);
+    
+    const uniqueNumber = Math.floor(Math.random() * 1000);
+    const concatenatedId = `Biafo-${projectName}-${moduleName}-${uniqueNumber}`;
+    setWRicefId(concatenatedId);
+  }, [projectName, moduleName]);
+  
 
   const editorConfig = {
     height: 200,

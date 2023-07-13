@@ -11,9 +11,7 @@ const Viewedit = React.lazy(() => import('./views/timesheets/viewedit/Viewedit')
 const Projects = React.lazy(() => import('./views/projectmanagement/projects/Projects'))
 const Client = React.lazy(() => import('./views/projectmanagement/client/Client'))
 const Todos = React.lazy(() => import('./views/projectmanagement/todos/Todos'))
-const AssignedProjects = React.lazy(() =>
-  import('./views/projectmanagement/assigned/AssignedProjects'),
-)
+const AssignedProjects = React.lazy(() =>import('./views/projectmanagement/assigned/AssignedProjects'))
 const Companies = React.lazy(() => import('./views/companies/Companies'))
 const Departments = React.lazy(() => import('./views/departments/Departments'))
 const Insights = React.lazy(() => import('./views/insights/Insights'))
@@ -38,10 +36,9 @@ const Expenses = React.lazy(() => import('./views/expenses/Expenses'))
 const AllFSF = React.lazy(() => import('./views/fsf/AllFSF'))
 const FSFform = React.lazy(() => import('./views/fsf/FSFform'))
 const AllCRF = React.lazy(() => import('./views/crf/AllCRF'))
+const CRFform = React.lazy(() => import('./views/crf/CRFform'))
 const TaskAssignment = React.lazy(() => import('./views/taskmanagement/TaskAssignment'))
-const TaskAssignmentUserSide = React.lazy(() =>
-  import('./views/taskmanagement/TaskAssignmentUserSide'),
-)
+const TaskAssignmentUserSide = React.lazy(() => import('./views/taskmanagement/TaskAssignmentUserSide'))
 const NotFound = React.lazy(() => import('./views/notFoundPage/NotFound'))
 
 // Function to check if the user has access to a specific route based on their role
@@ -178,8 +175,9 @@ const routes = [
   },
   { path: '/expenses', name: 'Expenses', element: Expenses, requiredRoles: [1] },
   { path: '/fsf', name: 'All FSF', element: AllFSF, requiredRoles: [1, 5, 6, 7] },
-  { path: '/allcrf', name: 'All CRF', element: AllCRF, requiredRoles: [1] },
+  { path: '/allcrf', name: 'All CRF', element: AllCRF, requiredRoles: [1, 5, 6, 7] },
   { path: '/fsfform', name: 'FSF Form', element: FSFform, requiredRoles: [1, 3, 6] },
+  { path: '/crfform', name: 'CRF Form', element: CRFform, requiredRoles: [1, 3, 6] },
   {
     path: '/taskmanagement-createnewtask',
     name: 'Task Assignment',
