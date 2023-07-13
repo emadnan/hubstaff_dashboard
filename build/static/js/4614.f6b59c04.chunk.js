@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_coreui_coreui_free_react_admin_template=self.webpackChunk_coreui_coreui_free_react_admin_template||[]).push([[4614],{4614:function(e,r,c){c.r(r);c(72791);var t=c(80184);r.default=function(){return(0,t.jsx)("div",{children:"Map"})}}}]);
+//# sourceMappingURL=4614.f6b59c04.chunk.js.map

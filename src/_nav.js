@@ -424,6 +424,12 @@ export const _navFunctional = [
     to: '/fsf',
     icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
   },
+  {
+    component: CNavItem,
+    name: 'CRF',
+    to: '/allcrf',
+    icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
+  },
 ]
 
 export const _navTeamLead = [
@@ -492,6 +498,12 @@ export const _navTeamLead = [
     component: CNavItem,
     name: 'FSF',
     to: '/fsf',
+    icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'CRF',
+    to: '/allcrf',
     icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
   },
 ]
