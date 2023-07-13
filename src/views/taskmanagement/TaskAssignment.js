@@ -15,6 +15,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Box from '@mui/material/Box'
 import moment from 'moment'
+import LoadingSpinner from 'src/components/Loader/Loader'
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -35,6 +36,8 @@ function TaskAssignment() {
   const [priorities, setPriorities] = useState('LOW')
   const [task_id, setTaskId] = useState()
   const [taskComment, setTaskComment] = useState()
+
+  const [isLoading, setIsLoading] = useState(false)
 
   // For Radio Buttons
   const radioOptions = [
@@ -161,6 +164,7 @@ function TaskAssignment() {
     task_managements_start_date,
     task_managements_dead_line,
   })
+
   const handleOk = () => {
     if (
       user_id &&
@@ -172,26 +176,43 @@ function TaskAssignment() {
     ) {
       addTask()
       setIsModalOpen(false)
+      setFormErrors(null)
     } else {
-      const errors = {}
-      if (!user_id) {
-        errors.user_id = 'Please Select the User'
-      }
-      if (!project_id) {
-        errors.project_id = 'Please Select the Project'
-      }
-      if (!task_description) {
-        errors.task_description = 'Task Description is required'
-      }
-      if (!task_managements_start_date) {
-        errors.task_managements_start_date = 'Start Date is required'
-      }
-      if (!task_managements_dead_line) {
-        errors.task_managements_dead_line = 'End Date is required'
-      }
-
-      setFormErrors(errors)
+      callErrors(
+        user_id,
+        project_id,
+        task_description,
+        task_managements_start_date,
+        task_managements_dead_line,
+      )
     }
+  }
+
+  const callErrors = (
+    user_id,
+    project_id,
+    task_description,
+    task_managements_start_date,
+    task_managements_dead_line,
+  ) => {
+    const errors = {}
+    if (!user_id) {
+      errors.user_id = 'Please Select the User'
+    }
+    if (!project_id) {
+      errors.project_id = 'Please Select the Project'
+    }
+    if (!task_description) {
+      errors.task_description = 'Task Description is required'
+    }
+    if (!task_managements_start_date) {
+      errors.task_managements_start_date = 'Start Date is required'
+    }
+    if (!task_managements_dead_line) {
+      errors.task_managements_dead_line = 'End Date is required'
+    }
+
+    setFormErrors(errors)
   }
 
   const handleFocus = (e) => {
@@ -213,6 +234,7 @@ function TaskAssignment() {
     setTaskManagementStartDate('')
     setTaskManagementDeadLine('')
     setTaskStatus('')
+    setFormErrors(null)
   }
 
   // Functions for Assign Tasks Modal
@@ -223,9 +245,29 @@ function TaskAssignment() {
     setIsModalOpenUpdate(true)
   }
   const handleUpdate = () => {
-    updateTask(editedTaskId)
-    setIsModalOpenUpdate(false)
+    if (
+      user_id &&
+      project_id &&
+      priorities &&
+      taskStatus &&
+      task_description &&
+      task_managements_start_date &&
+      task_managements_dead_line
+    ) {
+      updateTask(editedTaskId)
+      setIsModalOpenUpdate(false)
+      setFormErrors(null)
+    } else {
+      callErrors(
+        user_id,
+        project_id,
+        task_description,
+        task_managements_start_date,
+        task_managements_dead_line,
+      )
+    }
   }
+
   const updateCancel = () => {
     setIsModalOpenUpdate(false)
     form.resetFields()
@@ -236,6 +278,7 @@ function TaskAssignment() {
     setTaskManagementStartDate('')
     setTaskManagementDeadLine('')
     setTaskStatus('')
+    setFormErrors(null)
   }
 
   // Functions for Show Task Modal
@@ -256,23 +299,25 @@ function TaskAssignment() {
   }
 
   async function getTasks() {
-    await fetch(`${BASE_URL}/api/getTasks`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (local.Users.role === 7) {
-          const filteredUsersTask = data.task.filter((user) => user.team_lead_id === local.Users.id)
-          const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
-          const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
-          const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
-          setPendingTasks(todoTasks)
-          setInProgressTasks(in_progressTasks)
-          setCompletedTasks(doneTasks)
-          setTotalItemsPending(todoTasks.length)
-          setTotalItemsInProgress(in_progressTasks.length)
-          setTotalItemsCompleted(doneTasks.length)
-        }
-      })
-      .catch((error) => console.log(error))
+    try {
+      const response = await fetch(`${BASE_URL}/api/getTasks`)
+      const data = await response.json()
+
+      if (local.Users.role === 7) {
+        const filteredUsersTask = data.task.filter((user) => user.team_lead_id === local.Users.id)
+        const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
+        const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
+        const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
+        setPendingTasks(todoTasks)
+        setInProgressTasks(in_progressTasks)
+        setCompletedTasks(doneTasks)
+        setTotalItemsPending(todoTasks.length)
+        setTotalItemsInProgress(in_progressTasks.length)
+        setTotalItemsCompleted(doneTasks.length)
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   async function getTasksByUserId() {
@@ -366,7 +411,8 @@ function TaskAssignment() {
       .catch((error) => console.log(error))
   }
 
-  function addTask() {
+  async function addTask() {
+    setIsLoading(true)
     const taskData = {
       user_id,
       team_lead_id: local.Users.id,
@@ -376,34 +422,33 @@ function TaskAssignment() {
       start_date: task_managements_start_date,
       dead_line: task_managements_dead_line,
     }
-    fetch(`${BASE_URL}/api/addTasks`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${session_token}`,
-      },
-      body: JSON.stringify(taskData),
-    })
-      .then((response) => {
-        if (response.ok) {
-          getTasks()
-          form.resetFields()
-          setUserId('')
-          setProjectId('')
-          setTaskDescription('')
-          setPriorities('LOW')
-          setTaskManagementStartDate('')
-          setTaskManagementDeadLine('')
-          setTaskStatus('')
-          // handleButtonClick3();
-          // getMembers()
-        } else {
-          // handleButtonClick4();
-        }
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/addTasks`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session_token}`,
+        },
+        body: JSON.stringify(taskData),
       })
-      .catch((error) => {
-        console.error(error)
-      })
+
+      if (response.ok) {
+        await getTasks()
+        form.resetFields()
+        setUserId('')
+        setProjectId('')
+        setTaskDescription('')
+        setPriorities('LOW')
+        setTaskManagementStartDate('')
+        setTaskManagementDeadLine('')
+        setTaskStatus('')
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const getTaskById = async (id) => {
@@ -430,6 +475,7 @@ function TaskAssignment() {
   }
 
   const updateTask = async (newid) => {
+    setIsLoading(true)
     const taskData = {
       id: newid,
       user_id: user_id,
@@ -442,29 +488,31 @@ function TaskAssignment() {
       dead_line: task_managements_dead_line,
     }
 
-    await fetch(`${BASE_URL}/api/updateTasks`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${session_token}`,
-      },
-      body: JSON.stringify(taskData),
-    })
-      .then((response) => {
-        if (response.ok) {
-          getTasks()
-          form.resetFields()
-          setUserId('')
-          setProjectId('')
-          setTaskDescription('')
-          setPriorities('LOW')
-          setTaskManagementStartDate('')
-          setTaskManagementDeadLine('')
-        }
+    try {
+      const response = await fetch(`${BASE_URL}/api/updateTasks`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session_token}`,
+        },
+        body: JSON.stringify(taskData),
       })
-      .catch((error) => {
-        console.error(error)
-      })
+
+      if (response.ok) {
+        await getTasks()
+        form.resetFields()
+        setUserId('')
+        setProjectId('')
+        setTaskDescription('')
+        setPriorities('LOW')
+        setTaskManagementStartDate('')
+        setTaskManagementDeadLine('')
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const deleteTask = async (id) => {
@@ -636,73 +684,78 @@ function TaskAssignment() {
 
       <br></br>
 
-      <div>
-        {isPendingTasksTab === true && pendingTasks.length > 0 && currentItemsPending.length > 0 ? (
-          <div>
-            <div className="row">
-              <div className="col-md 6">
-                <h4>To-Do Tasks: {totalItemsPending}</h4>
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <div>
+          {isPendingTasksTab === true &&
+          pendingTasks.length > 0 &&
+          currentItemsPending.length > 0 ? (
+            <div>
+              <div className="row">
+                <div className="col-md 6">
+                  <h4>To-Do Tasks: {totalItemsPending}</h4>
+                </div>
               </div>
-            </div>
-            <CTable
-              align="middle"
-              className="mb-0 border"
-              hover
-              responsive
-              style={{ marginTop: '20px' }}
-            >
-              <CTableHead color="light">
-                {/* Task Assignment table heading */}
-                <CTableRow>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task No.
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Assigned To
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Project
-                  </CTableHeaderCell>
-                  {/* <CTableHeaderCell className="text-center" style={mystyle}>
+              <CTable
+                align="middle"
+                className="mb-0 border"
+                hover
+                responsive
+                style={{ marginTop: '20px' }}
+              >
+                <CTableHead color="light">
+                  {/* Task Assignment table heading */}
+                  <CTableRow>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Task No.
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Assigned To
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Project
+                    </CTableHeaderCell>
+                    {/* <CTableHeaderCell className="text-center" style={mystyle}>
                     Task Details
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Task Priority
                   </CTableHeaderCell> */}
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task Status
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Assigned Date
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Dead Line
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Actions
-                  </CTableHeaderCell>
-                </CTableRow>
-              </CTableHead>
-              <CTableBody>
-                {pendingTasks.length > 0 &&
-                  currentItemsPending.map((task, index) => (
-                    <CTableRow key={task.task_managements_id}>
-                      <CTableHeaderCell
-                        className="text-center"
-                        style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
-                      >
-                        {task.project_name} - {task.task_managements_id}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {task.name}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell
-                        className="text-center"
-                        style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
-                      >
-                        {task.project_name}
-                      </CTableHeaderCell>
-                      {/* <CTableHeaderCell
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Task Status
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Assigned Date
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Dead Line
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Actions
+                    </CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
+                <CTableBody>
+                  {pendingTasks.length > 0 &&
+                    currentItemsPending.map((task, index) => (
+                      <CTableRow key={task.task_managements_id}>
+                        <CTableHeaderCell
+                          className="text-center"
+                          style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                        >
+                          {task.project_name} - {task.task_managements_id}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          {task.name}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell
+                          className="text-center"
+                          style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                        >
+                          {task.project_name}
+                        </CTableHeaderCell>
+                        {/* <CTableHeaderCell
                         className="text-center"
                         style={{ ...mystyle2, width: '200px' }}
                       >
@@ -711,150 +764,155 @@ function TaskAssignment() {
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {task.priorites}
                       </CTableHeaderCell> */}
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {task.status}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {new Date(task.task_managements_start_date)
-                          .toLocaleDateString('en-GB', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                          })
-                          .replace(/\//g, '-')}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {new Date(task.task_managements_dead_line)
-                          .toLocaleDateString('en-GB', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                          })
-                          .replace(/\//g, '-')}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        <IconButton
-                          aria-label="View"
-                          onClick={() => openModalToTakeActionAgainstTask(task.task_managements_id)}
-                        >
-                          <VisibilityIcon htmlColor="#0070ff" />
-                        </IconButton>
-                        <IconButton aria-label="Update">
-                          <EditIcon
-                            htmlColor="#28B463"
-                            onClick={() => showUpdateModal(task.task_managements_id)}
-                          />
-                        </IconButton>
-                        <IconButton aria-label="Delete">
-                          <DeleteIcon
-                            htmlColor="#FF0000"
-                            onClick={() => deleteTask(task.task_managements_id)}
-                          />
-                        </IconButton>
-                      </CTableHeaderCell>
-                    </CTableRow>
-                  ))}
-              </CTableBody>
-            </CTable>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          {task.status}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          {new Date(task.task_managements_start_date)
+                            .toLocaleDateString('en-GB', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                            })
+                            .replace(/\//g, '-')}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          {new Date(task.task_managements_dead_line)
+                            .toLocaleDateString('en-GB', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                            })
+                            .replace(/\//g, '-')}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          <IconButton
+                            aria-label="View"
+                            onClick={() =>
+                              openModalToTakeActionAgainstTask(task.task_managements_id)
+                            }
+                          >
+                            <VisibilityIcon htmlColor="#0070ff" />
+                          </IconButton>
+                          <IconButton aria-label="Update">
+                            <EditIcon
+                              htmlColor="#28B463"
+                              onClick={() => showUpdateModal(task.task_managements_id)}
+                            />
+                          </IconButton>
+                          <IconButton aria-label="Delete">
+                            <DeleteIcon
+                              htmlColor="#FF0000"
+                              onClick={() => deleteTask(task.task_managements_id)}
+                            />
+                          </IconButton>
+                        </CTableHeaderCell>
+                      </CTableRow>
+                    ))}
+                </CTableBody>
+              </CTable>
 
-            <CPagination aria-label="Page navigation example">
-              <CPaginationItem
-                disabled={currentPagePending === 1}
-                onClick={() => handlePendingTaskPageChange(currentPagePending - 1)}
-                aria-label="Previous"
-              >
-                <span aria-hidden="true">&laquo;</span>
-              </CPaginationItem>
-              {Array.from({ length: Math.ceil(totalItemsPending / ITEMS_PER_PAGE) }, (_, index) => (
+              <CPagination aria-label="Page navigation example">
                 <CPaginationItem
-                  key={index + 1}
-                  active={index + 1 === currentPagePending}
-                  onClick={() => handlePendingTaskPageChange(index + 1)}
+                  disabled={currentPagePending === 1}
+                  onClick={() => handlePendingTaskPageChange(currentPagePending - 1)}
+                  aria-label="Previous"
                 >
-                  {index + 1}
+                  <span aria-hidden="true">&laquo;</span>
                 </CPaginationItem>
-              ))}
-              <CPaginationItem
-                disabled={currentPagePending === Math.ceil(totalItemsPending / ITEMS_PER_PAGE)}
-                onClick={() => handlePendingTaskPageChange(currentPagePending + 1)}
-                aria-label="Next"
-              >
-                <span aria-hidden="true">»</span>
-              </CPaginationItem>
-            </CPagination>
-          </div>
-        ) : (
-          ''
-        )}
-
-        {isInProgressTasksTab === true &&
-        inProgressTasks.length > 0 &&
-        currentItemsInProgress.length > 0 ? (
-          <div>
-            <div className="row">
-              <div className="col-md 6">
-                <h4>In-Progress Tasks: {totalItemsInProgress}</h4>
-              </div>
+                {Array.from(
+                  { length: Math.ceil(totalItemsPending / ITEMS_PER_PAGE) },
+                  (_, index) => (
+                    <CPaginationItem
+                      key={index + 1}
+                      active={index + 1 === currentPagePending}
+                      onClick={() => handlePendingTaskPageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </CPaginationItem>
+                  ),
+                )}
+                <CPaginationItem
+                  disabled={currentPagePending === Math.ceil(totalItemsPending / ITEMS_PER_PAGE)}
+                  onClick={() => handlePendingTaskPageChange(currentPagePending + 1)}
+                  aria-label="Next"
+                >
+                  <span aria-hidden="true">»</span>
+                </CPaginationItem>
+              </CPagination>
             </div>
-            <CTable
-              align="middle"
-              className="mb-0 border"
-              hover
-              responsive
-              style={{ marginTop: '20px' }}
-            >
-              <CTableHead color="light">
-                {/* Task Assignment table heading */}
-                <CTableRow>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task No.
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Assigned To
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Project
-                  </CTableHeaderCell>
-                  {/* <CTableHeaderCell className="text-center" style={mystyle}>
+          ) : (
+            ''
+          )}
+
+          {isInProgressTasksTab === true &&
+          inProgressTasks.length > 0 &&
+          currentItemsInProgress.length > 0 ? (
+            <div>
+              <div className="row">
+                <div className="col-md 6">
+                  <h4>In-Progress Tasks: {totalItemsInProgress}</h4>
+                </div>
+              </div>
+              <CTable
+                align="middle"
+                className="mb-0 border"
+                hover
+                responsive
+                style={{ marginTop: '20px' }}
+              >
+                <CTableHead color="light">
+                  {/* Task Assignment table heading */}
+                  <CTableRow>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Task No.
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Assigned To
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Project
+                    </CTableHeaderCell>
+                    {/* <CTableHeaderCell className="text-center" style={mystyle}>
                     Task Details
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Task Priority
                   </CTableHeaderCell> */}
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task Status
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Assigned Date
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Dead Line
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Actions
-                  </CTableHeaderCell>
-                </CTableRow>
-              </CTableHead>
-              <CTableBody>
-                {inProgressTasks.length > 0 &&
-                  currentItemsInProgress.map((task, index) => (
-                    <CTableRow key={task.task_managements_id}>
-                      <CTableHeaderCell
-                        className="text-center"
-                        style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
-                      >
-                        {task.project_name} - {task.task_managements_id}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {task.name}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell
-                        className="text-center"
-                        style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
-                      >
-                        {task.project_name}
-                      </CTableHeaderCell>
-                      {/* <CTableHeaderCell
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Task Status
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Assigned Date
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Dead Line
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Actions
+                    </CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
+                <CTableBody>
+                  {inProgressTasks.length > 0 &&
+                    currentItemsInProgress.map((task, index) => (
+                      <CTableRow key={task.task_managements_id}>
+                        <CTableHeaderCell
+                          className="text-center"
+                          style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                        >
+                          {task.project_name} - {task.task_managements_id}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          {task.name}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell
+                          className="text-center"
+                          style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                        >
+                          {task.project_name}
+                        </CTableHeaderCell>
+                        {/* <CTableHeaderCell
                         className="text-center"
                         style={{ ...mystyle2, width: '200px' }}
                       >
@@ -863,156 +921,158 @@ function TaskAssignment() {
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {task.priorites}
                       </CTableHeaderCell> */}
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {task.status}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {new Date(task.task_managements_start_date)
-                          .toLocaleDateString('en-GB', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                          })
-                          .replace(/\//g, '-')}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {new Date(task.task_managements_dead_line)
-                          .toLocaleDateString('en-GB', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                          })
-                          .replace(/\//g, '-')}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        <IconButton
-                          aria-label="View"
-                          onClick={() => openModalToTakeActionAgainstTask(task.task_managements_id)}
-                        >
-                          <VisibilityIcon htmlColor="#0070ff" />
-                        </IconButton>
-                        <IconButton aria-label="Update">
-                          <EditIcon
-                            htmlColor="#28B463"
-                            onClick={() => showUpdateModal(task.task_managements_id)}
-                          />
-                        </IconButton>
-                        <IconButton aria-label="Delete">
-                          <DeleteIcon
-                            htmlColor="#FF0000"
-                            onClick={() => deleteTask(task.task_managements_id)}
-                          />
-                        </IconButton>
-                      </CTableHeaderCell>
-                    </CTableRow>
-                  ))}
-              </CTableBody>
-            </CTable>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          {task.status}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          {new Date(task.task_managements_start_date)
+                            .toLocaleDateString('en-GB', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                            })
+                            .replace(/\//g, '-')}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          {new Date(task.task_managements_dead_line)
+                            .toLocaleDateString('en-GB', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                            })
+                            .replace(/\//g, '-')}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          <IconButton
+                            aria-label="View"
+                            onClick={() =>
+                              openModalToTakeActionAgainstTask(task.task_managements_id)
+                            }
+                          >
+                            <VisibilityIcon htmlColor="#0070ff" />
+                          </IconButton>
+                          <IconButton aria-label="Update">
+                            <EditIcon
+                              htmlColor="#28B463"
+                              onClick={() => showUpdateModal(task.task_managements_id)}
+                            />
+                          </IconButton>
+                          <IconButton aria-label="Delete">
+                            <DeleteIcon
+                              htmlColor="#FF0000"
+                              onClick={() => deleteTask(task.task_managements_id)}
+                            />
+                          </IconButton>
+                        </CTableHeaderCell>
+                      </CTableRow>
+                    ))}
+                </CTableBody>
+              </CTable>
 
-            <CPagination aria-label="Page navigation example">
-              <CPaginationItem
-                disabled={currentPageInProgress === 1}
-                onClick={() => handleInProgressTaskPageChange(currentPageInProgress - 1)}
-                aria-label="Previous"
-              >
-                <span aria-hidden="true">&laquo;</span>
-              </CPaginationItem>
-              {Array.from(
-                { length: Math.ceil(totalItemsInProgress / ITEMS_PER_PAGE) },
-                (_, index) => (
-                  <CPaginationItem
-                    key={index + 1}
-                    active={index + 1 === currentPageInProgress}
-                    onClick={() => handleInProgressTaskPageChange(index + 1)}
-                  >
-                    {index + 1}
-                  </CPaginationItem>
-                ),
-              )}
-              <CPaginationItem
-                disabled={
-                  currentPageInProgress === Math.ceil(totalItemsInProgress / ITEMS_PER_PAGE)
-                }
-                onClick={() => handleInProgressTaskPageChange(currentPageInProgress + 1)}
-                aria-label="Next"
-              >
-                <span aria-hidden="true">»</span>
-              </CPaginationItem>
-            </CPagination>
-          </div>
-        ) : (
-          ''
-        )}
-
-        {isCompletedTaskTab === true &&
-        completedTask.length > 0 &&
-        currentItemsCompleted.length > 0 ? (
-          <div>
-            <div className="row">
-              <div className="col-md 6">
-                <h4>Done Tasks: {totalItemsCompleted}</h4>
-              </div>
+              <CPagination aria-label="Page navigation example">
+                <CPaginationItem
+                  disabled={currentPageInProgress === 1}
+                  onClick={() => handleInProgressTaskPageChange(currentPageInProgress - 1)}
+                  aria-label="Previous"
+                >
+                  <span aria-hidden="true">&laquo;</span>
+                </CPaginationItem>
+                {Array.from(
+                  { length: Math.ceil(totalItemsInProgress / ITEMS_PER_PAGE) },
+                  (_, index) => (
+                    <CPaginationItem
+                      key={index + 1}
+                      active={index + 1 === currentPageInProgress}
+                      onClick={() => handleInProgressTaskPageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </CPaginationItem>
+                  ),
+                )}
+                <CPaginationItem
+                  disabled={
+                    currentPageInProgress === Math.ceil(totalItemsInProgress / ITEMS_PER_PAGE)
+                  }
+                  onClick={() => handleInProgressTaskPageChange(currentPageInProgress + 1)}
+                  aria-label="Next"
+                >
+                  <span aria-hidden="true">»</span>
+                </CPaginationItem>
+              </CPagination>
             </div>
-            <CTable
-              align="middle"
-              className="mb-0 border"
-              hover
-              responsive
-              style={{ marginTop: '20px' }}
-            >
-              <CTableHead color="light">
-                {/* Task Assignment table heading */}
-                <CTableRow>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task No.
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Assigned To
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Project
-                  </CTableHeaderCell>
-                  {/* <CTableHeaderCell className="text-center" style={mystyle}>
+          ) : (
+            ''
+          )}
+
+          {isCompletedTaskTab === true &&
+          completedTask.length > 0 &&
+          currentItemsCompleted.length > 0 ? (
+            <div>
+              <div className="row">
+                <div className="col-md 6">
+                  <h4>Done Tasks: {totalItemsCompleted}</h4>
+                </div>
+              </div>
+              <CTable
+                align="middle"
+                className="mb-0 border"
+                hover
+                responsive
+                style={{ marginTop: '20px' }}
+              >
+                <CTableHead color="light">
+                  {/* Task Assignment table heading */}
+                  <CTableRow>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Task No.
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Assigned To
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Project
+                    </CTableHeaderCell>
+                    {/* <CTableHeaderCell className="text-center" style={mystyle}>
                     Task Details
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Task Priority
                   </CTableHeaderCell> */}
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task Status
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Assigned Date
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Dead Line
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Actions
-                  </CTableHeaderCell>
-                </CTableRow>
-              </CTableHead>
-              <CTableBody>
-                {completedTask.length > 0 &&
-                  currentItemsCompleted.map((task, index) => (
-                    <CTableRow key={task.task_managements_id}>
-                      <CTableHeaderCell
-                        className="text-center"
-                        style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
-                      >
-                        {task.project_name} - {task.task_managements_id}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {task.name}
-                      </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Task Status
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Assigned Date
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Dead Line
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle}>
+                      Actions
+                    </CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
+                <CTableBody>
+                  {completedTask.length > 0 &&
+                    currentItemsCompleted.map((task, index) => (
+                      <CTableRow key={task.task_managements_id}>
+                        <CTableHeaderCell
+                          className="text-center"
+                          style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                        >
+                          {task.project_name} - {task.task_managements_id}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          {task.name}
+                        </CTableHeaderCell>
 
-                      <CTableHeaderCell
-                        className="text-center"
-                        style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
-                      >
-                        {task.project_name}
-                      </CTableHeaderCell>
-                      {/* <CTableHeaderCell
+                        <CTableHeaderCell
+                          className="text-center"
+                          style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                        >
+                          {task.project_name}
+                        </CTableHeaderCell>
+                        {/* <CTableHeaderCell
                         className="text-center"
                         style={{ ...mystyle2, width: '200px' }}
                       >
@@ -1021,85 +1081,90 @@ function TaskAssignment() {
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {task.priorites}
                       </CTableHeaderCell> */}
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {task.status}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {new Date(task.task_managements_start_date)
-                          .toLocaleDateString('en-GB', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                          })
-                          .replace(/\//g, '-')}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {new Date(task.task_managements_dead_line)
-                          .toLocaleDateString('en-GB', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                          })
-                          .replace(/\//g, '-')}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        <IconButton
-                          aria-label="View"
-                          onClick={() => openModalToTakeActionAgainstTask(task.task_managements_id)}
-                        >
-                          <VisibilityIcon htmlColor="#0070ff" />
-                        </IconButton>
-                        <IconButton aria-label="Update">
-                          <EditIcon
-                            htmlColor="#28B463"
-                            onClick={() => showUpdateModal(task.task_managements_id)}
-                          />
-                        </IconButton>
-                        <IconButton aria-label="Delete">
-                          <DeleteIcon
-                            htmlColor="#FF0000"
-                            onClick={() => deleteTask(task.task_managements_id)}
-                          />
-                        </IconButton>
-                      </CTableHeaderCell>
-                    </CTableRow>
-                  ))}
-              </CTableBody>
-            </CTable>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          {task.status}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          {new Date(task.task_managements_start_date)
+                            .toLocaleDateString('en-GB', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                            })
+                            .replace(/\//g, '-')}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          {new Date(task.task_managements_dead_line)
+                            .toLocaleDateString('en-GB', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                            })
+                            .replace(/\//g, '-')}
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          <IconButton
+                            aria-label="View"
+                            onClick={() =>
+                              openModalToTakeActionAgainstTask(task.task_managements_id)
+                            }
+                          >
+                            <VisibilityIcon htmlColor="#0070ff" />
+                          </IconButton>
+                          <IconButton aria-label="Update">
+                            <EditIcon
+                              htmlColor="#28B463"
+                              onClick={() => showUpdateModal(task.task_managements_id)}
+                            />
+                          </IconButton>
+                          <IconButton aria-label="Delete">
+                            <DeleteIcon
+                              htmlColor="#FF0000"
+                              onClick={() => deleteTask(task.task_managements_id)}
+                            />
+                          </IconButton>
+                        </CTableHeaderCell>
+                      </CTableRow>
+                    ))}
+                </CTableBody>
+              </CTable>
 
-            <CPagination aria-label="Page navigation example">
-              <CPaginationItem
-                disabled={currentPageCompleted === 1}
-                onClick={() => handleCompletedTaskPageChange(currentPageCompleted - 1)}
-                aria-label="Previous"
-              >
-                <span aria-hidden="true">&laquo;</span>
-              </CPaginationItem>
-              {Array.from(
-                { length: Math.ceil(totalItemsCompleted / ITEMS_PER_PAGE) },
-                (_, index) => (
-                  <CPaginationItem
-                    key={index + 1}
-                    active={index + 1 === currentPageCompleted}
-                    onClick={() => handleCompletedTaskPageChange(index + 1)}
-                  >
-                    {index + 1}
-                  </CPaginationItem>
-                ),
-              )}
-              <CPaginationItem
-                disabled={currentPageCompleted === Math.ceil(totalItemsCompleted / ITEMS_PER_PAGE)}
-                onClick={() => handleCompletedTaskPageChange(currentPageCompleted + 1)}
-                aria-label="Next"
-              >
-                <span aria-hidden="true">»</span>
-              </CPaginationItem>
-            </CPagination>
-          </div>
-        ) : (
-          ''
-        )}
-      </div>
+              <CPagination aria-label="Page navigation example">
+                <CPaginationItem
+                  disabled={currentPageCompleted === 1}
+                  onClick={() => handleCompletedTaskPageChange(currentPageCompleted - 1)}
+                  aria-label="Previous"
+                >
+                  <span aria-hidden="true">&laquo;</span>
+                </CPaginationItem>
+                {Array.from(
+                  { length: Math.ceil(totalItemsCompleted / ITEMS_PER_PAGE) },
+                  (_, index) => (
+                    <CPaginationItem
+                      key={index + 1}
+                      active={index + 1 === currentPageCompleted}
+                      onClick={() => handleCompletedTaskPageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </CPaginationItem>
+                  ),
+                )}
+                <CPaginationItem
+                  disabled={
+                    currentPageCompleted === Math.ceil(totalItemsCompleted / ITEMS_PER_PAGE)
+                  }
+                  onClick={() => handleCompletedTaskPageChange(currentPageCompleted + 1)}
+                  aria-label="Next"
+                >
+                  <span aria-hidden="true">»</span>
+                </CPaginationItem>
+              </CPagination>
+            </div>
+          ) : (
+            ''
+          )}
+        </div>
+      )}
       {/* Modal for Assign Task */}
       <Modal
         title="Add a Project"
