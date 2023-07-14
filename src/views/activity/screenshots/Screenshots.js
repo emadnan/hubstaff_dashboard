@@ -169,7 +169,11 @@ const Screenshots = () => {
 
       if (local.Users.role === 1 || local.Users.role === 3) {
         screenfilter = data.projectscreenshot
-        getAddresses(screenfilter[0].latitude, screenfilter[0].longitude)
+        if (screenfilter.length !== 0) {
+          getAddresses(screenfilter[0].latitude, screenfilter[0].longitude)
+        } else {
+          setAddresses('')
+        }
       } else {
         screenfilter = data.projectscreenshot.filter(
           (screenshot) => screenshot.user_id === local.Users.user_id,
@@ -224,7 +228,11 @@ const Screenshots = () => {
       setAllTotalHours(data.hours)
       setAllTotalMinutes(data.minutes)
       setAllTotalSeconds(data.seconds)
-      getAddresses(data.projects[0].latitude, data.projects[0].longitude)
+      if (data.projects.length !== 0) {
+        getAddresses(data.projects[0].latitude, data.projects[0].longitude)
+      } else {
+        setAddresses('')
+      }
     } catch (error) {
       console.log(error)
     }
