@@ -14,8 +14,12 @@ function CRFform() {
     const [project_id, setProjectId] = useState('')
     const [module_id, setModuleId] = useState('')
     const [fsf_id, setFsfId] = useState('')
+    const [implementation_partner, setImplementationPartner] = useState('BiafoTech')
+    const [issuance_date, setIssuanceDate] = useState('')
+    const [author, setAuthor] = useState(local.Users.name)
     const [projectname, setProjectName] = useState('')
     const [modulename, setModuleName] = useState('')
+    let user = { project_id, module_id, fsf_id, implementation_partner, issuance_date, author }
 
     const [project, setProjects] = useState([])
     const [projectmodule, setProjectModule] = useState([])
@@ -39,6 +43,10 @@ function CRFform() {
         left: '40%',
     }
 
+    const selectstyle = {
+        height: '40px',
+    }
+
     const handleMouseEnterPrimary = () => {
         setIsHoveredPrimary(true)
     }
@@ -60,6 +68,9 @@ function CRFform() {
         getProjects()
         getProjectModules()
         getFsf()
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0];
+        setIssuanceDate(formattedDate);
     }, [])
 
     const handleProjectChange = (value, option) => {
@@ -139,69 +150,88 @@ function CRFform() {
                         <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
                             <CardContent>
 
-                                <div className="form-outline mb-3">
-                                    <label>Project Name</label>
-                                    <Form.Item>
-                                        <Select
-                                            showSearch
-                                            placeholder="Select Project"
-                                            onChange={handleProjectChange}
-                                            value={project_id}
-                                            name="project_id"
-                                            // onFocus={handleFocus}
-                                            filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                                        >
-                                            {project.map((pro) => (
-                                                <Select.Option value={pro.id} key={pro.id} project_name={pro.project_name}>
-                                                    {pro.project_name}
+                                <div className="form-outline mb-6">
+                                    <h6>Project Name</h6>
+                                    <Box>
+                                        <Form.Item name="selectProject" hasFeedback>
+                                            <Select showSearch placeholder="Select Project" onChange={handleProjectChange} value={project_id} filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
+                                                {project.map((pro) => (
+                                                    <Select.Option value={pro.id} key={pro.id} project_name={pro.project_name}>
+                                                        {pro.project_name}
+                                                    </Select.Option>
+                                                ))}
+                                            </Select>
+                                        </Form.Item>
+                                    </Box>
+                                </div>
+
+                                <div className="form-outline mb-6">
+                                    <h6>Module Name</h6>
+                                    <Box>
+                                        <Form.Item name="selectModule" hasFeedback>
+                                            <Select showSearch placeholder="Select Module" onChange={handleModuleChange} value={module_id} filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
+                                                {projectmodule.map((proj) => (
+                                                    <Select.Option value={proj.id} key={proj.id} module_name={proj.name}>
+                                                        {proj.name}
+                                                    </Select.Option>
+                                                ))}
+                                            </Select>
+                                        </Form.Item>
+                                    </Box>
+                                </div>
+
+                                <div className="form-outline mb-6">
+                                    <h6>FSF</h6>
+                                    <Box>
+                                        <Form.Item name="selectFsf" hasFeedback>
+                                            <Select showSearch placeholder="Select Fsf" onChange={handleFsfChange} value={fsf_id} filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
+                                                <Select.Option value="0" key="none">
+                                                    None
                                                 </Select.Option>
-                                            ))}
-                                        </Select>
+                                                {allfsf.map((fsf) => (
+                                                    <Select.Option value={fsf.id} key={fsf.id}>
+                                                        {fsf.wricef_id}
+                                                    </Select.Option>
+                                                ))}
+                                            </Select>
+                                        </Form.Item>
+                                    </Box>
+                                </div>
+
+                                <div className="form-outline mb-3">
+                                    <h6>Implementation Partner</h6>
+                                    <Form.Item>
+                                        <input
+                                            type="text"
+                                            value={implementation_partner}
+                                            className="form-control form-control-lg"
+                                            placeholder="Enter Field Table Name"
+                                        />
+                                    </Form.Item>
+                                </div>
+
+                                <div className="form-outline mt-3">
+                                    <h6>Issuance Date</h6>
+                                    <Form.Item>
+                                        <input
+                                            type="date"
+                                            name="issuance_date"
+                                            value={issuance_date}
+                                            className="form-control form-control-lg"
+                                            placeholder="Enter Issuance Date"
+                                        />
                                     </Form.Item>
                                 </div>
 
                                 <div className="form-outline mb-3">
-                                    <label>Module Name</label>
+                                    <h6>Author</h6>
                                     <Form.Item>
-                                        <Select
-                                            showSearch
-                                            placeholder="Select Module"
-                                            onChange={handleModuleChange}
-                                            value={module_id}
-                                            name="module_id"
-                                            // onFocus={handleFocus}
-                                            filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                                        >
-                                            {projectmodule.map((proj) => (
-                                                <Select.Option value={proj.id} key={proj.id} module_name={proj.name}>
-                                                    {proj.name}
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
-                                    </Form.Item>
-                                </div>
-
-                                <div className="form-outline mb-3">
-                                    <label>FSF</label>
-                                    <Form.Item>
-                                        <Select
-                                            showSearch
-                                            placeholder="Select FSF"
-                                            onChange={handleFsfChange}
-                                            value={fsf_id}
-                                            name="fsf_id"
-                                            // onFocus={handleFocus}
-                                            filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                                        >
-                                            <Select.Option value="0" key="none">
-                                                None
-                                            </Select.Option>
-                                            {allfsf.map((fsf) => (
-                                                <Select.Option value={fsf.id} key={fsf.id}>
-                                                    {fsf.wricef_id}
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
+                                        <input
+                                            type="text"
+                                            value={author}
+                                            className="form-control form-control-lg"
+                                            placeholder="Enter Field Table Name"
+                                        />
                                     </Form.Item>
                                 </div>
 
@@ -214,102 +244,15 @@ function CRFform() {
                                     onOk={async () => {
                                         await navigate('/fsf');
                                         setIsModalVisible(false);
-                                      }}
-                                      
+                                    }}
                                 >
                                     {/* Modal content */}
                                     <p>Create Functional Specification Form first </p>
                                 </Modal>
 
-                                {/* <div className="form-outline mb-3">
-                                    <label>Implementation Partner</label>
-                                    <Form.Item>
-                                        <input
-                                            type="text"
-                                            value="BiafoTech"
-                                            readOnly
-                                            className="form-control form-control-lg"
-                                            placeholder="Enter Field Technical Name"
-                                        />
-                                    </Form.Item>
-                                </div> */}
-
-                                {/* <div className="form-outline mb-3">
-                                    <label>Reference Id</label>
-                                    <Select
-                                        placeholder="Select Reference Id"
-                                        onChange={handleReferenceIdChange}
-                                        value={reference_id}
-                                        name="reference_id"
-                                        onFocus={handleFocus}
-                                    >
-                                        <Select.Option value="0" key="none">
-                                            None
-                                        </Select.Option>
-                                        {fsfwricef.map((fsf) => (
-                                            <Select.Option value={fsf.id} key={fsf.id}>
-                                                {fsf.wricef_id}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                </div> */}
-
-                                {/* <div className="form-outline mb-3">
-                                    <label>Module</label>
-                                    <Select
-                                        placeholder="Select Module"
-                                        onChange={handleModuleChange}
-                                        value={module_id}
-                                        name="module_id"
-                                        onFocus={handleFocus}
-                                    >
-                                        {projectmodule.map((proj) => (
-                                            <Select.Option value={proj.id} key={proj.id} module_name={proj.name}>
-                                                {proj.name}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                </div> */}
-
-                                {/* <div className="form-outline mb-3">
-                                    <label>Project</label>
-                                    <Select
-                                        placeholder="Select Project"
-                                        onChange={handleProjectChange}
-                                        value={project_id}
-                                        name="project_id"
-                                        onFocus={handleFocus}
-                                    >
-                                        {project.map((pro) => (
-                                            <Select.Option value={pro.id} key={pro.id} project_name={pro.project_name}>
-                                                {pro.project_name}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                </div> */}
-
-                                {/* <div className="form-outline mb-3">
-                                    <label>Type of Development</label>
-                                    <Select
-                                        placeholder="Select Type of Development"
-                                        onChange={handleTypeOfDevelopmentChange}
-                                        value={type_of_development}
-                                        name="type_of_development"
-                                        onFocus={handleFocus}
-                                    >
-                                        <Select.Option value="Workflow">Workflow</Select.Option>
-                                        <Select.Option value="Report">Report</Select.Option>
-                                        <Select.Option value="Enhancement">Enhancement</Select.Option>
-                                        <Select.Option value="Interface">Interface</Select.Option>
-                                        <Select.Option value="Customization">Customization</Select.Option>
-                                        <Select.Option value="Form">Form</Select.Option>
-                                        <Select.Option value="Upload">Upload</Select.Option>
-                                        <Select.Option value="Integration">Integration</Select.Option>
-                                    </Select>
-                                </div> */}
-
                                 <Button
-                                    onClick={handleNext1}
+                                    // onClick={handleNext1}
+                                    onClick={() => console.log(user)}
                                     style={primaryButtonStyle}
                                     onMouseEnter={handleMouseEnterPrimary}
                                     onMouseLeave={handleMouseLeavePrimary}
