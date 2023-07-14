@@ -11,6 +11,8 @@ import Typography from '@mui/joy/Typography'
 import dayjs from 'dayjs'
 // import Geocode from 'react-geocode'
 import LoadingSpinner from 'src/components/Loader/Loader'
+import NoRecordsMessegeComponent from 'src/components/noRecordsMessegeComponent/NoRecordsMessegeComponent'
+import InitialMessegeForCompany from 'src/components/intialMessegeForCompany/InitialMessegeForCompany'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 dayjs.extend(customParseFormat)
 
@@ -34,17 +36,6 @@ const Screenshots = () => {
     fontSize: 18,
   }
 
-  const cardStyle = {
-    width: '100%',
-  }
-
-  const userStyle2 = {
-    fontFamily: 'Arial',
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#0070FF ',
-  }
-
   const [isEmployeeSelected, setIsEmployeeSelected] = useState(false)
   const [selectedDate, setSelectedDate] = useState(null)
   const [isRecordNotFound, setIsRecordNotFound] = useState(false)
@@ -54,26 +45,22 @@ const Screenshots = () => {
   useEffect(() => {
     if (local.Users.role === 3) {
       setIsAdminLogin(false)
+    } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+      setUserId(local.Users.user_id)
     }
   }, [])
 
   function onDateChange(date, dateString) {
     setIsAdminLogin(true)
     setSelectedDate(dateString)
-    if (date && (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7)) {
-      getAllWorkedTimeByInterval(dateString, local.Users.user_id)
-      getDateWiseScreenshots(dateString, local.Users.user_id)
-    } else if (date && local.Users.role === 3) {
+    if (date) {
       getAllWorkedTimeByInterval(dateString, user_id)
-      getDateWiseScreenshotsCompany(dateString, local.Users.company_id)
+      getDateWiseScreenshots(dateString, user_id)
     }
   }
 
   function onTodayButtonClicked() {
     setIsAdminLogin(true)
-    setAllTotalHours(null)
-    setAllTotalMinutes(null)
-    setAllTotalSeconds(null)
     setSelectedDate(null)
     getScreenshots()
   }
@@ -135,8 +122,9 @@ const Screenshots = () => {
         screenfilter = data.projectscreenshot.filter(
           (screenshot) => screenshot.company_id === local.Users.company_id,
         )
-        if (user_id) {
-          getAddresses(screenfilter[0].latitude, screenfilter[0].longitude)
+        const filteredUser = screenfilter.filter((user) => user.user_id === user_id)
+        if (user_id && filteredUser.length !== 0) {
+          getAddresses(filteredUser[0].latitude, filteredUser[0].longitude)
         }
       } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
         setIsEmployeeSelected(true)
@@ -145,12 +133,9 @@ const Screenshots = () => {
         )
         if (screenfilter.length === 0) {
           setIsRecordNotFound(true)
-        } else {
-          const employeeId = screenfilter[0].user_id
-          setUserId(employeeId)
         }
       }
-
+      getTodayWorked(user_id)
       setImages(screenfilter)
     } catch (error) {
       console.log(error)
@@ -169,34 +154,20 @@ const Screenshots = () => {
 
       if (local.Users.role === 1 || local.Users.role === 3) {
         screenfilter = data.projectscreenshot
-        if (screenfilter.length !== 0) {
-          getAddresses(screenfilter[0].latitude, screenfilter[0].longitude)
-        } else {
-          setAddresses('')
-        }
       } else {
         screenfilter = data.projectscreenshot.filter(
           (screenshot) => screenshot.user_id === local.Users.user_id,
         )
       }
 
-      setImages(screenfilter)
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  async function getDateWiseScreenshotsCompany(a, b) {
-    setIsLoading(true)
-    try {
-      const response = await fetchPromise(
-        `${BASE_URL}/api/get_projectscreenshot_by_compny_id/${a}/${b}`,
-      )
-      const data = await response.json()
-
-      const screenfilter = data
+      // Conditional Rendering of Location and Not Found Records
+      if (screenfilter.length !== 0) {
+        setIsRecordNotFound(false)
+        getAddresses(screenfilter[0].latitude, screenfilter[0].longitude)
+      } else {
+        setIsRecordNotFound(true)
+        setAddresses('')
+      }
 
       setImages(screenfilter)
     } catch (error) {
@@ -309,33 +280,13 @@ const Screenshots = () => {
   // Static Messeges
   const renderEmployeeSelectionText = () => {
     if (local.Users.role !== 5 && local.Users.role !== 6 && local.Users.role !== 7) {
-      return (
-        <Box mt={2}>
-          <Card style={cardStyle}>
-            <Box className="row">
-              <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }}>
-                PLEASE SELECT THE EMPLOYEE, WHOM YOU WANNA SEE SCREENSHOTS
-              </Typography>
-            </Box>
-          </Card>
-        </Box>
-      )
+      return <InitialMessegeForCompany />
     }
     return null
   }
 
   const renderNoRecordFoundMessage = () => {
-    return (
-      <Box mt={2}>
-        <Card style={cardStyle}>
-          <Box className="row">
-            <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }}>
-              NO RECORDS FOUND
-            </Typography>
-          </Box>
-        </Card>
-      </Box>
-    )
+    return <NoRecordsMessegeComponent />
   }
 
   return (
@@ -408,123 +359,15 @@ const Screenshots = () => {
       {isAdminLogin && isLoading ? (
         <LoadingSpinner />
       ) : (
-        <div style={imageContainer}>
-          {user_id
-            ? images
-                .filter((image) => image.user_id === user_id)
-                .map((image) => {
-                  return (
-                    <>
-                      {image.get_timings.map((timing) => (
-                        <div key={timing.id} style={{ cursor: 'pointer' }}>
-                          <Card
-                            variant="outlined"
-                            sx={{ width: 240, my: 1, mx: 1 }}
-                            onClick={() => handleClick(timing.getattechments)}
-                          >
-                            <CardOverflow>
-                              <AspectRatio ratio="2">
-                                {timing.getattechments.map((attach) => (
-                                  <div key={attach.id} style={{ position: 'relative' }}>
-                                    <img
-                                      src={url(attach.path_url)}
-                                      alt={attach.path_url}
-                                      style={{ filter: 'blur(3px)' }}
-                                    />
-                                    <div
-                                      style={{
-                                        position: 'absolute',
-                                        top: '32px',
-                                        right: '84px',
-                                        padding: '8px 18px',
-                                        borderRadius: '50%',
-                                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                                        border: '4px solid black',
-                                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                                        color: '#fff',
-                                        fontSize: '24px',
-                                        fontWeight: 'bold',
-                                      }}
-                                    >
-                                      {timing.getattechments.length}
-                                    </div>
-                                  </div>
-                                ))}
-                              </AspectRatio>
-                            </CardOverflow>
-                            <Typography level="h2" sx={{ fontSize: 'md', mt: 1 }}>
-                              {image.project_name}
-                            </Typography>
-                            <Typography level="body2" sx={{ mt: 0.5, mb: 1 }}>
-                              {image.stream_name}
-                            </Typography>
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 0.5,
-                                mx: 'auto',
-                                my: 0.5,
-                              }}
-                            >
-                              {timing.getattechments.map((_, index) => (
-                                <Box
-                                  key={index}
-                                  sx={{
-                                    borderRadius: '50%',
-                                    width: `max(${6 - index}px, 3px)`,
-                                    height: `max(${6 - index}px, 3px)`,
-                                    bgcolor: index === 0 ? 'primary.solidBg' : 'background.level3',
-                                  }}
-                                />
-                              ))}
-                            </Box>
-                            <Divider />
-                            <CardOverflow
-                              variant="soft"
-                              sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                gap: 1,
-                                py: 1,
-                                px: 'var(--Card-padding)',
-                                bgcolor: 'background.level1',
-                              }}
-                            >
-                              <Typography
-                                level="body3"
-                                sx={{ fontWeight: 'md', color: 'text.secondary' }}
-                              >
-                                {new Date(timing.start_time)
-                                  .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                                  .substring(0, 11)}{' '}
-                                -
-                                {new Date(timing.end_time)
-                                  .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                                  .substring(0, 11)}
-                              </Typography>
-                              <Typography
-                                level="body3"
-                                sx={{ fontWeight: 'md', color: 'text.secondary' }}
-                              >
-                                {new Intl.DateTimeFormat('en-GB', {
-                                  year: 'numeric',
-                                  month: 'long',
-                                  day: '2-digit',
-                                }).format(new Date(timing.created_at))}
-                              </Typography>
-                            </CardOverflow>
-                          </Card>
-                        </div>
-                      ))}
-                    </>
-                  )
-                })
-            : images.map((image) => {
-                return (
-                  <>
-                    {isEmployeeSelected === true
-                      ? image.get_timings.map((timing) => (
+        <>
+          <div style={imageContainer}>
+            {user_id
+              ? images
+                  .filter((image) => image.user_id === user_id)
+                  .map((image) => {
+                    return (
+                      <>
+                        {image.get_timings.map((timing) => (
                           <div key={timing.id} style={{ cursor: 'pointer' }}>
                             <Card
                               variant="outlined"
@@ -626,15 +469,141 @@ const Screenshots = () => {
                               </CardOverflow>
                             </Card>
                           </div>
-                        ))
-                      : ''}
-                  </>
-                )
-              })}
-        </div>
+                        ))}
+                      </>
+                    )
+                  })
+              : images.map((image) => {
+                  return (
+                    <>
+                      {isEmployeeSelected === true
+                        ? image.get_timings.map((timing) => (
+                            <div key={timing.id} style={{ cursor: 'pointer' }}>
+                              <Card
+                                variant="outlined"
+                                sx={{ width: 240, my: 1, mx: 1 }}
+                                onClick={() => handleClick(timing.getattechments)}
+                              >
+                                <CardOverflow>
+                                  <AspectRatio ratio="2">
+                                    {timing.getattechments.map((attach) => (
+                                      <div key={attach.id} style={{ position: 'relative' }}>
+                                        <img
+                                          src={url(attach.path_url)}
+                                          alt={attach.path_url}
+                                          style={{ filter: 'blur(3px)' }}
+                                        />
+                                        <div
+                                          style={{
+                                            position: 'absolute',
+                                            top: '32px',
+                                            right: '84px',
+                                            padding: '8px 18px',
+                                            borderRadius: '50%',
+                                            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                            border: '4px solid black',
+                                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                            color: '#fff',
+                                            fontSize: '24px',
+                                            fontWeight: 'bold',
+                                          }}
+                                        >
+                                          {timing.getattechments.length}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </AspectRatio>
+                                </CardOverflow>
+                                <Typography level="h2" sx={{ fontSize: 'md', mt: 1 }}>
+                                  {image.project_name}
+                                </Typography>
+                                <Typography level="body2" sx={{ mt: 0.5, mb: 1 }}>
+                                  {image.stream_name}
+                                </Typography>
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 0.5,
+                                    mx: 'auto',
+                                    my: 0.5,
+                                  }}
+                                >
+                                  {timing.getattechments.map((_, index) => (
+                                    <Box
+                                      key={index}
+                                      sx={{
+                                        borderRadius: '50%',
+                                        width: `max(${6 - index}px, 3px)`,
+                                        height: `max(${6 - index}px, 3px)`,
+                                        bgcolor:
+                                          index === 0 ? 'primary.solidBg' : 'background.level3',
+                                      }}
+                                    />
+                                  ))}
+                                </Box>
+                                <Divider />
+                                <CardOverflow
+                                  variant="soft"
+                                  sx={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    gap: 1,
+                                    py: 1,
+                                    px: 'var(--Card-padding)',
+                                    bgcolor: 'background.level1',
+                                  }}
+                                >
+                                  <Typography
+                                    level="body3"
+                                    sx={{ fontWeight: 'md', color: 'text.secondary' }}
+                                  >
+                                    {new Date(timing.start_time)
+                                      .toLocaleTimeString([], {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                      })
+                                      .substring(0, 11)}{' '}
+                                    -
+                                    {new Date(timing.end_time)
+                                      .toLocaleTimeString([], {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                      })
+                                      .substring(0, 11)}
+                                  </Typography>
+                                  <Typography
+                                    level="body3"
+                                    sx={{ fontWeight: 'md', color: 'text.secondary' }}
+                                  >
+                                    {new Intl.DateTimeFormat('en-GB', {
+                                      year: 'numeric',
+                                      month: 'long',
+                                      day: '2-digit',
+                                    }).format(new Date(timing.created_at))}
+                                  </Typography>
+                                </CardOverflow>
+                              </Card>
+                            </div>
+                          ))
+                        : ''}
+                    </>
+                  )
+                })}
+          </div>
+
+          <div>
+            {!user_id && isEmployeeSelected === false ? renderEmployeeSelectionText() : ''}
+            {!user_id && isAdminLogin === false && isRecordNotFound === true
+              ? renderNoRecordFoundMessage()
+              : ''}
+            {user_id && isAdminLogin === true && isRecordNotFound === true
+              ? renderNoRecordFoundMessage()
+              : ''}
+          </div>
+        </>
       )}
-      {!user_id && isEmployeeSelected === false ? renderEmployeeSelectionText() : ''}
-      {!user_id && isRecordNotFound === true ? renderNoRecordFoundMessage() : ''}
+
       <div style={imageViewerStyle}>
         {isViewerOpen && imagesUrls && (
           <ImageViewer

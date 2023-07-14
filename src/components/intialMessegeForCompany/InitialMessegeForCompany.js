@@ -1,5 +1,24 @@
 import React from 'react'
+import Box from '@mui/joy/Box'
+import Card from '@mui/joy/Card'
+import Typography from '@mui/joy/Typography'
 
 export default function InitialMessegeForCompany() {
-  return <div>InitialMessegeForCompany</div>
+  const cardStyle = {
+    width: '100%',
+  }
+
+  return (
+    <>
+      <Box mt={2}>
+        <Card style={cardStyle}>
+          <Box className="row">
+            <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }}>
+              PLEASE SELECT THE EMPLOYEE, WHOM YOU WANNA SEE SCREENSHOTS
+            </Typography>
+          </Box>
+        </Card>
+      </Box>
+    </>
+  )
 }
