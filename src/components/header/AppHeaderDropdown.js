@@ -1,6 +1,5 @@
 import { React, useState, useEffect } from 'react'
 import {
-  CAvatar,
   CDropdown,
   CDropdownDivider,
   CDropdownHeader,
@@ -8,8 +7,10 @@ import {
   CDropdownMenu,
   CDropdownToggle,
 } from '@coreui/react'
+import BusinessIcon from '@mui/icons-material/Business'
+import AccountCircle from '@mui/icons-material/AccountCircle'
 import { Modal } from 'antd'
-import { cilSettings, cilUser, cilAccountLogout } from '@coreui/icons'
+import { cilSettings, cilAccountLogout } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { useNavigate } from 'react-router-dom'
 import user from './../../assets/images/user.png'
@@ -62,9 +63,9 @@ const AppHeaderDropdown = () => {
       <CDropdown variant="nav-item">
         <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
           {local.Users.role === 3 ? (
-            <CAvatar src={company} size="col-md-8" />
+            <BusinessIcon style={{ fontSize: '40px' }} />
           ) : (
-            <CAvatar src={user} size="col-md-4" />
+            <AccountCircle style={{ fontSize: '40px' }} />
           )}
         </CDropdownToggle>
 
@@ -81,11 +82,16 @@ const AppHeaderDropdown = () => {
           <CDropdownItem href="#">
             <CIcon icon={cilSettings} className="me-2" />
             Change Password
+          </CDropdownItem> 
+
+          <CDropdownItem onClick={showModal}>
+            <CIcon icon={cilSettings} className="me-2" />
+            Settings
           </CDropdownItem> */}
 
           {/* <CDropdownDivider /> */}
 
-          <CDropdownItem href="#" onClick={showModal}>
+          <CDropdownItem onClick={showModal}>
             <CIcon icon={cilAccountLogout} className="me-2" />
             Logout
           </CDropdownItem>
