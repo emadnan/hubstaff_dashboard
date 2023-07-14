@@ -7,6 +7,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import Alert from '@mui/material/Alert'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
+import LoadingSpinner from 'src/components/Loader/Loader'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 const Users = () => {
@@ -25,6 +26,8 @@ const Users = () => {
     password,
     role,
   })
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value)
@@ -104,6 +107,17 @@ const Users = () => {
       callErrors(name, email, password, role)
     }
   }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+    form.resetFields()
+    setName('')
+    setEmail('')
+    setPassword('')
+    setRole('')
+    setTeamId('')
+  }
+
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return re.test(email)
@@ -127,16 +141,6 @@ const Users = () => {
     }
 
     setFormErrors(errors)
-  }
-
-  const handleCancel = () => {
-    setIsModalOpen(false)
-    form.resetFields()
-    setName('')
-    setEmail('')
-    setPassword('')
-    setRole('')
-    setTeamId('')
   }
 
   // Functions for Delete User Modal
@@ -192,7 +196,6 @@ const Users = () => {
 
   function handleButtonClick1() {
     setShowAlert1(true)
-    getList()
   }
 
   function handleCloseAlert1() {
@@ -211,7 +214,6 @@ const Users = () => {
 
   // Functions for Add User Failure
   const [showAlert2, setShowAlert2] = useState(false)
-
   function handleButtonClick2() {
     setShowAlert2(true)
   }
@@ -232,7 +234,6 @@ const Users = () => {
 
   // Functions for Delete User Success
   const [showAlert3, setShowAlert3] = useState(false)
-
   function handleButtonClick3() {
     setShowAlert3(true)
   }
@@ -253,7 +254,6 @@ const Users = () => {
 
   // Functions for Delete User Failure
   const [showAlert4, setShowAlert4] = useState(false)
-
   function handleButtonClick4() {
     setShowAlert4(true)
   }
@@ -274,7 +274,6 @@ const Users = () => {
 
   // Functions for Update User Success
   const [showAlert5, setShowAlert5] = useState(false)
-
   function handleButtonClick5() {
     setShowAlert5(true)
   }
@@ -295,7 +294,6 @@ const Users = () => {
 
   // Functions for Update User Failure
   const [showAlert6, setShowAlert6] = useState(false)
-
   function handleButtonClick6() {
     setShowAlert6(true)
   }
@@ -319,7 +317,7 @@ const Users = () => {
   const [roles, setRoles] = useState([])
   const [byuser, setUserById] = useState([])
   const [team, setTeam] = useState([])
-  var filteredUsers = []
+  let filteredUsers = []
 
   //Initial rendering through useEffect
   useEffect(() => {
@@ -344,20 +342,25 @@ const Users = () => {
   }
 
   // Get API call
-  function getList() {
-    fetch(`${BASE_URL}/api/get_users`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (local.Users.role === 1) {
-          filteredUsers = data.Users
-        } else if (local.Users.role === 3) {
-          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id)
-        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
-          filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
-        }
-        setUsers(filteredUsers)
-      })
-      .catch((error) => console.log(error))
+  const getList = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/get_users`)
+      const data = await response.json()
+
+      let filteredUsers = []
+
+      if (local.Users.role === 1) {
+        filteredUsers = data.Users
+      } else if (local.Users.role === 3) {
+        filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id)
+      } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+        filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
+      }
+
+      setUsers(filteredUsers)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   function getRoles() {
@@ -414,78 +417,86 @@ const Users = () => {
       company_id: local.Users.company_id,
       team_id: team_id,
     }
-    console.log(adduser)
+    setIsLoading(true)
+    try {
+      const response = await fetch(`${BASE_URL}/api/add_user`, {
+        method: 'POST',
+        body: JSON.stringify(adduser),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
 
-    await fetch(`${BASE_URL}/api/add_user`, {
-      method: 'POST',
-      body: JSON.stringify(adduser),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          handleButtonClick1()
-        } else {
-          handleButtonClick2()
-        }
-      })
-      .catch((error) => {
-        console.error(error)
-      })
+      if (response.ok) {
+        await getList()
+        handleButtonClick1()
+      } else {
+        handleButtonClick2()
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsLoading(false) // Hide loader
+    }
   }
 
   // Delete API call
   async function deleteUser(newid) {
-    await fetch(`${BASE_URL}/api/delete_user`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: newid,
-      }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          handleButtonClick3()
-          getList()
-        } else {
-          handleButtonClick4()
-        }
+    setIsLoading(true)
+    try {
+      const response = await fetch(`${BASE_URL}/api/delete_user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: newid,
+        }),
       })
-      .catch((error) => {
-        console.error(error)
-      })
+
+      if (response.ok) {
+        await getList()
+        handleButtonClick3()
+      } else {
+        handleButtonClick4()
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsLoading(false) // Hide loader
+    }
   }
 
   // Update API call
   async function updateUser(newid) {
-    await fetch(`${BASE_URL}/api/update_user`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: newid,
-        name: name,
-        email: email,
-        role: role,
-        company_id: local.Users.company_id,
-        team_id: team_id,
-      }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          handleButtonClick5()
-          getList()
-        } else {
-          handleButtonClick6()
-        }
+    setIsLoading(true)
+    try {
+      const response = await fetch(`${BASE_URL}/api/update_user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: newid,
+          name: name,
+          email: email,
+          role: role,
+          company_id: local.Users.company_id,
+          team_id: team_id,
+        }),
       })
-      .catch((error) => {
-        console.error(error)
-      })
+
+      if (response.ok) {
+        await getList()
+        handleButtonClick5()
+      } else {
+        handleButtonClick6()
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsLoading(false) // Hide loader
+    }
   }
 
   const handleFocus = (e) => {
@@ -499,12 +510,12 @@ const Users = () => {
 
   return (
     <>
+      {/* BUTTON (for company to create a user) */}
       <div className="row">
         <div className="col-md 6">
           <h3>Users</h3>
         </div>
         <div className="col-md 6">
-          {/* Add Users Button */}
           {isCreateButtonEnabled ? (
             <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>
               Add User
@@ -512,308 +523,321 @@ const Users = () => {
           ) : null}
         </div>
       </div>
-      <br></br>
-      <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-        <CTableHead color="light">
-          {/* Users table heading */}
-          <CTableRow>
-            <CTableHeaderCell className="text-center" style={mystyle}>
-              Sr/No
-            </CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>
-              User Name
-            </CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>
-              Email
-            </CTableHeaderCell>
-            {local.Users.role === 1 ? (
-              <CTableHeaderCell className="text-center" style={mystyle}>
-                Role
-              </CTableHeaderCell>
-            ) : null}
-            {/* {roleHeader} */}
-            {isEditButtonEnabled || isDeleteButtonEnabled ? (
-              <CTableHeaderCell className="text-center" style={mystyle}>
-                Action
-              </CTableHeaderCell>
-            ) : null}
-          </CTableRow>
 
-          {/* Get API Users */}
-          {users.map((user, index) => (
-            <CTableRow key={user.id}>
-              <CTableHeaderCell className="text-center" style={mystyle2}>
-                {index + 1}
-              </CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle2}>
-                {user.name}
-              </CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle2}>
-                {user.email}
-              </CTableHeaderCell>
-              {local.Users.role === 1 ? (
-                <CTableHeaderCell className="text-center" style={mystyle2}>
-                  {user.role}
-                </CTableHeaderCell>
-              ) : null}
-              {isEditButtonEnabled || isDeleteButtonEnabled ? (
-                <CTableHeaderCell className="text-center" style={mystyle2}>
-                  {isEditButtonEnabled ? (
-                    <IconButton aria-label="update" onClick={() => showModal3(user.id)}>
-                      <EditIcon htmlColor="#28B463" />
-                    </IconButton>
-                  ) : null}
-                  {isDeleteButtonEnabled ? (
-                    <IconButton aria-label="delete" onClick={() => showModal2(user.id)}>
-                      <DeleteIcon htmlColor="#FF0000" />
-                    </IconButton>
-                  ) : null}
-                </CTableHeaderCell>
-              ) : null}
-            </CTableRow>
-          ))}
-        </CTableHead>
-        <CTableBody>
-          {/* Modal for Add User */}
-          <Modal
-            title="Add a User"
-            open={isModalOpen}
-            okButtonProps={{ style: { background: 'blue' } }}
-            onOk={handleOk}
-            onCancel={handleCancel}
-            maskClosable={false}
+      <br />
+      {/* TABLE (where company employee are previewed) */}
+      <div>
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : (
+          <CTable
+            align="middle"
+            className="mb-0 border"
+            hover
+            responsive
+            style={{ marginTop: '20px' }}
           >
-            <br></br>
+            <CTableHead color="light">
+              <CTableRow>
+                <CTableHeaderCell className="text-center" style={mystyle}>
+                  Sr/No
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>
+                  User Name
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle}>
+                  Email
+                </CTableHeaderCell>
+                {local.Users.role === 1 ? (
+                  <CTableHeaderCell className="text-center" style={mystyle}>
+                    Role
+                  </CTableHeaderCell>
+                ) : null}
+                {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                  <CTableHeaderCell className="text-center" style={mystyle}>
+                    Action
+                  </CTableHeaderCell>
+                ) : null}
+              </CTableRow>
+            </CTableHead>
+            <CTableBody>
+              {users.map((user, index) => (
+                <CTableRow key={user.id}>
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                    {index + 1}
+                  </CTableHeaderCell>
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                    {user.name}
+                  </CTableHeaderCell>
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                    {user.email}
+                  </CTableHeaderCell>
+                  {local.Users.role === 1 ? (
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {user.role}
+                    </CTableHeaderCell>
+                  ) : null}
+                  {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {isEditButtonEnabled ? (
+                        <IconButton aria-label="update" onClick={() => showModal3(user.id)}>
+                          <EditIcon htmlColor="#28B463" />
+                        </IconButton>
+                      ) : null}
+                      {isDeleteButtonEnabled ? (
+                        <IconButton aria-label="delete" onClick={() => showModal2(user.id)}>
+                          <DeleteIcon htmlColor="#FF0000" />
+                        </IconButton>
+                      ) : null}
+                    </CTableHeaderCell>
+                  ) : null}
+                </CTableRow>
+              ))}
+            </CTableBody>
+          </CTable>
+        )}
+      </div>
+      {/* MODALS */}
+      <div>
+        {/* Modal for Add User */}
+        <Modal
+          title="Add a User"
+          open={isModalOpen}
+          okButtonProps={{ style: { background: 'blue' } }}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          maskClosable={false}
+        >
+          <br></br>
 
-            <div className="form-outline mt-3">
-              <label>Username</label>
+          <div className="form-outline mt-3">
+            <label>Username</label>
+            <input
+              type="text"
+              value={name}
+              name="name"
+              onFocus={handleFocus}
+              onChange={(e) => setName(e.target.value)}
+              className="form-control form-control-lg"
+              placeholder="Enter User Name"
+            />
+          </div>
+          {formErrors.name && <div className="text-danger">{formErrors.name}</div>}
+
+          <div className="form-outline mt-3">
+            <label>Email</label>
+            <input
+              type="email"
+              value={email}
+              name="email"
+              onFocus={handleFocus}
+              onChange={(e) => setEmail(e.target.value)}
+              className="form-control form-control-lg"
+              placeholder="Enter Email"
+            />
+          </div>
+          {formErrors.email && <div className="text-danger">{formErrors.email}</div>}
+
+          <div className="form-outline mt-3">
+            <label>Password</label>
+            <div className="position-relative">
               <input
-                type="text"
-                value={name}
-                name="name"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                name="password"
                 onFocus={handleFocus}
-                onChange={(e) => setName(e.target.value)}
+                onChange={handlePasswordChange}
                 className="form-control form-control-lg"
-                placeholder="Enter User Name"
+                placeholder="Enter Password"
               />
+              <IconButton
+                onClick={toggleShowPassword}
+                edge="end"
+                className="visibility-icon"
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                }}
+              >
+                {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+              </IconButton>
             </div>
-            {formErrors.name && <div className="text-danger">{formErrors.name}</div>}
+          </div>
+          {formErrors.password && <div className="text-danger">{formErrors.password}</div>}
 
+          <Form form={form}>
             <div className="form-outline mt-3">
-              <label>Email</label>
-              <input
-                type="email"
-                value={email}
-                name="email"
-                onFocus={handleFocus}
-                onChange={(e) => setEmail(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Email"
-              />
-            </div>
-            {formErrors.email && <div className="text-danger">{formErrors.email}</div>}
-
-            <div className="form-outline mt-3">
-              <label>Password</label>
-              <div className="position-relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  name="password"
+              <label>Role</label>
+              <Form.Item
+                name="role"
+                validateStatus={formErrors.role ? 'error' : ''}
+                help={formErrors.role}
+              >
+                <Select
+                  placeholder="Select Role Id"
+                  onChange={handleRoleChange}
                   onFocus={handleFocus}
-                  onChange={handlePasswordChange}
-                  className="form-control form-control-lg"
-                  placeholder="Enter Password"
-                />
-                <IconButton
-                  onClick={toggleShowPassword}
-                  edge="end"
-                  className="visibility-icon"
-                  style={{
-                    position: 'absolute',
-                    right: '10px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                  }}
-                >
-                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                </IconButton>
-              </div>
-            </div>
-            {formErrors.password && <div className="text-danger">{formErrors.password}</div>}
-
-            <Form form={form}>
-              <div className="form-outline mt-3">
-                <label>Role</label>
-                <Form.Item
                   name="role"
-                  validateStatus={formErrors.role ? 'error' : ''}
-                  help={formErrors.role}
+                  value={role}
                 >
-                  <Select
-                    placeholder="Select Role Id"
-                    onChange={handleRoleChange}
-                    onFocus={handleFocus}
-                    name="role"
-                    value={role}
-                  >
-                    {roles.map((user) => (
-                      <Select.Option value={user.id} key={user.id}>
-                        {user.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </div>
+                  {roles.map((user) => (
+                    <Select.Option value={user.id} key={user.id}>
+                      {user.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
 
+            <div className="form-outline mt-3">
+              <label>Team</label>
+              <Form.Item>
+                <Select
+                  placeholder="Select Team"
+                  name="team"
+                  onChange={handleTeamChange}
+                  onFocus={handleFocus}
+                  value={team_id}
+                >
+                  {team.map((tem) => (
+                    <Select.Option value={tem.id} key={tem.id}>
+                      {tem.team_name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
+          </Form>
+        </Modal>
+
+        {/* Modal for Update User */}
+        <Modal
+          title="Update a User"
+          open={isModalOpen3}
+          onOk={handleOk3}
+          okButtonProps={{ style: { background: 'blue' } }}
+          onCancel={handleCancel3}
+          maskClosable={false}
+        >
+          <br></br>
+
+          {byuser.map((user) => (
+            <div key={user.id}>
               <div className="form-outline mt-3">
-                <label>Team</label>
-                <Form.Item>
-                  <Select
-                    placeholder="Select Team"
-                    name="team"
-                    onChange={handleTeamChange}
-                    onFocus={handleFocus}
-                    value={team_id}
-                  >
-                    {team.map((tem) => (
-                      <Select.Option value={tem.id} key={tem.id}>
-                        {tem.team_name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
+                <label>Username</label>
+                <input
+                  type="text"
+                  name="name"
+                  defaultValue={user.name}
+                  onFocus={handleFocus}
+                  onChange={(e) => setName(e.target.value)}
+                  className="form-control form-control-lg"
+                  placeholder="Enter User Name"
+                />
               </div>
-            </Form>
-          </Modal>
+              {formErrors.name && <div className="text-danger">{formErrors.name}</div>}
 
-          {/* Modal for Update User */}
-          <Modal
-            title="Update a User"
-            open={isModalOpen3}
-            onOk={handleOk3}
-            okButtonProps={{ style: { background: 'blue' } }}
-            onCancel={handleCancel3}
-            maskClosable={false}
-          >
-            <br></br>
-
-            {byuser.map((user) => (
-              <div key={user.id}>
+              <Form form={form}>
                 <div className="form-outline mt-3">
-                  <label>Username</label>
-                  <input
-                    type="text"
-                    name="name"
-                    defaultValue={user.name}
-                    onFocus={handleFocus}
-                    onChange={(e) => setName(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter User Name"
-                  />
-                </div>
-                {formErrors.name && <div className="text-danger">{formErrors.name}</div>}
-
-                <Form form={form}>
-                  <div className="form-outline mt-3">
-                    <label>Role</label>
-                    <Form.Item
+                  <label>Role</label>
+                  <Form.Item
+                    name="role"
+                    validateStatus={formErrors.role ? 'error' : ''}
+                    help={formErrors.role}
+                  >
+                    <Select
+                      placeholder="Select Role"
+                      onFocus={handleFocus}
+                      onChange={handleRoleChange}
+                      defaultValue={user.role}
                       name="role"
-                      validateStatus={formErrors.role ? 'error' : ''}
-                      help={formErrors.role}
                     >
-                      <Select
-                        placeholder="Select Role"
-                        onFocus={handleFocus}
-                        onChange={handleRoleChange}
-                        defaultValue={user.role}
-                        name="role"
-                      >
-                        {roles.map((user) => (
-                          <Select.Option value={user.id} key={user.id}>
-                            {user.name}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </div>
+                      {roles.map((user) => (
+                        <Select.Option value={user.id} key={user.id}>
+                          {user.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
 
-                  <div className="form-outline mt-3">
-                    <label>Team</label>
-                    <Form.Item>
-                      <Select
-                        placeholder="Select Team"
-                        onChange={handleTeamChange}
-                        onFocus={handleFocus}
-                        defaultValue={user.team_id}
-                        name="team"
-                      >
-                        {team.map((tem) => (
-                          <Select.Option value={tem.id} key={tem.id}>
-                            {tem.team_name}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </div>
-                </Form>
-              </div>
-            ))}
-          </Modal>
+                <div className="form-outline mt-3">
+                  <label>Team</label>
+                  <Form.Item>
+                    <Select
+                      placeholder="Select Team"
+                      onChange={handleTeamChange}
+                      onFocus={handleFocus}
+                      defaultValue={user.team_id}
+                      name="team"
+                    >
+                      {team.map((tem) => (
+                        <Select.Option value={tem.id} key={tem.id}>
+                          {tem.team_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+              </Form>
+            </div>
+          ))}
+        </Modal>
 
-          {/* Modal for Deletion Confirmation */}
-          <Modal
-            title="Are you sure you want to delete?"
-            open={isModalOpen2}
-            onOk={handleOk2}
-            okButtonProps={{ style: { background: 'blue' } }}
-            onCancel={handleCancel2}
-            style={modalStyle}
-          ></Modal>
+        {/* Modal for Deletion Confirmation */}
+        <Modal
+          title="Are you sure you want to delete?"
+          open={isModalOpen2}
+          onOk={handleOk2}
+          okButtonProps={{ style: { background: 'blue' } }}
+          onCancel={handleCancel2}
+          style={modalStyle}
+        ></Modal>
 
-          {/* Alert for Add User Success*/}
-          {showAlert1 && (
-            <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
-              User Added Successfully
-            </Alert>
-          )}
+        {/* Alert for Add User Success*/}
+        {showAlert1 && (
+          <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
+            User Added Successfully
+          </Alert>
+        )}
 
-          {/* Alert for Add User Failure*/}
-          {showAlert2 && (
-            <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
-              Failed to Add User
-            </Alert>
-          )}
+        {/* Alert for Add User Failure*/}
+        {showAlert2 && (
+          <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
+            Failed to Add User
+          </Alert>
+        )}
 
-          {/* Alert for Delete User Success*/}
-          {showAlert3 && (
-            <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
-              User Deleted Successfully
-            </Alert>
-          )}
+        {/* Alert for Delete User Success*/}
+        {showAlert3 && (
+          <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
+            User Deleted Successfully
+          </Alert>
+        )}
 
-          {/* Alert for Delete User Failure*/}
-          {showAlert4 && (
-            <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
-              Failed to Delete User
-            </Alert>
-          )}
+        {/* Alert for Delete User Failure*/}
+        {showAlert4 && (
+          <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
+            Failed to Delete User
+          </Alert>
+        )}
 
-          {/* Alert for Update User Success*/}
-          {showAlert5 && (
-            <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
-              User Updated Successfully
-            </Alert>
-          )}
+        {/* Alert for Update User Success*/}
+        {showAlert5 && (
+          <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
+            User Updated Successfully
+          </Alert>
+        )}
 
-          {/* Alert for Update User Failure*/}
-          {showAlert6 && (
-            <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
-              Failed to Update User
-            </Alert>
-          )}
-        </CTableBody>
-      </CTable>
+        {/* Alert for Update User Failure*/}
+        {showAlert6 && (
+          <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
+            Failed to Update User
+          </Alert>
+        )}
+      </div>
     </>
   )
 }
