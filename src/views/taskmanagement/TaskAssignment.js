@@ -669,12 +669,15 @@ function TaskAssignment() {
         <div className="col-md 6">
           <h3>Task Management</h3>
         </div>
-        <div className="col-md 6">
-          {/* Assign a Task Button */}
-          <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>
-            Create Task
-          </Button>
-        </div>
+        {isLoading ? (
+          ''
+        ) : (
+          <div className="col-md 6">
+            <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>
+              Create Task
+            </Button>
+          </div>
+        )}
       </div>
       <div className="row">
         <Box className="col-md-3">
