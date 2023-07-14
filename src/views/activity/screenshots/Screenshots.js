@@ -169,6 +169,7 @@ const Screenshots = () => {
 
       if (local.Users.role === 1 || local.Users.role === 3) {
         screenfilter = data.projectscreenshot
+        getAddresses(screenfilter[0].latitude, screenfilter[0].longitude)
       } else {
         screenfilter = data.projectscreenshot.filter(
           (screenshot) => screenshot.user_id === local.Users.user_id,
