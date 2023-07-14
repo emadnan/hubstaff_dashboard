@@ -277,6 +277,12 @@ const Screenshots = () => {
     return concatinatedImage
   }
 
+  // Disable Dates
+  const disabledDate = (current) => {
+    // Disable dates that are after the current date
+    return current && current > dayjs().endOf('day')
+  }
+
   // Static Messeges
   const renderEmployeeSelectionText = () => {
     if (local.Users.role !== 5 && local.Users.role !== 6 && local.Users.role !== 7) {
@@ -321,6 +327,7 @@ const Screenshots = () => {
               value={selectedDate ? dayjs(selectedDate, 'YYYY-MM-DD') : null}
               onChange={onDateChange}
               disabled={!user_id}
+              disabledDate={disabledDate}
               clearIcon={null}
               style={{
                 width: '100%',
