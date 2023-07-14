@@ -176,7 +176,15 @@ function TaskAssignment() {
     ) {
       addTask()
       setIsModalOpen(false)
-      setFormErrors(null)
+      setFormErrors({
+        user_id: '',
+        project_id: '',
+        priorities: '',
+        taskStatus: '',
+        task_description: '',
+        task_managements_start_date: '',
+        task_managements_dead_line: '',
+      })
     } else {
       callErrors(
         user_id,
@@ -234,7 +242,15 @@ function TaskAssignment() {
     setTaskManagementStartDate('')
     setTaskManagementDeadLine('')
     setTaskStatus('')
-    setFormErrors(null)
+    setFormErrors({
+      user_id: '',
+      project_id: '',
+      priorities: '',
+      taskStatus: '',
+      task_description: '',
+      task_managements_start_date: '',
+      task_managements_dead_line: '',
+    })
   }
 
   // Functions for Assign Tasks Modal
@@ -256,7 +272,15 @@ function TaskAssignment() {
     ) {
       updateTask(editedTaskId)
       setIsModalOpenUpdate(false)
-      setFormErrors(null)
+      setFormErrors({
+        user_id: '',
+        project_id: '',
+        priorities: '',
+        taskStatus: '',
+        task_description: '',
+        task_managements_start_date: '',
+        task_managements_dead_line: '',
+      })
     } else {
       callErrors(
         user_id,
@@ -278,7 +302,15 @@ function TaskAssignment() {
     setTaskManagementStartDate('')
     setTaskManagementDeadLine('')
     setTaskStatus('')
-    setFormErrors(null)
+    setFormErrors({
+      user_id: '',
+      project_id: '',
+      priorities: '',
+      taskStatus: '',
+      task_description: '',
+      task_managements_start_date: '',
+      task_managements_dead_line: '',
+    })
   }
 
   // Functions for Show Task Modal
@@ -291,11 +323,25 @@ function TaskAssignment() {
   const handleOkToTakeActionAgainstTask = async () => {
     updateTaskStatus(task_id, taskStatus, taskComment)
     setIsModalOpenToTakeAction(false)
+    form.resetFields()
+    setUserId('')
+    setProjectId('')
+    setTaskDescription('')
+    setPriorities('LOW')
+    setTaskManagementStartDate('')
+    setTaskManagementDeadLine('')
   }
 
   const handleCancelToTakeActionAgainstTask = async () => {
     setTaskComment('')
     setIsModalOpenToTakeAction(false)
+    form.resetFields()
+    setUserId('')
+    setProjectId('')
+    setTaskDescription('')
+    setPriorities('LOW')
+    setTaskManagementStartDate('')
+    setTaskManagementDeadLine('')
   }
 
   async function getTasks() {
@@ -1167,7 +1213,7 @@ function TaskAssignment() {
       )}
       {/* Modal for Assign Task */}
       <Modal
-        title="Add a Project"
+        title="Assign a New Task for Your Team Member"
         open={isModalOpen}
         onOk={handleOk}
         okButtonProps={{ style: { background: 'blue' } }}
@@ -1287,7 +1333,7 @@ function TaskAssignment() {
 
       {/* Modal for Update Task */}
       <Modal
-        title="Update a Task"
+        title="Update an Already Assigned Task for Your Team Member"
         open={isModalOpenUpdate}
         onOk={handleUpdate}
         okButtonProps={{ style: { background: 'blue' } }}
