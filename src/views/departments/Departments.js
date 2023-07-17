@@ -438,6 +438,17 @@ const Departments = () => {
     }))
   }
 
+  const [selectedDepartment, setSelectedDepartment] = useState('')
+
+  const handleDepartmentSelect = (value) => {
+    setSelectedDepartment(value)
+  }
+
+  const clearFilter = () => {
+    form.resetFields()
+    setSelectedDepartment('')
+  }
+
   return (
     <>
       <div className="row">
@@ -453,6 +464,41 @@ const Departments = () => {
           ) : null}
         </div>
       </div>
+
+      {isCreateButtonEnabled ? (
+        <div className="row mt-2 mb-2 justify-content-between">
+          <div className="col-md-4">
+            {local.Users.role === 1 || local.Users.role === 3 ? (
+              <div className="d-flex">
+                <Form form={form} style={{ width: '100%' }}>
+                  <Form.Item name="select" hasFeedback>
+                    <Select
+                      showSearch
+                      placeholder="Select Department"
+                      onChange={handleDepartmentSelect}
+                      value={department_name}
+                      filterOption={(input, option) =>
+                        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
+                      style={{ width: '100%' }}
+                    >
+                      {department.map((dept) => (
+                        <Select.Option value={dept.id} key={dept.id}>
+                          {dept.department_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Form>
+                <Button type="default" onClick={clearFilter} className="ml-2">
+                  Clear Filter
+                </Button>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+
       <br></br>
       <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
         <CTableHead color="light">
@@ -478,36 +524,44 @@ const Departments = () => {
           </CTableRow>
 
           {/* Get API Users */}
-          {department.map((dept, index) => (
-            <CTableRow key={dept.id}>
-              <CTableHeaderCell className="text-center" style={mystyle2}>
-                {index + 1}
-              </CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle2}>
-                {dept.company_name}
-              </CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle2}>
-                {dept.department_name}
-              </CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle2}>
-                {dept.description}
-              </CTableHeaderCell>
-              {isEditButtonEnabled || isDeleteButtonEnabled ? (
+          {department
+            .filter((dept) => {
+              // Apply Department filter
+              if (selectedDepartment !== '') {
+                return dept.id === selectedDepartment
+              }
+              return true
+            })
+            .map((dept, index) => (
+              <CTableRow key={dept.id}>
                 <CTableHeaderCell className="text-center" style={mystyle2}>
-                  {isEditButtonEnabled ? (
-                    <IconButton aria-label="update" onClick={() => showModal3(dept.id)}>
-                      <EditIcon htmlColor="#28B463" />
-                    </IconButton>
-                  ) : null}
-                  {isDeleteButtonEnabled ? (
-                    <IconButton aria-label="delete" onClick={() => showModal2(dept.id)}>
-                      <DeleteIcon htmlColor="#FF0000" />
-                    </IconButton>
-                  ) : null}
+                  {index + 1}
                 </CTableHeaderCell>
-              ) : null}
-            </CTableRow>
-          ))}
+                <CTableHeaderCell className="text-center" style={mystyle2}>
+                  {dept.company_name}
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle2}>
+                  {dept.department_name}
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle2}>
+                  {dept.description}
+                </CTableHeaderCell>
+                {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                    {isEditButtonEnabled ? (
+                      <IconButton aria-label="update" onClick={() => showModal3(dept.id)}>
+                        <EditIcon htmlColor="#28B463" />
+                      </IconButton>
+                    ) : null}
+                    {isDeleteButtonEnabled ? (
+                      <IconButton aria-label="delete" onClick={() => showModal2(dept.id)}>
+                        <DeleteIcon htmlColor="#FF0000" />
+                      </IconButton>
+                    ) : null}
+                  </CTableHeaderCell>
+                ) : null}
+              </CTableRow>
+            ))}
         </CTableHead>
         <CTableBody>
           {/* Modal for Add Department */}

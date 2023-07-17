@@ -22,6 +22,10 @@ const Projects = () => {
   const [project_id, setProjectId] = useState('')
   const [proj_id, setProjId] = useState('')
 
+  // Filter Projects
+  const [selectedDepartment, setSelectedDepartment] = useState('')
+  const [selectedProject, setSelectedProject] = useState('')
+
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'))
   const permissions = local.permissions
@@ -705,6 +709,26 @@ const Projects = () => {
     }))
   }
 
+  //------------
+  // Filter
+  //------------
+
+  // Filter on the basis of Department
+  const handleDepartmentSelect = (value) => {
+    setSelectedDepartment(value)
+  }
+
+  // Filter on the basis of Project
+  const handleProjectSelectAndSearch = (value) => {
+    setSelectedProject(value)
+  }
+
+  const clearFilter = () => {
+    form.resetFields()
+    setSelectedDepartment('')
+    setSelectedProject('')
+  }
+
   return (
     <>
       <div className="row">
@@ -720,6 +744,79 @@ const Projects = () => {
           ) : null}
         </div>
       </div>
+
+      {isCreateButtonEnabled ? (
+        <div className="row mt-2 mb-2 justify-content-between">
+          <Form form={form}>
+            <div className="col-md-4">
+              {local.Users.role === 1 || local.Users.role === 3 ? (
+                <div className="d-flex align-items-center">
+                  <Form.Item
+                    name="projectSelect"
+                    hasFeedback
+                    style={{
+                      width: '100%',
+                    }}
+                  >
+                    <Select
+                      showSearch
+                      placeholder="Select Project"
+                      onChange={handleProjectSelectAndSearch}
+                      value={project_id}
+                      filterOption={(input, option) =>
+                        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
+                    >
+                      {projects.map((project) => (
+                        <Select.Option value={project.id} key={project.id}>
+                          {project.project_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="col-md-4">
+              {local.Users.role === 1 || local.Users.role === 3 ? (
+                <div className="d-flex align-items-center">
+                  <Form.Item
+                    name="departmentSelect"
+                    hasFeedback
+                    style={{
+                      width: '100%',
+                    }}
+                  >
+                    <Select
+                      placeholder="Select Department"
+                      onChange={handleDepartmentSelect}
+                      value={department_id}
+                    >
+                      {department.map((dept) => (
+                        <Select.Option value={dept.id} key={dept.id}>
+                          {dept.department_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+              ) : null}
+            </div>
+          </Form>
+          <div className="col-md-4">
+            {local.Users.role === 1 || local.Users.role === 3 ? (
+              <div className="d-flex align-items-center">
+                <Button type="default" onClick={clearFilter} className="ml-2">
+                  Clear Filter
+                </Button>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ) : (
+        ''
+      )}
       <br></br>
       <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
         <CTableHead color="light">
@@ -757,72 +854,87 @@ const Projects = () => {
 
           {/* Get API Projects */}
           {local.Users.role === 1 || local.Users.role === 3
-            ? projects.map((project, index) => {
-                const startDate = moment(project.start_date).format('DD-MM-YYYY')
-                const deadline = moment(project.dead_line).format('DD-MM-YYYY')
+            ? projects
+                .filter((project) => {
+                  // Apply Department filter
+                  if (selectedDepartment !== '') {
+                    return project.department_id === selectedDepartment
+                  }
+                  return true
+                })
+                .filter((project) => {
+                  // Apply Project filter
+                  if (selectedProject !== '') {
+                    return project.id === selectedProject
+                  }
+                  return true
+                })
+                .map((project, index) => {
+                  const startDate = moment(project.start_date).format('DD-MM-YYYY')
+                  const deadline = moment(project.dead_line).format('DD-MM-YYYY')
 
-                return (
-                  <CTableRow key={project.id}>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {index + 1}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {project.project_name}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {project.company_name}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {project.department_name}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {startDate}
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {deadline}
-                    </CTableHeaderCell>
-                    {isEditButtonEnabled || isViewButtonEnabled || isDeleteButtonEnabled ? (
+                  return (
+                    <CTableRow key={project.id}>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {isViewButtonEnabled ? (
-                          <IconButton
-                            aria-label="view"
-                            onClick={() => showModal5(project.project_id)}
-                          >
-                            <VisibilityIcon htmlColor="#0070ff" />
-                          </IconButton>
-                        ) : null}
-                        {isEditButtonEnabled ? (
-                          <IconButton
-                            aria-label="update"
-                            onClick={() => showModal3(project.project_id)}
-                          >
-                            <EditIcon htmlColor="#28B463" />
-                          </IconButton>
-                        ) : null}
-                        {isDeleteButtonEnabled ? (
-                          <IconButton
-                            aria-label="delete"
-                            onClick={() => showModal2(project.project_id)}
-                          >
-                            <DeleteIcon htmlColor="#FF0000" />
-                          </IconButton>
-                        ) : null}
+                        {index + 1}
                       </CTableHeaderCell>
-                    ) : null}
-                    {isAssignProjectEnabled ? (
                       <CTableHeaderCell className="text-center" style={mystyle2}>
-                        <IconButton
-                          aria-label="assign"
-                          title="Assign Project"
-                          onClick={() => showModal6(project.project_id)}
-                        >
-                          <PermContactCalendarIcon htmlColor="#0070ff" />
-                        </IconButton>
+                        {project.project_name}
                       </CTableHeaderCell>
-                    ) : null}
-                  </CTableRow>
-                )
-              })
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {project.company_name}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {project.department_name}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {startDate}
+                      </CTableHeaderCell>
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {deadline}
+                      </CTableHeaderCell>
+                      {isEditButtonEnabled || isViewButtonEnabled || isDeleteButtonEnabled ? (
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          {isViewButtonEnabled ? (
+                            <IconButton
+                              aria-label="view"
+                              onClick={() => showModal5(project.project_id)}
+                            >
+                              <VisibilityIcon htmlColor="#0070ff" />
+                            </IconButton>
+                          ) : null}
+                          {isEditButtonEnabled ? (
+                            <IconButton
+                              aria-label="update"
+                              onClick={() => showModal3(project.project_id)}
+                            >
+                              <EditIcon htmlColor="#28B463" />
+                            </IconButton>
+                          ) : null}
+                          {isDeleteButtonEnabled ? (
+                            <IconButton
+                              aria-label="delete"
+                              onClick={() => showModal2(project.project_id)}
+                            >
+                              <DeleteIcon htmlColor="#FF0000" />
+                            </IconButton>
+                          ) : null}
+                        </CTableHeaderCell>
+                      ) : null}
+                      {isAssignProjectEnabled ? (
+                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                          <IconButton
+                            aria-label="assign"
+                            title="Assign Project"
+                            onClick={() => showModal6(project.project_id)}
+                          >
+                            <PermContactCalendarIcon htmlColor="#0070ff" />
+                          </IconButton>
+                        </CTableHeaderCell>
+                      ) : null}
+                    </CTableRow>
+                  )
+                })
             : null}
         </CTableHead>
         <CTableBody>

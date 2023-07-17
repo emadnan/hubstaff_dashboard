@@ -166,7 +166,6 @@ const Users = () => {
   }
 
   const handleOk3 = () => {
-    console.log('name', name, 'role', role)
     if (name && role) {
       updateUser(isModalOpen3)
       setIsModalOpen3(false)
@@ -508,6 +507,16 @@ const Users = () => {
     }))
   }
 
+  const [searchedUser, setSearchedUser] = useState('')
+
+  const handleUserSearch = (value) => {
+    setSearchedUser(value)
+  }
+
+  const clearFilter = () => {
+    form.resetFields()
+    setSearchedUser('')
+  }
   return (
     <>
       {/* BUTTON (for company to create a user) */}
@@ -523,6 +532,40 @@ const Users = () => {
           ) : null}
         </div>
       </div>
+
+      {isCreateButtonEnabled ? (
+        <div className="row mt-2 mb-2 justify-content-between">
+          <div className="col-md-4">
+            {local.Users.role === 1 || local.Users.role === 3 ? (
+              <div className="d-flex">
+                <Form form={form} style={{ width: '100%' }}>
+                  <Form.Item name="select" hasFeedback>
+                    <Select
+                      showSearch
+                      placeholder="Enter User Name"
+                      onChange={handleUserSearch}
+                      value={name}
+                      filterOption={(input, option) =>
+                        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
+                      style={{ width: '100%' }}
+                    >
+                      {users.map((user) => (
+                        <Select.Option value={user.id} key={user.id}>
+                          {user.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Form>
+                <Button type="default" onClick={clearFilter} className="ml-2">
+                  Clear Filter
+                </Button>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
 
       <br />
       {/* TABLE (where company employee are previewed) */}
@@ -561,38 +604,46 @@ const Users = () => {
               </CTableRow>
             </CTableHead>
             <CTableBody>
-              {users.map((user, index) => (
-                <CTableRow key={user.id}>
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                    {index + 1}
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                    {user.name}
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                    {user.email}
-                  </CTableHeaderCell>
-                  {local.Users.role === 1 ? (
+              {users
+                .filter((user) => {
+                  // Apply Department filter
+                  if (searchedUser !== '') {
+                    return user.id === searchedUser
+                  }
+                  return true
+                })
+                .map((user, index) => (
+                  <CTableRow key={user.id}>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {user.role}
+                      {index + 1}
                     </CTableHeaderCell>
-                  ) : null}
-                  {isEditButtonEnabled || isDeleteButtonEnabled ? (
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {isEditButtonEnabled ? (
-                        <IconButton aria-label="update" onClick={() => showModal3(user.id)}>
-                          <EditIcon htmlColor="#28B463" />
-                        </IconButton>
-                      ) : null}
-                      {isDeleteButtonEnabled ? (
-                        <IconButton aria-label="delete" onClick={() => showModal2(user.id)}>
-                          <DeleteIcon htmlColor="#FF0000" />
-                        </IconButton>
-                      ) : null}
+                      {user.name}
                     </CTableHeaderCell>
-                  ) : null}
-                </CTableRow>
-              ))}
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {user.email}
+                    </CTableHeaderCell>
+                    {local.Users.role === 1 ? (
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {user.role}
+                      </CTableHeaderCell>
+                    ) : null}
+                    {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {isEditButtonEnabled ? (
+                          <IconButton aria-label="update" onClick={() => showModal3(user.id)}>
+                            <EditIcon htmlColor="#28B463" />
+                          </IconButton>
+                        ) : null}
+                        {isDeleteButtonEnabled ? (
+                          <IconButton aria-label="delete" onClick={() => showModal2(user.id)}>
+                            <DeleteIcon htmlColor="#FF0000" />
+                          </IconButton>
+                        ) : null}
+                      </CTableHeaderCell>
+                    ) : null}
+                  </CTableRow>
+                ))}
             </CTableBody>
           </CTable>
         )}
