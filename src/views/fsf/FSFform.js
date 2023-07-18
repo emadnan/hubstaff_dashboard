@@ -1140,7 +1140,12 @@ function FSFform() {
   async function getFsfWricefId() {
     await fetch(`${BASE_URL}/api/getFunctionalSpecificationForm`)
       .then((response) => response.json())
-      .then((data) => setFsfWricef(data.Functional))
+      .then((data) => {
+        if (local.Users.role === 3) {
+          filteredUsers = data.Functional.filter((user) => user.company_id === local.Users.company_id)
+        }
+        setFsfWricef(filteredUsers)
+      })
       .catch((error) => console.log(error))
   }
 
