@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
+import VisibilityIcon from '@mui/icons-material/Visibility'
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -73,7 +74,7 @@ function AllCRF() {
     transform: 'translateX(-50%)',
   }
 
-  // Functions for Delete FSF Input Parameter Modal
+  // Functions for Delete CRF Modal
   const [isModalOpen1, setIsModalOpen1] = useState(false)
   const showModal1 = (id) => {
     setIsModalOpen1(id)
@@ -88,12 +89,28 @@ function AllCRF() {
     setIsModalOpen1(false)
   }
 
+  // Functions for View CRF Modal
+  const [isModalOpen2, setIsModalOpen2] = useState(false)
+  const showModal2 = (id) => {
+    getCrfById(id)
+    setIsModalOpen2(id)
+  }
+
+  const handleOk2 = () => {
+    setIsModalOpen2(false)
+  }
+
+  const handleCancel2 = () => {
+    setIsModalOpen2(false)
+  }
+
   //Initial rendering through useEffect
   useEffect(() => {
     getCrf()
   }, [])
 
   const [crf, setCrf] = useState([])
+  const [bycrf, setCrfById] = useState([])
   var filteredUsers = [];
 
   //GET API calls
@@ -106,6 +123,13 @@ function AllCRF() {
         }
         setCrf(filteredUsers)
       })
+      .catch((error) => console.log(error))
+  }
+
+  async function getCrfById(id) {
+    await fetch(`${BASE_URL}/api/getChangeRequestFormById/${id}`)
+      .then((response) => response.json())
+      .then((data) => setCrfById(data.CRForm))
       .catch((error) => console.log(error))
   }
 
@@ -177,15 +201,15 @@ function AllCRF() {
                 {index + 1}
               </CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>
-                {crf.doc_ref_no}
+                {crf.doc_ref_no}-{crf.crf_version}
               </CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>
-              {new Date(crf.issuance_date).toLocaleDateString()}
+                {new Date(crf.issuance_date).toLocaleDateString()}
               </CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>
-                {/* <IconButton aria-label="update" onClick={() => showModal2(stream.id)}>
-                  <EditIcon htmlColor="#28B463" />
-                </IconButton> */}
+                <IconButton aria-label="view" title="View CRF" onClick={() => showModal2(crf.id)}>
+                  <VisibilityIcon htmlColor="#28B463" />
+                </IconButton>
                 <IconButton aria-label="delete" onClick={() => showModal1(crf.id)}>
                   <DeleteIcon htmlColor="#FF0000" />
                 </IconButton>
@@ -200,13 +224,41 @@ function AllCRF() {
 
       {/* Modal for Deletion Confirmation */}
       <Modal
-            title="Are you sure you want to delete?"
-            open={isModalOpen1}
-            onOk={handleOk1}
-            okButtonProps={{ style: { background: 'blue' } }}
-            onCancel={handleCancel1}
-            style={modalStyle}
-          ></Modal>
+        title="Are you sure you want to delete?"
+        open={isModalOpen1}
+        onOk={handleOk1}
+        okButtonProps={{ style: { background: 'blue' } }}
+        onCancel={handleCancel1}
+        style={modalStyle}
+      ></Modal>
+
+      {/* Modal for View FSF Details */}
+      <Modal
+        title={<div style={{ textAlign: 'center', fontWeight: 'bold' }}>CRF Details</div>}
+        open={isModalOpen2}
+        onOk={handleOk2}
+        okButtonProps={{ style: { background: 'blue' } }}
+        onCancel={handleCancel2}
+        width={800}
+      >
+        {bycrf.map((crf) => {
+          return (
+            <div key={crf.id}>
+              <br></br>
+              <h6 style={perStyle}>Customer</h6>
+              <p>{crf.project_details.project_name}</p>
+              <h6 style={perStyle}>Implementation Partner</h6>
+              <p>{crf.implementation_partner}</p>
+              <h6 style={perStyle}>Document Reference No</h6>
+              <p>{crf.doc_ref_no}-{crf.crf_version}</p>
+              <h6 style={perStyle}>Issuance Date</h6>
+              <p>{new Date(crf.issuance_date).toLocaleDateString()}</p>
+              <h6 style={perStyle}>Author</h6>
+              <p>{crf.author}</p>
+            </div>
+          )
+        })}
+      </Modal>
     </>
   )
 }
