@@ -745,78 +745,60 @@ const Projects = () => {
         </div>
       </div>
 
-      {isCreateButtonEnabled ? (
+      {isCreateButtonEnabled && (local.Users.role === 1 || local.Users.role === 3) && (
         <div className="row mt-2 mb-2 justify-content-between">
-          <Form form={form}>
+          <Form form={form} className="d-flex w-100">
             <div className="col-md-4">
-              {local.Users.role === 1 || local.Users.role === 3 ? (
-                <div className="d-flex align-items-center">
-                  <Form.Item
-                    name="projectSelect"
-                    hasFeedback
-                    style={{
-                      width: '100%',
-                    }}
+              <div className="d-flex align-items-center">
+                <Form.Item name="projectSelect" hasFeedback style={{ width: '100%' }}>
+                  <Select
+                    showSearch
+                    placeholder="Select Project"
+                    onChange={handleProjectSelectAndSearch}
+                    value={project_id}
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
                   >
-                    <Select
-                      showSearch
-                      placeholder="Select Project"
-                      onChange={handleProjectSelectAndSearch}
-                      value={project_id}
-                      filterOption={(input, option) =>
-                        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                      }
-                    >
-                      {projects.map((project) => (
-                        <Select.Option value={project.id} key={project.id}>
-                          {project.project_name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
-              ) : null}
+                    {projects.map((project) => (
+                      <Select.Option value={project.id} key={project.id}>
+                        {project.project_name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
             </div>
 
             <div className="col-md-4">
-              {local.Users.role === 1 || local.Users.role === 3 ? (
-                <div className="d-flex align-items-center">
-                  <Form.Item
-                    name="departmentSelect"
-                    hasFeedback
-                    style={{
-                      width: '100%',
-                    }}
+              <div className="ml-2 d-flex align-items-center">
+                <Form.Item name="departmentSelect" hasFeedback style={{ width: '100%' }}>
+                  <Select
+                    placeholder="Select Department"
+                    onChange={handleDepartmentSelect}
+                    value={department_id}
                   >
-                    <Select
-                      placeholder="Select Department"
-                      onChange={handleDepartmentSelect}
-                      value={department_id}
-                    >
-                      {department.map((dept) => (
-                        <Select.Option value={dept.id} key={dept.id}>
-                          {dept.department_name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
-              ) : null}
+                    {department.map((dept) => (
+                      <Select.Option value={dept.id} key={dept.id}>
+                        {dept.department_name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
             </div>
-          </Form>
-          <div className="col-md-4">
-            {local.Users.role === 1 || local.Users.role === 3 ? (
+
+            <div className="col-md-4">
               <div className="d-flex align-items-center">
                 <Button type="default" onClick={clearFilter} className="ml-2">
                   Clear Filter
                 </Button>
               </div>
-            ) : null}
-          </div>
+            </div>
+          </Form>
         </div>
-      ) : (
-        ''
       )}
+
       <br></br>
       <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
         <CTableHead color="light">

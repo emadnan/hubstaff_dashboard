@@ -144,107 +144,93 @@ const AssignedProjects = () => {
       </div>
 
       <div className="row mt-2 mb-2 justify-content-between">
-        <Form form={form}>
+        <Form form={form} className="d-flex w-100">
           <div className="col-md-3">
-            {local.Users.role === 1 || local.Users.role === 3 ? (
-              <div className="d-flex align-items-center">
-                <Form.Item
-                  name="projectSelect"
-                  hasFeedback
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Select
-                    showSearch
-                    placeholder="Select Project Name"
-                    name="project_name"
-                    onChange={handleProjectSearch}
-                    filterOption={(input, option) =>
-                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                    }
-                  >
-                    {projects.map((project) => (
-                      <Select.Option value={project.id} key={project.id}>
-                        {project.project_name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </div>
-            ) : null}
+            {local.Users.role === 1 ||
+              (local.Users.role === 3 && (
+                <div className="d-flex align-items-center">
+                  <Form.Item name="projectSelect" hasFeedback style={{ width: '100%' }}>
+                    <Select
+                      showSearch
+                      placeholder="Select Project Name"
+                      name="project_name"
+                      onChange={handleProjectSearch}
+                      filterOption={(input, option) =>
+                        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
+                    >
+                      {projects.map((project) => (
+                        <Select.Option value={project.id} key={project.id}>
+                          {project.project_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+              ))}
           </div>
 
           <div className="col-md-3">
-            {local.Users.role === 1 || local.Users.role === 3 ? (
-              <div className="d-flex align-items-center">
-                <Form.Item
-                  name="streamSelect"
-                  hasFeedback
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Select
-                    showSearch
-                    placeholder="Select Stream Name"
-                    name="stream_name"
-                    onChange={handleStreamSearch}
-                    filterOption={(input, option) =>
-                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                    }
-                  >
-                    {getstreams.map((getstream) => (
-                      <Select.Option value={getstream.id} key={getstream.id}>
-                        {getstream.stream_name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </div>
-            ) : null}
+            {local.Users.role === 1 ||
+              (local.Users.role === 3 && (
+                <div className="ml-2 d-flex align-items-center">
+                  <Form.Item name="streamSelect" hasFeedback style={{ width: '100%' }}>
+                    <Select
+                      showSearch
+                      placeholder="Select Stream Name"
+                      name="stream_name"
+                      onChange={handleStreamSearch}
+                      filterOption={(input, option) =>
+                        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
+                    >
+                      {getstreams.map((getstream) => (
+                        <Select.Option value={getstream.id} key={getstream.id}>
+                          {getstream.stream_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+              ))}
           </div>
 
           <div className="col-md-3">
-            {local.Users.role === 1 || local.Users.role === 3 ? (
-              <div className="d-flex align-items-center">
-                <Form.Item
-                  name="userSelect"
-                  hasFeedback
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Select
-                    showSearch
-                    name="user_name"
-                    placeholder="Select User Name"
-                    onChange={handleUserSearch}
-                    filterOption={(input, option) =>
-                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                    }
-                  >
-                    {users.map((user) => (
-                      <Select.Option value={user.id} key={user.id}>
-                        {user.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </div>
-            ) : null}
+            {local.Users.role === 1 ||
+              (local.Users.role === 3 && (
+                <div className="ml-2 d-flex align-items-center">
+                  <Form.Item name="userSelect" hasFeedback style={{ width: '100%' }}>
+                    <Select
+                      showSearch
+                      name="user_name"
+                      placeholder="Select User Name"
+                      onChange={handleUserSearch}
+                      filterOption={(input, option) =>
+                        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
+                    >
+                      {users.map((user) => (
+                        <Select.Option value={user.id} key={user.id}>
+                          {user.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+              ))}
+          </div>
+
+          <div className="col-md-3">
+            {local.Users.role === 1 ||
+              (local.Users.role === 3 && (
+                <div className="d-flex align-items-center">
+                  <Button type="default" onClick={clearFilter} className="ml-2">
+                    Clear Filter
+                  </Button>
+                </div>
+              ))}
           </div>
         </Form>
-
-        <div className="col-md-3">
-          {local.Users.role === 1 || local.Users.role === 3 ? (
-            <div className="d-flex align-items-center">
-              <Button type="default" onClick={clearFilter} className="ml-2">
-                Clear Filter
-              </Button>
-            </div>
-          ) : null}
-        </div>
       </div>
 
       <br></br>

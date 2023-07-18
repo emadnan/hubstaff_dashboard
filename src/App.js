@@ -46,7 +46,7 @@ const App = () => {
     <BrowserRouter>
       <Suspense fallback={loading}>
         <Routes>
-          <Route exact path="/" name="Login Page" element={<LandingPage />} />
+          <Route exact path="/" name="Landing Page" element={<LandingPage />} />
           <Route exact path="/login" name="Login Page" element={<Login />} />
           <Route exact path="/register" name="Register Page" element={<Register />} />
           <Route exact path="/selectedPlan" name="Login Page" element={<SelectedPlanWrapper />} />
