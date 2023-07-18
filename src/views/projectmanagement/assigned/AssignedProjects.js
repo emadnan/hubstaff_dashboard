@@ -275,7 +275,7 @@ const AssignedProjects = () => {
               return true
             })
             .map((assign, index) => (
-              <CTableRow key={assign.id}>
+              <CTableRow key={index}>
                 <CTableHeaderCell className="text-center" style={mystyle2}>
                   {index + 1}
                 </CTableHeaderCell>
