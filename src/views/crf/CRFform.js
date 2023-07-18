@@ -3,6 +3,7 @@ import { Select, Form, Modal } from 'antd'
 import { Box, Typography } from '@mui/material'
 import { Card, CardContent, Button } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
+
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 function CRFform() {
@@ -14,12 +15,33 @@ function CRFform() {
     const [project_id, setProjectId] = useState('')
     const [module_id, setModuleId] = useState('')
     const [fsf_id, setFsfId] = useState('')
-    const [implementation_partner, setImplementationPartner] = useState('BiafoTech')
+    const [implementation_partner, setImplementationPartner] = useState('')
     const [issuance_date, setIssuanceDate] = useState('')
-    const [author, setAuthor] = useState(local.Users.name)
+    const [author, setAuthor] = useState('')
+    const [doc_ref_no, setDocRefNo] = useState('')
     const [projectname, setProjectName] = useState('')
     const [modulename, setModuleName] = useState('')
     let user = { project_id, module_id, fsf_id, implementation_partner, issuance_date, author }
+
+    const getCurrentDate = () => {
+        const today = new Date()
+        const year = today.getFullYear()
+        const month = String(today.getMonth() + 1).padStart(2, '0')
+        const day = String(today.getDate()).padStart(2, '0')
+        const formattedDate = `${year}-${month}-${day}`
+        return formattedDate
+    }
+    
+    useEffect(() => {
+        const currentDate = getCurrentDate();
+        setIssuanceDate(currentDate);
+        setImplementationPartner(local.Users.company_name);
+        setAuthor(local.Users.name);
+
+        const uniqueNumber = Math.floor(Math.random() * 1000);
+        const concatenatedId = `Biafo-${projectname}-${modulename}-${uniqueNumber}`;
+        setDocRefNo(concatenatedId);
+    }, [projectname, modulename]);
 
     const [project, setProjects] = useState([])
     const [projectmodule, setProjectModule] = useState([])
@@ -61,6 +83,7 @@ function CRFform() {
     const handleNext1 = () => {
         setShowLevel1(false)
         setShowLevel2(true)
+        addCrfForm()
     }
 
     //Initial rendering
@@ -120,6 +143,31 @@ function CRFform() {
             .then((response) => response.json())
             .then((data) => setAllFsf(data.Functional))
             .catch((error) => console.log(error))
+    }
+
+    // Add API call
+    async function addCrfForm() {
+        let user = { project_id, module_id, fsf_id, company_id: local.Users.company_id, implementation_partner, issuance_date, author, doc_ref_no }
+        console.log(user)
+
+        await fetch(`${BASE_URL}/api/addChangeRequestForm`, {
+            method: 'POST',
+            body: JSON.stringify(user),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((response) => {
+                if (response.ok) {
+                    // handleButtonClick1()
+                    // getList()
+                } else {
+                    // handleButtonClick2()
+                }
+            })
+            .catch((error) => {
+                console.error(error)
+            })
     }
 
     return (
@@ -198,7 +246,7 @@ function CRFform() {
                                     </Box>
                                 </div>
 
-                                <div className="form-outline mb-3">
+                                {/* <div className="form-outline mb-3">
                                     <h6>Implementation Partner</h6>
                                     <Form.Item>
                                         <input
@@ -208,9 +256,9 @@ function CRFform() {
                                             placeholder="Enter Field Table Name"
                                         />
                                     </Form.Item>
-                                </div>
+                                </div> */}
 
-                                <div className="form-outline mt-3">
+                                {/* <div className="form-outline mt-3">
                                     <h6>Issuance Date</h6>
                                     <Form.Item>
                                         <input
@@ -221,9 +269,9 @@ function CRFform() {
                                             placeholder="Enter Issuance Date"
                                         />
                                     </Form.Item>
-                                </div>
+                                </div> */}
 
-                                <div className="form-outline mb-3">
+                                {/* <div className="form-outline mb-3">
                                     <h6>Author</h6>
                                     <Form.Item>
                                         <input
@@ -233,7 +281,7 @@ function CRFform() {
                                             placeholder="Enter Field Table Name"
                                         />
                                     </Form.Item>
-                                </div>
+                                </div> */}
 
                                 <Modal
                                     title="Create FSF"
@@ -251,10 +299,10 @@ function CRFform() {
                                 </Modal>
 
                                 <Button
-                                    // onClick={handleNext1}
-                                    onClick={() => console.log(user)}
+                                    onClick={handleNext1}
+                                    // onClick={() => console.log(user)}
                                     style={primaryButtonStyle}
-                                    onMouseEnter={handleMouseEnterPrimary}
+                                    onMouseEnter={handleMouseEnterPrimary}  
                                     onMouseLeave={handleMouseLeavePrimary}
                                 >
                                     Next

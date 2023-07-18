@@ -1,9 +1,17 @@
-import React from 'react'
-import { Button } from 'antd'
+import { React, useState, useEffect } from 'react'
+import { Button, Modal } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
+import IconButton from '@mui/material/IconButton'
+import DeleteIcon from '@mui/icons-material/Delete'
+
+const BASE_URL = process.env.REACT_APP_BASE_URL
 
 function AllCRF() {
+
+  //Local Storage access
+  const local = JSON.parse(localStorage.getItem('user-info'))
+  const navigate = useNavigate()
 
   //CSS Stylings
   const buttonStyle = {
@@ -65,7 +73,65 @@ function AllCRF() {
     transform: 'translateX(-50%)',
   }
 
-  const navigate = useNavigate()
+  // Functions for Delete FSF Input Parameter Modal
+  const [isModalOpen1, setIsModalOpen1] = useState(false)
+  const showModal1 = (id) => {
+    setIsModalOpen1(id)
+  }
+
+  const handleOk1 = () => {
+    deleteCrf(isModalOpen1)
+    setIsModalOpen1(false)
+  }
+
+  const handleCancel1 = () => {
+    setIsModalOpen1(false)
+  }
+
+  //Initial rendering through useEffect
+  useEffect(() => {
+    getCrf()
+  }, [])
+
+  const [crf, setCrf] = useState([])
+  var filteredUsers = [];
+
+  //GET API calls
+  async function getCrf() {
+    await fetch(`${BASE_URL}/api/getChangeRequestForm`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === 6) {
+          filteredUsers = data.CRForm.filter((user) => user.company_id === local.Users.company_id)
+        }
+        setCrf(filteredUsers)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  // API Calls through Fetch
+  async function deleteCrf(newid) {
+    await fetch(`${BASE_URL}/api/deleteChangeRequestForm`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: newid,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          getCrf()
+          // handleButtonClick1()
+        } else {
+          // handleButtonClick2()
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
 
   return (
     <>
@@ -94,16 +160,53 @@ function AllCRF() {
               Sr/No
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
-              Reference ID
+              Document Reference No
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Issuance Date
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
               Actions
             </CTableHeaderCell>
           </CTableRow>
+
+          {/* Get API Users */}
+          {crf.map((crf, index) => (
+            <CTableRow key={crf.id}>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+                {index + 1}
+              </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+                {crf.doc_ref_no}
+              </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+              {new Date(crf.issuance_date).toLocaleDateString()}
+              </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+                {/* <IconButton aria-label="update" onClick={() => showModal2(stream.id)}>
+                  <EditIcon htmlColor="#28B463" />
+                </IconButton> */}
+                <IconButton aria-label="delete" onClick={() => showModal1(crf.id)}>
+                  <DeleteIcon htmlColor="#FF0000" />
+                </IconButton>
+              </CTableHeaderCell>
+            </CTableRow>
+          ))}
+
         </CTableHead>
 
         <CTableBody></CTableBody>
       </CTable>
+
+      {/* Modal for Deletion Confirmation */}
+      <Modal
+            title="Are you sure you want to delete?"
+            open={isModalOpen1}
+            onOk={handleOk1}
+            okButtonProps={{ style: { background: 'blue' } }}
+            onCancel={handleCancel1}
+            style={modalStyle}
+          ></Modal>
     </>
   )
 }
