@@ -38,8 +38,8 @@ function CRFform() {
         setImplementationPartner(local.Users.company_name);
         setAuthor(local.Users.name);
 
-        const uniqueNumber = Math.floor(Math.random() * 1000);
-        const concatenatedId = `Biafo-${projectname}-${modulename}-${uniqueNumber}`;
+        // const uniqueNumber = Math.floor(Math.random() * 1000);
+        const concatenatedId = `Biafo-${projectname}-${modulename}`;
         setDocRefNo(concatenatedId);
     }, [projectname, modulename]);
 
