@@ -19,6 +19,7 @@ function CRFform() {
     const [issuance_date, setIssuanceDate] = useState('')
     const [author, setAuthor] = useState('')
     const [doc_ref_no, setDocRefNo] = useState('')
+    const [reference, setReference] = useState('')
     const [projectname, setProjectName] = useState('')
     const [modulename, setModuleName] = useState('')
     let user = { project_id, module_id, fsf_id, implementation_partner, issuance_date, author }
@@ -31,7 +32,7 @@ function CRFform() {
         const formattedDate = `${year}-${month}-${day}`
         return formattedDate
     }
-    
+
     useEffect(() => {
         const currentDate = getCurrentDate();
         setIssuanceDate(currentDate);
@@ -46,15 +47,24 @@ function CRFform() {
     const [project, setProjects] = useState([])
     const [projectmodule, setProjectModule] = useState([])
     const [allfsf, setAllFsf] = useState([])
+    const [fsfbyprojectandmodule, setFsfByProjectAndModule] = useState([])
+    const [bycrfreference, setByCrfReference] = useState([])
     var filteredUsers = []
     const navigate = useNavigate()
 
     //CSS Styling
     const [isHoveredPrimary, setIsHoveredPrimary] = useState(false)
+    const [isHoveredDanger, setIsHoveredDanger] = useState(false)
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const primaryButtonStyle = {
         backgroundColor: isHoveredPrimary ? '#6699CC' : 'blue',
+        color: 'white',
+        transition: 'background-color 0.3s',
+    }
+
+    const dangerButtonStyle = {
+        backgroundColor: isHoveredDanger ? '#FAA0A0' : 'red',
         color: 'white',
         transition: 'background-color 0.3s',
     }
@@ -77,13 +87,34 @@ function CRFform() {
         setIsHoveredPrimary(false)
     }
 
+    const handleMouseEnterDanger = () => {
+        setIsHoveredDanger(true)
+    }
+
+    const handleMouseLeaveDanger = () => {
+        setIsHoveredDanger(false)
+    }
+
     const [showLevel1, setShowLevel1] = useState(true)
     const [showLevel2, setShowLevel2] = useState(false)
+    const [showLevel3, setShowLevel3] = useState(false)
 
     const handleNext1 = () => {
         setShowLevel1(false)
         setShowLevel2(true)
+        getFsfByProjectAndModule()
+        // addCrfForm()
+    }
+
+    const handleNext2 = () => {
+        setShowLevel2(false)
+        setShowLevel3(true)
         addCrfForm()
+    }
+
+    const handleBack2 = () => {
+        setShowLevel2(false)
+        setShowLevel1(true)
     }
 
     //Initial rendering
@@ -106,12 +137,23 @@ function CRFform() {
         setModuleName(option.module_name)
     }
 
+    const handleCrfReference = (value) => {
+        console.log(value)
+        setReference(value)
+    }
+
     const handleFsfChange = (value) => {
+        console.log(value);
         if (value === "0") {
             setIsModalVisible(true);
         } else {
-            setFsfId(value)
+            // setFsfId(value)
+            handleReference(value)
         }
+    }
+
+    const handleReference = (value) => {
+        getCrfByReference(value)
     }
 
     //GET API calls
@@ -145,9 +187,24 @@ function CRFform() {
             .catch((error) => console.log(error))
     }
 
+    async function getFsfByProjectAndModule() {
+        await fetch(`${BASE_URL}/api/getFsfByProjectIdAndModuleId/${project_id}/${module_id}`)
+            .then((response) => response.json())
+            .then((data) => setFsfByProjectAndModule(data.FSFs))
+            .catch((error) => console.log(error))
+    }
+
+    async function getCrfByReference(value) {
+        setFsfId(value)
+        await fetch(`${BASE_URL}/api/getCrfByProjectIdModuleIdAndFsfId/${project_id}/${module_id}/${value}`)
+            .then((response) => response.json())
+            .then((data) => setByCrfReference(data.Crfs))
+            .catch((error) => console.log(error))
+    }
+
     // Add API call
     async function addCrfForm() {
-        let user = { project_id, module_id, fsf_id, company_id: local.Users.company_id, implementation_partner, issuance_date, author, doc_ref_no }
+        let user = { project_id, module_id, fsf_id, company_id: local.Users.company_id, reference: reference, implementation_partner, issuance_date, author, doc_ref_no }
         console.log(user)
 
         await fetch(`${BASE_URL}/api/addChangeRequestForm`, {
@@ -175,15 +232,13 @@ function CRFform() {
             {/* CRF Level 1 Form Starts */}
             {showLevel1 && (
                 <div>
-                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    {/* <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <Box sx={{ maxWidth: 'md' }}>
-                            <Typography variant="h3" component="h3" align="center">
-                                Change Request Document
+                            <Typography variant="h5" component="h5" align="center">
+                                Select Project and Module 
                             </Typography>
                         </Box>
-                    </Box>
-
-                    <br />
+                    </Box> */}
 
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <Box sx={{ maxWidth: 'md' }}>
@@ -228,6 +283,37 @@ function CRFform() {
                                     </Box>
                                 </div>
 
+                                <Button
+                                    onClick={handleNext1}
+                                    // onClick={() => console.log(user)}
+                                    style={primaryButtonStyle}
+                                    onMouseEnter={handleMouseEnterPrimary}
+                                    onMouseLeave={handleMouseLeavePrimary}
+                                >
+                                    Next
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            )}
+
+            {/* CRF Level 2 Form Starts */}
+            {showLevel2 && (
+                <div>
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Box sx={{ maxWidth: 'md' }}>
+                            <Typography variant="h4" component="h4" align="center">
+                                Level 2
+                            </Typography>
+                        </Box>
+                    </Box>
+
+                    <br />
+                    <div className="row justify-content-center">
+                        <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
+                            <CardContent>
+
                                 <div className="form-outline mb-6">
                                     <h6>FSF</h6>
                                     <Box>
@@ -236,9 +322,9 @@ function CRFform() {
                                                 <Select.Option value="0" key="none">
                                                     None
                                                 </Select.Option>
-                                                {allfsf.map((fsf) => (
+                                                {fsfbyprojectandmodule.map((fsf) => (
                                                     <Select.Option value={fsf.id} key={fsf.id}>
-                                                        {fsf.wricef_id}
+                                                        {fsf.wricef_id}-{fsf.description}
                                                     </Select.Option>
                                                 ))}
                                             </Select>
@@ -246,42 +332,23 @@ function CRFform() {
                                     </Box>
                                 </div>
 
-                                {/* <div className="form-outline mb-3">
-                                    <h6>Implementation Partner</h6>
-                                    <Form.Item>
-                                        <input
-                                            type="text"
-                                            value={implementation_partner}
-                                            className="form-control form-control-lg"
-                                            placeholder="Enter Field Table Name"
-                                        />
-                                    </Form.Item>
-                                </div> */}
-
-                                {/* <div className="form-outline mt-3">
-                                    <h6>Issuance Date</h6>
-                                    <Form.Item>
-                                        <input
-                                            type="date"
-                                            name="issuance_date"
-                                            value={issuance_date}
-                                            className="form-control form-control-lg"
-                                            placeholder="Enter Issuance Date"
-                                        />
-                                    </Form.Item>
-                                </div> */}
-
-                                {/* <div className="form-outline mb-3">
-                                    <h6>Author</h6>
-                                    <Form.Item>
-                                        <input
-                                            type="text"
-                                            value={author}
-                                            className="form-control form-control-lg"
-                                            placeholder="Enter Field Table Name"
-                                        />
-                                    </Form.Item>
-                                </div> */}
+                                <div className="form-outline mb-6">
+                                    <h6>Document Reference No</h6>
+                                    <Box>
+                                        <Form.Item name="selectCrf" hasFeedback>
+                                            <Select showSearch placeholder="Select Crf" onChange={handleCrfReference} value={reference} filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
+                                                <Select.Option value="0" key="none">
+                                                    None
+                                                </Select.Option>
+                                                {bycrfreference.map((crf) => (
+                                                    <Select.Option value={crf.doc_ref_no} key={crf.id}>
+                                                        {crf.doc_ref_no}-{crf.f_s_f_details.description}-{crf.crf_version}
+                                                    </Select.Option>
+                                                ))}
+                                            </Select>
+                                        </Form.Item>
+                                    </Box>
+                                </div>
 
                                 <Modal
                                     title="Create FSF"
@@ -299,10 +366,17 @@ function CRFform() {
                                 </Modal>
 
                                 <Button
-                                    onClick={handleNext1}
-                                    // onClick={() => console.log(user)}
+                                    onClick={handleBack2}
+                                    style={dangerButtonStyle}
+                                    onMouseEnter={handleMouseEnterDanger}
+                                    onMouseLeave={handleMouseLeaveDanger}
+                                >
+                                    Back
+                                </Button>
+                                <Button
+                                    onClick={handleNext2}
                                     style={primaryButtonStyle}
-                                    onMouseEnter={handleMouseEnterPrimary}  
+                                    onMouseEnter={handleMouseEnterPrimary}
                                     onMouseLeave={handleMouseLeavePrimary}
                                 >
                                     Next

@@ -139,8 +139,8 @@ function FSFform() {
     const currentDate = getCurrentDate();
     setRequestedDate(currentDate);
     
-    const uniqueNumber = Math.floor(Math.random() * 1000);
-    const concatenatedId = `Biafo-${projectName}-${moduleName}-${uniqueNumber}`;
+    // const uniqueNumber = Math.floor(Math.random() * 1000);
+    const concatenatedId = `Biafo-${projectName}-${moduleName}`;
     setWRicefId(concatenatedId);
   }, [projectName, moduleName]);
   
