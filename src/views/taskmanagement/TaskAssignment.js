@@ -1166,7 +1166,7 @@ function TaskAssignment() {
                           <IconButton aria-label="Delete">
                             <DeleteIcon
                               htmlColor="#FF0000"
-                              onClick={() => deleteTask(task.task_managements_id)}
+                              onClick={() => showDeleteModal(task.task_managements_id)}
                             />
                           </IconButton>
                         </CTableHeaderCell>
@@ -1326,7 +1326,7 @@ function TaskAssignment() {
                           <IconButton aria-label="Delete">
                             <DeleteIcon
                               htmlColor="#FF0000"
-                              onClick={() => deleteTask(task.task_managements_id)}
+                              onClick={() => showDeleteModal(task.task_managements_id)}
                             />
                           </IconButton>
                         </CTableHeaderCell>
