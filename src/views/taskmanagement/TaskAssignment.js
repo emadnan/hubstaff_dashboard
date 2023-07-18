@@ -14,6 +14,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Box from '@mui/material/Box'
+import Alert from '@mui/material/Alert'
 import moment from 'moment'
 import LoadingSpinner from 'src/components/Loader/Loader'
 
@@ -48,6 +49,7 @@ function TaskAssignment() {
 
   // Get & Set Selected Task ID :
   const [editedTaskId, setEditedTaskId] = useState()
+  const [deleteTaskId, setDeleteTaskId] = useState()
 
   const [users, setAllUsers] = useState([])
   const [projects, setProjects] = useState([])
@@ -102,6 +104,13 @@ function TaskAssignment() {
     backgroundColor: 'white ',
   }
 
+  const alertStyle = {
+    position: 'fixed',
+    top: '10%',
+    left: '55%',
+    transform: 'translateX(-50%)',
+  }
+
   //Initial rendering through useEffect
   useEffect(() => {
     getUsers()
@@ -121,9 +130,16 @@ function TaskAssignment() {
     setCurrentItemsCompleted(slicedItemsCompleted)
   }, [currentPageCompleted, completedTask])
 
-  //Get calls handling
+  //----------------------------------
+  // Functions for Applying Filters
+  //----------------------------------
+
   const handleUserChange = (value) => {
     setUserId(value)
+  }
+
+  const handleProjectChange = (value) => {
+    setProjectId(value)
   }
 
   const applyFilters = () => {
@@ -147,15 +163,30 @@ function TaskAssignment() {
     setSelectedProject(null)
   }
 
-  const handleProjectChange = (value) => {
-    setProjectId(value)
+  const changeTab = (e) => {
+    if (isFilterApplied === false) {
+      clearFilters()
+    }
+
+    if (e.target.value === 'Completed') {
+      setIsPendingTasksTab(false)
+      setIsInProgressTasksTab(false)
+      setIsCompletedTasksTab(true)
+    } else if (e.target.value === 'InProgress') {
+      setIsPendingTasksTab(false)
+      setIsInProgressTasksTab(true)
+      setIsCompletedTasksTab(false)
+    } else {
+      setIsPendingTasksTab(true)
+      setIsInProgressTasksTab(false)
+      setIsCompletedTasksTab(false)
+    }
   }
 
-  // Functions for Assign Tasks Modal
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const showModal = () => {
-    setIsModalOpen(true)
-  }
+  //----------------------------------
+  // Functions for Fields Validation
+  //----------------------------------
+
   const [formErrors, setFormErrors] = useState({
     user_id,
     project_id,
@@ -164,6 +195,52 @@ function TaskAssignment() {
     task_managements_start_date,
     task_managements_dead_line,
   })
+
+  const handleFocus = (e) => {
+    const { name } = e.target
+
+    setFormErrors((prevFormErrors) => ({
+      ...prevFormErrors,
+      [name]: '',
+    }))
+  }
+
+  const callErrors = (
+    user_id,
+    project_id,
+    task_description,
+    task_managements_start_date,
+    task_managements_dead_line,
+  ) => {
+    const errors = {}
+    if (!user_id) {
+      errors.user_id = 'Please Select the User'
+    }
+    if (!project_id) {
+      errors.project_id = 'Please Select the Project'
+    }
+    if (!task_description) {
+      errors.task_description = 'Task Description is required'
+    }
+    if (!task_managements_start_date) {
+      errors.task_managements_start_date = 'Start Date is required'
+    }
+    if (!task_managements_dead_line) {
+      errors.task_managements_dead_line = 'End Date is required'
+    }
+
+    setFormErrors(errors)
+  }
+
+  //---------------------------
+  // Functions for Crud Tasks
+  //---------------------------
+
+  // Functions for Assign Tasks Modal
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const showModal = () => {
+    setIsModalOpen(true)
+  }
 
   const handleOk = () => {
     if (
@@ -196,42 +273,6 @@ function TaskAssignment() {
     }
   }
 
-  const callErrors = (
-    user_id,
-    project_id,
-    task_description,
-    task_managements_start_date,
-    task_managements_dead_line,
-  ) => {
-    const errors = {}
-    if (!user_id) {
-      errors.user_id = 'Please Select the User'
-    }
-    if (!project_id) {
-      errors.project_id = 'Please Select the Project'
-    }
-    if (!task_description) {
-      errors.task_description = 'Task Description is required'
-    }
-    if (!task_managements_start_date) {
-      errors.task_managements_start_date = 'Start Date is required'
-    }
-    if (!task_managements_dead_line) {
-      errors.task_managements_dead_line = 'End Date is required'
-    }
-
-    setFormErrors(errors)
-  }
-
-  const handleFocus = (e) => {
-    const { name } = e.target
-
-    setFormErrors((prevFormErrors) => ({
-      ...prevFormErrors,
-      [name]: '',
-    }))
-  }
-
   const handleCancel = () => {
     setIsModalOpen(false)
     form.resetFields()
@@ -253,13 +294,14 @@ function TaskAssignment() {
     })
   }
 
-  // Functions for Assign Tasks Modal
+  // Functions for Update Tasks Modal
   const [isModalOpenUpdate, setIsModalOpenUpdate] = useState(false)
   const showUpdateModal = (task_managements_id) => {
     setEditedTaskId(task_managements_id)
     getTaskById(task_managements_id)
     setIsModalOpenUpdate(true)
   }
+
   const handleUpdate = () => {
     if (
       user_id &&
@@ -313,6 +355,22 @@ function TaskAssignment() {
     })
   }
 
+  // Functions for Delete Tasks Modal
+  const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
+  const showDeleteModal = (task_managements_id) => {
+    setDeleteTaskId(task_managements_id)
+    setIsModalOpenDelete(true)
+  }
+
+  const handleDelete = () => {
+    deleteTask(deleteTaskId)
+    setIsModalOpenDelete(false)
+  }
+
+  const deleteCancel = () => {
+    setIsModalOpenDelete(false)
+  }
+
   // Functions for Show Task Modal
   const [isModalOpenToTakeAction, setIsModalOpenToTakeAction] = useState(false)
   const openModalToTakeActionAgainstTask = (id) => {
@@ -343,6 +401,10 @@ function TaskAssignment() {
     setTaskManagementStartDate('')
     setTaskManagementDeadLine('')
   }
+
+  //------------------
+  // APIs
+  //------------------
 
   async function getTasks() {
     try {
@@ -480,6 +542,7 @@ function TaskAssignment() {
       })
 
       if (response.ok) {
+        handleButtonAddedClick()
         await getTasks()
         form.resetFields()
         setUserId('')
@@ -492,6 +555,7 @@ function TaskAssignment() {
       }
     } catch (error) {
       console.error(error)
+      handleButtonAddedFailureClick()
     } finally {
       setIsLoading(false)
     }
@@ -545,6 +609,7 @@ function TaskAssignment() {
       })
 
       if (response.ok) {
+        handleButtonUpdateClick()
         await getTasks()
         form.resetFields()
         setUserId('')
@@ -556,6 +621,7 @@ function TaskAssignment() {
       }
     } catch (error) {
       console.error(error)
+      handleButtonUpdateFailureClick()
     } finally {
       setIsLoading(false)
     }
@@ -574,12 +640,13 @@ function TaskAssignment() {
       .then((response) => {
         if (response.ok) {
           getTasks()
+          handleButtonDeleteClick()
           form.resetFields()
-          console.log('Task DELETED Successfully')
         }
       })
       .catch((error) => {
         console.error(error)
+        handleButtonDeleteFailureClick()
       })
   }
 
@@ -604,29 +671,10 @@ function TaskAssignment() {
       })
   }
 
-  const changeTab = (e) => {
-    if (isFilterApplied === false) {
-      clearFilters()
-    }
-
-    if (e.target.value === 'Completed') {
-      setIsPendingTasksTab(false)
-      setIsInProgressTasksTab(false)
-      setIsCompletedTasksTab(true)
-    } else if (e.target.value === 'InProgress') {
-      setIsPendingTasksTab(false)
-      setIsInProgressTasksTab(true)
-      setIsCompletedTasksTab(false)
-    } else {
-      setIsPendingTasksTab(true)
-      setIsInProgressTasksTab(false)
-      setIsCompletedTasksTab(false)
-    }
-  }
-
   //------------------
   // Pagination logic
   //------------------
+
   // Pagination for Pending task table
   const indexOfLastItemPending = currentPagePending * ITEMS_PER_PAGE
   const indexOfFirstItemPending = indexOfLastItemPending - ITEMS_PER_PAGE
@@ -662,6 +710,115 @@ function TaskAssignment() {
   const handleCompletedTaskPageChange = (pageNumber) => {
     setCurrentPageCompleted(pageNumber)
   }
+
+  //---------
+  // Alerts
+  //---------
+
+  const [showAlertAdded, setShowAlertAdded] = useState(false)
+  const [showAlertAddedFailure, setShowAlertAddedFailure] = useState(false)
+  const [showAlertDelete, setShowAlertDelete] = useState(false)
+  const [showAlertDeleteFailure, setShowAlertDeleteFailure] = useState(false)
+  const [showAlertUpdate, setShowAlertUpdate] = useState(false)
+  const [showAlertUpdateFailure, setShowAlertUpdateFailure] = useState(false)
+
+  const handleButtonAddedClick = () => {
+    setShowAlertAdded(true)
+  }
+  const handleButtonAddedFailureClick = () => {
+    setShowAlertAddedFailure(true)
+  }
+  const handleButtonDeleteClick = () => {
+    setShowAlertDelete(true)
+  }
+  const handleButtonDeleteFailureClick = () => {
+    setShowAlertDeleteFailure(true)
+  }
+  const handleButtonUpdateClick = () => {
+    setShowAlertUpdate(true)
+  }
+  const handleButtonUpdateFailureClick = () => {
+    setShowAlertUpdateFailure(true)
+  }
+
+  const handleCloseAddedAlert = () => {
+    setShowAlertAdded(false)
+  }
+  const handleCloseAddedFailureAlert = () => {
+    setShowAlertAddedFailure(false)
+  }
+  const handleCloseDeleteAlert = () => {
+    setShowAlertDelete(false)
+  }
+  const handleCloseDeleteFailureAlert = () => {
+    setShowAlertDeleteFailure(false)
+  }
+  const handleCloseUpdateAlert = () => {
+    setShowAlertUpdate(false)
+  }
+  const handleCloseUpdateFailureAlert = () => {
+    setShowAlertUpdateFailure(false)
+  }
+
+  useEffect(() => {
+    if (showAlertAdded) {
+      const timer = setTimeout(() => {
+        setShowAlertAdded(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlertAdded])
+
+  useEffect(() => {
+    if (showAlertAddedFailure) {
+      const timer = setTimeout(() => {
+        setShowAlertAddedFailure(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlertAddedFailure])
+
+  useEffect(() => {
+    if (showAlertUpdate) {
+      const timer = setTimeout(() => {
+        setShowAlertUpdate(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlertUpdate])
+
+  useEffect(() => {
+    if (showAlertUpdateFailure) {
+      const timer = setTimeout(() => {
+        setShowAlertUpdateFailure(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlertUpdateFailure])
+
+  useEffect(() => {
+    if (showAlertDelete) {
+      const timer = setTimeout(() => {
+        setShowAlertDelete(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlertDelete])
+
+  useEffect(() => {
+    if (showAlertDeleteFailure) {
+      const timer = setTimeout(() => {
+        setShowAlertDeleteFailure(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlertDeleteFailure])
 
   return (
     <>
@@ -852,7 +1009,7 @@ function TaskAssignment() {
                           <IconButton aria-label="Delete">
                             <DeleteIcon
                               htmlColor="#FF0000"
-                              onClick={() => deleteTask(task.task_managements_id)}
+                              onClick={() => showDeleteModal(task.task_managements_id)}
                             />
                           </IconButton>
                         </CTableHeaderCell>
@@ -1536,6 +1693,50 @@ function TaskAssignment() {
           </div>
         </div>
       </Modal>
+
+      <Modal
+        title="Are you sure you want to delete?"
+        open={isModalOpenDelete}
+        onOk={handleDelete}
+        okButtonProps={{ style: { background: 'blue' } }}
+        onCancel={deleteCancel}
+      ></Modal>
+
+      {showAlertAdded && (
+        <Alert onClose={handleCloseAddedAlert} severity="success" style={alertStyle}>
+          Task Added Successfully
+        </Alert>
+      )}
+
+      {showAlertAddedFailure && (
+        <Alert onClose={handleCloseAddedFailureAlert} severity="error" style={alertStyle}>
+          Failed to Add Task
+        </Alert>
+      )}
+
+      {showAlertDelete && (
+        <Alert onClose={handleCloseDeleteAlert} severity="success" style={alertStyle}>
+          Task Deleted Successfully
+        </Alert>
+      )}
+
+      {showAlertDeleteFailure && (
+        <Alert onClose={handleCloseDeleteFailureAlert} severity="error" style={alertStyle}>
+          Failed to Delete Task
+        </Alert>
+      )}
+
+      {showAlertUpdate && (
+        <Alert onClose={handleCloseUpdateAlert} severity="success" style={alertStyle}>
+          Task Updated Successfully
+        </Alert>
+      )}
+
+      {showAlertUpdateFailure && (
+        <Alert onClose={handleCloseUpdateFailureAlert} severity="error" style={alertStyle}>
+          Failed to Update Task
+        </Alert>
+      )}
     </>
   )
 }
