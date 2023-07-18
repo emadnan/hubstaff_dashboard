@@ -26,6 +26,7 @@ function FSFform() {
   const local = JSON.parse(localStorage.getItem('user-info'))
 
   //Variable declarations
+  const [fsfdescription, setFsfDescription] =  useState('')
   const [reference_id, setReferenceId] = useState('')
   const [module_id, setModuleId] = useState('')
   const [moduleName, setModuleName] = useState('')
@@ -186,6 +187,7 @@ function FSFform() {
   }
 
   const [formErrors, setFormErrors] = useState({
+    fsfdescription: '',
     reference_id: '',
     module_id: '',
     project_id: '',
@@ -624,6 +626,9 @@ function FSFform() {
 
   const handleNext1 = () => {
     const errors = {}
+    if (!fsfdescription) {
+      errors.fsfdescription = 'Fsf Description is required'
+    }
     if (!reference_id) {
       errors.reference_id = 'Reference Id is required'
     }
@@ -1190,6 +1195,7 @@ function FSFform() {
   // Add FSF API call
   async function addFsfForm() {
     let data = {
+      description: fsfdescription,
       reference_id,
       company_id: local.Users.company_id,
       module_id,
@@ -1513,6 +1519,23 @@ function FSFform() {
           <div className="row justify-content-center">
             <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
               <CardContent>
+
+              <div className="form-outline mb-3">
+                  <label>Description</label>
+                  <Form.Item
+                    validateStatus={formErrors.fsfdescription ? 'error' : ''}
+                    help={formErrors.fsfdescription}
+                  >
+                    <input
+                      type="text"
+                      value={fsfdescription}
+                      onChange={(e) => setFsfDescription(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter FSF Description"
+                    />
+                  </Form.Item>
+                </div>
+
                 <div className="form-outline mb-3">
                   <label>Reference Id</label>
                   <Form.Item
