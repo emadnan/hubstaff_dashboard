@@ -16,6 +16,15 @@ const BASE_URL = process.env.REACT_APP_BASE_URL
 const theme = createTheme()
 
 const Register = () => {
+  const navigate = useNavigate()
+  useEffect(() => {
+    const sessionToken = JSON.parse(sessionStorage.getItem('user-info'))?.token
+
+    if (sessionToken) {
+      navigate('/Dashboard')
+    }
+  })
+
   //Variable declarations
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
@@ -23,7 +32,6 @@ const Register = () => {
   const [confirmpass, setConfirmPass] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showPassword2, setShowPassword2] = useState(false)
-  const navigate = useNavigate()
 
   //Form handling
   const handleSubmit = (event) => {
