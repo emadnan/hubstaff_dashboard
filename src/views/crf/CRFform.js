@@ -22,7 +22,13 @@ function CRFform() {
     const [reference, setReference] = useState('')
     const [projectname, setProjectName] = useState('')
     const [modulename, setModuleName] = useState('')
-    let user = { project_id, module_id, fsf_id, implementation_partner, issuance_date, author }
+    const [crf_id, setCrfId] = useState('')
+    const [ref_id, setRef_id] = useState()
+    const [requirement, setRequirement] = useState('')
+    const [required_time_no, setRequiredTime] = useState('')
+    const [required_time_type, setRequiredTimeType] = useState('')
+    const [functional_resource, setFunctionalResource] = useState('')
+    const [Technical_resource, setTechnicalResource] = useState('')
 
     const getCurrentDate = () => {
         const today = new Date()
@@ -117,6 +123,14 @@ function CRFform() {
         setShowLevel1(true)
     }
 
+    const handleNext3 = () => {
+        setShowLevel3(false)
+        addChangeRequestSummary()
+        setTimeout(() => {
+            navigate('/allcrf')
+          }, 2000)
+    }
+
     //Initial rendering
     useEffect(() => {
         getProjects()
@@ -154,6 +168,22 @@ function CRFform() {
 
     const handleReference = (value) => {
         getCrfByReference(value)
+    }
+
+    const handleTimeChange = (value) => {
+        setRequiredTime(value)
+    }
+
+    const handleTypeChange = (value) => {
+        setRequiredTimeType(value)
+    }
+
+    const handleFunctionalResourceChange = (value) => {
+        setFunctionalResource(value)
+    }
+
+    const handleTechnicalResourceChange = (value) => {
+        setTechnicalResource(value)
     }
 
     //GET API calls
@@ -204,10 +234,39 @@ function CRFform() {
 
     // Add API call
     async function addCrfForm() {
-        let user = { project_id, module_id, fsf_id, company_id: local.Users.company_id, reference: reference, implementation_partner, issuance_date, author, doc_ref_no }
-        console.log(user)
+        let data = { project_id, module_id, fsf_id, company_id: local.Users.company_id, reference: reference, implementation_partner, issuance_date, author, doc_ref_no }
+        console.log(data)
 
         await fetch(`${BASE_URL}/api/addChangeRequestForm`, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((response) => {
+                if (response.ok) {
+                    return response.json()
+                    // handleButtonClick1()
+                    // getList()
+                } else {
+                    // handleButtonClick2()
+                }
+            })
+            .then((data) => {
+                console.log("data: ",data)
+                setRef_id(data.crf)
+              })
+            .catch((error) => {
+                console.error(error)
+            })
+    }
+
+    async function addChangeRequestSummary() {
+        let user = { crf_id: ref_id, requirement, required_time_no, required_time_type, functional_resource, Technical_resource}
+        console.log(user)
+
+        await fetch(`${BASE_URL}/api/addChangeRequestSummary`, {
             method: 'POST',
             body: JSON.stringify(user),
             headers: {
@@ -232,13 +291,13 @@ function CRFform() {
             {/* CRF Level 1 Form Starts */}
             {showLevel1 && (
                 <div>
-                    {/* <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <Box sx={{ maxWidth: 'md' }}>
-                            <Typography variant="h5" component="h5" align="center">
-                                Select Project and Module 
+                            <Typography variant="h3" component="h3" align="center">
+                                Change Request Document
                             </Typography>
                         </Box>
-                    </Box> */}
+                    </Box>
 
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <Box sx={{ maxWidth: 'md' }}>
@@ -285,7 +344,6 @@ function CRFform() {
 
                                 <Button
                                     onClick={handleNext1}
-                                    // onClick={() => console.log(user)}
                                     style={primaryButtonStyle}
                                     onMouseEnter={handleMouseEnterPrimary}
                                     onMouseLeave={handleMouseLeavePrimary}
@@ -301,6 +359,16 @@ function CRFform() {
             {/* CRF Level 2 Form Starts */}
             {showLevel2 && (
                 <div>
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Box sx={{ maxWidth: 'md' }}>
+                            <Typography variant="h3" component="h3" align="center">
+                                Change Request Document
+                            </Typography>
+                        </Box>
+                    </Box>
+
+                    <br></br>
+
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <Box sx={{ maxWidth: 'md' }}>
                             <Typography variant="h4" component="h4" align="center">
@@ -342,7 +410,7 @@ function CRFform() {
                                                 </Select.Option>
                                                 {bycrfreference.map((crf) => (
                                                     <Select.Option value={crf.doc_ref_no} key={crf.id}>
-                                                        {crf.doc_ref_no}-{crf.f_s_f_details.description}-{crf.crf_version}
+                                                        {crf.doc_ref_no}-{crf.crf_version}
                                                     </Select.Option>
                                                 ))}
                                             </Select>
@@ -375,6 +443,103 @@ function CRFform() {
                                 </Button>
                                 <Button
                                     onClick={handleNext2}
+                                    style={primaryButtonStyle}
+                                    onMouseEnter={handleMouseEnterPrimary}
+                                    onMouseLeave={handleMouseLeavePrimary}
+                                >
+                                    Next
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            )}
+
+            {/* CRF Change Request Summary Form Starts */}
+            {showLevel3 && (
+                <div>
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Box sx={{ maxWidth: 'md' }}>
+                            <Typography variant="h3" component="h3" align="center">
+                                Change Request Summary
+                            </Typography>
+                        </Box>
+                    </Box>
+
+                    <br />
+                    <div className="row justify-content-center">
+                        <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
+                            <CardContent>
+
+                                <div className="form-outline mb-3">
+                                    <label>Requirement</label>
+                                    <Form.Item>
+                                        <input
+                                            type="text"
+                                            value={requirement}
+                                            onChange={(e) => setRequirement(e.target.value)}
+                                            className="form-control form-control-lg"
+                                            placeholder="Enter Requirements"
+                                        />
+                                    </Form.Item>
+                                </div>
+
+                                <div className="form-outline mb-6 time-container">
+                                    <h6>Required Time</h6>
+                                    <Box>
+                                        <Form.Item name="selectTime" hasFeedback>
+                                            <Select showSearch placeholder="Select Required Time" onChange={handleTimeChange} value={required_time_no} filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
+                                                <Select.Option value="1">1</Select.Option>
+                                                <Select.Option value="2">2</Select.Option>
+                                                <Select.Option value="3">3</Select.Option>
+                                                <Select.Option value="4">4</Select.Option>
+                                                <Select.Option value="5">5</Select.Option>
+                                                <Select.Option value="6">6</Select.Option>
+                                                <Select.Option value="7">7</Select.Option>
+                                                <Select.Option value="8">8</Select.Option>
+                                                <Select.Option value="9">9</Select.Option>
+                                            </Select>
+                                        </Form.Item>
+                                    </Box>
+
+                                    <Box>
+                                        <Form.Item name="selectType" hasFeedback>
+                                            <Select showSearch placeholder="Select Required Type" onChange={handleTypeChange} value={required_time_type} filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
+                                                <Select.Option value="hours" >hours</Select.Option>
+                                                <Select.Option value="days" >days</Select.Option>
+                                                <Select.Option value="weeks" >weeks</Select.Option>
+                                                <Select.Option value="months" >months</Select.Option>
+                                            </Select>
+                                        </Form.Item>
+                                    </Box>
+                                </div>
+
+                                <div className="form-outline mb-6">
+                                    <h6>Functional Resource</h6>
+                                    <Box>
+                                        <Form.Item name="selectResource" hasFeedback>
+                                            <Select showSearch placeholder="Select Required" onChange={handleFunctionalResourceChange} value={functional_resource} filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
+                                                <Select.Option value="Yes" >Yes</Select.Option>
+                                                <Select.Option value="No" >No</Select.Option>
+                                            </Select>
+                                        </Form.Item>
+                                    </Box>
+                                </div>
+
+                                <div className="form-outline mb-6">
+                                    <h6>Technical Resource</h6>
+                                    <Box>
+                                        <Form.Item name="selectTechnical" hasFeedback>
+                                            <Select showSearch placeholder="Select Required" onChange={handleTechnicalResourceChange} value={Technical_resource} filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
+                                                <Select.Option value="Yes" >Yes</Select.Option>
+                                                <Select.Option value="No" >No</Select.Option>
+                                            </Select>
+                                        </Form.Item>
+                                    </Box>
+                                </div>
+
+                                <Button
+                                    onClick={handleNext3}
                                     style={primaryButtonStyle}
                                     onMouseEnter={handleMouseEnterPrimary}
                                     onMouseLeave={handleMouseLeavePrimary}
