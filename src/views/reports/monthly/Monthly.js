@@ -530,7 +530,14 @@ export default function Dashboard() {
         >
           <Box className="col-md-5">
             <Form.Item name="select" hasFeedback>
-              <Select placeholder="SELECT EMPLOYEE" onChange={handleUserChange}>
+              <Select
+                placeholder="SELECT EMPLOYEE"
+                onChange={handleUserChange}
+                showSearch
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
                 {users.map((user) => (
                   <Select.Option value={user.id} key={user.id}>
                     {user.name}

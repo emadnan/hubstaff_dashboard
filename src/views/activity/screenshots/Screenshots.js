@@ -349,7 +349,15 @@ const Screenshots = () => {
                   width: '100%',
                 }}
               >
-                <Select placeholder="Members" onChange={handleUserChange} value={user_id}>
+                <Select
+                  placeholder="Members"
+                  onChange={handleUserChange}
+                  value={user_id}
+                  showSearch
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
                   {users.map((user) => (
                     <Select.Option value={user.id} key={user.id}>
                       {user.name}
