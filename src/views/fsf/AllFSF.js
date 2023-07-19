@@ -661,7 +661,7 @@ function AllFSF() {
                   {index + 1}
                 </CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle2}>
-                  {fsf.wricef_id}
+                  {fsf.wricef_id}-{fsf.fsf_version}
                 </CTableHeaderCell>
                 {local.Users.role === 6 ? (
                   <CTableHeaderCell className="text-center" style={mystyle2}>
