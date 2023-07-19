@@ -472,7 +472,7 @@ function CRFform() {
                             <CardContent>
 
                                 <div className="form-outline mb-3">
-                                    <label>Requirement</label>
+                                    <h6>Requirement</h6>
                                     <Form.Item>
                                         <input
                                             type="text"

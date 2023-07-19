@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react'
-import { Button, Modal } from 'antd'
+import { Button, Divider, Modal } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import IconButton from '@mui/material/IconButton'
@@ -53,11 +53,12 @@ function AllCRF() {
   }
 
   const perStyle = {
-    fontSize: 14,
+    fontSize: 16,
+    fontWeight: 'bold',
   }
 
   const perStyle2 = {
-    fontSize: 14,
+    fontSize: 18,
     textAlign: 'center',
     fontWeight: 'bold',
   }
@@ -234,7 +235,7 @@ function AllCRF() {
 
       {/* Modal for View FSF Details */}
       <Modal
-        title={<div style={{ textAlign: 'center', fontWeight: 'bold' }}>CRF Details</div>}
+        title={<div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 26 }}>Change Request Form</div>}
         open={isModalOpen2}
         onOk={handleOk2}
         okButtonProps={{ style: { background: 'blue' } }}
@@ -244,7 +245,7 @@ function AllCRF() {
         {bycrf.map((crf) => {
           return (
             <div key={crf.id}>
-              <br></br>
+              <Divider></Divider>
               <h6 style={perStyle}>Customer</h6>
               <p>{crf.project_details.project_name}</p>
               <h6 style={perStyle}>Implementation Partner</h6>
@@ -255,6 +256,19 @@ function AllCRF() {
               <p>{new Date(crf.issuance_date).toLocaleDateString()}</p>
               <h6 style={perStyle}>Author</h6>
               <p>{crf.author}</p>
+              <Divider></Divider>
+              <h6 style={perStyle2}>Change Request Summary</h6>
+              <br></br>
+              <h6 style={perStyle}>Change Request Number</h6>
+              <p>{crf.doc_ref_no}-{crf.crf_version}</p>
+              <h6 style={perStyle}>New Requirements</h6>
+              <p>{crf.crs_ddetails.requirement}</p>
+              <h6 style={perStyle}>Required Time</h6>
+              <p>{crf.crs_ddetails.required_time_no} {crf.crs_ddetails.required_time_type}</p>
+              <h6 style={perStyle}>Functional Resource Requirement</h6>
+              <p>{crf.crs_ddetails.functional_resource}</p>
+              <h6 style={perStyle}>Technical Resource Requirement</h6>
+              <p>{crf.crs_ddetails.Technical_resource}</p>
             </div>
           )
         })}
