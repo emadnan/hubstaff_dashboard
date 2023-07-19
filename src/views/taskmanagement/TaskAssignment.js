@@ -853,7 +853,14 @@ function TaskAssignment() {
         <Form form={form} className="row col-md-6">
           <Box className="col-md-6">
             <Form.Item name="selectUser" hasFeedback>
-              <Select placeholder="SELECT EMPLOYEE" onChange={(value) => setSelectedUser(value)}>
+              <Select
+                placeholder="SELECT EMPLOYEE"
+                onChange={(value) => setSelectedUser(value)}
+                showSearch
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
                 {users.map((user) => (
                   <Select.Option value={user.id} key={user.id}>
                     {user.name}
@@ -864,7 +871,14 @@ function TaskAssignment() {
           </Box>
           <Box className="col-md-6">
             <Form.Item name="selectProject" hasFeedback>
-              <Select placeholder="SELECT PROJECT" onChange={(value) => setSelectedProject(value)}>
+              <Select
+                placeholder="SELECT PROJECT"
+                onChange={(value) => setSelectedProject(value)}
+                showSearch
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
                 {projects.map((project) => (
                   <Select.Option value={project.id} key={project.id}>
                     {project.project_name}

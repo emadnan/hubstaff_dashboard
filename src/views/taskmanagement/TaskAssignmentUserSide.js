@@ -301,7 +301,14 @@ const TaskAssignmentUserSide = () => {
         <Box className="col-md-4">
           <Form form={form}>
             <Form.Item name="select" hasFeedback>
-              <Select placeholder="SELECT PROJECT" onChange={handleFilterTaskOnProjectChange}>
+              <Select
+                placeholder="SELECT PROJECT"
+                onChange={handleFilterTaskOnProjectChange}
+                showSearch
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
                 {projects.map((project) => (
                   <Select.Option value={project.id} key={project.id}>
                     {project.project_name}

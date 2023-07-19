@@ -777,6 +777,10 @@ const Projects = () => {
                     placeholder="Select Department"
                     onChange={handleDepartmentSelect}
                     value={department_id}
+                    showSearch
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
                   >
                     {department.map((dept) => (
                       <Select.Option value={dept.id} key={dept.id}>
