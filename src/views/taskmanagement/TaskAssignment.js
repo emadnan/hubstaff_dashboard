@@ -836,71 +836,75 @@ function TaskAssignment() {
           </div>
         )}
       </div>
-      <div className="row">
-        <Box className="col-md-3">
-          <Space
-            style={{
-              marginBottom: 24,
-            }}
+      {isLoading ? (
+        ''
+      ) : (
+        <div className="row">
+          <Box className="col-md-3">
+            <Space
+              style={{
+                marginBottom: 24,
+              }}
+            >
+              <Radio.Group onChange={changeTab}>
+                <Radio.Button value="Pending">To Do</Radio.Button>
+                <Radio.Button value="InProgress">In-Progress</Radio.Button>
+                <Radio.Button value="Completed">Done</Radio.Button>
+              </Radio.Group>
+            </Space>
+          </Box>
+          <Form form={form} className="row col-md-6">
+            <Box className="col-md-6">
+              <Form.Item name="selectUser" hasFeedback>
+                <Select
+                  placeholder="SELECT EMPLOYEE"
+                  onChange={(value) => setSelectedUser(value)}
+                  showSearch
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {users.map((user) => (
+                    <Select.Option value={user.id} key={user.id}>
+                      {user.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Box>
+            <Box className="col-md-6">
+              <Form.Item name="selectProject" hasFeedback>
+                <Select
+                  placeholder="SELECT PROJECT"
+                  onChange={(value) => setSelectedProject(value)}
+                  showSearch
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {projects.map((project) => (
+                    <Select.Option value={project.id} key={project.id}>
+                      {project.project_name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Box>
+          </Form>
+          <Box
+            className="col-md-3 d-flex justify-content-end"
+            sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}
           >
-            <Radio.Group onChange={changeTab}>
-              <Radio.Button value="Pending">To Do</Radio.Button>
-              <Radio.Button value="InProgress">In-Progress</Radio.Button>
-              <Radio.Button value="Completed">Done</Radio.Button>
-            </Radio.Group>
-          </Space>
-        </Box>
-        <Form form={form} className="row col-md-6">
-          <Box className="col-md-6">
-            <Form.Item name="selectUser" hasFeedback>
-              <Select
-                placeholder="SELECT EMPLOYEE"
-                onChange={(value) => setSelectedUser(value)}
-                showSearch
-                filterOption={(input, option) =>
-                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }
-              >
-                {users.map((user) => (
-                  <Select.Option value={user.id} key={user.id}>
-                    {user.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Box>
-          <Box className="col-md-6">
-            <Form.Item name="selectProject" hasFeedback>
-              <Select
-                placeholder="SELECT PROJECT"
-                onChange={(value) => setSelectedProject(value)}
-                showSearch
-                filterOption={(input, option) =>
-                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }
-              >
-                {projects.map((project) => (
-                  <Select.Option value={project.id} key={project.id}>
-                    {project.project_name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Box>
-        </Form>
-        <Box
-          className="col-md-3 d-flex justify-content-end"
-          sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}
-        >
-          <Button type="default" onClick={applyFilters}>
-            Apply Filter
-          </Button>
+            <Button type="default" onClick={applyFilters}>
+              Apply Filter
+            </Button>
 
-          <Button type="default" onClick={clearFilters} danger>
-            Clear Filter
-          </Button>
-        </Box>
-      </div>
+            <Button type="default" onClick={clearFilters} danger>
+              Clear Filter
+            </Button>
+          </Box>
+        </div>
+      )}
 
       <br></br>
 
