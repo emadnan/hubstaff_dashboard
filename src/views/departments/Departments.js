@@ -152,7 +152,13 @@ const Departments = () => {
   }
 
   const handleOk3 = () => {
-    if (company_id && department_name && description) {
+    console.log(
+      "company_id !== '' && department_name !== '' && description !== '' : ",
+      company_id,
+      department_name,
+      description,
+    )
+    if (company_id !== '' && department_name !== '' && description !== '') {
       updateDepartment(isModalOpen3)
       setIsModalOpen3(false)
       form.resetFields()
@@ -694,7 +700,7 @@ const Departments = () => {
                   <input
                     name="department_name"
                     type="text"
-                    defaultValue={dept.department_name}
+                    value={department_name}
                     onFocus={handleFocus}
                     onChange={(e) => setDepartmentName(e.target.value)}
                     className="form-control form-control-lg"
@@ -710,7 +716,7 @@ const Departments = () => {
                   <input
                     name="descrition"
                     type="text"
-                    defaultValue={dept.description}
+                    value={description}
                     onFocus={handleFocus}
                     onChange={(e) => setDescription(e.target.value)}
                     className="form-control form-control-lg"
