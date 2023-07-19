@@ -92,6 +92,11 @@ const Departments = () => {
       setCompanyId('')
       setDepartmentName('')
       setDescription('')
+      setFormErrors({
+        company_id: '',
+        department_name: '',
+        description: '',
+      })
     } else {
       callErrors(company_id, department_name, description)
     }
@@ -117,6 +122,11 @@ const Departments = () => {
     setCompanyId('')
     setDepartmentName('')
     setDescription('')
+    setFormErrors({
+      company_id: '',
+      department_name: '',
+      description: '',
+    })
   }
 
   // Functions for Delete Department Modal
@@ -149,6 +159,11 @@ const Departments = () => {
       setCompanyId('')
       setDepartmentName('')
       setDescription('')
+      setFormErrors({
+        company_id: '',
+        department_name: '',
+        description: '',
+      })
     } else {
       callErrors(company_id, department_name, description)
     }
@@ -160,6 +175,11 @@ const Departments = () => {
     setCompanyId('')
     setDepartmentName('')
     setDescription('')
+    setFormErrors({
+      company_id: '',
+      department_name: '',
+      description: '',
+    })
   }
 
   // Functions for Add Department Success

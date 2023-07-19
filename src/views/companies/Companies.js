@@ -104,6 +104,14 @@ const Companies = () => {
       setContactNo('')
       setCity('')
       setCountry('')
+      setFormErrors({
+        company_name: '',
+        address: '',
+        company_email: '',
+        city: '',
+        country: '',
+        contact_no: '',
+      })
     } else {
       callErrors(company_name, address, company_email, city, country, contact_no)
     }
@@ -159,6 +167,14 @@ const Companies = () => {
     setContactNo('')
     setCity('')
     setCountry('')
+    setFormErrors({
+      company_name: '',
+      address: '',
+      company_email: '',
+      city: '',
+      country: '',
+      contact_no: '',
+    })
   }
 
   // Functions for Delete Company Modal
@@ -189,6 +205,14 @@ const Companies = () => {
       setIsModalOpen3(false)
       setEnableChangeCity(false)
       form.resetFields()
+      setFormErrors({
+        company_name: '',
+        address: '',
+        company_email: '',
+        city: '',
+        country: '',
+        contact_no: '',
+      })
     } else {
       callErrors(company_name, address, company_email, city, country, contact_no)
     }
@@ -198,6 +222,14 @@ const Companies = () => {
     setIsModalOpen3(false)
     setEnableChangeCity(false)
     form.resetFields()
+    setFormErrors({
+      company_name: '',
+      address: '',
+      company_email: '',
+      city: '',
+      country: '',
+      contact_no: '',
+    })
   }
 
   // Functions for Show Details Modal

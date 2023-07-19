@@ -124,6 +124,14 @@ const Projects = () => {
       setDescription('')
       setStartDate('')
       setDeadLine('')
+      setFormErrors({
+        company_id: '',
+        department_id: '',
+        project_name: '',
+        description: '',
+        start_date: '',
+        dead_line: '',
+      })
     } else {
       callErrors(company_id, department_id, project_name, description, start_date, dead_line)
     }
@@ -168,6 +176,14 @@ const Projects = () => {
     setDescription('')
     setStartDate('')
     setDeadLine('')
+    setFormErrors({
+      company_id: '',
+      department_id: '',
+      project_name: '',
+      description: '',
+      start_date: '',
+      dead_line: '',
+    })
   }
 
   // Functions for Delete Project Modal
@@ -203,6 +219,14 @@ const Projects = () => {
       setDescription('')
       setStartDate('')
       setDeadLine('')
+      setFormErrors({
+        company_id: '',
+        department_id: '',
+        project_name: '',
+        description: '',
+        start_date: '',
+        dead_line: '',
+      })
     } else {
       callErrors(company_id, department_id, project_name, description, start_date, dead_line)
     }
@@ -217,6 +241,14 @@ const Projects = () => {
     setDescription('')
     setStartDate('')
     setDeadLine('')
+    setFormErrors({
+      company_id: '',
+      department_id: '',
+      project_name: '',
+      description: '',
+      start_date: '',
+      dead_line: '',
+    })
   }
 
   // Functions for Assign Users Modal

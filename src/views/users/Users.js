@@ -103,6 +103,12 @@ const Users = () => {
       setPassword('')
       setRole('')
       setTeamId('')
+      setFormErrors({
+        name: '',
+        email: '',
+        password: '',
+        role: '',
+      })
     } else {
       callErrors(name, email, password, role)
     }
@@ -116,6 +122,12 @@ const Users = () => {
     setPassword('')
     setRole('')
     setTeamId('')
+    setFormErrors({
+      name: '',
+      email: '',
+      password: '',
+      role: '',
+    })
   }
 
   const validateEmail = (email) => {
@@ -175,6 +187,12 @@ const Users = () => {
       setPassword('')
       setRole('')
       setTeamId('')
+      setFormErrors({
+        name: '',
+        email: '',
+        password: '',
+        role: '',
+      })
     } else {
       callErrors(name, email, password, role)
     }
@@ -188,6 +206,12 @@ const Users = () => {
     setPassword('')
     setRole('')
     setTeamId('')
+    setFormErrors({
+      name: '',
+      email: '',
+      password: '',
+      role: '',
+    })
   }
 
   // Functions for Add User Success
