@@ -24,6 +24,10 @@ function CRFform() {
   const [modulename, setModuleName] = useState('')
   const [crf_id, setCrfId] = useState('')
   const [ref_id, setRef_id] = useState()
+  const [crf_title, setCrfTitle] = useState('')
+  const [type_of_requirement, setTypeOfRequirement] = useState('')
+  const [priority, setPriority] = useState('')
+  const [with_in_project_scope, setWithInProjectScope] = useState('')
   const [requirement, setRequirement] = useState('')
   const [required_time_no, setRequiredTime] = useState('')
   const [required_time_type, setRequiredTimeType] = useState('')
@@ -99,6 +103,11 @@ function CRFform() {
     height: '40px',
   }
 
+  const perStyle = {
+    fontSize: 15,
+    fontWeight: 'bold',
+  }
+
   const handleMouseEnterPrimary = () => {
     setIsHoveredPrimary(true)
   }
@@ -143,6 +152,10 @@ function CRFform() {
         author,
         doc_ref_no,
         crf_id,
+        crf_title,
+        type_of_requirement,
+        priority,
+        with_in_project_scope,
         requirement,
         required_time_no,
         required_time_type,
@@ -168,6 +181,10 @@ function CRFform() {
         author,
         doc_ref_no,
         crf_id,
+        crf_title,
+        type_of_requirement,
+        priority,
+        with_in_project_scope,
         requirement,
         required_time_no,
         required_time_type,
@@ -183,31 +200,24 @@ function CRFform() {
   }
 
   const handleNext3 = () => {
-    console.log(
-      'crf_id requirement required_time_no required_time_type functional_resource Technical_resource',
-      ref_id,
-      requirement,
-      required_time_no,
-      required_time_type,
-      functional_resource,
-      Technical_resource,
-    )
     if (
       ref_id &&
+      crf_title &&
+      type_of_requirement &&
+      priority &&
+      with_in_project_scope &&
       requirement &&
       required_time_no &&
       required_time_type &&
       functional_resource &&
       Technical_resource
     ) {
-      console.log('Condition True')
       setShowLevel3(false)
       addChangeRequestSummary()
       setTimeout(() => {
         navigate('/allcrf')
       }, 2000)
     } else {
-      console.log('Condition false Api Call')
       callErrors(
         project_id,
         module_id,
@@ -218,6 +228,10 @@ function CRFform() {
         author,
         doc_ref_no,
         crf_id,
+        crf_title,
+        type_of_requirement,
+        priority,
+        with_in_project_scope,
         requirement,
         required_time_no,
         required_time_type,
@@ -257,7 +271,6 @@ function CRFform() {
     if (value === '0') {
       setIsModalVisible(true)
     } else {
-      // setFsfId(value)
       handleReference(value)
     }
   }
@@ -268,6 +281,18 @@ function CRFform() {
 
   const handleTimeChange = (value) => {
     setRequiredTime(value)
+  }
+
+  const handleTypeOfRequirementChange = (value) => {
+    setTypeOfRequirement(value)
+  }
+
+  const handlePriorityChange = (value) => {
+    setPriority(value)
+  }
+
+  const handleWithInProjectScopeChange = (value) => {
+    setWithInProjectScope(value)
   }
 
   const handleTypeChange = (value) => {
@@ -292,6 +317,10 @@ function CRFform() {
     author: '',
     doc_ref_no: '',
     crf_id: '',
+    crf_title: '',
+    type_of_requirement: '',
+    priority: '',
+    with_in_project_scope: '',
     requirement: '',
     required_time_no: '',
     required_time_type: '',
@@ -318,6 +347,10 @@ function CRFform() {
     author,
     doc_ref_no,
     crf_id,
+    crf_title,
+    type_of_requirement,
+    priority,
+    with_in_project_scope,
     requirement,
     required_time_no,
     required_time_type,
@@ -325,48 +358,60 @@ function CRFform() {
     Technical_resource,
   ) => {
     const errors = {}
-    if (showLevel1 && !project_id) {
-      errors.project_id = 'Please Select the Project'
-    }
-    if (showLevel1 && !module_id) {
-      errors.module_id = 'Please Select the Module'
-    }
-    if (showLevel2 && !fsf_id) {
-      errors.fsf_id = 'Please Select the FSF'
-    }
-    if (showLevel2 && !reference) {
-      errors.reference = 'Please Select the Reference Id'
-    }
-    if (showLevel2 && !implementation_partner) {
-      errors.implementation_partner = 'Please Select the Implementation Partner'
-    }
-    if (showLevel2 && !issuance_date) {
-      errors.issuance_date = 'Please Select the Insurance Date'
-    }
-    if (showLevel2 && !author) {
-      errors.author = 'Please Select the Authur'
-    }
-    if (showLevel2 && !doc_ref_no) {
-      errors.doc_ref_no = 'Please Select the Document Reference No.'
-    }
-    if (showLevel3 && !crf_id) {
-      errors.crf_id = 'Please Select CRF Id'
-    }
-    if (showLevel3 && !requirement) {
-      errors.requirement = 'Enter Your Requirements'
-    }
-    if (showLevel3 && !required_time_no) {
-      errors.required_time_no = 'Please Select Requirement Time'
-    }
-    if (showLevel3 && !required_time_type) {
-      errors.required_time_type = 'Please Select Requirement Time Type'
-    }
-    if (showLevel3 && !functional_resource) {
-      errors.functional_resource = 'Please Select Function Resource'
-    }
-    if (showLevel3 && !Technical_resource) {
-      errors.Technical_resource = 'Please Select Technical Resource'
-    }
+      if (showLevel1 && !project_id) {
+          errors.project_id = 'Please Select the Project'
+      }
+      if (showLevel1 && !module_id) {
+          errors.module_id = 'Please Select the Module'
+      }
+      if (showLevel2 && !fsf_id) {
+          errors.fsf_id = 'Please Select the FSF'
+      }
+      if (showLevel2 && !reference) {
+          errors.reference = 'Please Select the Reference Id'
+      }
+      if (showLevel2 && !implementation_partner) {
+          errors.implementation_partner = 'Please Select the Implementation Partner'
+      }
+      if (showLevel2 && !issuance_date) {
+          errors.issuance_date = 'Please Select the Insurance Date'
+      }
+      if (showLevel2 && !author) {
+          errors.author = 'Please Select the Authur'
+      }
+      if (showLevel2 && !doc_ref_no) {
+          errors.doc_ref_no = 'Please Select the Document Reference No'
+      }
+      if (showLevel3 && !crf_id) {
+          errors.crf_id = 'Please Select CRF Id'
+      }
+      if (showLevel3 && !crf_title) {
+          errors.crf_title = 'Please Enter Your CRF Title'
+      }
+      if (showLevel3 && !type_of_requirement) {
+          errors.type_of_requirement = 'Please Select the Type of Requirement'
+      }
+      if (showLevel3 && !priority) {
+          errors.priority = 'Please Select the Priority'
+      }
+      if (showLevel3 && !with_in_project_scope) {
+          errors.with_in_project_scope = 'Please Select With-In Project Scope '
+      }
+      if (showLevel3 && !requirement) {
+          errors.requirement = 'Enter Your Requirements'
+      }
+      if (showLevel3 && !required_time_no) {
+          errors.required_time_no = 'Please Select Requirement Time'
+      }
+      if (showLevel3 && !required_time_type) {
+          errors.required_time_type = 'Please Select Requirement Time Type'
+      }
+      if (showLevel3 && !functional_resource) {
+          errors.functional_resource = 'Please Select Function Resource'
+      }
+      if (showLevel3 && !Technical_resource) {
+          errors.Technical_resource = 'Please Select Technical Resource'
+      }
 
     setFormErrors(errors)
   }
@@ -458,6 +503,10 @@ function CRFform() {
   async function addChangeRequestSummary() {
     let user = {
       crf_id: ref_id,
+      crf_title,
+      type_of_requirement,
+      priority,
+      with_in_project_scope,
       requirement,
       required_time_no,
       required_time_type,
@@ -543,7 +592,7 @@ function CRFform() {
             <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
               <CardContent>
                 <div className="form-outline mb-6">
-                  <h6>Project Name</h6>
+                  <h6 style={perStyle}>Project Name</h6>
                   <Box>
                     <Form.Item
                       name="project_id"
@@ -575,7 +624,7 @@ function CRFform() {
                 </div>
 
                 <div className="form-outline mb-6">
-                  <h6>Module Name</h6>
+                  <h6 style={perStyle}>Module Name</h6>
                   <Box>
                     <Form.Item
                       name="module_id"
@@ -642,7 +691,7 @@ function CRFform() {
             <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
               <CardContent>
                 <div className="form-outline mb-6">
-                  <h6>FSF</h6>
+                  <h6 style={perStyle}>FSF</h6>
                   <Box>
                     <Form.Item
                       name="fsf_id"
@@ -673,7 +722,7 @@ function CRFform() {
                 </div>
 
                 <div className="form-outline mb-6">
-                  <h6>Document Reference No</h6>
+                  <h6 style={perStyle}>Document Reference No</h6>
                   <Box>
                     <Form.Item
                       name="reference"
@@ -755,8 +804,25 @@ function CRFform() {
           <div className="row justify-content-center">
             <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
               <CardContent>
+              <div className="form-outline mb-3">
+                  <h6 style={perStyle}>Title</h6>
+                  <Form.Item
+                    name="crf_title"
+                    validateStatus={formErrors.crf_title ? 'error' : ''}
+                    help={formErrors.crf_title}
+                  >
+                    <input
+                      type="text"
+                      value={crf_title}
+                      onChange={(e) => setCrfTitle(e.target.value)}
+                      className="form-control form-control-lg"
+                      placeholder="Enter Title"
+                    />
+                  </Form.Item>
+                </div>
+
                 <div className="form-outline mb-3">
-                  <label>Requirement</label>
+                  <h6 style={perStyle}>New Requirement Detail</h6>
                   <Form.Item
                     name="requirement"
                     validateStatus={formErrors.requirement ? 'error' : ''}
@@ -767,13 +833,65 @@ function CRFform() {
                       value={requirement}
                       onChange={(e) => setRequirement(e.target.value)}
                       className="form-control form-control-lg"
-                      placeholder="Enter Requirements"
+                      placeholder="Enter New Requirement Detail"
                     />
                   </Form.Item>
                 </div>
 
+                <div className="form-outline mb-6">
+                  <h6 style={perStyle}>Type Of Requirement</h6>
+                  <Box>
+                    <Form.Item
+                      name="type_of_requirement"
+                      validateStatus={formErrors.type_of_requirement ? 'error' : ''}
+                      help={formErrors.type_of_requirement}
+                      hasFeedback
+                    >
+                      <Select
+                        showSearch
+                        placeholder="Select Type of Requirement"
+                        onChange={handleTypeOfRequirementChange}
+                        value={type_of_requirement}
+                        filterOption={(input, option) =>
+                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                      >
+                        <Select.Option value="Change">Change</Select.Option>
+                        <Select.Option value="Enhancement">Enhancement</Select.Option>
+                        <Select.Option value="Error_rectification">Error Rectification</Select.Option>
+                      </Select>
+                    </Form.Item>
+                  </Box>
+                </div>
+
+                <div className="form-outline mb-6">
+                  <h6 style={perStyle}>Priority</h6>
+                  <Box>
+                    <Form.Item
+                      name="priority"
+                      validateStatus={formErrors.priority ? 'error' : ''}
+                      help={formErrors.priority}
+                      hasFeedback
+                    >
+                      <Select
+                        showSearch
+                        placeholder="Select Priority"
+                        onChange={handlePriorityChange}
+                        value={priority}
+                        filterOption={(input, option) =>
+                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                      >
+                        <Select.Option value="Low">Low</Select.Option>
+                        <Select.Option value="Medium">Medium</Select.Option>
+                        <Select.Option value="High">High</Select.Option>
+                      </Select>
+                    </Form.Item>
+                  </Box>
+                </div>
+
                 <div className="form-outline mb-6 time-container">
-                  <h6>Required Time</h6>
+                  <h6 style={perStyle}>Required Time</h6>
                   <Box>
                     <Form.Item
                       name="required_time_no"
@@ -829,7 +947,7 @@ function CRFform() {
                 </div>
 
                 <div className="form-outline mb-6">
-                  <h6>Functional Resource</h6>
+                  <h6 style={perStyle}>Functional Resource (required)</h6>
                   <Box>
                     <Form.Item
                       name="functional_resource"
@@ -854,7 +972,7 @@ function CRFform() {
                 </div>
 
                 <div className="form-outline mb-6">
-                  <h6>Technical Resource</h6>
+                  <h6 style={perStyle}>Technical Resource (required)</h6>
                   <Box>
                     <Form.Item
                       name="Technical_resource"
@@ -867,6 +985,31 @@ function CRFform() {
                         placeholder="Select Required"
                         onChange={handleTechnicalResourceChange}
                         value={Technical_resource}
+                        filterOption={(input, option) =>
+                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                      >
+                        <Select.Option value="Yes">Yes</Select.Option>
+                        <Select.Option value="No">No</Select.Option>
+                      </Select>
+                    </Form.Item>
+                  </Box>
+                </div>
+
+                <div className="form-outline mb-6">
+                  <h6 style={perStyle}>Within Project Scope</h6>
+                  <Box>
+                    <Form.Item
+                      name="with_in_project_scope"
+                      validateStatus={formErrors.with_in_project_scope ? 'error' : ''}
+                      help={formErrors.with_in_project_scope}
+                      hasFeedback
+                    >
+                      <Select
+                        showSearch
+                        placeholder="Select Within Project Scope"
+                        onChange={handleWithInProjectScopeChange}
+                        value={with_in_project_scope}
                         filterOption={(input, option) =>
                           option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                         }
