@@ -14,6 +14,13 @@ function AllCRF() {
   //Local Storage access
   const local = JSON.parse(localStorage.getItem('user-info'))
   const navigate = useNavigate()
+  const permissions = local.permissions
+  const perm = permissions.map((permission) => ({
+    name: permission.name,
+  }))
+
+  //Role & Permissions check
+  const isCreateButtonEnabled = perm.some((item) => item.name === 'Create_Crf')
 
   //CSS Stylings
   const buttonStyle = {
@@ -153,7 +160,7 @@ function AllCRF() {
     await fetch(`${BASE_URL}/api/getChangeRequestForm`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 6) {
+        if (local.Users.role === 6 || local.Users.role === 7) {
           filteredUsers = data.CRForm.filter((user) => user.company_id === local.Users.company_id)
         }
         setCrf(filteredUsers)
@@ -200,15 +207,17 @@ function AllCRF() {
         </div>
         <div className="col-md 6">
           {/* Add CRF Button */}
-          <Button
-            className="btn btn-primary"
-            style={buttonStyle}
-            onClick={async () => {
-              await navigate('/crfform')
-            }}
-          >
-            Add CRF
-          </Button>
+          {isCreateButtonEnabled ? (
+            <Button
+              className="btn btn-primary"
+              style={buttonStyle}
+              onClick={async () => {
+                await navigate('/crfform')
+              }}
+            >
+              Add CRF
+            </Button>
+          ) : null}
         </div>
       </div>
       <br></br>
@@ -245,9 +254,13 @@ function AllCRF() {
                 <IconButton aria-label="view" title="View CRF" onClick={() => showModal2(crf.id)}>
                   <VisibilityIcon htmlColor="#28B463" />
                 </IconButton>
-                <IconButton aria-label="delete" onClick={() => showModal1(crf.id)}>
-                  <DeleteIcon htmlColor="#FF0000" />
-                </IconButton>
+                {
+                  local.Users.role === 6 ? (
+                    <IconButton aria-label="delete" onClick={() => showModal1(crf.id)}>
+                      <DeleteIcon htmlColor="#FF0000" />
+                    </IconButton>
+                  ) : null
+                }
               </CTableHeaderCell>
             </CTableRow>
           ))}
