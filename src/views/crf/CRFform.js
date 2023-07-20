@@ -61,6 +61,7 @@ function CRFform() {
   //CSS Styling
   const [isHoveredPrimary, setIsHoveredPrimary] = useState(false)
   const [isHoveredDanger, setIsHoveredDanger] = useState(false)
+  const [isHoveredSuccess, setIsHoveredSuccess] = useState(false)
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   const primaryButtonStyle = {
@@ -71,6 +72,12 @@ function CRFform() {
 
   const dangerButtonStyle = {
     backgroundColor: isHoveredDanger ? '#FAA0A0' : 'red',
+    color: 'white',
+    transition: 'background-color 0.3s',
+  }
+
+  const successButtonStyle = {
+    backgroundColor: isHoveredSuccess ? '#90EE90' : 'green',
     color: 'white',
     transition: 'background-color 0.3s',
   }
@@ -106,6 +113,14 @@ function CRFform() {
 
   const handleMouseLeaveDanger = () => {
     setIsHoveredDanger(false)
+  }
+
+  const handleMouseEnterSuccess = () => {
+    setIsHoveredSuccess(true)
+  }
+
+  const handleMouseLeaveSuccess = () => {
+    setIsHoveredSuccess(false)
   }
 
   const [showLevel1, setShowLevel1] = useState(true)
@@ -865,11 +880,11 @@ function CRFform() {
 
                 <Button
                   onClick={handleNext3}
-                  style={primaryButtonStyle}
-                  onMouseEnter={handleMouseEnterPrimary}
-                  onMouseLeave={handleMouseLeavePrimary}
+                  style={successButtonStyle}
+                  onMouseEnter={handleMouseEnterSuccess}
+                  onMouseLeave={handleMouseLeaveSuccess}
                 >
-                  Next
+                  Submit
                 </Button>
               </CardContent>
             </Card>
