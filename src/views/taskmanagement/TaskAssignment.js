@@ -70,14 +70,12 @@ function TaskAssignment() {
   const [totalItemsCompleted, setTotalItemsCompleted] = useState(0)
   const [currentItemsCompleted, setCurrentItemsCompleted] = useState([])
 
-  const [selectedUser, setSelectedUser] = useState()
-  const [selectedProject, setSelectedProject] = useState()
+  const [selectedUser, setSelectedUser] = useState('')
+  const [selectedProject, setSelectedProject] = useState('')
 
   const [isPendingTasksTab, setIsPendingTasksTab] = useState(true)
   const [isInProgressTasksTab, setIsInProgressTasksTab] = useState(false)
   const [isCompletedTaskTab, setIsCompletedTasksTab] = useState(false)
-
-  const [isFilterApplied, setIsFilterApplied] = useState(false)
 
   let [form] = Form.useForm()
 
@@ -142,31 +140,27 @@ function TaskAssignment() {
     setProjectId(value)
   }
 
-  const applyFilters = () => {
-    setIsFilterApplied(true)
-    if (selectedUser && selectedProject) {
-      getTaskByProjectAndUserId()
-    } else if (selectedProject && !selectedUser) {
-      getTaskByProjectId()
-    } else if (!selectedProject && selectedUser) {
-      getTasksByUserId()
-    } else {
-      return
-    }
-  }
+  // const applyFilters = () => {
+  //   if (selectedUser && selectedProject) {
+  //     getTaskByProjectAndUserId()
+  //   } else if (selectedProject && !selectedUser) {
+  //     getTaskByProjectId()
+  //   } else if (!selectedProject && selectedUser) {
+  //     getTasksByUserId()
+  //   } else {
+  //     return
+  //   }
+  // }
 
   const clearFilters = () => {
-    setIsFilterApplied(false)
     getTasks()
     form.resetFields()
-    setSelectedUser(null)
-    setSelectedProject(null)
+    setSelectedUser('')
+    setSelectedProject('')
   }
 
   const changeTab = (e) => {
-    if (isFilterApplied === false) {
-      clearFilters()
-    }
+    clearFilters()
 
     if (e.target.value === 'Completed') {
       setIsPendingTasksTab(false)
@@ -413,9 +407,30 @@ function TaskAssignment() {
 
       if (local.Users.role === 7) {
         const filteredUsersTask = data.task.filter((user) => user.team_lead_id === local.Users.id)
-        const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
-        const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
-        const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
+
+        // Step 1: Concatenate Ticket No with Project Name
+        const tasksWithConcatenatedNames = filteredUsersTask.map((task) => {
+          const project_name = task.project_name
+          const initials = project_name
+            .split(' ')
+            .map((word) => word[0])
+            .join('')
+          const ticket_no = task.ticket_no
+          const concatenatedName = initials + '-' + String(ticket_no).padStart(2, '0')
+
+          // Adding the new property "concatenatedName" to the task object
+          return {
+            ...task,
+            concatenatedName,
+          }
+        })
+
+        console.log('tasksWithConcatenatedNames: ', tasksWithConcatenatedNames)
+        const todoTasks = tasksWithConcatenatedNames.filter((task) => task.status === 'Pending')
+        const in_progressTasks = tasksWithConcatenatedNames.filter(
+          (task) => task.status === 'InProgress',
+        )
+        const doneTasks = tasksWithConcatenatedNames.filter((task) => task.status === 'Completed')
         setPendingTasks(todoTasks)
         setInProgressTasks(in_progressTasks)
         setCompletedTasks(doneTasks)
@@ -428,65 +443,65 @@ function TaskAssignment() {
     }
   }
 
-  async function getTasksByUserId() {
-    await fetch(`${BASE_URL}/api/getTaskByUserId/${selectedUser}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (local.Users.role === 7) {
-          const filteredUsersTask = data.task.filter((user) => user.team_lead_id === local.Users.id)
-          const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
-          const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
-          const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
-          setPendingTasks(todoTasks)
-          setInProgressTasks(in_progressTasks)
-          setCompletedTasks(doneTasks)
-          setTotalItemsPending(todoTasks.length)
-          setTotalItemsInProgress(in_progressTasks.length)
-          setTotalItemsCompleted(doneTasks.length)
-        }
-      })
-      .catch((error) => console.log(error))
-  }
+  // async function getTasksByUserId() {
+  //   await fetch(`${BASE_URL}/api/getTaskByUserId/${selectedUser}`)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (local.Users.role === 7) {
+  //         const filteredUsersTask = data.task.filter((user) => user.team_lead_id === local.Users.id)
+  //         const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
+  //         const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
+  //         const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
+  //         setPendingTasks(todoTasks)
+  //         setInProgressTasks(in_progressTasks)
+  //         setCompletedTasks(doneTasks)
+  //         setTotalItemsPending(todoTasks.length)
+  //         setTotalItemsInProgress(in_progressTasks.length)
+  //         setTotalItemsCompleted(doneTasks.length)
+  //       }
+  //     })
+  //     .catch((error) => console.log(error))
+  // }
 
-  const getTaskByProjectId = async () => {
-    await fetch(`${BASE_URL}/api/getTaskByProjectId/${selectedProject}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (local.Users.role === 7) {
-          const filteredUsersTask = data.task.filter((task) => task.team_lead_id === local.Users.id)
-          const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
-          const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
-          const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
-          setPendingTasks(todoTasks)
-          setInProgressTasks(in_progressTasks)
-          setCompletedTasks(doneTasks)
-          setTotalItemsPending(todoTasks.length)
-          setTotalItemsInProgress(in_progressTasks.length)
-          setTotalItemsCompleted(doneTasks.length)
-        }
-      })
-      .catch((error) => console.log(error))
-  }
+  // const getTaskByProjectId = async () => {
+  //   await fetch(`${BASE_URL}/api/getTaskByProjectId/${selectedProject}`)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (local.Users.role === 7) {
+  //         const filteredUsersTask = data.task.filter((task) => task.team_lead_id === local.Users.id)
+  //         const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
+  //         const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
+  //         const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
+  //         setPendingTasks(todoTasks)
+  //         setInProgressTasks(in_progressTasks)
+  //         setCompletedTasks(doneTasks)
+  //         setTotalItemsPending(todoTasks.length)
+  //         setTotalItemsInProgress(in_progressTasks.length)
+  //         setTotalItemsCompleted(doneTasks.length)
+  //       }
+  //     })
+  //     .catch((error) => console.log(error))
+  // }
 
-  const getTaskByProjectAndUserId = async () => {
-    await fetch(`${BASE_URL}/api/getTaskByUserIdAndProjectId/${selectedUser}/${selectedProject}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (local.Users.role === 7) {
-          const filteredUsersTask = data.task.filter((task) => task.team_lead_id === local.Users.id)
-          const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
-          const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
-          const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
-          setPendingTasks(todoTasks)
-          setInProgressTasks(in_progressTasks)
-          setCompletedTasks(doneTasks)
-          setTotalItemsPending(todoTasks.length)
-          setTotalItemsInProgress(in_progressTasks.length)
-          setTotalItemsCompleted(doneTasks.length)
-        }
-      })
-      .catch((error) => console.log(error))
-  }
+  // const getTaskByProjectAndUserId = async () => {
+  //   await fetch(`${BASE_URL}/api/getTaskByUserIdAndProjectId/${selectedUser}/${selectedProject}`)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (local.Users.role === 7) {
+  //         const filteredUsersTask = data.task.filter((task) => task.team_lead_id === local.Users.id)
+  //         const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
+  //         const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
+  //         const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
+  //         setPendingTasks(todoTasks)
+  //         setInProgressTasks(in_progressTasks)
+  //         setCompletedTasks(doneTasks)
+  //         setTotalItemsPending(todoTasks.length)
+  //         setTotalItemsInProgress(in_progressTasks.length)
+  //         setTotalItemsCompleted(doneTasks.length)
+  //       }
+  //     })
+  //     .catch((error) => console.log(error))
+  // }
 
   async function getUsers() {
     let filteredUsers = []
@@ -895,9 +910,9 @@ function TaskAssignment() {
             className="col-md-3 d-flex justify-content-end"
             sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}
           >
-            <Button type="default" onClick={applyFilters}>
+            {/* <Button type="default" onClick={applyFilters}>
               Apply Filter
-            </Button>
+            </Button> */}
 
             <Button type="default" onClick={clearFilters} danger>
               Clear Filter
@@ -932,7 +947,7 @@ function TaskAssignment() {
                   {/* Task Assignment table heading */}
                   <CTableRow>
                     <CTableHeaderCell className="text-center" style={mystyle}>
-                      Task No.
+                      Ticket #
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle}>
                       Assigned To
@@ -962,24 +977,39 @@ function TaskAssignment() {
                 </CTableHead>
                 <CTableBody>
                   {pendingTasks.length > 0 &&
-                    currentItemsPending.map((task, index) => (
-                      <CTableRow key={task.task_managements_id}>
-                        <CTableHeaderCell
-                          className="text-center"
-                          style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
-                        >
-                          {task.project_name} - {task.task_managements_id}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
-                          {task.name}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell
-                          className="text-center"
-                          style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
-                        >
-                          {task.project_name}
-                        </CTableHeaderCell>
-                        {/* <CTableHeaderCell
+                    currentItemsPending
+                      .filter((user) => {
+                        // Apply User filter
+                        if (selectedUser !== '') {
+                          return user.user_id === selectedUser
+                        }
+                        return true
+                      })
+                      .filter((project) => {
+                        // Apply Project filter
+                        if (selectedProject !== '') {
+                          return project.project_id === selectedProject
+                        }
+                        return true
+                      })
+                      .map((task, index) => (
+                        <CTableRow key={index}>
+                          <CTableHeaderCell
+                            className="text-center"
+                            style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                          >
+                            {task.concatenatedName}
+                          </CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>
+                            {task.name}
+                          </CTableHeaderCell>
+                          <CTableHeaderCell
+                            className="text-center"
+                            style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                          >
+                            {task.project_name}
+                          </CTableHeaderCell>
+                          {/* <CTableHeaderCell
                         className="text-center"
                         style={{ ...mystyle2, width: '200px' }}
                       >
@@ -988,51 +1018,51 @@ function TaskAssignment() {
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {task.priorites}
                       </CTableHeaderCell> */}
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
-                          {task.status}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
-                          {new Date(task.task_managements_start_date)
-                            .toLocaleDateString('en-GB', {
-                              day: '2-digit',
-                              month: '2-digit',
-                              year: 'numeric',
-                            })
-                            .replace(/\//g, '-')}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
-                          {new Date(task.task_managements_dead_line)
-                            .toLocaleDateString('en-GB', {
-                              day: '2-digit',
-                              month: '2-digit',
-                              year: 'numeric',
-                            })
-                            .replace(/\//g, '-')}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
-                          <IconButton
-                            aria-label="View"
-                            onClick={() =>
-                              openModalToTakeActionAgainstTask(task.task_managements_id)
-                            }
-                          >
-                            <VisibilityIcon htmlColor="#0070ff" />
-                          </IconButton>
-                          <IconButton aria-label="Update">
-                            <EditIcon
-                              htmlColor="#28B463"
+                          <CTableHeaderCell className="text-center" style={mystyle2}>
+                            {task.status}
+                          </CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>
+                            {new Date(task.task_managements_start_date)
+                              .toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                              })
+                              .replace(/\//g, '-')}
+                          </CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>
+                            {new Date(task.task_managements_dead_line)
+                              .toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                              })
+                              .replace(/\//g, '-')}
+                          </CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>
+                            <IconButton
+                              aria-label="View"
+                              onClick={() =>
+                                openModalToTakeActionAgainstTask(task.task_managements_id)
+                              }
+                            >
+                              <VisibilityIcon htmlColor="#0070ff" />
+                            </IconButton>
+                            <IconButton
+                              aria-label="Update"
                               onClick={() => showUpdateModal(task.task_managements_id)}
-                            />
-                          </IconButton>
-                          <IconButton aria-label="Delete">
-                            <DeleteIcon
-                              htmlColor="#FF0000"
+                            >
+                              <EditIcon htmlColor="#28B463" />
+                            </IconButton>
+                            <IconButton
+                              aria-label="Delete"
                               onClick={() => showDeleteModal(task.task_managements_id)}
-                            />
-                          </IconButton>
-                        </CTableHeaderCell>
-                      </CTableRow>
-                    ))}
+                            >
+                              <DeleteIcon htmlColor="#FF0000" />
+                            </IconButton>
+                          </CTableHeaderCell>
+                        </CTableRow>
+                      ))}
                 </CTableBody>
               </CTable>
 
@@ -1089,7 +1119,7 @@ function TaskAssignment() {
                   {/* Task Assignment table heading */}
                   <CTableRow>
                     <CTableHeaderCell className="text-center" style={mystyle}>
-                      Task No.
+                      Ticket #
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle}>
                       Assigned To
@@ -1119,24 +1149,39 @@ function TaskAssignment() {
                 </CTableHead>
                 <CTableBody>
                   {inProgressTasks.length > 0 &&
-                    currentItemsInProgress.map((task, index) => (
-                      <CTableRow key={task.task_managements_id}>
-                        <CTableHeaderCell
-                          className="text-center"
-                          style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
-                        >
-                          {task.project_name} - {task.task_managements_id}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
-                          {task.name}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell
-                          className="text-center"
-                          style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
-                        >
-                          {task.project_name}
-                        </CTableHeaderCell>
-                        {/* <CTableHeaderCell
+                    currentItemsInProgress
+                      .filter((user) => {
+                        // Apply User filter
+                        if (selectedUser !== '') {
+                          return user.user_id === selectedUser
+                        }
+                        return true
+                      })
+                      .filter((project) => {
+                        // Apply Project filter
+                        if (selectedProject !== '') {
+                          return project.project_id === selectedProject
+                        }
+                        return true
+                      })
+                      .map((task, index) => (
+                        <CTableRow key={index}>
+                          <CTableHeaderCell
+                            className="text-center"
+                            style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                          >
+                            {task.concatenatedName}
+                          </CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>
+                            {task.name}
+                          </CTableHeaderCell>
+                          <CTableHeaderCell
+                            className="text-center"
+                            style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                          >
+                            {task.project_name}
+                          </CTableHeaderCell>
+                          {/* <CTableHeaderCell
                         className="text-center"
                         style={{ ...mystyle2, width: '200px' }}
                       >
@@ -1145,51 +1190,51 @@ function TaskAssignment() {
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {task.priorites}
                       </CTableHeaderCell> */}
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
-                          {task.status}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
-                          {new Date(task.task_managements_start_date)
-                            .toLocaleDateString('en-GB', {
-                              day: '2-digit',
-                              month: '2-digit',
-                              year: 'numeric',
-                            })
-                            .replace(/\//g, '-')}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
-                          {new Date(task.task_managements_dead_line)
-                            .toLocaleDateString('en-GB', {
-                              day: '2-digit',
-                              month: '2-digit',
-                              year: 'numeric',
-                            })
-                            .replace(/\//g, '-')}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
-                          <IconButton
-                            aria-label="View"
-                            onClick={() =>
-                              openModalToTakeActionAgainstTask(task.task_managements_id)
-                            }
-                          >
-                            <VisibilityIcon htmlColor="#0070ff" />
-                          </IconButton>
-                          <IconButton aria-label="Update">
-                            <EditIcon
-                              htmlColor="#28B463"
+                          <CTableHeaderCell className="text-center" style={mystyle2}>
+                            {task.status}
+                          </CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>
+                            {new Date(task.task_managements_start_date)
+                              .toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                              })
+                              .replace(/\//g, '-')}
+                          </CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>
+                            {new Date(task.task_managements_dead_line)
+                              .toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                              })
+                              .replace(/\//g, '-')}
+                          </CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>
+                            <IconButton
+                              aria-label="View"
+                              onClick={() =>
+                                openModalToTakeActionAgainstTask(task.task_managements_id)
+                              }
+                            >
+                              <VisibilityIcon htmlColor="#0070ff" />
+                            </IconButton>
+                            <IconButton
+                              aria-label="Update"
                               onClick={() => showUpdateModal(task.task_managements_id)}
-                            />
-                          </IconButton>
-                          <IconButton aria-label="Delete">
-                            <DeleteIcon
-                              htmlColor="#FF0000"
+                            >
+                              <EditIcon htmlColor="#28B463" />
+                            </IconButton>
+                            <IconButton
+                              aria-label="Delete"
                               onClick={() => showDeleteModal(task.task_managements_id)}
-                            />
-                          </IconButton>
-                        </CTableHeaderCell>
-                      </CTableRow>
-                    ))}
+                            >
+                              <DeleteIcon htmlColor="#FF0000" />
+                            </IconButton>
+                          </CTableHeaderCell>
+                        </CTableRow>
+                      ))}
                 </CTableBody>
               </CTable>
 
@@ -1248,7 +1293,7 @@ function TaskAssignment() {
                   {/* Task Assignment table heading */}
                   <CTableRow>
                     <CTableHeaderCell className="text-center" style={mystyle}>
-                      Task No.
+                      Ticket #
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle}>
                       Assigned To
@@ -1278,25 +1323,40 @@ function TaskAssignment() {
                 </CTableHead>
                 <CTableBody>
                   {completedTask.length > 0 &&
-                    currentItemsCompleted.map((task, index) => (
-                      <CTableRow key={task.task_managements_id}>
-                        <CTableHeaderCell
-                          className="text-center"
-                          style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
-                        >
-                          {task.project_name} - {task.task_managements_id}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
-                          {task.name}
-                        </CTableHeaderCell>
+                    currentItemsCompleted
+                      .filter((user) => {
+                        // Apply User filter
+                        if (selectedUser !== '') {
+                          return user.user_id === selectedUser
+                        }
+                        return true
+                      })
+                      .filter((project) => {
+                        // Apply Project filter
+                        if (selectedProject !== '') {
+                          return project.project_id === selectedProject
+                        }
+                        return true
+                      })
+                      .map((task, index) => (
+                        <CTableRow key={index}>
+                          <CTableHeaderCell
+                            className="text-center"
+                            style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                          >
+                            {task.concatenatedName}
+                          </CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>
+                            {task.name}
+                          </CTableHeaderCell>
 
-                        <CTableHeaderCell
-                          className="text-center"
-                          style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
-                        >
-                          {task.project_name}
-                        </CTableHeaderCell>
-                        {/* <CTableHeaderCell
+                          <CTableHeaderCell
+                            className="text-center"
+                            style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
+                          >
+                            {task.project_name}
+                          </CTableHeaderCell>
+                          {/* <CTableHeaderCell
                         className="text-center"
                         style={{ ...mystyle2, width: '200px' }}
                       >
@@ -1305,51 +1365,51 @@ function TaskAssignment() {
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {task.priorites}
                       </CTableHeaderCell> */}
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
-                          {task.status}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
-                          {new Date(task.task_managements_start_date)
-                            .toLocaleDateString('en-GB', {
-                              day: '2-digit',
-                              month: '2-digit',
-                              year: 'numeric',
-                            })
-                            .replace(/\//g, '-')}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
-                          {new Date(task.task_managements_dead_line)
-                            .toLocaleDateString('en-GB', {
-                              day: '2-digit',
-                              month: '2-digit',
-                              year: 'numeric',
-                            })
-                            .replace(/\//g, '-')}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
-                          <IconButton
-                            aria-label="View"
-                            onClick={() =>
-                              openModalToTakeActionAgainstTask(task.task_managements_id)
-                            }
-                          >
-                            <VisibilityIcon htmlColor="#0070ff" />
-                          </IconButton>
-                          <IconButton aria-label="Update">
-                            <EditIcon
-                              htmlColor="#28B463"
+                          <CTableHeaderCell className="text-center" style={mystyle2}>
+                            {task.status}
+                          </CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>
+                            {new Date(task.task_managements_start_date)
+                              .toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                              })
+                              .replace(/\//g, '-')}
+                          </CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>
+                            {new Date(task.task_managements_dead_line)
+                              .toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                              })
+                              .replace(/\//g, '-')}
+                          </CTableHeaderCell>
+                          <CTableHeaderCell className="text-center" style={mystyle2}>
+                            <IconButton
+                              aria-label="View"
+                              onClick={() =>
+                                openModalToTakeActionAgainstTask(task.task_managements_id)
+                              }
+                            >
+                              <VisibilityIcon htmlColor="#0070ff" />
+                            </IconButton>
+                            <IconButton
+                              aria-label="Update"
                               onClick={() => showUpdateModal(task.task_managements_id)}
-                            />
-                          </IconButton>
-                          <IconButton aria-label="Delete">
-                            <DeleteIcon
-                              htmlColor="#FF0000"
+                            >
+                              <EditIcon htmlColor="#28B463" />
+                            </IconButton>
+                            <IconButton
+                              aria-label="Delete"
                               onClick={() => showDeleteModal(task.task_managements_id)}
-                            />
-                          </IconButton>
-                        </CTableHeaderCell>
-                      </CTableRow>
-                    ))}
+                            >
+                              <DeleteIcon htmlColor="#FF0000" />
+                            </IconButton>
+                          </CTableHeaderCell>
+                        </CTableRow>
+                      ))}
                 </CTableBody>
               </CTable>
 
