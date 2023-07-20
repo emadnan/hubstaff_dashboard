@@ -1,17 +1,14 @@
 import { React, useState, useEffect } from 'react'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
-import { Button, Modal, Checkbox, Divider, Alert, Select, Form } from 'antd'
+import { Button, Modal, Checkbox, Divider, Select, Form } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import IconButton from '@mui/material/IconButton'
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft'
 import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar'
 import PeopleIcon from '@mui/icons-material/People'
-import { Box, TextField, MenuItem } from '@mui/material'
-import { Editor } from '@tinymce/tinymce-react'
+import Alert from '@mui/material/Alert';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -245,13 +242,34 @@ function AllFSF() {
 
   // Functions for Delete FSF Success
   const [showAlert1, setShowAlert1] = useState(false)
+  const [showAlert2, setShowAlert2] = useState(false)
+  const [showAlert3, setShowAlert3] = useState(false)
+  const [showAlert4, setShowAlert4] = useState(false)
+  const [showAlert5, setShowAlert5] = useState(false)
+  const [showAlert6, setShowAlert6] = useState(false)
 
   function handleButtonClick1() {
     setShowAlert1(true)
   }
 
-  function handleCloseAlert1() {
-    setShowAlert1(false)
+  function handleButtonClick2() {
+    setShowAlert2(true)
+  }
+
+  function handleButtonClick3() {
+    setShowAlert3(true)
+  }
+
+  function handleButtonClick4() {
+    setShowAlert4(true)
+  }
+
+  function handleButtonClick5() {
+    setShowAlert5(true)
+  }
+
+  function handleButtonClick6() {
+    setShowAlert6(true)
   }
 
   useEffect(() => {
@@ -264,17 +282,6 @@ function AllFSF() {
     }
   }, [showAlert1])
 
-  // Functions for Delete FSF Failure
-  const [showAlert2, setShowAlert2] = useState(false)
-
-  function handleButtonClick2() {
-    setShowAlert2(true)
-  }
-
-  function handleCloseAlert2() {
-    setShowAlert2(false)
-  }
-
   useEffect(() => {
     if (showAlert2) {
       const timer = setTimeout(() => {
@@ -284,17 +291,6 @@ function AllFSF() {
       return () => clearTimeout(timer)
     }
   }, [showAlert2])
-
-  // Functions for Assign Members Success
-  const [showAlert3, setShowAlert3] = useState(false)
-
-  function handleButtonClick3() {
-    setShowAlert3(true)
-  }
-
-  function handleCloseAlert3() {
-    setShowAlert3(false)
-  }
 
   useEffect(() => {
     if (showAlert3) {
@@ -306,17 +302,6 @@ function AllFSF() {
     }
   }, [showAlert3])
 
-  // Functions for Assign Members Failure
-  const [showAlert4, setShowAlert4] = useState(false)
-
-  function handleButtonClick4() {
-    setShowAlert4(true)
-  }
-
-  function handleCloseAlert4() {
-    setShowAlert4(false)
-  }
-
   useEffect(() => {
     if (showAlert4) {
       const timer = setTimeout(() => {
@@ -327,17 +312,6 @@ function AllFSF() {
     }
   }, [showAlert4])
 
-  // Functions for Update Status Success
-  const [showAlert5, setShowAlert5] = useState(false)
-
-  function handleButtonClick5() {
-    setShowAlert5(true)
-  }
-
-  function handleCloseAlert5() {
-    setShowAlert5(false)
-  }
-
   useEffect(() => {
     if (showAlert5) {
       const timer = setTimeout(() => {
@@ -347,17 +321,6 @@ function AllFSF() {
       return () => clearTimeout(timer)
     }
   }, [showAlert5])
-
-  // Functions for Update Status Failure
-  const [showAlert6, setShowAlert6] = useState(false)
-
-  function handleButtonClick6() {
-    setShowAlert6(true)
-  }
-
-  function handleCloseAlert6() {
-    setShowAlert6(false)
-  }
 
   useEffect(() => {
     if (showAlert6) {
@@ -1204,44 +1167,32 @@ function AllFSF() {
 
           {/* Alert for Add Company Success*/}
           {showAlert1 && (
-            <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
-              FSF Deleted Successfully
-            </Alert>
+            <Alert severity="success" style={modalStyle2}>FSF Deleted Successfully</Alert>
           )}
 
           {/* Alert for Add Company Failure*/}
           {showAlert2 && (
-            <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
-              Failed to Delete FSF
-            </Alert>
+            <Alert severity="error" style={modalStyle2}>Failed to Delete FSF</Alert>
           )}
 
           {/* Alert for  Success*/}
           {showAlert3 && (
-            <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
-              Members Assigned Successfully
-            </Alert>
+            <Alert severity="success" style={modalStyle2}>Members Assigned Successfully</Alert>
           )}
 
           {/* Alert for Assign Members Failure*/}
           {showAlert4 && (
-            <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
-              Failed to Assign Members
-            </Alert>
+            <Alert severity="error" style={modalStyle2}>Failed to Assign Members</Alert>
           )}
 
           {/* Alert for Update StatusSuccess*/}
           {showAlert5 && (
-            <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
-              Status Updated Successfully
-            </Alert>
+            <Alert severity="success" style={modalStyle2}>Status Updated Successfully</Alert>
           )}
 
           {/* Alert for Update Status Failure*/}
           {showAlert6 && (
-            <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
-              Failed to Update Status
-            </Alert>
+            <Alert severity="error" style={modalStyle2}>Failed to Update Status</Alert>
           )}
         </CTableBody>
       </CTable>
