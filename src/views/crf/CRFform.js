@@ -209,6 +209,26 @@ function CRFform() {
         setShowAlert2(true)
     }
 
+    useEffect(() => {
+        if (showAlert1) {
+          const timer = setTimeout(() => {
+            setShowAlert1(false)
+          }, 2000)
+    
+          return () => clearTimeout(timer)
+        }
+      }, [showAlert1])
+    
+      useEffect(() => {
+        if (showAlert2) {
+          const timer = setTimeout(() => {
+            setShowAlert2(false)
+          }, 2000)
+    
+          return () => clearTimeout(timer)
+        }
+      }, [showAlert2])
+
     //GET API calls
     async function getProjects() {
         await fetch(`${BASE_URL}/api/getproject`)
