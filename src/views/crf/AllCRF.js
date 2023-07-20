@@ -5,6 +5,7 @@ import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@co
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import Alert from '@mui/material/Alert';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -110,6 +111,19 @@ function AllCRF() {
     getCrf()
   }, [])
 
+
+  const [showAlert1, setShowAlert1] = useState(false)
+  const [showAlert2, setShowAlert2] = useState(false)
+
+  function handleButtonClick1() {
+    setShowAlert1(true)
+  }
+
+  function handleButtonClick2() {
+    setShowAlert2(true)
+  }
+
+  //Array declarations for GET methods
   const [crf, setCrf] = useState([])
   const [bycrf, setCrfById] = useState([])
   var filteredUsers = [];
@@ -148,9 +162,9 @@ function AllCRF() {
       .then((response) => {
         if (response.ok) {
           getCrf()
-          // handleButtonClick1()
+          handleButtonClick1()
         } else {
-          // handleButtonClick2()
+          handleButtonClick2()
         }
       })
       .catch((error) => {
@@ -262,17 +276,27 @@ function AllCRF() {
               <h6 style={perStyle}>Change Request Number</h6>
               <p>{crf.doc_ref_no}-{crf.crf_version}</p>
               <h6 style={perStyle}>New Requirements</h6>
-              <p>{crf.crs_ddetails.requirement}</p>
+              <p>{crf.crs_details.requirement}</p>
               <h6 style={perStyle}>Required Time</h6>
-              <p>{crf.crs_ddetails.required_time_no} {crf.crs_ddetails.required_time_type}</p>
+              <p>{crf.crs_details.required_time_no} {crf.crs_details.required_time_type}</p>
               <h6 style={perStyle}>Functional Resource Requirement</h6>
-              <p>{crf.crs_ddetails.functional_resource}</p>
+              <p>{crf.crs_details.functional_resource}</p>
               <h6 style={perStyle}>Technical Resource Requirement</h6>
-              <p>{crf.crs_ddetails.Technical_resource}</p>
+              <p>{crf.crs_details.Technical_resource}</p>
             </div>
           )
         })}
       </Modal>
+
+      {/* Alert for Delete CRF Success*/}
+      {showAlert1 && (
+        <Alert severity="success" style={modalStyle2}>CRF Deleted Successfully</Alert>
+      )}
+
+      {/* Alert for Delete CRF Failure*/}
+      {showAlert2 && (
+        <Alert severity="error" style={modalStyle2}>CRF Deleted Successfully</Alert>
+      )}
     </>
   )
 }

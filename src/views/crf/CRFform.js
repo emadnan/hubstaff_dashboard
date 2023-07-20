@@ -3,6 +3,8 @@ import { Select, Form, Modal } from 'antd'
 import { Box, Typography } from '@mui/material'
 import { Card, CardContent, Button } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
+import { Message } from 'primereact/message';
+import Alert from '@mui/material/Alert';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -30,6 +32,7 @@ function CRFform() {
     const [functional_resource, setFunctionalResource] = useState('')
     const [Technical_resource, setTechnicalResource] = useState('')
 
+    //Get current date function
     const getCurrentDate = () => {
         const today = new Date()
         const year = today.getFullYear()
@@ -39,6 +42,7 @@ function CRFform() {
         return formattedDate
     }
 
+    //Initial setting of Reference through useEffect
     useEffect(() => {
         const currentDate = getCurrentDate();
         setIssuanceDate(currentDate);
@@ -50,6 +54,7 @@ function CRFform() {
         setDocRefNo(concatenatedId);
     }, [projectname, modulename]);
 
+    //Array declarations for GET methods
     const [project, setProjects] = useState([])
     const [projectmodule, setProjectModule] = useState([])
     const [allfsf, setAllFsf] = useState([])
@@ -85,6 +90,13 @@ function CRFform() {
         height: '40px',
     }
 
+    const modalStyle2 = {
+        position: 'fixed',
+        top: '10%',
+        left: '55%',
+        transform: 'translateX(-50%)',
+    }
+
     const handleMouseEnterPrimary = () => {
         setIsHoveredPrimary(true)
     }
@@ -101,6 +113,7 @@ function CRFform() {
         setIsHoveredDanger(false)
     }
 
+    //DIV handling
     const [showLevel1, setShowLevel1] = useState(true)
     const [showLevel2, setShowLevel2] = useState(false)
     const [showLevel3, setShowLevel3] = useState(false)
@@ -109,7 +122,6 @@ function CRFform() {
         setShowLevel1(false)
         setShowLevel2(true)
         getFsfByProjectAndModule()
-        // addCrfForm()
     }
 
     const handleNext2 = () => {
@@ -128,7 +140,7 @@ function CRFform() {
         addChangeRequestSummary()
         setTimeout(() => {
             navigate('/allcrf')
-          }, 2000)
+        }, 1000)
     }
 
     //Initial rendering
@@ -161,7 +173,6 @@ function CRFform() {
         if (value === "0") {
             setIsModalVisible(true);
         } else {
-            // setFsfId(value)
             handleReference(value)
         }
     }
@@ -184,6 +195,18 @@ function CRFform() {
 
     const handleTechnicalResourceChange = (value) => {
         setTechnicalResource(value)
+    }
+
+    // Functions for Add CRF Success
+    const [showAlert1, setShowAlert1] = useState(false)
+    const [showAlert2, setShowAlert2] = useState(false)
+
+    function handleButtonClick1() {
+        setShowAlert1(true)
+    }
+
+    function handleButtonClick2() {
+        setShowAlert2(true)
     }
 
     //GET API calls
@@ -247,23 +270,20 @@ function CRFform() {
             .then((response) => {
                 if (response.ok) {
                     return response.json()
-                    // handleButtonClick1()
-                    // getList()
                 } else {
-                    // handleButtonClick2()
                 }
             })
             .then((data) => {
-                console.log("data: ",data)
+                console.log("data: ", data)
                 setRef_id(data.crf)
-              })
+            })
             .catch((error) => {
                 console.error(error)
             })
     }
 
     async function addChangeRequestSummary() {
-        let user = { crf_id: ref_id, requirement, required_time_no, required_time_type, functional_resource, Technical_resource}
+        let user = { crf_id: ref_id, requirement, required_time_no, required_time_type, functional_resource, Technical_resource }
         console.log(user)
 
         await fetch(`${BASE_URL}/api/addChangeRequestSummary`, {
@@ -275,10 +295,9 @@ function CRFform() {
         })
             .then((response) => {
                 if (response.ok) {
-                    // handleButtonClick1()
-                    // getList()
+                    handleButtonClick1()
                 } else {
-                    // handleButtonClick2()
+                    handleButtonClick2()
                 }
             })
             .catch((error) => {
@@ -505,10 +524,10 @@ function CRFform() {
                                     <Box>
                                         <Form.Item name="selectType" hasFeedback>
                                             <Select showSearch placeholder="Select Required Type" onChange={handleTypeChange} value={required_time_type} filterOption={(input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
-                                                <Select.Option value="hours" >hours</Select.Option>
-                                                <Select.Option value="days" >days</Select.Option>
-                                                <Select.Option value="weeks" >weeks</Select.Option>
-                                                <Select.Option value="months" >months</Select.Option>
+                                                <Select.Option value="hour(s)" >hour(s)</Select.Option>
+                                                <Select.Option value="day(s)" >day(s)</Select.Option>
+                                                <Select.Option value="week(s)" >week(s)</Select.Option>
+                                                <Select.Option value="month(s)" >month(s)</Select.Option>
                                             </Select>
                                         </Form.Item>
                                     </Box>
@@ -550,6 +569,16 @@ function CRFform() {
                         </Card>
                     </div>
                 </div>
+            )}
+
+            {/* Alert for Add CRF Success*/}
+            {showAlert1 && (
+                <Alert severity="success" style={modalStyle2}>CRF Successfully Submitted</Alert>
+            )}
+
+            {/* Alert for Add CRF Failure*/}
+            {showAlert2 && (
+                <Alert severity="error" style={modalStyle2}>CRF Successfully Submitted</Alert>
             )}
         </>
     )

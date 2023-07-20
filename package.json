@@ -58,6 +58,7 @@
     "json2csv": "^5.0.0",
     "jspdf": "^2.4.0",
     "moment": "^2.29.4",
+    "primereact": "^9.6.0",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-app-polyfill": "^3.0.0",
