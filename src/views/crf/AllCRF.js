@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react'
-import { Button, Divider, Modal } from 'antd'
+import { Button, Divider, Modal, Select, Form } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import IconButton from '@mui/material/IconButton'
@@ -130,6 +130,22 @@ function AllCRF() {
     setIsModalOpen3(false)
   }
 
+  // Functions for Add CRF Comment and Status at Project Manager Modal
+  const [isModalOpen4, setIsModalOpen4] = useState(false)
+  const showModal4 = (id) => {
+    getCrfById(id)
+    setIsModalOpen4(id)
+  }
+
+  const handleOk4 = () => {
+    updateCommentandStatus(isModalOpen4)
+    setIsModalOpen4(false)
+  }
+
+  const handleCancel4 = () => {
+    setIsModalOpen4(false)
+  }
+
   //Initial rendering through useEffect
   useEffect(() => {
     getCrf()
@@ -167,10 +183,15 @@ function AllCRF() {
     }
   }, [showAlert2])
 
+  const handleStatusChange = (value) => {
+    setStatus(value)
+  }
+
   //Array declarations for GET methods
   const [crf, setCrf] = useState([])
   const [bycrf, setCrfById] = useState([])
   const [comment, setComment] = useState('')
+  const [status, setStatus] = useState('')
   var filteredUsers = [];
 
   //GET API calls
@@ -225,7 +246,30 @@ function AllCRF() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        id: newid, 
+        id: newid,
+        comment: comment,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          getCrf()
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
+
+  // API Calls through Fetch
+  async function updateCommentandStatus(newid) {
+    await fetch(`${BASE_URL}/api/updateStatusAndComment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: newid,
+        status: status,
         comment: comment,
       }),
     })
@@ -283,9 +327,13 @@ function AllCRF() {
             <CTableHeaderCell className="text-center" style={mystyle}>
               Status
             </CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>
-              Status
-            </CTableHeaderCell>
+            {
+              local.Users.role === 6 ? (
+                <CTableHeaderCell className="text-center" style={mystyle}>
+                  Comments
+                </CTableHeaderCell>
+              ) : null
+            }
             <CTableHeaderCell className="text-center" style={mystyle}>
               Actions
             </CTableHeaderCell>
@@ -310,14 +358,31 @@ function AllCRF() {
               <CTableHeaderCell className="text-center" style={mystyle2}>
                 {new Date(crf.issuance_date).toLocaleDateString()}
               </CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle2}>
-                {crf.status}
-              </CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle2}>
-              <IconButton aria-label="comment" title="Comment" onClick={() => showModal3(crf.id)}>
-                  <CommentIcon htmlColor="#28B463" />
-                </IconButton>
-              </CTableHeaderCell>
+              {
+                local.Users.role === 6 ? (
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                    {crf.status}
+                  </CTableHeaderCell>
+                ) : null
+              }
+              {
+                local.Users.role === 6 ? (
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                    <IconButton aria-label="comment" title="Comment" onClick={() => showModal3(crf.id)}>
+                      <CommentIcon htmlColor="#0070ff" />
+                    </IconButton>
+                  </CTableHeaderCell>
+                ) : null
+              }
+              {
+                local.Users.role === 7 ? (
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                    <IconButton aria-label="comment" title="Comment" onClick={() => showModal4(crf.id)}>
+                      <CommentIcon htmlColor="#0070ff" />
+                    </IconButton>
+                  </CTableHeaderCell>
+                ) : null
+              }
               <CTableHeaderCell className="text-center" style={mystyle2}>
                 <IconButton aria-label="view" title="View CRF" onClick={() => showModal2(crf.id)}>
                   <VisibilityIcon htmlColor="#28B463" />
@@ -397,29 +462,69 @@ function AllCRF() {
         })}
       </Modal>
 
-      {/* Modal for Change CRF Comments */}
+      {/* Modal for Change CRF Comments at Functional */}
       <Modal
-            title="Assign Status"
-            open={isModalOpen3}
-            onOk={handleOk3}
-            okButtonProps={{ style: { background: 'blue' } }}
-            onCancel={handleCancel3}
-          >
-            {bycrf.map((crf) => (
-              <div key={crf.id}>
-                <div className="form-outline mb-3">
-                  <h6 style={perStyle}>Comment</h6>
-                  <input
-                    type="text"
-                    defaultValue={crf.comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Comment"
-                  />
-                </div>
-              </div>
-            ))}
-          </Modal>
+        // title="Change Comments"
+        open={isModalOpen3}
+        onOk={handleOk3}
+        okButtonProps={{ style: { background: 'blue' } }}
+        onCancel={handleCancel3}
+      >
+        {bycrf.map((crf) => (
+          <div key={crf.id}>
+            <div className="form-outline mb-3">
+              <h6 style={perStyle}>Comment</h6>
+              <input
+                type="text"
+                defaultValue={crf.comment}
+                onChange={(e) => setComment(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Comment"
+              />
+            </div>
+          </div>
+        ))}
+      </Modal>
+
+      {/* Modal for Change CRF Comments and Status at Project Manager */}
+      <Modal
+        // title="Change Request"
+        open={isModalOpen4}
+        onOk={handleOk4}
+        okButtonProps={{ style: { background: 'blue' } }}
+        onCancel={handleCancel4}
+      >
+        {bycrf.map((crf) => (
+          <div key={crf.id}>
+
+            <div className="form-outline mb-3">
+              <h6 style={perStyle}>Status</h6>
+              <Form.Item>
+                <Select
+                  placeholder="Select Status"
+                  onChange={handleStatusChange}
+                  defaultValue={crf.status}
+                >
+                  <Select.Option value="Pending">Pending</Select.Option>
+                  <Select.Option value="Accepted">Accepted</Select.Option>
+                  <Select.Option value="Change Request">Change Request</Select.Option>
+                </Select>
+              </Form.Item>
+            </div>
+
+            <div className="form-outline mb-3">
+              <h6 style={perStyle}>Comment</h6>
+              <input
+                type="text"
+                defaultValue={crf.comment}
+                onChange={(e) => setComment(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Comment"
+              />
+            </div>
+          </div>
+        ))}
+      </Modal>
 
       {/* Alert for Delete CRF Success*/}
       {showAlert1 && (
