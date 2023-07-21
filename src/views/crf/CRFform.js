@@ -498,6 +498,7 @@ function CRFform() {
       project_id,
       module_id,
       fsf_id,
+      functional_id: local.Users.user_id,
       company_id: local.Users.company_id,
       reference: reference,
       project_manager,

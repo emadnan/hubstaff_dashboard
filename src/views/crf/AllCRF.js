@@ -199,8 +199,10 @@ function AllCRF() {
     await fetch(`${BASE_URL}/api/getChangeRequestForm`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 6 || local.Users.role === 7) {
-          filteredUsers = data.CRForm.filter((user) => user.company_id === local.Users.company_id)
+        if (local.Users.role === 6) {
+          filteredUsers = data.CRForm.filter((user) => (user.company_id === local.Users.company_id) && (user.functional_id === local.Users.user_id))
+        } else if (local.Users.role === 7) {
+          filteredUsers = data.CRForm.filter((user) => (user.company_id === local.Users.company_id) && (user.project_manager === local.Users.user_id))
         }
         setCrf(filteredUsers)
       })
