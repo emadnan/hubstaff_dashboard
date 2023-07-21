@@ -306,16 +306,24 @@ function AllCRF() {
               <Divider></Divider>
               <h6 style={perStyle2}>Change Request Summary</h6>
               <br></br>
+              <h6 style={perStyle}>CRF Title</h6>
+              <p>{crf.crs_details.crf_title}</p>
               <h6 style={perStyle}>Change Request Number</h6>
               <p>{crf.doc_ref_no}-{crf.crf_version}</p>
               <h6 style={perStyle}>New Requirements</h6>
               <p>{crf.crs_details.requirement}</p>
+              <h6 style={perStyle}>Type Of Requirement</h6>
+              <p>{crf.crs_details.type_of_requirement}</p>
+              <h6 style={perStyle}>Priority</h6>
+              <p>{crf.crs_details.priority}</p>
               <h6 style={perStyle}>Required Time</h6>
               <p>{crf.crs_details.required_time_no} {crf.crs_details.required_time_type}</p>
               <h6 style={perStyle}>Functional Resource Requirement</h6>
               <p>{crf.crs_details.functional_resource}</p>
               <h6 style={perStyle}>Technical Resource Requirement</h6>
               <p>{crf.crs_details.Technical_resource}</p>
+              <h6 style={perStyle}>With-In Project Scope</h6>
+              <p>{crf.crs_details.with_in_project_scope}</p>
             </div>
           )
         })}
