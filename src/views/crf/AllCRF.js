@@ -2,8 +2,10 @@ import { React, useState, useEffect } from 'react'
 import { Button, Divider, Modal, Select, Form } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
+import { Box } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import CommentIcon from '@mui/icons-material/Comment';
 import Alert from '@mui/material/Alert';
@@ -19,6 +21,32 @@ function AllCRF() {
   const perm = permissions.map((permission) => ({
     name: permission.name,
   }))
+
+  //Updation Variables Declaration
+  const [project_id, setProjectId] = useState('')
+  const [module_id, setModuleId] = useState('')
+  const [fsf_id, setFsfId] = useState('')
+  const [company_id, setCompanyId] = useState('')
+  const [project_manager, setProjectManager] = useState('')
+  const [functional_id, setFunctionalId] = useState('')
+  const [reference, setReference] = useState('')
+  const [implementation_partner, setImplementationPartner] = useState('')
+  const [issuance_date, setIssuanceDate] = useState('')
+  const [author, setAuthor] = useState('')
+  const [doc_ref_no, setDocRefNo] = useState('')
+  const [crf_version, setCrfVersion] = useState('')
+  const [status, setStatus] = useState('')
+  const [comment, setComment] = useState('')
+  const [crf_id, setCrfId] = useState('')
+  const [crf_title, setCrfTitle] = useState('')
+  const [requirement, setRequirement] = useState('')
+  const [required_time_no, setRequiredTime] = useState('')
+  const [required_time_type, setRequiredTimeType] = useState('')
+  const [functional_resource, setFunctionalResource] = useState('')
+  const [Technical_resource, setTechnicalResource] = useState('')
+  const [type_of_requirement, setTypeOfRequirement] = useState('')
+  const [priority, setPriority] = useState('')
+  const [with_in_project_scope, setWithInProjectScope] = useState('')
 
   //Role & Permissions check
   const isCreateButtonEnabled = perm.some((item) => item.name === 'Create_Crf')
@@ -84,6 +112,35 @@ function AllCRF() {
     transform: 'translateX(-50%)',
   }
 
+  const handleTimeChange = (value) => {
+    setRequiredTime(value)
+  }
+
+  const handleTypeOfRequirementChange = (value) => {
+    setTypeOfRequirement(value)
+  }
+
+  const handlePriorityChange = (value) => {
+    setPriority(value)
+  }
+
+  const handleWithInProjectScopeChange = (value) => {
+    setWithInProjectScope(value)
+  }
+
+  const handleTypeChange = (value) => {
+    setRequiredTimeType(value)
+  }
+
+  const handleFunctionalResourceChange = (value) => {
+    setFunctionalResource(value)
+  }
+
+  const handleTechnicalResourceChange = (value) => {
+    setTechnicalResource(value)
+  }
+
+
   // Functions for Delete CRF Modal
   const [isModalOpen1, setIsModalOpen1] = useState(false)
   const showModal1 = (id) => {
@@ -146,6 +203,22 @@ function AllCRF() {
     setIsModalOpen4(false)
   }
 
+  // Functions for Update CRF Modal
+  const [isModalOpen5, setIsModalOpen5] = useState(false)
+  const showModal5 = (id) => {
+    getCrfUpdateById(id)
+    setIsModalOpen5(id)
+  }
+
+  const handleOk5 = () => {
+    updateCrf(isModalOpen5)
+    setIsModalOpen5(false)
+  }
+
+  const handleCancel5 = () => {
+    setIsModalOpen5(false)
+  }
+
   //Initial rendering through useEffect
   useEffect(() => {
     getCrf()
@@ -190,8 +263,7 @@ function AllCRF() {
   //Array declarations for GET methods
   const [crf, setCrf] = useState([])
   const [bycrf, setCrfById] = useState([])
-  const [comment, setComment] = useState('')
-  const [status, setStatus] = useState('')
+  const [bycrfid, setByCrfId] = useState([])
   var filteredUsers = [];
 
   //GET API calls
@@ -213,6 +285,39 @@ function AllCRF() {
     await fetch(`${BASE_URL}/api/getChangeRequestFormById/${id}`)
       .then((response) => response.json())
       .then((data) => setCrfById(data.CRForm))
+      .catch((error) => console.log(error))
+  }
+
+  function getCrfUpdateById(id) {
+    fetch(`${BASE_URL}/api/getChangeRequestFormById/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setByCrfId(data.CRForm)
+        setProjectId(data.CRForm[0].project_id)
+        setModuleId(data.CRForm[0].module_id)
+        setFsfId(data.CRForm[0].fsf_id)
+        setCompanyId(data.CRForm[0].company_id)
+        setProjectManager(data.CRForm[0].project_manager)
+        setFunctionalId(data.CRForm[0].functional_id)
+        setReference(data.CRForm[0].reference)
+        setImplementationPartner(data.CRForm[0].implementation_partner)
+        setIssuanceDate(data.CRForm[0].issuance_date)
+        setAuthor(data.CRForm[0].author)
+        setDocRefNo(data.CRForm[0].doc_ref_no)
+        setCrfVersion(data.CRForm[0].crf_version)
+        setStatus(data.CRForm[0].status)
+        setComment(data.CRForm[0].comment)  
+        setCrfId(data.CRForm[0].crs_details.crf_id)
+        setCrfTitle(data.CRForm[0].crs_details.crf_title)
+        setRequirement(data.CRForm[0].crs_details.requirement)
+        setRequiredTime(data.CRForm[0].crs_details.required_time_no)
+        setRequiredTimeType(data.CRForm[0].crs_details.required_time_type)
+        setFunctionalResource(data.CRForm[0].crs_details.functional_resource)
+        setTechnicalResource(data.CRForm[0].crs_details.Technical_resource)
+        setTypeOfRequirement(data.CRForm[0].crs_details.type_of_requirement)
+        setPriority(data.CRForm[0].crs_details.priority)
+        setWithInProjectScope(data.CRForm[0].crs_details.with_in_project_scope)
+      })
       .catch((error) => console.log(error))
   }
 
@@ -273,6 +378,51 @@ function AllCRF() {
         id: newid,
         status: status,
         comment: comment,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          getCrf()
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
+
+  // Update CRF API call
+  async function updateCrf(newid) {
+    await fetch(`${BASE_URL}/api/updateCrfAndCrs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: newid,
+        project_id: project_id,
+        module_id: module_id,
+        fsf_id: fsf_id,
+        company_id: company_id,
+        project_manager: project_manager,
+        functional_id: functional_id,
+        reference: reference,
+        implementation_partner: implementation_partner,
+        issuance_date: issuance_date,
+        author: author,
+        doc_ref_no: doc_ref_no,
+        crf_version: crf_version,
+        status: status,
+        comment: comment,
+        crf_id: crf_id,
+        crf_title: crf_title,
+        requirement: requirement,
+        required_time_no: required_time_no,
+        required_time_type: required_time_type,
+        functional_resource: functional_resource,
+        Technical_resource: Technical_resource,
+        type_of_requirement: type_of_requirement,
+        priority: priority,
+        with_in_project_scope: with_in_project_scope,
       }),
     })
       .then((response) => {
@@ -393,6 +543,13 @@ function AllCRF() {
                   local.Users.role === 6 ? (
                     <IconButton aria-label="delete" onClick={() => showModal1(crf.id)}>
                       <DeleteIcon htmlColor="#FF0000" />
+                    </IconButton>
+                  ) : null
+                }
+                {
+                  crf.status === 'Change Request' && local.Users.role === 6 ? (
+                    <IconButton aria-label="update" onClick={() => showModal5(crf.id)}>
+                      <EditIcon htmlColor="#28B463" />
                     </IconButton>
                   ) : null
                 }
@@ -524,6 +681,211 @@ function AllCRF() {
                 placeholder="Enter Comment"
               />
             </div>
+          </div>
+        ))}
+      </Modal>
+
+      {/* Modal for Update CRF */}
+      <Modal
+        title="Update CRF"
+        open={isModalOpen5}
+        onOk={handleOk5}
+        okButtonProps={{ style: { background: 'blue' } }}
+        onCancel={handleCancel5}
+        maskClosable={false}
+      >
+        <br></br>
+
+        {bycrfid.map((crf) => (
+          <div key={crf.id}>
+
+            <div className="form-outline mb-3">
+              <h6 style={perStyle}>Implementation Partner</h6>
+              <Form.Item name="implementation_partner">
+                <input
+                  type="text"
+                  defaultValue={crf.implementation_partner}
+                  onChange={(e) => setImplementationPartner(e.target.value)}
+                  className="form-control form-control-lg"
+                  placeholder="Enter Implementation Partner"
+                />
+              </Form.Item>
+            </div>
+
+            <div className="form-outline mb-3">
+              <h6 style={perStyle}>Title</h6>
+              <Form.Item name="crf_title">
+                <input
+                  type="text"
+                  defaultValue={crf.crs_details.crf_title}
+                  onChange={(e) => setCrfTitle(e.target.value)}
+                  className="form-control form-control-lg"
+                  placeholder="Enter Title"
+                />
+              </Form.Item>
+            </div>
+
+            <div className="form-outline mb-3">
+              <h6 style={perStyle}>New Requirement Detail</h6>
+              <Form.Item name="requirement">
+                <input
+                  type="text"
+                  defaultValue={crf.crs_details.requirement}
+                  onChange={(e) => setRequirement(e.target.value)}
+                  className="form-control form-control-lg"
+                  placeholder="Enter New Requirement Detail"
+                />
+              </Form.Item>
+            </div>
+
+            <div className="form-outline mb-6">
+              <h6 style={perStyle}>Type Of Requirement</h6>
+              <Box>
+                <Form.Item name="type_of_requirement" hasFeedback>
+                  <Select
+                    showSearch
+                    placeholder="Select Type of Requirement"
+                    onChange={handleTypeOfRequirementChange}
+                    defaultValue={crf.crs_details.type_of_requirement}
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    <Select.Option value="Change">Change</Select.Option>
+                    <Select.Option value="Enhancement">Enhancement</Select.Option>
+                    <Select.Option value="Error_rectification">Error Rectification</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Box>
+            </div>
+
+            <div className="form-outline mb-6">
+              <h6 style={perStyle}>Priority</h6>
+              <Box>
+                <Form.Item name="priority" hasFeedback>
+                  <Select
+                    showSearch
+                    placeholder="Select Priority"
+                    onChange={handlePriorityChange}
+                    defaultValue={crf.crs_details.priority}
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    <Select.Option value="Low">Low</Select.Option>
+                    <Select.Option value="Medium">Medium</Select.Option>
+                    <Select.Option value="High">High</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Box>
+            </div>
+
+            <div className="form-outline mb-6 time-container">
+              <h6 style={perStyle}>Required Time</h6>
+              <Box>
+                <Form.Item name="required_time_no" hasFeedback>
+                  <Select
+                    showSearch
+                    placeholder="Select Required Time"
+                    onChange={handleTimeChange}
+                    defaultValue={crf.crs_details.required_time_no}
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    <Select.Option value="1">1</Select.Option>
+                    <Select.Option value="2">2</Select.Option>
+                    <Select.Option value="3">3</Select.Option>
+                    <Select.Option value="4">4</Select.Option>
+                    <Select.Option value="5">5</Select.Option>
+                    <Select.Option value="6">6</Select.Option>
+                    <Select.Option value="7">7</Select.Option>
+                    <Select.Option value="8">8</Select.Option>
+                    <Select.Option value="9">9</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Box>
+
+              <Box>
+                <Form.Item name="required_time_type" hasFeedback>
+                  <Select
+                    showSearch
+                    placeholder="Select Required Type"
+                    onChange={handleTypeChange}
+                    defaultValue={crf.crs_details.required_time_type}
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    <Select.Option value="hours">hours</Select.Option>
+                    <Select.Option value="days">days</Select.Option>
+                    <Select.Option value="weeks">weeks</Select.Option>
+                    <Select.Option value="months">months</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Box>
+            </div>
+
+            <div className="form-outline mb-6">
+              <h6 style={perStyle}>Functional Resource (required)</h6>
+              <Box>
+                <Form.Item name="functional_resource" hasFeedback>
+                  <Select
+                    showSearch
+                    placeholder="Select Required"
+                    onChange={handleFunctionalResourceChange}
+                    defaultValue={crf.crs_details.functional_resource}
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    <Select.Option value="Yes">Yes</Select.Option>
+                    <Select.Option value="No">No</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Box>
+            </div>
+
+            <div className="form-outline mb-6">
+              <h6 style={perStyle}>Technical Resource (required)</h6>
+              <Box>
+                <Form.Item name="Technical_resource" hasFeedback>
+                  <Select
+                    showSearch
+                    placeholder="Select Required"
+                    onChange={handleTechnicalResourceChange}
+                    defaultValue={crf.crs_details.Technical_resource}
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    <Select.Option value="Yes">Yes</Select.Option>
+                    <Select.Option value="No">No</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Box>
+            </div>
+
+            <div className="form-outline mb-6">
+              <h6 style={perStyle}>Within Project Scope</h6>
+              <Box>
+                <Form.Item name="with_in_project_scope" hasFeedback>
+                  <Select
+                    showSearch
+                    placeholder="Select Within Project Scope"
+                    onChange={handleWithInProjectScopeChange}
+                    defaultValue={crf.crs_details.with_in_project_scope}
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    <Select.Option value="Yes">Yes</Select.Option>
+                    <Select.Option value="No">No</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Box>
+            </div>
+
           </div>
         ))}
       </Modal>
