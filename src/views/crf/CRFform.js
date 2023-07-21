@@ -19,6 +19,7 @@ function CRFform() {
   const [issuance_date, setIssuanceDate] = useState('')
   const [author, setAuthor] = useState('')
   const [doc_ref_no, setDocRefNo] = useState('')
+  const [project_manager, setProjectManager] = useState('')
   const [reference, setReference] = useState('')
   const [projectname, setProjectName] = useState('')
   const [modulename, setModuleName] = useState('')
@@ -59,6 +60,7 @@ function CRFform() {
   const [allfsf, setAllFsf] = useState([])
   const [fsfbyprojectandmodule, setFsfByProjectAndModule] = useState([])
   const [bycrfreference, setByCrfReference] = useState([])
+  const [byusers, setByUsers] = useState([])
   var filteredUsers = []
   const navigate = useNavigate()
 
@@ -147,6 +149,7 @@ function CRFform() {
         module_id,
         fsf_id,
         reference,
+        project_manager,
         implementation_partner,
         issuance_date,
         author,
@@ -166,7 +169,7 @@ function CRFform() {
   }
 
   const handleNext2 = () => {
-    if (fsf_id && reference && implementation_partner && issuance_date && author && doc_ref_no) {
+    if (fsf_id && project_manager && reference && implementation_partner && issuance_date && author && doc_ref_no) {
       setShowLevel2(false)
       setShowLevel3(true)
       addCrfForm()
@@ -176,6 +179,7 @@ function CRFform() {
         module_id,
         fsf_id,
         reference,
+        project_manager,
         implementation_partner,
         issuance_date,
         author,
@@ -223,6 +227,7 @@ function CRFform() {
         module_id,
         fsf_id,
         reference,
+        project_manager,
         implementation_partner,
         issuance_date,
         author,
@@ -244,6 +249,7 @@ function CRFform() {
   //Initial rendering
   useEffect(() => {
     getProjects()
+    getUsers()
     getProjectModules()
     getFsf()
     const today = new Date()
@@ -279,6 +285,10 @@ function CRFform() {
     getCrfByReference(value)
   }
 
+  const handleProjectManagerChange = (value) => {
+    setProjectManager(value)
+  }
+
   const handleTimeChange = (value) => {
     setRequiredTime(value)
   }
@@ -312,6 +322,7 @@ function CRFform() {
     module_id: '',
     fsf_id: '',
     reference: '',
+    project_manager: '',
     implementation_partner: '',
     issuance_date: '',
     author: '',
@@ -342,6 +353,7 @@ function CRFform() {
     module_id,
     fsf_id,
     reference,
+    project_manager,
     implementation_partner,
     issuance_date,
     author,
@@ -358,60 +370,63 @@ function CRFform() {
     Technical_resource,
   ) => {
     const errors = {}
-      if (showLevel1 && !project_id) {
-          errors.project_id = 'Please Select the Project'
-      }
-      if (showLevel1 && !module_id) {
-          errors.module_id = 'Please Select the Module'
-      }
-      if (showLevel2 && !fsf_id) {
-          errors.fsf_id = 'Please Select the FSF'
-      }
-      if (showLevel2 && !reference) {
-          errors.reference = 'Please Select the Reference Id'
-      }
-      if (showLevel2 && !implementation_partner) {
-          errors.implementation_partner = 'Please Select the Implementation Partner'
-      }
-      if (showLevel2 && !issuance_date) {
-          errors.issuance_date = 'Please Select the Insurance Date'
-      }
-      if (showLevel2 && !author) {
-          errors.author = 'Please Select the Authur'
-      }
-      if (showLevel2 && !doc_ref_no) {
-          errors.doc_ref_no = 'Please Select the Document Reference No'
-      }
-      if (showLevel3 && !crf_id) {
-          errors.crf_id = 'Please Select CRF Id'
-      }
-      if (showLevel3 && !crf_title) {
-          errors.crf_title = 'Please Enter Your CRF Title'
-      }
-      if (showLevel3 && !type_of_requirement) {
-          errors.type_of_requirement = 'Please Select the Type of Requirement'
-      }
-      if (showLevel3 && !priority) {
-          errors.priority = 'Please Select the Priority'
-      }
-      if (showLevel3 && !with_in_project_scope) {
-          errors.with_in_project_scope = 'Please Select With-In Project Scope '
-      }
-      if (showLevel3 && !requirement) {
-          errors.requirement = 'Enter Your Requirements'
-      }
-      if (showLevel3 && !required_time_no) {
-          errors.required_time_no = 'Please Select Requirement Time'
-      }
-      if (showLevel3 && !required_time_type) {
-          errors.required_time_type = 'Please Select Requirement Time Type'
-      }
-      if (showLevel3 && !functional_resource) {
-          errors.functional_resource = 'Please Select Function Resource'
-      }
-      if (showLevel3 && !Technical_resource) {
-          errors.Technical_resource = 'Please Select Technical Resource'
-      }
+    if (showLevel1 && !project_id) {
+      errors.project_id = 'Please Select the Project'
+    }
+    if (showLevel1 && !module_id) {
+      errors.module_id = 'Please Select the Module'
+    }
+    if (showLevel2 && !fsf_id) {
+      errors.fsf_id = 'Please Select the FSF'
+    }
+    if (showLevel2 && !reference) {
+      errors.reference = 'Please Select the Reference Id'
+    }
+    if (showLevel2 && !project_manager) {
+      errors.project_manager = 'Please Select the Project Manager'
+    }
+    if (showLevel2 && !implementation_partner) {
+      errors.implementation_partner = 'Please Select the Implementation Partner'
+    }
+    if (showLevel2 && !issuance_date) {
+      errors.issuance_date = 'Please Select the Insurance Date'
+    }
+    if (showLevel2 && !author) {
+      errors.author = 'Please Select the Authur'
+    }
+    if (showLevel2 && !doc_ref_no) {
+      errors.doc_ref_no = 'Please Select the Document Reference No'
+    }
+    if (showLevel3 && !crf_id) {
+      errors.crf_id = 'Please Select CRF Id'
+    }
+    if (showLevel3 && !crf_title) {
+      errors.crf_title = 'Please Enter Your CRF Title'
+    }
+    if (showLevel3 && !type_of_requirement) {
+      errors.type_of_requirement = 'Please Select the Type of Requirement'
+    }
+    if (showLevel3 && !priority) {
+      errors.priority = 'Please Select the Priority'
+    }
+    if (showLevel3 && !with_in_project_scope) {
+      errors.with_in_project_scope = 'Please Select With-In Project Scope '
+    }
+    if (showLevel3 && !requirement) {
+      errors.requirement = 'Enter Your Requirements'
+    }
+    if (showLevel3 && !required_time_no) {
+      errors.required_time_no = 'Please Select Requirement Time'
+    }
+    if (showLevel3 && !required_time_type) {
+      errors.required_time_type = 'Please Select Requirement Time Type'
+    }
+    if (showLevel3 && !functional_resource) {
+      errors.functional_resource = 'Please Select Function Resource'
+    }
+    if (showLevel3 && !Technical_resource) {
+      errors.Technical_resource = 'Please Select Technical Resource'
+    }
 
     setFormErrors(errors)
   }
@@ -432,6 +447,19 @@ function CRFform() {
       })
       .catch((error) => console.log(error))
   }
+
+  async function getUsers() {
+    await fetch(`${BASE_URL}/api/get_users`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === 6) {
+          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && (user.role === 6 || user.role === 7))
+        }
+        setByUsers(filteredUsers)
+      })
+      .catch((error) => console.log(error))
+  }
+
 
   async function getProjectModules() {
     await fetch(`${BASE_URL}/api/getModules`)
@@ -472,6 +500,7 @@ function CRFform() {
       fsf_id,
       company_id: local.Users.company_id,
       reference: reference,
+      project_manager,
       implementation_partner,
       issuance_date,
       author,
@@ -752,6 +781,34 @@ function CRFform() {
                   </Box>
                 </div>
 
+                <div className="form-outline mb-6">
+                  <h6 style={perStyle}>Project Manager</h6>
+                  <Box>
+                    <Form.Item
+                      name="project_manager"
+                      validateStatus={formErrors.project_manager ? 'error' : ''}
+                      help={formErrors.project_manager}
+                      hasFeedback
+                    >
+                      <Select
+                        showSearch
+                        placeholder="Select Project Manager"
+                        onChange={handleProjectManagerChange}
+                        value={project_manager}
+                        filterOption={(input, option) =>
+                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                      >
+                        {byusers.map((user) => (
+                          <Select.Option value={user.id} key={user.id}>
+                            {user.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Box>
+                </div>
+
                 <Modal
                   title="Create FSF"
                   open={isModalVisible}
@@ -804,7 +861,7 @@ function CRFform() {
           <div className="row justify-content-center">
             <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
               <CardContent>
-              <div className="form-outline mb-3">
+                <div className="form-outline mb-3">
                   <h6 style={perStyle}>Title</h6>
                   <Form.Item
                     name="crf_title"
