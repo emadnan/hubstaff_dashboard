@@ -549,7 +549,7 @@ function AllCRF() {
                 {
                   crf.status === 'Change Request' && local.Users.role === 6 ? (
                     <IconButton aria-label="update" onClick={() => showModal5(crf.id)}>
-                      <EditIcon htmlColor="#28B463" />
+                      <EditIcon htmlColor="#0070ff" />
                     </IconButton>
                   ) : null
                 }
@@ -698,19 +698,6 @@ function AllCRF() {
 
         {bycrfid.map((crf) => (
           <div key={crf.id}>
-
-            <div className="form-outline mb-3">
-              <h6 style={perStyle}>Implementation Partner</h6>
-              <Form.Item name="implementation_partner">
-                <input
-                  type="text"
-                  defaultValue={crf.implementation_partner}
-                  onChange={(e) => setImplementationPartner(e.target.value)}
-                  className="form-control form-control-lg"
-                  placeholder="Enter Implementation Partner"
-                />
-              </Form.Item>
-            </div>
 
             <div className="form-outline mb-3">
               <h6 style={perStyle}>Title</h6>
