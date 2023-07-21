@@ -5,6 +5,7 @@ import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@co
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import CommentIcon from '@mui/icons-material/Comment';
 import Alert from '@mui/material/Alert';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
@@ -113,6 +114,22 @@ function AllCRF() {
     setIsModalOpen2(false)
   }
 
+  // Functions for Add CRF Comment Modal
+  const [isModalOpen3, setIsModalOpen3] = useState(false)
+  const showModal3 = (id) => {
+    getCrfById(id)
+    setIsModalOpen3(id)
+  }
+
+  const handleOk3 = () => {
+    updateComment(isModalOpen3)
+    setIsModalOpen3(false)
+  }
+
+  const handleCancel3 = () => {
+    setIsModalOpen3(false)
+  }
+
   //Initial rendering through useEffect
   useEffect(() => {
     getCrf()
@@ -153,6 +170,7 @@ function AllCRF() {
   //Array declarations for GET methods
   const [crf, setCrf] = useState([])
   const [bycrf, setCrfById] = useState([])
+  const [comment, setComment] = useState('')
   var filteredUsers = [];
 
   //GET API calls
@@ -199,6 +217,28 @@ function AllCRF() {
       })
   }
 
+  // API Calls through Fetch
+  async function updateComment(newid) {
+    await fetch(`${BASE_URL}/api/updateComment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: newid, 
+        comment: comment,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          getCrf()
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
+
   return (
     <>
       <div className="row">
@@ -230,8 +270,21 @@ function AllCRF() {
             <CTableHeaderCell className="text-center" style={mystyle}>
               Document Reference No
             </CTableHeaderCell>
+            {
+              local.Users.role === 6 ? (
+                <CTableHeaderCell className="text-center" style={mystyle}>
+                  Assigned To
+                </CTableHeaderCell>
+              ) : null
+            }
             <CTableHeaderCell className="text-center" style={mystyle}>
               Issuance Date
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Status
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Status
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
               Actions
@@ -247,8 +300,23 @@ function AllCRF() {
               <CTableHeaderCell className="text-center" style={mystyle2}>
                 {crf.doc_ref_no}-{crf.crf_version}
               </CTableHeaderCell>
+              {
+                local.Users.role === 6 ? (
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                    {crf.project_manager_details.name}
+                  </CTableHeaderCell>
+                ) : null
+              }
               <CTableHeaderCell className="text-center" style={mystyle2}>
                 {new Date(crf.issuance_date).toLocaleDateString()}
+              </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+                {crf.status}
+              </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+              <IconButton aria-label="comment" title="Comment" onClick={() => showModal3(crf.id)}>
+                  <CommentIcon htmlColor="#28B463" />
+                </IconButton>
               </CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>
                 <IconButton aria-label="view" title="View CRF" onClick={() => showModal2(crf.id)}>
@@ -328,6 +396,30 @@ function AllCRF() {
           )
         })}
       </Modal>
+
+      {/* Modal for Change CRF Comments */}
+      <Modal
+            title="Assign Status"
+            open={isModalOpen3}
+            onOk={handleOk3}
+            okButtonProps={{ style: { background: 'blue' } }}
+            onCancel={handleCancel3}
+          >
+            {bycrf.map((crf) => (
+              <div key={crf.id}>
+                <div className="form-outline mb-3">
+                  <h6 style={perStyle}>Comment</h6>
+                  <input
+                    type="text"
+                    defaultValue={crf.comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Comment"
+                  />
+                </div>
+              </div>
+            ))}
+          </Modal>
 
       {/* Alert for Delete CRF Success*/}
       {showAlert1 && (
