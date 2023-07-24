@@ -7,13 +7,12 @@ import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import CommentIcon from '@mui/icons-material/Comment';
-import Alert from '@mui/material/Alert';
+import CommentIcon from '@mui/icons-material/Comment'
+import Alert from '@mui/material/Alert'
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 function AllCRF() {
-
   //Local Storage access
   const local = JSON.parse(localStorage.getItem('user-info'))
   const navigate = useNavigate()
@@ -140,7 +139,6 @@ function AllCRF() {
     setTechnicalResource(value)
   }
 
-
   // Functions for Delete CRF Modal
   const [isModalOpen1, setIsModalOpen1] = useState(false)
   const showModal1 = (id) => {
@@ -224,7 +222,6 @@ function AllCRF() {
     getCrf()
   }, [])
 
-
   const [showAlert1, setShowAlert1] = useState(false)
   const [showAlert2, setShowAlert2] = useState(false)
 
@@ -264,7 +261,7 @@ function AllCRF() {
   const [crf, setCrf] = useState([])
   const [bycrf, setCrfById] = useState([])
   const [bycrfid, setByCrfId] = useState([])
-  var filteredUsers = [];
+  var filteredUsers = []
 
   //GET API calls
   async function getCrf() {
@@ -272,9 +269,17 @@ function AllCRF() {
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 6) {
-          filteredUsers = data.CRForm.filter((user) => (user.company_id === local.Users.company_id) && (user.functional_id === local.Users.user_id))
+          filteredUsers = data.CRForm.filter(
+            (user) =>
+              user.company_id === local.Users.company_id &&
+              user.functional_id === local.Users.user_id,
+          )
         } else if (local.Users.role === 7) {
-          filteredUsers = data.CRForm.filter((user) => (user.company_id === local.Users.company_id) && (user.project_manager === local.Users.user_id))
+          filteredUsers = data.CRForm.filter(
+            (user) =>
+              user.company_id === local.Users.company_id &&
+              user.project_manager === local.Users.user_id,
+          )
         }
         setCrf(filteredUsers)
       })
@@ -306,7 +311,7 @@ function AllCRF() {
         setDocRefNo(data.CRForm[0].doc_ref_no)
         setCrfVersion(data.CRForm[0].crf_version)
         setStatus(data.CRForm[0].status)
-        setComment(data.CRForm[0].comment)  
+        setComment(data.CRForm[0].comment)
         setCrfId(data.CRForm[0].crs_details.crf_id)
         setCrfTitle(data.CRForm[0].crs_details.crf_title)
         setRequirement(data.CRForm[0].crs_details.requirement)
@@ -466,97 +471,94 @@ function AllCRF() {
             <CTableHeaderCell className="text-center" style={mystyle}>
               Document Reference No
             </CTableHeaderCell>
-            {
-              local.Users.role === 6 ? (
-                <CTableHeaderCell className="text-center" style={mystyle}>
-                  Assigned To
-                </CTableHeaderCell>
-              ) : null
-            }
+            {local.Users.role === 6 ? (
+              <CTableHeaderCell className="text-center" style={mystyle}>
+                Assigned To
+              </CTableHeaderCell>
+            ) : null}
             <CTableHeaderCell className="text-center" style={mystyle}>
               Issuance Date
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
               Status
             </CTableHeaderCell>
-            {
-              local.Users.role === 6 ? (
-                <CTableHeaderCell className="text-center" style={mystyle}>
-                  Comments
-                </CTableHeaderCell>
-              ) : null
-            }
+            {local.Users.role === 6 ? (
+              <CTableHeaderCell className="text-center" style={mystyle}>
+                Comments
+              </CTableHeaderCell>
+            ) : null}
             <CTableHeaderCell className="text-center" style={mystyle}>
               Actions
             </CTableHeaderCell>
           </CTableRow>
 
           {/* Get API Users */}
-          {crf.map((crf, index) => (
-            <CTableRow key={crf.id}>
-              <CTableHeaderCell className="text-center" style={mystyle2}>
-                {index + 1}
-              </CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle2}>
-                {crf.doc_ref_no}-{crf.crf_version}{'.'}{crf.crf_version_float}
-              </CTableHeaderCell>
-              {
-                local.Users.role === 6 ? (
+          {crf.map((crf, index) =>
+            crf.crs_details === null ? (
+              ''
+            ) : (
+              <CTableRow key={crf.id}>
+                <CTableHeaderCell className="text-center" style={mystyle2}>
+                  {index + 1}
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle2}>
+                  {crf.doc_ref_no}-{crf.crf_version}
+                  {'.'}
+                  {crf.crf_version_float}
+                </CTableHeaderCell>
+                {local.Users.role === 6 ? (
                   <CTableHeaderCell className="text-center" style={mystyle2}>
                     {crf.project_manager_details.name}
                   </CTableHeaderCell>
-                ) : null
-              }
-              <CTableHeaderCell className="text-center" style={mystyle2}>
-                {new Date(crf.issuance_date).toLocaleDateString()}
-              </CTableHeaderCell>
-              {
-                local.Users.role === 6 ? (
+                ) : null}
+                <CTableHeaderCell className="text-center" style={mystyle2}>
+                  {new Date(crf.issuance_date).toLocaleDateString()}
+                </CTableHeaderCell>
+                {local.Users.role === 6 ? (
                   <CTableHeaderCell className="text-center" style={mystyle2}>
                     {crf.status}
                   </CTableHeaderCell>
-                ) : null
-              }
-              {
-                local.Users.role === 6 ? (
+                ) : null}
+                {local.Users.role === 6 ? (
                   <CTableHeaderCell className="text-center" style={mystyle2}>
-                    <IconButton aria-label="comment" title="Comment" onClick={() => showModal3(crf.id)}>
+                    <IconButton
+                      aria-label="comment"
+                      title="Comment"
+                      onClick={() => showModal3(crf.id)}
+                    >
                       <CommentIcon htmlColor="#0070ff" />
                     </IconButton>
                   </CTableHeaderCell>
-                ) : null
-              }
-              {
-                local.Users.role === 7 ? (
+                ) : null}
+                {local.Users.role === 7 ? (
                   <CTableHeaderCell className="text-center" style={mystyle2}>
-                    <IconButton aria-label="comment" title="Comment" onClick={() => showModal4(crf.id)}>
+                    <IconButton
+                      aria-label="comment"
+                      title="Comment"
+                      onClick={() => showModal4(crf.id)}
+                    >
                       <CommentIcon htmlColor="#0070ff" />
                     </IconButton>
                   </CTableHeaderCell>
-                ) : null
-              }
-              <CTableHeaderCell className="text-center" style={mystyle2}>
-                <IconButton aria-label="view" title="View CRF" onClick={() => showModal2(crf.id)}>
-                  <VisibilityIcon htmlColor="#28B463" />
-                </IconButton>
-                {
-                  local.Users.role === 6 ? (
+                ) : null}
+                <CTableHeaderCell className="text-center" style={mystyle2}>
+                  <IconButton aria-label="view" title="View CRF" onClick={() => showModal2(crf.id)}>
+                    <VisibilityIcon htmlColor="#28B463" />
+                  </IconButton>
+                  {local.Users.role === 6 ? (
                     <IconButton aria-label="delete" onClick={() => showModal1(crf.id)}>
                       <DeleteIcon htmlColor="#FF0000" />
                     </IconButton>
-                  ) : null
-                }
-                {
-                  crf.status === 'Change Request' && local.Users.role === 6 ? (
+                  ) : null}
+                  {crf.status === 'Change Request' && local.Users.role === 6 ? (
                     <IconButton aria-label="update" onClick={() => showModal5(crf.id)}>
                       <EditIcon htmlColor="#0070ff" />
                     </IconButton>
-                  ) : null
-                }
-              </CTableHeaderCell>
-            </CTableRow>
-          ))}
-
+                  ) : null}
+                </CTableHeaderCell>
+              </CTableRow>
+            ),
+          )}
         </CTableHead>
 
         <CTableBody></CTableBody>
@@ -574,7 +576,11 @@ function AllCRF() {
 
       {/* Modal for View FSF Details */}
       <Modal
-        title={<div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 26 }}>Change Request Form</div>}
+        title={
+          <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 26 }}>
+            Change Request Form
+          </div>
+        }
         open={isModalOpen2}
         onOk={handleOk2}
         okButtonProps={{ style: { background: 'blue' } }}
@@ -590,7 +596,11 @@ function AllCRF() {
               <h6 style={perStyle}>Implementation Partner</h6>
               <p>{crf.implementation_partner}</p>
               <h6 style={perStyle}>Document Reference No</h6>
-              <p>{crf.doc_ref_no}-{crf.crf_version}{'.'}{crf.crf_version_float}</p>
+              <p>
+                {crf.doc_ref_no}-{crf.crf_version}
+                {'.'}
+                {crf.crf_version_float}
+              </p>
               <h6 style={perStyle}>Issuance Date</h6>
               <p>{new Date(crf.issuance_date).toLocaleDateString()}</p>
               <h6 style={perStyle}>Author</h6>
@@ -601,7 +611,11 @@ function AllCRF() {
               <h6 style={perStyle}>CRF Title</h6>
               <p>{crf.crs_details.crf_title}</p>
               <h6 style={perStyle}>Change Request Number</h6>
-              <p>{crf.doc_ref_no}-{crf.crf_version}{'.'}{crf.crf_version_float}</p>
+              <p>
+                {crf.doc_ref_no}-{crf.crf_version}
+                {'.'}
+                {crf.crf_version_float}
+              </p>
               <h6 style={perStyle}>New Requirements</h6>
               <p>{crf.crs_details.requirement}</p>
               <h6 style={perStyle}>Type Of Requirement</h6>
@@ -609,7 +623,9 @@ function AllCRF() {
               <h6 style={perStyle}>Priority</h6>
               <p>{crf.crs_details.priority}</p>
               <h6 style={perStyle}>Required Time</h6>
-              <p>{crf.crs_details.required_time_no} {crf.crs_details.required_time_type}</p>
+              <p>
+                {crf.crs_details.required_time_no} {crf.crs_details.required_time_type}
+              </p>
               <h6 style={perStyle}>Functional Resource Requirement</h6>
               <p>{crf.crs_details.functional_resource}</p>
               <h6 style={perStyle}>Technical Resource Requirement</h6>
@@ -655,7 +671,6 @@ function AllCRF() {
       >
         {bycrf.map((crf) => (
           <div key={crf.id}>
-
             <div className="form-outline mb-3">
               <h6 style={perStyle}>Status</h6>
               <Form.Item>
@@ -698,7 +713,6 @@ function AllCRF() {
 
         {bycrfid.map((crf) => (
           <div key={crf.id}>
-
             <div className="form-outline mb-3">
               <h6 style={perStyle}>Title</h6>
               <Form.Item name="crf_title">
@@ -872,19 +886,22 @@ function AllCRF() {
                 </Form.Item>
               </Box>
             </div>
-
           </div>
         ))}
       </Modal>
 
       {/* Alert for Delete CRF Success*/}
       {showAlert1 && (
-        <Alert severity="success" style={modalStyle2}>CRF Deleted Successfully</Alert>
+        <Alert severity="success" style={modalStyle2}>
+          CRF Deleted Successfully
+        </Alert>
       )}
 
       {/* Alert for Delete CRF Failure*/}
       {showAlert2 && (
-        <Alert severity="error" style={modalStyle2}>CRF Deleted Successfully</Alert>
+        <Alert severity="error" style={modalStyle2}>
+          CRF Deleted Successfully
+        </Alert>
       )}
     </>
   )
