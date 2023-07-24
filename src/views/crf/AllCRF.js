@@ -245,7 +245,7 @@ function AllCRF() {
                 {index + 1}
               </CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>
-                {crf.doc_ref_no}-{crf.crf_version}
+                {crf.doc_ref_no}-{crf.crf_version}{'.'}{crf.crf_version_float}
               </CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>
                 {new Date(crf.issuance_date).toLocaleDateString()}
@@ -298,7 +298,7 @@ function AllCRF() {
               <h6 style={perStyle}>Implementation Partner</h6>
               <p>{crf.implementation_partner}</p>
               <h6 style={perStyle}>Document Reference No</h6>
-              <p>{crf.doc_ref_no}-{crf.crf_version}</p>
+              <p>{crf.doc_ref_no}-{crf.crf_version}{'.'}{crf.crf_version_float}</p>
               <h6 style={perStyle}>Issuance Date</h6>
               <p>{new Date(crf.issuance_date).toLocaleDateString()}</p>
               <h6 style={perStyle}>Author</h6>
@@ -307,7 +307,7 @@ function AllCRF() {
               <h6 style={perStyle2}>Change Request Summary</h6>
               <br></br>
               <h6 style={perStyle}>Change Request Number</h6>
-              <p>{crf.doc_ref_no}-{crf.crf_version}</p>
+              <p>{crf.doc_ref_no}-{crf.crf_version}{'.'}{crf.crf_version_float}</p>
               <h6 style={perStyle}>New Requirements</h6>
               <p>{crf.crs_details.requirement}</p>
               <h6 style={perStyle}>Required Time</h6>

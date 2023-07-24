@@ -744,7 +744,7 @@ function CRFform() {
                         </Select.Option>
                         {bycrfreference.map((crf) => (
                           <Select.Option value={crf.doc_ref_no} key={crf.id}>
-                            {crf.doc_ref_no}-{crf.crf_version}
+                            {crf.doc_ref_no}-{crf.crf_version}{'.'}{crf.crf_version_float}
                           </Select.Option>
                         ))}
                       </Select>
