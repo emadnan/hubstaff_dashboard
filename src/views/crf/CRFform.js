@@ -172,7 +172,7 @@ function CRFform() {
     if (fsf_id && project_manager && reference && implementation_partner && issuance_date && author && doc_ref_no) {
       setShowLevel2(false)
       setShowLevel3(true)
-      addCrfForm()
+      // addCrfForm()
     } else {
       callErrors(
         project_id,
@@ -204,46 +204,55 @@ function CRFform() {
   }
 
   const handleNext3 = () => {
-    if (
-      ref_id &&
-      crf_title &&
-      type_of_requirement &&
-      priority &&
-      with_in_project_scope &&
-      requirement &&
-      required_time_no &&
-      required_time_type &&
-      functional_resource &&
-      Technical_resource
-    ) {
+    // if (
+    //   project_id && 
+    //   module_id &&
+    //   fsf_id && 
+    //   project_manager && 
+    //   reference && 
+    //   implementation_partner && 
+    //   issuance_date && 
+    //   author && 
+    //   doc_ref_no &&
+    //   ref_id &&
+    //   crf_title &&
+    //   type_of_requirement &&
+    //   priority &&
+    //   with_in_project_scope &&
+    //   requirement &&
+    //   required_time_no &&
+    //   required_time_type &&
+    //   functional_resource &&
+    //   Technical_resource
+    // ) {
       setShowLevel3(false)
-      addChangeRequestSummary()
+      addCrfForm()
       setTimeout(() => {
         navigate('/allcrf')
       }, 2000)
-    } else {
-      callErrors(
-        project_id,
-        module_id,
-        fsf_id,
-        reference,
-        project_manager,
-        implementation_partner,
-        issuance_date,
-        author,
-        doc_ref_no,
-        crf_id,
-        crf_title,
-        type_of_requirement,
-        priority,
-        with_in_project_scope,
-        requirement,
-        required_time_no,
-        required_time_type,
-        functional_resource,
-        Technical_resource,
-      )
-    }
+    // } else {
+    //   callErrors(
+    //     project_id,
+    //     module_id,
+    //     fsf_id,
+    //     reference,
+    //     project_manager,
+    //     implementation_partner,
+    //     issuance_date,
+    //     author,
+    //     doc_ref_no,
+    //     crf_id,
+    //     crf_title,
+    //     type_of_requirement,
+    //     priority,
+    //     with_in_project_scope,
+    //     requirement,
+    //     required_time_no,
+    //     required_time_type,
+    //     functional_resource,
+    //     Technical_resource,
+    //   )
+    // }
   }
 
   //Initial rendering
@@ -506,6 +515,15 @@ function CRFform() {
       issuance_date,
       author,
       doc_ref_no,
+      crf_title,
+      type_of_requirement,
+      priority,
+      with_in_project_scope,
+      requirement,
+      required_time_no,
+      required_time_type,
+      functional_resource,
+      Technical_resource,
     }
     console.log(data)
 
@@ -518,51 +536,51 @@ function CRFform() {
     })
       .then((response) => {
         if (response.ok) {
-          return response.json()
-        }
-      })
-      .then((data) => {
-        console.log('data: ', data)
-        setRef_id(data.crf)
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-  }
-
-  async function addChangeRequestSummary() {
-    let user = {
-      crf_id: ref_id,
-      crf_title,
-      type_of_requirement,
-      priority,
-      with_in_project_scope,
-      requirement,
-      required_time_no,
-      required_time_type,
-      functional_resource,
-      Technical_resource,
-    }
-    console.log(user)
-
-    await fetch(`${BASE_URL}/api/addChangeRequestSummary`, {
-      method: 'POST',
-      body: JSON.stringify(user),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
           handleButtonClick1()
-        } else {
-          handleButtonClick2()
         }
       })
+      // .then((data) => {
+      //   console.log('data: ', data)
+      //   setRef_id(data.crf)
+      // })
       .catch((error) => {
         console.error(error)
       })
   }
+
+  // async function addChangeRequestSummary() {
+  //   let user = {
+  //     crf_id: ref_id,
+  //     crf_title,
+  //     type_of_requirement,
+  //     priority,
+  //     with_in_project_scope,
+  //     requirement,
+  //     required_time_no,
+  //     required_time_type,
+  //     functional_resource,
+  //     Technical_resource,
+  //   }
+  //   console.log(user)
+
+  //   await fetch(`${BASE_URL}/api/addChangeRequestSummary`, {
+  //     method: 'POST',
+  //     body: JSON.stringify(user),
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //   })
+  //     .then((response) => {
+  //       if (response.ok) {
+  //         handleButtonClick1()
+  //       } else {
+  //         handleButtonClick2()
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error(error)
+  //     })
+  // }
 
   // Functions for Add CRF Success
   const [showAlert1, setShowAlert1] = useState(false)
