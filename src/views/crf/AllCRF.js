@@ -545,15 +545,15 @@ function AllCRF() {
                   <IconButton aria-label="view" title="View CRF" onClick={() => showModal2(crf.id)}>
                     <VisibilityIcon htmlColor="#28B463" />
                   </IconButton>
-                  {local.Users.role === 6 ? (
-                    <IconButton aria-label="delete" onClick={() => showModal1(crf.id)}>
-                      <DeleteIcon htmlColor="#FF0000" />
-                    </IconButton>
-                  ) : null}
                   {crf.status === 'Change Request' && local.Users.role === 6 ? (
                     <IconButton aria-label="update" onClick={() => showModal5(crf.id)}>
                       <EditIcon htmlColor="#0070ff" />
                     </IconButton>
+                  ) : null}
+                  {crf.status === 'Change Request' && local.Users.role === 6 ? (
+                    <IconButton aria-label="delete" onClick={() => showModal1(crf.id)}>
+                    <DeleteIcon htmlColor="#FF0000" />
+                  </IconButton>
                   ) : null}
                 </CTableHeaderCell>
               </CTableRow>
