@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react'
-import { Button, Divider, Modal, Select, Form } from 'antd'
+import { Divider, Modal, Select, Form, Button } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { Box } from '@mui/material'
@@ -178,6 +178,7 @@ function AllCRF() {
   const showModal3 = (id) => {
     getMessagesByCrfId(id)
     setTempId(id)
+    setMessages('')
     setIsModalOpen3(id)
   }
 
@@ -425,6 +426,7 @@ function AllCRF() {
     })
       .then((response) => {
         if (response.ok) {
+          getMessagesByCrfId()
           setMessages('')
           setTempId('')
         }
@@ -574,15 +576,15 @@ function AllCRF() {
                     </IconButton>
                   </CTableHeaderCell>
                 ) : null}
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                    <IconButton
-                      aria-label="comment"
-                      title="Comment"
-                      onClick={() => showModal3(crf.id)}
-                    >
-                      <CommentIcon htmlColor="#0070ff" />
-                    </IconButton>
-                  </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle2}>
+                  <IconButton
+                    aria-label="comment"
+                    title="Comment"
+                    onClick={() => showModal3(crf.id)}
+                  >
+                    <CommentIcon htmlColor="#0070ff" />
+                  </IconButton>
+                </CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle2}>
                   <IconButton aria-label="view" title="View CRF" onClick={() => showModal2(crf.id)}>
                     <VisibilityIcon htmlColor="#28B463" />
@@ -687,23 +689,23 @@ function AllCRF() {
         onCancel={handleCancel3}
         footer={null}
       >
-          <MDBRow className="d-flex justify-content-center">
-            <MDBCol md="10" lg="10" xl="10">
-              <MDBCard style={{ width: '100%', maxWidth: '1000px' }}>
-                <MDBCardHeader
-                  className="d-flex justify-content-between align-items-center p-3"
-                  style={{ borderTop: "4px solid #5141e0" }}
-                >
-                  <h5 className="mb-0">Chat messages</h5>
-                </MDBCardHeader>
-                <Scrollbars
-                  autoHide
-                  autoHideTimeout={500}
-                  autoHideDuration={200}
-                  style={{ height: '400px' }}
-                >
-                  <MDBCardBody>
-                    
+        <MDBRow className="d-flex justify-content-center">
+          <MDBCol md="10" lg="10" xl="10">
+            <MDBCard style={{ width: '100%', maxWidth: '1000px' }}>
+              <MDBCardHeader
+                className="d-flex justify-content-between align-items-center p-3"
+                style={{ borderTop: "4px solid #5141e0" }}
+              >
+                <h5 className="mb-0">Chat messages</h5>
+              </MDBCardHeader>
+              <Scrollbars
+                autoHide
+                autoHideTimeout={500}
+                autoHideDuration={200}
+                style={{ height: '400px' }}
+              >
+                <MDBCardBody>
+
                   {bymessage.map((msg) => {
                     return (
                       <div key={msg.id}>
@@ -743,26 +745,26 @@ function AllCRF() {
                     );
                   })}
 
-                  </MDBCardBody>
-                </Scrollbars>
+                </MDBCardBody>
+              </Scrollbars>
 
-                <MDBCardFooter className="text-muted d-flex justify-content-start align-items-center p-3">
-                  <MDBInputGroup className="mb-0">
-                    <input
-                      className="form-control form-control-lg"
-                      placeholder="Type message"
-                      type="text"
-                      onChange={(e) => setMessages(e.target.value)}
-                    />
-                    <MDBBtn color="primary" onClick={addMessage}>
-                      Send
-                    </MDBBtn>
-                  </MDBInputGroup>
-                </MDBCardFooter>
+              <MDBCardFooter className="text-muted d-flex justify-content-start align-items-center p-3">
+                <MDBInputGroup className="mb-0">
+                  <input
+                    className="form-control form-control-lg"
+                    placeholder="Type message"
+                    type="text"
+                    onChange={(e) => setMessages(e.target.value)}
+                  />
+                  <MDBBtn color="primary" onClick={() => addMessage()}>
+                    Send
+                  </MDBBtn>
+                </MDBInputGroup>
+              </MDBCardFooter>
 
-              </MDBCard>
-            </MDBCol>
-          </MDBRow>
+            </MDBCard>
+          </MDBCol>
+        </MDBRow>
       </Modal>
 
       {/* Modal for Change CRF Comments and Status at Project Manager */}
