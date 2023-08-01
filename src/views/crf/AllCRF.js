@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react'
-import { Divider, Modal, Select, Form, Button } from 'antd'
+import { Divider, Modal, Select, Form, Button, Input } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { Box } from '@mui/material'
@@ -22,6 +22,7 @@ import {
   MDBBtn,
 } from 'mdb-react-ui-kit';
 import { Scrollbars } from 'react-custom-scrollbars';
+const { Search } = Input;
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -66,6 +67,7 @@ function AllCRF() {
   const isCreateButtonEnabled = perm.some((item) => item.name === 'Create_Crf')
 
   //CSS Stylings
+
   const buttonStyle = {
     float: 'right',
     padding: '2px',
@@ -92,6 +94,15 @@ function AllCRF() {
     minWidth: '100%',
     marginTop: '50px',
   }
+
+  const buttonStyle2 = {
+    backgroundColor: '#003d8c',
+    color: '#fff',
+    padding: '10px 20px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  };
 
   const mystyle2 = {
     backgroundColor: 'white ',
@@ -304,7 +315,6 @@ function AllCRF() {
     await fetch(`${BASE_URL}/api/getAllMessageByCrfId/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        setByMessage([]);
         setByMessage(data.chat)
       })
       .catch((error) => console.log(error))
@@ -429,6 +439,7 @@ function AllCRF() {
           getMessagesByCrfId()
           setMessages('')
           setTempId('')
+          setByMessage([])
         }
       })
       .catch((error) => {
@@ -691,7 +702,7 @@ function AllCRF() {
       >
         <MDBRow className="d-flex justify-content-center">
           <MDBCol md="10" lg="10" xl="10">
-            <MDBCard style={{ width: '100%', maxWidth: '1000px' }}>
+            <MDBCard style={{ width: '100%', height: '100%', maxWidth: '1000px', maxHeight: '100%' }}>
               <MDBCardHeader
                 className="d-flex justify-content-between align-items-center p-3"
                 style={{ borderTop: "4px solid #5141e0" }}
@@ -704,11 +715,11 @@ function AllCRF() {
                 autoHideDuration={200}
                 style={{ height: '400px' }}
               >
-                <MDBCardBody>
+                <MDBCardBody style={{ height: '100%' }}>
 
-                  {bymessage.map((msg) => {
+                  {bymessage.map((msg, index) => {
                     return (
-                      <div key={msg.id}>
+                      <div key={index}>
                         {msg.sender_id === local.Users.user_id ? (
                           <>
                             <div className="d-flex justify-content-between">
