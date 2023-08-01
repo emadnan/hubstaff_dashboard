@@ -9,6 +9,19 @@ import EditIcon from '@mui/icons-material/Edit'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import CommentIcon from '@mui/icons-material/Comment'
 import Alert from '@mui/material/Alert'
+import {
+  MDBContainer,
+  MDBRow,
+  MDBCol,
+  MDBCard,
+  MDBCardHeader,
+  MDBCardBody,
+  MDBCardFooter,
+  MDBIcon,
+  MDBInputGroup,
+  MDBBtn,
+} from 'mdb-react-ui-kit';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -22,6 +35,7 @@ function AllCRF() {
   }))
 
   //Updation Variables Declaration
+  const [temp_id, setTempId] = useState('')
   const [project_id, setProjectId] = useState('')
   const [module_id, setModuleId] = useState('')
   const [fsf_id, setFsfId] = useState('')
@@ -36,6 +50,7 @@ function AllCRF() {
   const [crf_version, setCrfVersion] = useState('')
   const [status, setStatus] = useState('')
   const [comment, setComment] = useState('')
+  const [messages, setMessages] = useState('')
   const [crf_id, setCrfId] = useState('')
   const [crf_title, setCrfTitle] = useState('')
   const [requirement, setRequirement] = useState('')
@@ -58,12 +73,6 @@ function AllCRF() {
     backgroundColor: 'white',
     fontWeight: 'bold',
     color: '#0070ff',
-  }
-
-  const heading = {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    float: 'right',
   }
 
   const mystyle = {
@@ -96,11 +105,6 @@ function AllCRF() {
   const perStyle2 = {
     fontSize: 18,
     textAlign: 'center',
-    fontWeight: 'bold',
-  }
-
-  const headStyle = {
-    color: '#0070ff',
     fontWeight: 'bold',
   }
 
@@ -169,10 +173,11 @@ function AllCRF() {
     setIsModalOpen2(false)
   }
 
-  // Functions for Add CRF Comment Modal
+  // Functions for Add CRF Messages Modal
   const [isModalOpen3, setIsModalOpen3] = useState(false)
   const showModal3 = (id) => {
-    getCrfById(id)
+    getMessagesByCrfId(id)
+    setTempId(id)
     setIsModalOpen3(id)
   }
 
@@ -185,7 +190,7 @@ function AllCRF() {
     setIsModalOpen3(false)
   }
 
-  // Functions for Add CRF Comment and Status at Project Manager Modal
+  // Functions for Add and Update Status at Project Manager Modal
   const [isModalOpen4, setIsModalOpen4] = useState(false)
   const showModal4 = (id) => {
     getCrfById(id)
@@ -261,6 +266,7 @@ function AllCRF() {
   const [crf, setCrf] = useState([])
   const [bycrf, setCrfById] = useState([])
   const [bycrfid, setByCrfId] = useState([])
+  const [bymessage, setByMessage] = useState([])
   var filteredUsers = []
 
   //GET API calls
@@ -290,6 +296,16 @@ function AllCRF() {
     await fetch(`${BASE_URL}/api/getChangeRequestFormById/${id}`)
       .then((response) => response.json())
       .then((data) => setCrfById(data.CRForm))
+      .catch((error) => console.log(error))
+  }
+
+  async function getMessagesByCrfId(id) {
+    await fetch(`${BASE_URL}/api/getAllMessageByCrfId/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setByMessage([]);
+        setByMessage(data.chat)
+      })
       .catch((error) => console.log(error))
   }
 
@@ -395,6 +411,29 @@ function AllCRF() {
       })
   }
 
+  async function addMessage() {
+    let item = { crf_id: temp_id, sender_id: local.Users.user_id, messages }
+
+    console.log(item)
+
+    await fetch(`${BASE_URL}/api/sendMessage`, {
+      method: 'POST',
+      body: JSON.stringify(item),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          setMessages('')
+          setTempId('')
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
+
   // Update CRF API call
   async function updateCrf(newid) {
     await fetch(`${BASE_URL}/api/updateCrfAndCrs`, {
@@ -482,6 +521,11 @@ function AllCRF() {
             <CTableHeaderCell className="text-center" style={mystyle}>
               Status
             </CTableHeaderCell>
+            {local.Users.role === 7 ? (
+              <CTableHeaderCell className="text-center" style={mystyle}>
+                Comments
+              </CTableHeaderCell>
+            ) : null}
             {local.Users.role === 6 ? (
               <CTableHeaderCell className="text-center" style={mystyle}>
                 Comments
@@ -519,7 +563,17 @@ function AllCRF() {
                     {crf.status}
                   </CTableHeaderCell>
                 ) : null}
-                {local.Users.role === 6 ? (
+                {local.Users.role === 7 ? (
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                    <IconButton
+                      aria-label="status"
+                      title="Status"
+                      onClick={() => showModal4(crf.id)}
+                    >
+                      <CommentIcon htmlColor="#0070ff" />
+                    </IconButton>
+                  </CTableHeaderCell>
+                ) : null}
                   <CTableHeaderCell className="text-center" style={mystyle2}>
                     <IconButton
                       aria-label="comment"
@@ -529,18 +583,6 @@ function AllCRF() {
                       <CommentIcon htmlColor="#0070ff" />
                     </IconButton>
                   </CTableHeaderCell>
-                ) : null}
-                {local.Users.role === 7 ? (
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                    <IconButton
-                      aria-label="comment"
-                      title="Comment"
-                      onClick={() => showModal4(crf.id)}
-                    >
-                      <CommentIcon htmlColor="#0070ff" />
-                    </IconButton>
-                  </CTableHeaderCell>
-                ) : null}
                 <CTableHeaderCell className="text-center" style={mystyle2}>
                   <IconButton aria-label="view" title="View CRF" onClick={() => showModal2(crf.id)}>
                     <VisibilityIcon htmlColor="#28B463" />
@@ -552,8 +594,8 @@ function AllCRF() {
                   ) : null}
                   {crf.status === 'Change Request' && local.Users.role === 6 ? (
                     <IconButton aria-label="delete" onClick={() => showModal1(crf.id)}>
-                    <DeleteIcon htmlColor="#FF0000" />
-                  </IconButton>
+                      <DeleteIcon htmlColor="#FF0000" />
+                    </IconButton>
                   ) : null}
                 </CTableHeaderCell>
               </CTableRow>
@@ -639,26 +681,88 @@ function AllCRF() {
 
       {/* Modal for Change CRF Comments at Functional */}
       <Modal
-        // title="Change Comments"
         open={isModalOpen3}
         onOk={handleOk3}
         okButtonProps={{ style: { background: 'blue' } }}
         onCancel={handleCancel3}
+        footer={null}
       >
-        {bycrf.map((crf) => (
-          <div key={crf.id}>
-            <div className="form-outline mb-3">
-              <h6 style={perStyle}>Comment</h6>
-              <input
-                type="text"
-                defaultValue={crf.comment}
-                onChange={(e) => setComment(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Comment"
-              />
-            </div>
-          </div>
-        ))}
+          <MDBRow className="d-flex justify-content-center">
+            <MDBCol md="10" lg="10" xl="10">
+              <MDBCard style={{ width: '100%', maxWidth: '1000px' }}>
+                <MDBCardHeader
+                  className="d-flex justify-content-between align-items-center p-3"
+                  style={{ borderTop: "4px solid #5141e0" }}
+                >
+                  <h5 className="mb-0">Chat messages</h5>
+                </MDBCardHeader>
+                <Scrollbars
+                  autoHide
+                  autoHideTimeout={500}
+                  autoHideDuration={200}
+                  style={{ height: '400px' }}
+                >
+                  <MDBCardBody>
+                    
+                  {bymessage.map((msg) => {
+                    return (
+                      <div key={msg.id}>
+                        {msg.sender_id === local.Users.user_id ? (
+                          <>
+                            <div className="d-flex justify-content-between">
+                              <p className="small mb-1 text-muted">{msg.message_time}</p>
+                              <p className="small mb-1">{msg.name}</p>
+                            </div>
+                            <div className="d-flex flex-row justify-content-end mb-4 pt-1">
+                              <div>
+                                <p className="small p-2 me-3 mb-3 text-white rounded-3 bg-primary">
+                                  {msg.messages}
+                                </p>
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="d-flex justify-content-between">
+                              <p className="small mb-1">{msg.name}</p>
+                              <p className="small mb-1 text-muted">{msg.message_time}</p>
+                            </div>
+                            <div className="d-flex flex-row justify-content-start">
+                              <div>
+                                <p
+                                  className="small p-2 ms-3 mb-3 rounded-3"
+                                  style={{ backgroundColor: "#f5f6f7" }}
+                                >
+                                  {msg.messages}
+                                </p>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  </MDBCardBody>
+                </Scrollbars>
+
+                <MDBCardFooter className="text-muted d-flex justify-content-start align-items-center p-3">
+                  <MDBInputGroup className="mb-0">
+                    <input
+                      className="form-control form-control-lg"
+                      placeholder="Type message"
+                      type="text"
+                      onChange={(e) => setMessages(e.target.value)}
+                    />
+                    <MDBBtn color="primary" onClick={addMessage}>
+                      Send
+                    </MDBBtn>
+                  </MDBInputGroup>
+                </MDBCardFooter>
+
+              </MDBCard>
+            </MDBCol>
+          </MDBRow>
       </Modal>
 
       {/* Modal for Change CRF Comments and Status at Project Manager */}
@@ -686,16 +790,6 @@ function AllCRF() {
               </Form.Item>
             </div>
 
-            <div className="form-outline mb-3">
-              <h6 style={perStyle}>Comment</h6>
-              <input
-                type="text"
-                defaultValue={crf.comment}
-                onChange={(e) => setComment(e.target.value)}
-                className="form-control form-control-lg"
-                placeholder="Enter Comment"
-              />
-            </div>
           </div>
         ))}
       </Modal>
