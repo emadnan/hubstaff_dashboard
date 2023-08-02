@@ -748,7 +748,10 @@ function CRFform() {
                 <Modal
                   title="Create FSF"
                   open={isModalVisible}
-                  onCancel={() => setIsModalVisible(false)}
+                  onCancel={() => {
+                    setIsModalVisible(false)
+                    setFsfId('')
+                  }}
                   okButtonProps={{ style: { background: 'blue' } }}
                   style={modalStyle}
                   onOk={async () => {
