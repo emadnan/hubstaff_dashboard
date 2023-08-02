@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react'
-import { Divider, Modal, Select, Form, Button, Input } from 'antd'
+import { Divider, Modal, Select, Form } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { Box } from '@mui/material'
@@ -9,20 +9,18 @@ import EditIcon from '@mui/icons-material/Edit'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import CommentIcon from '@mui/icons-material/Comment'
 import Alert from '@mui/material/Alert'
+import Button from '@mui/material/Button';
+import SendIcon from '@mui/icons-material/Send';
 import {
-  MDBContainer,
   MDBRow,
   MDBCol,
   MDBCard,
   MDBCardHeader,
   MDBCardBody,
   MDBCardFooter,
-  MDBIcon,
-  MDBInputGroup,
-  MDBBtn,
 } from 'mdb-react-ui-kit';
+import { InputText } from "primereact/inputtext";
 import { Scrollbars } from 'react-custom-scrollbars';
-const { Search } = Input;
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -94,15 +92,6 @@ function AllCRF() {
     minWidth: '100%',
     marginTop: '50px',
   }
-
-  const buttonStyle2 = {
-    backgroundColor: '#003d8c',
-    color: '#fff',
-    padding: '10px 20px',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  };
 
   const mystyle2 = {
     backgroundColor: 'white ',
@@ -189,7 +178,6 @@ function AllCRF() {
   const showModal3 = (id) => {
     getMessagesByCrfId(id)
     setTempId(id)
-    setMessages('')
     setIsModalOpen3(id)
   }
 
@@ -424,9 +412,6 @@ function AllCRF() {
 
   async function addMessage() {
     let item = { crf_id: temp_id, sender_id: local.Users.user_id, messages }
-
-    console.log(item)
-
     await fetch(`${BASE_URL}/api/sendMessage`, {
       method: 'POST',
       body: JSON.stringify(item),
@@ -436,10 +421,7 @@ function AllCRF() {
     })
       .then((response) => {
         if (response.ok) {
-          getMessagesByCrfId()
-          setMessages('')
-          setTempId('')
-          setByMessage([])
+          getMessagesByCrfId(temp_id)
         }
       })
       .catch((error) => {
@@ -724,7 +706,7 @@ function AllCRF() {
                           <>
                             <div className="d-flex justify-content-between">
                               <p className="small mb-1 text-muted">{msg.message_time}</p>
-                              <p className="small mb-1">{msg.name}</p>
+                              <p className="small mb-1">Me</p>
                             </div>
                             <div className="d-flex flex-row justify-content-end mb-4 pt-1">
                               <div>
@@ -760,17 +742,27 @@ function AllCRF() {
               </Scrollbars>
 
               <MDBCardFooter className="text-muted d-flex justify-content-start align-items-center p-3">
-                <MDBInputGroup className="mb-0">
-                  <input
+                <div style={{ position: 'relative', flex: 1 }}>
+                  <InputText
                     className="form-control form-control-lg"
-                    placeholder="Type message"
                     type="text"
+                    placeholder="Type Message..."
+                    value={messages}
                     onChange={(e) => setMessages(e.target.value)}
                   />
-                  <MDBBtn color="primary" onClick={() => addMessage()}>
-                    Send
-                  </MDBBtn>
-                </MDBInputGroup>
+                  <IconButton color="primary" aria-label="add an alarm" onClick={() => addMessage()}
+                    className="p-button-text"
+                    style={{
+                      position: 'absolute',
+                      right: '5px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      border: 'none',
+                      color: '#321fdb'
+                    }}>
+                    <SendIcon />
+                  </IconButton>
+                </div>
               </MDBCardFooter>
 
             </MDBCard>

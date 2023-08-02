@@ -2,6 +2,9 @@ import React, { Suspense } from 'react'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import './scss/style.scss'
 
+import "primereact/resources/themes/lara-light-indigo/theme.css";    
+import "primereact/resources/primereact.min.css";                                      
+import 'primeicons/primeicons.css';
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 
