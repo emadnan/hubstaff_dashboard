@@ -6,8 +6,10 @@ import { Box } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
+import CreateIcon from '@mui/icons-material/Create';
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import CommentIcon from '@mui/icons-material/Comment'
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
@@ -422,6 +424,7 @@ function AllCRF() {
       .then((response) => {
         if (response.ok) {
           getMessagesByCrfId(temp_id)
+          setMessages('')
         }
       })
       .catch((error) => {
@@ -560,12 +563,9 @@ function AllCRF() {
                 ) : null}
                 {local.Users.role === 7 ? (
                   <CTableHeaderCell className="text-center" style={mystyle2}>
-                    <IconButton
-                      aria-label="status"
-                      title="Status"
-                      onClick={() => showModal4(crf.id)}
-                    >
-                      <CommentIcon htmlColor="#0070ff" />
+                    {crf.status}
+                    <IconButton aria-label="status" title="Status" onClick={() => showModal4(crf.id)}>
+                      <CreateIcon htmlColor="#0070ff" />
                     </IconButton>
                   </CTableHeaderCell>
                 ) : null}
@@ -575,7 +575,7 @@ function AllCRF() {
                     title="Comment"
                     onClick={() => showModal3(crf.id)}
                   >
-                    <CommentIcon htmlColor="#0070ff" />
+                    <ChatBubbleIcon htmlColor="#0070ff" />
                   </IconButton>
                 </CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle2}>
