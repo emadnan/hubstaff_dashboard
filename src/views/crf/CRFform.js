@@ -143,6 +143,7 @@ function CRFform() {
       setShowLevel1(false)
       setShowLevel2(true)
       getFsfByProjectAndModule()
+      setFormErrors('')
     } else {
       callErrors(
         project_id,
@@ -172,7 +173,7 @@ function CRFform() {
     if (fsf_id && project_manager && reference && implementation_partner && issuance_date && author && doc_ref_no) {
       setShowLevel2(false)
       setShowLevel3(true)
-      // addCrfForm()
+      setFormErrors('')
     } else {
       callErrors(
         project_id,
@@ -204,55 +205,12 @@ function CRFform() {
   }
 
   const handleNext3 = () => {
-    // if (
-    //   project_id && 
-    //   module_id &&
-    //   fsf_id && 
-    //   project_manager && 
-    //   reference && 
-    //   implementation_partner && 
-    //   issuance_date && 
-    //   author && 
-    //   doc_ref_no &&
-    //   ref_id &&
-    //   crf_title &&
-    //   type_of_requirement &&
-    //   priority &&
-    //   with_in_project_scope &&
-    //   requirement &&
-    //   required_time_no &&
-    //   required_time_type &&
-    //   functional_resource &&
-    //   Technical_resource
-    // ) {
-      setShowLevel3(false)
-      addCrfForm()
-      setTimeout(() => {
-        navigate('/allcrf')
-      }, 2000)
-    // } else {
-    //   callErrors(
-    //     project_id,
-    //     module_id,
-    //     fsf_id,
-    //     reference,
-    //     project_manager,
-    //     implementation_partner,
-    //     issuance_date,
-    //     author,
-    //     doc_ref_no,
-    //     crf_id,
-    //     crf_title,
-    //     type_of_requirement,
-    //     priority,
-    //     with_in_project_scope,
-    //     requirement,
-    //     required_time_no,
-    //     required_time_type,
-    //     functional_resource,
-    //     Technical_resource,
-    //   )
-    // }
+    setShowLevel3(false)
+    addCrfForm()
+    setFormErrors('')
+    setTimeout(() => {
+      navigate('/allcrf')
+    }, 2000)
   }
 
   //Initial rendering
@@ -539,48 +497,10 @@ function CRFform() {
           handleButtonClick1()
         }
       })
-      // .then((data) => {
-      //   console.log('data: ', data)
-      //   setRef_id(data.crf)
-      // })
       .catch((error) => {
         console.error(error)
       })
   }
-
-  // async function addChangeRequestSummary() {
-  //   let user = {
-  //     crf_id: ref_id,
-  //     crf_title,
-  //     type_of_requirement,
-  //     priority,
-  //     with_in_project_scope,
-  //     requirement,
-  //     required_time_no,
-  //     required_time_type,
-  //     functional_resource,
-  //     Technical_resource,
-  //   }
-  //   console.log(user)
-
-  //   await fetch(`${BASE_URL}/api/addChangeRequestSummary`, {
-  //     method: 'POST',
-  //     body: JSON.stringify(user),
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //   })
-  //     .then((response) => {
-  //       if (response.ok) {
-  //         handleButtonClick1()
-  //       } else {
-  //         handleButtonClick2()
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error(error)
-  //     })
-  // }
 
   // Functions for Add CRF Success
   const [showAlert1, setShowAlert1] = useState(false)
@@ -639,11 +559,12 @@ function CRFform() {
           <div className="row justify-content-center">
             <Card sx={{ maxWidth: 800, justifyContent: 'center', padding: '20px' }}>
               <CardContent>
+
                 <div className="form-outline mb-6">
                   <h6 style={perStyle}>Project Name</h6>
                   <Box>
                     <Form.Item
-                      name="project_id"
+                      name={project_id ? null : "project_id"}
                       validateStatus={formErrors.project_id ? 'error' : ''}
                       help={formErrors.project_id}
                       hasFeedback
@@ -658,11 +579,7 @@ function CRFform() {
                         }
                       >
                         {project.map((pro) => (
-                          <Select.Option
-                            value={pro.id}
-                            key={pro.id}
-                            project_name={pro.project_name}
-                          >
+                          <Select.Option value={pro.id} key={pro.id} project_name={pro.project_name}>
                             {pro.project_name}
                           </Select.Option>
                         ))}
@@ -675,7 +592,7 @@ function CRFform() {
                   <h6 style={perStyle}>Module Name</h6>
                   <Box>
                     <Form.Item
-                      name="module_id"
+                      name={module_id ? null : "module_id"}
                       validateStatus={formErrors.module_id ? 'error' : ''}
                       help={formErrors.module_id}
                       hasFeedback
@@ -742,7 +659,7 @@ function CRFform() {
                   <h6 style={perStyle}>FSF</h6>
                   <Box>
                     <Form.Item
-                      name="fsf_id"
+                      name={fsf_id ? null : "fsf_id"}
                       validateStatus={formErrors.fsf_id ? 'error' : ''}
                       help={formErrors.fsf_id}
                       hasFeedback
@@ -773,7 +690,7 @@ function CRFform() {
                   <h6 style={perStyle}>Document Reference No</h6>
                   <Box>
                     <Form.Item
-                      name="reference"
+                      name={reference ? null : "reference"}
                       validateStatus={formErrors.reference ? 'error' : ''}
                       help={formErrors.reference}
                       hasFeedback
@@ -804,7 +721,7 @@ function CRFform() {
                   <h6 style={perStyle}>Project Manager</h6>
                   <Box>
                     <Form.Item
-                      name="project_manager"
+                      name={project_manager ? null : "project_manager"}
                       validateStatus={formErrors.project_manager ? 'error' : ''}
                       help={formErrors.project_manager}
                       hasFeedback
@@ -883,7 +800,7 @@ function CRFform() {
                 <div className="form-outline mb-3">
                   <h6 style={perStyle}>Title</h6>
                   <Form.Item
-                    name="crf_title"
+                    name={crf_title ? null : "crf_title"}
                     validateStatus={formErrors.crf_title ? 'error' : ''}
                     help={formErrors.crf_title}
                   >
@@ -900,7 +817,7 @@ function CRFform() {
                 <div className="form-outline mb-3">
                   <h6 style={perStyle}>New Requirement Detail</h6>
                   <Form.Item
-                    name="requirement"
+                    name={requirement ? null : "requirement"}
                     validateStatus={formErrors.requirement ? 'error' : ''}
                     help={formErrors.requirement}
                   >
@@ -918,7 +835,7 @@ function CRFform() {
                   <h6 style={perStyle}>Type Of Requirement</h6>
                   <Box>
                     <Form.Item
-                      name="type_of_requirement"
+                      name={type_of_requirement ? null : "type_of_requirement"}
                       validateStatus={formErrors.type_of_requirement ? 'error' : ''}
                       help={formErrors.type_of_requirement}
                       hasFeedback
@@ -944,7 +861,7 @@ function CRFform() {
                   <h6 style={perStyle}>Priority</h6>
                   <Box>
                     <Form.Item
-                      name="priority"
+                      name={priority ? null : "priority"}
                       validateStatus={formErrors.priority ? 'error' : ''}
                       help={formErrors.priority}
                       hasFeedback
@@ -970,7 +887,7 @@ function CRFform() {
                   <h6 style={perStyle}>Required Time</h6>
                   <Box>
                     <Form.Item
-                      name="required_time_no"
+                      name={required_time_no ? null : "required_time_no"}
                       validateStatus={formErrors.required_time_no ? 'error' : ''}
                       help={formErrors.required_time_no}
                       hasFeedback
@@ -999,7 +916,7 @@ function CRFform() {
 
                   <Box>
                     <Form.Item
-                      name="required_time_type"
+                      name={required_time_type ? null : "required_time_type"}
                       validateStatus={formErrors.required_time_type ? 'error' : ''}
                       help={formErrors.required_time_type}
                       hasFeedback
@@ -1026,7 +943,7 @@ function CRFform() {
                   <h6 style={perStyle}>Functional Resource (required)</h6>
                   <Box>
                     <Form.Item
-                      name="functional_resource"
+                      name={functional_resource ? null : "functional_resource"}
                       validateStatus={formErrors.functional_resource ? 'error' : ''}
                       help={formErrors.functional_resource}
                       hasFeedback
@@ -1051,7 +968,7 @@ function CRFform() {
                   <h6 style={perStyle}>Technical Resource (required)</h6>
                   <Box>
                     <Form.Item
-                      name="Technical_resource"
+                      name={Technical_resource ? null : "Technical_resource"}
                       validateStatus={formErrors.Technical_resource ? 'error' : ''}
                       help={formErrors.Technical_resource}
                       hasFeedback
@@ -1076,7 +993,7 @@ function CRFform() {
                   <h6 style={perStyle}>Within Project Scope</h6>
                   <Box>
                     <Form.Item
-                      name="with_in_project_scope"
+                      name={with_in_project_scope ? null : "with_in_project_scope"}
                       validateStatus={formErrors.with_in_project_scope ? 'error' : ''}
                       help={formErrors.with_in_project_scope}
                       hasFeedback
