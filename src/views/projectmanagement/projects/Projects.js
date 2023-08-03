@@ -26,6 +26,7 @@ const Projects = () => {
   // Filter Projects
   const [selectedDepartment, setSelectedDepartment] = useState('')
   const [selectedProject, setSelectedProject] = useState('')
+  const [selectedProjectManager, setSelectedProjectManager] = useState('')
 
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'))
@@ -789,10 +790,15 @@ const Projects = () => {
     setSelectedProject(value)
   }
 
+  const handleProjectManagerSelect = (value) => {
+    setSelectedProjectManager(value)
+  }
+
   const clearFilter = () => {
     form.resetFields()
     setSelectedDepartment('')
     setSelectedProject('')
+    setSelectedProjectManager('')
   }
 
   return (
@@ -814,7 +820,7 @@ const Projects = () => {
       {isCreateButtonEnabled && (local.Users.role === 1 || local.Users.role === 3) && (
         <div className="row mt-2 mb-2 justify-content-between">
           <Form form={form} className="d-flex w-100">
-            <div className="col-md-4">
+            <div className="col-md-3">
               <div className="d-flex align-items-center">
                 <Form.Item name="projectSelect" hasFeedback style={{ width: '100%' }}>
                   <Select
@@ -836,7 +842,7 @@ const Projects = () => {
               </div>
             </div>
 
-            <div className="col-md-4">
+            <div className="col-md-3">
               <div className="ml-2 d-flex align-items-center">
                 <Form.Item name="departmentSelect" hasFeedback style={{ width: '100%' }}>
                   <Select
@@ -851,6 +857,28 @@ const Projects = () => {
                     {department.map((dept) => (
                       <Select.Option value={dept.id} key={dept.id}>
                         {dept.department_name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className="col-md-3">
+              <div className="ml-2 d-flex align-items-center">
+                <Form.Item name="projectManagerSelect" hasFeedback style={{ width: '100%' }}>
+                  <Select
+                    placeholder="Select Project Manager"
+                    onChange={handleProjectManagerSelect}
+                    value={project_manager}
+                    showSearch
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {byusers.map((user) => (
+                      <Select.Option value={user.id} key={user.id}>
+                        {user.name}
                       </Select.Option>
                     ))}
                   </Select>
@@ -918,6 +946,13 @@ const Projects = () => {
                   // Apply Project filter
                   if (selectedProject !== '') {
                     return project.id === selectedProject
+                  }
+                  return true
+                })
+                .filter((project) => {
+                  // Apply Project Manager filter
+                  if (selectedProjectManager !== '') {
+                    return project.project_manager === selectedProjectManager
                   }
                   return true
                 })
