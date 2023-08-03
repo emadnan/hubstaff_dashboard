@@ -16,6 +16,7 @@ const Projects = () => {
   const [company_id, setCompanyId] = useState('')
   const [project_name, setProjectName] = useState('')
   const [description, setDescription] = useState('')
+  const [project_manager, setProjectManager] = useState('')
   const [start_date, setStartDate] = useState('')
   const [dead_line, setDeadLine] = useState('')
   const [stream_id, setStreamId] = useState('')
@@ -46,6 +47,7 @@ const Projects = () => {
     department_id: '',
     project_name: '',
     description: '',
+    project_manager: '',
     start_date: '',
     dead_line: '',
   })
@@ -114,7 +116,7 @@ const Projects = () => {
     setIsModalOpen(true)
   }
   const handleOk = () => {
-    if (company_id && department_id && project_name && description && start_date && dead_line) {
+    if (company_id && department_id && project_name && description && project_manager && start_date && dead_line) {
       addProject()
       setIsModalOpen(false)
       form.resetFields()
@@ -122,6 +124,7 @@ const Projects = () => {
       setCompanyId('')
       setProjectName('')
       setDescription('')
+      setProjectManager('')
       setStartDate('')
       setDeadLine('')
       setFormErrors({
@@ -129,11 +132,12 @@ const Projects = () => {
         department_id: '',
         project_name: '',
         description: '',
+        project_manager: '',
         start_date: '',
         dead_line: '',
       })
     } else {
-      callErrors(company_id, department_id, project_name, description, start_date, dead_line)
+      callErrors(company_id, department_id, project_name, description, project_manager, start_date, dead_line)
     }
   }
 
@@ -142,6 +146,7 @@ const Projects = () => {
     department_id,
     project_name,
     description,
+    project_manager,
     start_date,
     dead_line,
   ) => {
@@ -157,6 +162,9 @@ const Projects = () => {
     }
     if (!description) {
       errors.description = 'Enter the Description'
+    }
+    if (!project_manager) {
+      errors.project_manager = 'Select a Project Manager'
     }
     if (!start_date) {
       errors.start_date = 'Select Start Date'
@@ -174,6 +182,7 @@ const Projects = () => {
     setCompanyId('')
     setProjectName('')
     setDescription('')
+    setProjectManager('')
     setStartDate('')
     setDeadLine('')
     setFormErrors({
@@ -181,6 +190,7 @@ const Projects = () => {
       department_id: '',
       project_name: '',
       description: '',
+      project_manager: '',
       start_date: '',
       dead_line: '',
     })
@@ -209,7 +219,7 @@ const Projects = () => {
   }
 
   const handleOk3 = () => {
-    if (department_id && company_id && project_name && description && start_date && dead_line) {
+    if (department_id && company_id && project_name && description && project_manager && start_date && dead_line) {
       updateProject(isModalOpen3)
       setIsModalOpen3(false)
       form.resetFields()
@@ -217,6 +227,7 @@ const Projects = () => {
       setCompanyId('')
       setProjectName('')
       setDescription('')
+      setProjectManager('')
       setStartDate('')
       setDeadLine('')
       setFormErrors({
@@ -224,11 +235,12 @@ const Projects = () => {
         department_id: '',
         project_name: '',
         description: '',
+        project_manager: '',
         start_date: '',
         dead_line: '',
       })
     } else {
-      callErrors(company_id, department_id, project_name, description, start_date, dead_line)
+      callErrors(company_id, department_id, project_name, description, project_manager, start_date, dead_line)
     }
   }
 
@@ -239,6 +251,7 @@ const Projects = () => {
     setCompanyId('')
     setProjectName('')
     setDescription('')
+    setProjectManager('')
     setStartDate('')
     setDeadLine('')
     setFormErrors({
@@ -246,6 +259,7 @@ const Projects = () => {
       department_id: '',
       project_name: '',
       description: '',
+      project_manager: '',
       start_date: '',
       dead_line: '',
     })
@@ -477,10 +491,15 @@ const Projects = () => {
     setDepartmentId(value)
   }
 
+  const handleProjectManagerChange = (value) => {
+    setProjectManager(value)
+  }
+
   // Array declaration for API calls
   const [projects, setProjects] = useState([])
   const [company, setCompanies] = useState([])
   const [users, setUsers] = useState([])
+  const [byusers, setByUsers] = useState([])
   const [department, setDepartment] = useState([])
   const [byproject, setByProject] = useState([])
   const [byproject2, setByProject2] = useState([])
@@ -496,6 +515,7 @@ const Projects = () => {
     getUsers()
     getDepartment()
     getStreams()
+    getProjectManagers()
   }, [])
 
   useEffect(() => {
@@ -544,6 +564,7 @@ const Projects = () => {
         setDepartmentId(data.projects[0].department_id)
         setProjectName(data.projects[0].project_name)
         setDescription(data.projects[0].project_description)
+        setProjectManager(data.projects[0].project_manager)
         const formattedStartDate = moment(data.projects[0].start_date).format('YYYY-MM-DD')
         setStartDate(formattedStartDate)
         const formattedDeadLine = moment(data.projects[0].dead_line).format('YYYY-MM-DD')
@@ -580,6 +601,18 @@ const Projects = () => {
           filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
         }
         setUsers(filteredUsers.slice(1))
+      })
+      .catch((error) => console.log(error))
+  }
+
+  async function getProjectManagers() {
+    await fetch(`${BASE_URL}/api/get_users`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === 1 || local.Users.role === 3 ) {
+          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && (user.role === 6 || user.role === 7))
+        }
+        setByUsers(filteredUsers)
       })
       .catch((error) => console.log(error))
   }
@@ -628,7 +661,7 @@ const Projects = () => {
 
   // Add API call
   async function addProject() {
-    let user = { department_id, company_id, project_name, description, start_date, dead_line }
+    let user = { department_id, company_id, project_name, description, project_manager, start_date, dead_line }
     console.log(user)
 
     await fetch(`${BASE_URL}/api/add_project`, {
@@ -715,6 +748,7 @@ const Projects = () => {
         company_id: company_id,
         project_name: project_name,
         description: description,
+        project_manager: project_manager,
         start_date: start_date,
         dead_line: dead_line,
       }),
@@ -847,10 +881,10 @@ const Projects = () => {
               Project Name
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
-              Company Name
+              Department Name
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
-              Department Name
+              Project Manager
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
               Start Date
@@ -900,10 +934,10 @@ const Projects = () => {
                         {project.project_name}
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {project.company_name}
+                        {project.department_name}
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {project.department_name}
+                        {project.project_manager_details[0]?.name}
                       </CTableHeaderCell>
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {startDate}
@@ -1006,6 +1040,28 @@ const Projects = () => {
                     {department.map((department) => (
                       <Select.Option value={department.id} key={department.id}>
                         {department.department_name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+
+              <div className="form-outline mt-3">
+                <label>Project Manager</label>
+                <Form.Item
+                  validateStatus={formErrors.project_manager ? 'error' : ''}
+                  help={formErrors.project_manager}
+                >
+                  <Select
+                    name="project_manager"
+                    placeholder="Select Project Manager"
+                    onChange={handleProjectManagerChange}
+                    onFocus={handleFocus}
+                    value={project_manager}
+                  >
+                    {byusers.map((user) => (
+                      <Select.Option value={user.id} key={user.id}>
+                        {user.name}
                       </Select.Option>
                     ))}
                   </Select>
@@ -1124,6 +1180,28 @@ const Projects = () => {
                         {department.map((department) => (
                           <Select.Option value={department.id} key={department.id}>
                             {department.department_name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </div>
+
+                  <div className="form-outline mt-3">
+                    <label>Project Manager</label>
+                    <Form.Item
+                      validateStatus={formErrors.project_manager ? 'error' : ''}
+                      help={formErrors.project_manager}
+                    >
+                      <Select
+                        name="project_manager"
+                        placeholder="Select Project Manager"
+                        onFocus={handleFocus}
+                        onChange={handleProjectManagerChange}
+                        value={project_manager}
+                      >
+                        {byusers.map((user) => (
+                          <Select.Option value={user.id} key={user.id}>
+                            {user.name}
                           </Select.Option>
                         ))}
                       </Select>

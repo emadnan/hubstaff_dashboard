@@ -13,10 +13,8 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import Alert from '@mui/material/Alert'
 import { useNavigate } from 'react-router-dom'
-import { Editor } from '@tinymce/tinymce-react'
-
-import { Card, CardContent, MenuItem, Button } from '@mui/material'
-import { Box, TextField, Typography } from '@mui/material'
+import { Card, CardContent, Button } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import Tooltip from '@mui/material/Tooltip'
 import AddIcon from '@mui/icons-material/Add'
 import CloseIcon from '@mui/icons-material/Close'
@@ -44,7 +42,7 @@ function FSFform() {
   const [development_logic, setDevelopmentLogic] = useState('')
   const [attachment, setAttachment] = useState(null)
 
-  const [fsf_id, setFsfId] = useState('')
+  // const [fsf_id, setFsfId] = useState('')
   const [description, setDescription] = useState('')
   const [input_parameter_name, setInputParameterName] = useState('')
   const [output_parameter_name, setOutputParameterName] = useState('')
@@ -1567,28 +1565,6 @@ function FSFform() {
                 </div>
 
                 <div className="form-outline mb-3">
-                  <label>Module</label>
-                  <Form.Item
-                    validateStatus={formErrors.module_id ? 'error' : ''}
-                    help={formErrors.module_id}
-                  >
-                    <Select
-                      placeholder="Select Module"
-                      onChange={handleModuleChange}
-                      value={module_id}
-                      name="module_id"
-                      onFocus={handleFocus}
-                    >
-                      {projectmodule.map((proj) => (
-                        <Select.Option value={proj.id} key={proj.id} module_name={proj.name}>
-                          {proj.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
-
-                <div className="form-outline mb-3">
                   <label>Project</label>
                   <Form.Item
                     validateStatus={formErrors.project_id ? 'error' : ''}
@@ -1604,6 +1580,28 @@ function FSFform() {
                       {project.map((pro) => (
                         <Select.Option value={pro.id} key={pro.id} project_name={pro.project_name}>
                           {pro.project_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+
+                <div className="form-outline mb-3">
+                  <label>Module</label>
+                  <Form.Item
+                    validateStatus={formErrors.module_id ? 'error' : ''}
+                    help={formErrors.module_id}
+                  >
+                    <Select
+                      placeholder="Select Module"
+                      onChange={handleModuleChange}
+                      value={module_id}
+                      name="module_id"
+                      onFocus={handleFocus}
+                    >
+                      {projectmodule.map((proj) => (
+                        <Select.Option value={proj.id} key={proj.id} module_name={proj.name}>
+                          {proj.name}
                         </Select.Option>
                       ))}
                     </Select>
