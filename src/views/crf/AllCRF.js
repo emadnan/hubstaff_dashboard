@@ -184,7 +184,6 @@ function AllCRF() {
   }
 
   const handleOk3 = () => {
-    updateComment(isModalOpen3)
     setIsModalOpen3(false)
   }
 

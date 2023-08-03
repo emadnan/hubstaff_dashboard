@@ -4,14 +4,22 @@ import { Button, Modal, Checkbox, Divider, Alert, Select, Form } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import IconButton from '@mui/material/IconButton'
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft'
 import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar'
 import PeopleIcon from '@mui/icons-material/People'
-import { Box, TextField, MenuItem } from '@mui/material'
-import { Editor } from '@tinymce/tinymce-react'
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import SendIcon from '@mui/icons-material/Send';
+import {
+  MDBRow,
+  MDBCol,
+  MDBCard,
+  MDBCardHeader,
+  MDBCardBody,
+  MDBCardFooter,
+} from 'mdb-react-ui-kit';
+import { InputText } from "primereact/inputtext";
+import { Scrollbars } from 'react-custom-scrollbars';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -42,12 +50,15 @@ function AllFSF() {
   const [selectedUsers, setSelectedUsers] = useState([])
   const [assignedfsf, setAssignedFsf] = useState([])
   const [comment, setComment] = useState('')
+  const [messages, setMessages] = useState('')
+  const [temp_id, setTempId] = useState('')
   const [fsfcomment, setFsfComment] = useState('')
   const [status, setStatus] = useState([])
   const [teamstatus, setTeamStatus] = useState([])
   const [assignedstatus, setAssignedStatus] = useState([])
   const [teamassignedstatus, setTeamAssignedStatus] = useState([])
   const [assignedstatusteam, setAssignedStatusTeam] = useState([])
+  const [bymessage, setByMessage] = useState([])
   var filteredUsers = []
 
   //CSS Stylings
@@ -153,6 +164,16 @@ function AllFSF() {
       })
       .catch((error) => console.log(error))
   }
+
+  async function getMessagesByFsfId(id) {
+    await fetch(`${BASE_URL}/api/getAllMessageByFsfId/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setByMessage(data.chat)
+      })
+      .catch((error) => console.log(error))
+  }
+
 
   async function getAssignedFsfToUserStatusTeamLead(id) {
     await fetch(`${BASE_URL}/api/getFsfFromAssignToteamleadByFsfIdAndLogin/${id}`)
@@ -470,6 +491,22 @@ function AllFSF() {
     setTeamStatus('')
   }
 
+  // Functions for Add FSF Messages Modal
+  const [isModalOpen7, setIsModalOpen7] = useState(false)
+  const showModal7 = (id) => {
+    getMessagesByFsfId(id)
+    setTempId(id)
+    setIsModalOpen7(id)
+  }
+
+  const handleOk7 = () => {
+    setIsModalOpen7(false)
+  }
+
+  const handleCancel7 = () => {
+    setIsModalOpen7(false)
+  }
+
   // API Calls through Fetch
   async function deleteFsf(newid) {
     await fetch(`${BASE_URL}/api/deleteFunctionalSpecificationForm`, {
@@ -568,6 +605,26 @@ function AllFSF() {
       })
   }
 
+  async function addMessage() {
+    let item = { fsf_id: temp_id, sender_id: local.Users.user_id, messages }
+    await fetch(`${BASE_URL}/api/sendFsfMessage`, {
+      method: 'POST',
+      body: JSON.stringify(item),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          getMessagesByFsfId(temp_id)
+          setMessages('')
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
+
   const urlAttachment = (imageUrl) => {
     // Logic to concatenate the base URL with the image URL
     const concatinatedImage = `${BASE_URL}/attachment/${imageUrl}`
@@ -618,11 +675,9 @@ function AllFSF() {
               <CTableHeaderCell className="text-center" style={mystyle}>
                 WRICEF ID
               </CTableHeaderCell>
-              {local.Users.role === 6 ? (
                 <CTableHeaderCell className="text-center" style={mystyle}>
                   Status
                 </CTableHeaderCell>
-              ) : null}
               {local.Users.role === 6 ? (
                 <CTableHeaderCell className="text-center" style={mystyle}>
                   Comment
@@ -670,7 +725,13 @@ function AllFSF() {
                 ) : null}
                 {local.Users.role === 6 ? (
                   <CTableHeaderCell className="text-center" style={mystyle2}>
-                    {fsf.comment}
+                    <IconButton
+                      aria-label="comment"
+                      title="Comment"
+                      onClick={() => showModal7(fsf.id)}
+                    >
+                      <ChatBubbleIcon htmlColor="#0070ff" />
+                    </IconButton>
                   </CTableHeaderCell>
                 ) : null}
                 {local.Users.role === 7 || local.Users.role === 6 ? (
@@ -1190,6 +1251,102 @@ function AllFSF() {
                 </div>
               ))}
             </div>
+          </Modal>
+
+          {/* Modal for Change FSF Comments at Functional */}
+          <Modal
+            open={isModalOpen7}
+            onOk={handleOk7}
+            okButtonProps={{ style: { background: 'blue' } }}
+            onCancel={handleCancel7}
+            footer={null}
+          >
+            <MDBRow className="d-flex justify-content-center">
+              <MDBCol md="10" lg="10" xl="10">
+                <MDBCard style={{ width: '100%', height: '100%', maxWidth: '1000px', maxHeight: '100%' }}>
+                  <MDBCardHeader
+                    className="d-flex justify-content-between align-items-center p-3"
+                    style={{ borderTop: "4px solid #5141e0" }}
+                  >
+                    <h5 className="mb-0">Chat messages</h5>
+                  </MDBCardHeader>
+                  <Scrollbars
+                    autoHide
+                    autoHideTimeout={500}
+                    autoHideDuration={200}
+                    style={{ height: '400px' }}
+                  >
+                    <MDBCardBody style={{ height: '100%' }}>
+
+                      {bymessage.map((msg, index) => {
+                        return (
+                          <div key={index}>
+                            {msg.sender_id === local.Users.user_id ? (
+                              <>
+                                <div className="d-flex justify-content-between">
+                                  <p className="small mb-1 text-muted">{msg.message_time}</p>
+                                  <p className="small mb-1">Me</p>
+                                </div>
+                                <div className="d-flex flex-row justify-content-end mb-4 pt-1">
+                                  <div>
+                                    <p className="small p-2 me-3 mb-3 text-white rounded-3 bg-primary">
+                                      {msg.messages}
+                                    </p>
+                                  </div>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className="d-flex justify-content-between">
+                                  <p className="small mb-1">{msg.crf_chat_sender_detailes[0]?.name}</p>
+                                  <p className="small mb-1 text-muted">{msg.created_at}</p>
+                                </div>
+                                <div className="d-flex flex-row justify-content-start">
+                                  <div>
+                                    <p
+                                      className="small p-2 ms-3 mb-3 rounded-3"
+                                      style={{ backgroundColor: "#f5f6f7" }}
+                                    >
+                                      {msg.messages}
+                                    </p>
+                                  </div>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        );
+                      })}
+
+                    </MDBCardBody>
+                  </Scrollbars>
+
+                  <MDBCardFooter className="text-muted d-flex justify-content-start align-items-center p-3">
+                    <div style={{ position: 'relative', flex: 1 }}>
+                      <InputText
+                        className="form-control form-control-lg"
+                        type="text"
+                        placeholder="Type Message..."
+                        value={messages}
+                        onChange={(e) => setMessages(e.target.value)}
+                      />
+                      <IconButton color="primary" aria-label="add an alarm" onClick={() => addMessage()}
+                        className="p-button-text"
+                        style={{
+                          position: 'absolute',
+                          right: '5px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          border: 'none',
+                          color: '#321fdb'
+                        }}>
+                        <SendIcon />
+                      </IconButton>
+                    </div>
+                  </MDBCardFooter>
+
+                </MDBCard>
+              </MDBCol>
+            </MDBRow>
           </Modal>
 
           {/* Modal for Deletion Confirmation */}
