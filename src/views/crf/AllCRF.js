@@ -709,7 +709,7 @@ function AllCRF() {
                             </div>
                             <div className="d-flex flex-row justify-content-end mb-4 pt-1">
                               <div>
-                                <p className="small p-2 me-3 mb-3 text-white rounded-3 bg-primary">
+                                <p className="small p-2 me-3 mb-3 text-white rounded-3 bg-primary" style={{wordBreak: 'break-word'}}>
                                   {msg.messages}
                                 </p>
                               </div>
@@ -725,7 +725,7 @@ function AllCRF() {
                               <div>
                                 <p
                                   className="small p-2 ms-3 mb-3 rounded-3"
-                                  style={{ backgroundColor: "#f5f6f7" }}
+                                  style={{ backgroundColor: "#f5f6f7", wordBreak: 'break-word' }}
                                 >
                                   {msg.messages}
                                 </p>
