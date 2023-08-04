@@ -675,7 +675,6 @@ function AllFSF() {
               <CTableHeaderCell className="text-center" style={mystyle}>
                 WRICEF ID
               </CTableHeaderCell>
-
               <CTableHeaderCell className="text-center" style={mystyle}>
                 Status
               </CTableHeaderCell>
@@ -767,13 +766,6 @@ function AllFSF() {
                   <IconButton aria-label="view" title="View FSF" onClick={() => showModal(fsf.id)}>
                     <VisibilityIcon htmlColor="#28B463" />
                   </IconButton>
-                  {
-                    local.Users.role === 6 ? (
-                      <IconButton aria-label="delete" onClick={() => showModal3(fsf.id)}>
-                        <DeleteIcon htmlColor="#FF0000" />
-                      </IconButton>
-                    ) : null
-                  }
                 </CTableHeaderCell>
               </CTableRow>
             ))}
@@ -1205,10 +1197,10 @@ function AllFSF() {
               <div className="col md-2 text-center">
                 <h6 style={heading}>Status</h6>
               </div>
-              <div className="col md-3"></div>
+              {/* <div className="col md-3"></div>
               <div className="col md-2 text-center">
                 <h6 style={heading}>Comment</h6>
-              </div>
+              </div> */}
               &nbsp;
               <Divider></Divider>
             </div>
@@ -1227,10 +1219,10 @@ function AllFSF() {
                   <div className="col md-2 text-center">
                     <h6>{stat.status}</h6>
                   </div>
-                  <div className="col md-3"></div>
+                  {/* <div className="col md-3"></div>
                   <div className="col md-2 text-center">
                     <h6>{stat.comment}</h6>
-                  </div>
+                  </div> */}
                   &nbsp;
                   <Divider />
                 </div>
