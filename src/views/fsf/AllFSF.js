@@ -665,7 +665,7 @@ function AllFSF() {
       <br></br>
       <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
         {local.Users.role === 6 || local.Users.role === 7 ? (
-          
+
           <CTableHead color="light">
             <CTableRow>
 
@@ -676,16 +676,16 @@ function AllFSF() {
                 WRICEF ID
               </CTableHeaderCell>
 
-                <CTableHeaderCell className="text-center" style={mystyle}>
-                  Status
-                </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle}>
+                Status
+              </CTableHeaderCell>
 
               {local.Users.role === 6 || local.Users.role === 7 ? (
                 <CTableHeaderCell className="text-center" style={mystyle}>
                   Comment
                 </CTableHeaderCell>
               ) : null}
-                
+
               {local.Users.role === 7 ? (
                 <CTableHeaderCell className="text-center" style={mystyle}>
                   Assign User
@@ -698,9 +698,9 @@ function AllFSF() {
                 </CTableHeaderCell>
               ) : null}
 
-                <CTableHeaderCell className="text-center" style={mystyle}>
-                  Actions
-                </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle}>
+                Actions
+              </CTableHeaderCell>
 
             </CTableRow>
 
@@ -763,24 +763,18 @@ function AllFSF() {
                     </IconButton>
                   </CTableHeaderCell>
                 ) : null}
-                {local.Users.role === 7 ? (
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                  <IconButton
-                    aria-label="view"
-                    title="View FSF"
-                    onClick={() => showModal(fsf.id)}
-                  >
+                <CTableHeaderCell className="text-center" style={mystyle2}>
+                  <IconButton aria-label="view" title="View FSF" onClick={() => showModal(fsf.id)}>
                     <VisibilityIcon htmlColor="#28B463" />
                   </IconButton>
+                  {
+                    local.Users.role === 6 ? (
+                      <IconButton aria-label="delete" onClick={() => showModal3(fsf.id)}>
+                        <DeleteIcon htmlColor="#FF0000" />
+                      </IconButton>
+                    ) : null
+                  }
                 </CTableHeaderCell>
-                ) : null}
-                {local.Users.role === 6 ? (
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                    <IconButton aria-label="delete" onClick={() => showModal3(fsf.id)}>
-                      <DeleteIcon htmlColor="#FF0000" />
-                    </IconButton>
-                  </CTableHeaderCell>
-                ) : null}
               </CTableRow>
             ))}
           </CTableHead>
@@ -816,7 +810,7 @@ function AllFSF() {
                   {assigned.team_lead_details.name}
                 </CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle2}>
-                  {assigned.assign_status} 
+                  {assigned.assign_status}
                   <IconButton
                     aria-label="status"
                     title="Update Status"
