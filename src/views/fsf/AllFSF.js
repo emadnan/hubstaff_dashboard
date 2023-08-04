@@ -6,6 +6,7 @@ import IconButton from '@mui/material/IconButton'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import DeleteIcon from '@mui/icons-material/Delete'
 import DehazeIcon from '@mui/icons-material/Dehaze'
+import CreateIcon from '@mui/icons-material/Create';
 import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar'
 import PeopleIcon from '@mui/icons-material/People'
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
@@ -585,7 +586,6 @@ function AllFSF() {
     var formData = new FormData()
     formData.append('status', teamstatus)
     formData.append('fsf_id', newid)
-    formData.append('comment', fsfcomment)
     await fetch(`${BASE_URL}/api/updateStatusByTeamLogin`, {
       method: 'POST',
       headers: {
@@ -595,9 +595,7 @@ function AllFSF() {
     })
       .then((response) => {
         if (response.ok) {
-          // handleButtonClick5();
-        } else {
-          // handleButtonClick6();
+          getFsfonTeamLeadId(local.token)
         }
       })
       .catch((error) => {
@@ -669,45 +667,40 @@ function AllFSF() {
         {local.Users.role === 6 || local.Users.role === 7 ? (
           <CTableHead color="light">
             <CTableRow>
+
               <CTableHeaderCell className="text-center" style={mystyle}>
                 Sr/No
               </CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle}>
                 WRICEF ID
               </CTableHeaderCell>
+
                 <CTableHeaderCell className="text-center" style={mystyle}>
                   Status
                 </CTableHeaderCell>
-              {local.Users.role === 6 ? (
+
+              {local.Users.role === 6 || local.Users.role === 7 ? (
                 <CTableHeaderCell className="text-center" style={mystyle}>
                   Comment
                 </CTableHeaderCell>
               ) : null}
-              {local.Users.role === 7 || local.Users.role === 6 ? (
-                <CTableHeaderCell className="text-center" style={mystyle}>
-                  View
-                </CTableHeaderCell>
-              ) : null}
+                
               {local.Users.role === 7 ? (
                 <CTableHeaderCell className="text-center" style={mystyle}>
                   Assign User
                 </CTableHeaderCell>
               ) : null}
+
               {local.Users.role === 7 ? (
                 <CTableHeaderCell className="text-center" style={mystyle}>
                   Users Assigned Status
                 </CTableHeaderCell>
               ) : null}
-              {local.Users.role === 7 ? (
-                <CTableHeaderCell className="text-center" style={mystyle}>
-                  Status
-                </CTableHeaderCell>
-              ) : null}
-              {local.Users.role === 6 ? (
+
                 <CTableHeaderCell className="text-center" style={mystyle}>
                   Actions
                 </CTableHeaderCell>
-              ) : null}
+
             </CTableRow>
 
             {fsfonTeamId.map((fsf, index) => (
@@ -718,11 +711,24 @@ function AllFSF() {
                 <CTableHeaderCell className="text-center" style={mystyle2}>
                   {fsf.wricef_id}-{fsf.fsf_version}
                 </CTableHeaderCell>
-                {local.Users.role === 6 ? (
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                    {fsf.status}
-                  </CTableHeaderCell>
-                ) : null}
+                {
+                  local.Users.role === 6 ? (
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {fsf.status}
+                    </CTableHeaderCell>
+                  ) : local.Users.role === 7 ? (
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {fsf.status}
+                      <IconButton
+                        aria-label="status"
+                        title="Status"
+                        onClick={() => showModal5(fsf.id)}
+                      >
+                        <CreateIcon htmlColor="#0070ff" />
+                      </IconButton>
+                    </CTableHeaderCell>
+                  ) : null
+                }
                 {local.Users.role === 6 ? (
                   <CTableHeaderCell className="text-center" style={mystyle2}>
                     <IconButton
@@ -1185,16 +1191,6 @@ function AllFSF() {
                   </Form.Item>
                 </div>
 
-                <div className="form-outline mb-3">
-                  <label>Comment</label>
-                  <input
-                    type="text"
-                    defaultValue={assign.fsfcomment}
-                    onChange={(e) => setFsfComment(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Comment"
-                  />
-                </div>
               </div>
             ))}
           </Modal>
