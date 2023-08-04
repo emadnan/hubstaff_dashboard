@@ -204,6 +204,11 @@ function CRFform() {
     setShowLevel1(true)
   }
 
+  const handleBack3 = () => {
+    setShowLevel3(false)
+    setShowLevel2(true)
+  }
+
   const handleNext3 = () => {
     setShowLevel3(false)
     addCrfForm()
@@ -1017,6 +1022,14 @@ function CRFform() {
                   </Box>
                 </div>
 
+                <Button
+                  onClick={handleBack3}
+                  style={dangerButtonStyle}
+                  onMouseEnter={handleMouseEnterDanger}
+                  onMouseLeave={handleMouseLeaveDanger}
+                >
+                  Back
+                </Button>
                 <Button
                   onClick={handleNext3}
                   style={successButtonStyle}

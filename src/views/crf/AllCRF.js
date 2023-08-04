@@ -586,11 +586,6 @@ function AllCRF() {
                       <EditIcon htmlColor="#0070ff" />
                     </IconButton>
                   ) : null}
-                  {crf.status === 'Change Request' && local.Users.role === 6 ? (
-                    <IconButton aria-label="delete" onClick={() => showModal1(crf.id)}>
-                      <DeleteIcon htmlColor="#FF0000" />
-                    </IconButton>
-                  ) : null}
                 </CTableHeaderCell>
               </CTableRow>
             ),
