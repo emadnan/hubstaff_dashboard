@@ -718,7 +718,7 @@ function AllCRF() {
                         ) : (
                           <>
                             <div className="d-flex justify-content-between">
-                              <p className="small mb-1">{msg.name}</p>
+                              <p className="small mb-1">{msg.crf_chat_sender_detailes[0]?.name}</p>
                               <p className="small mb-1 text-muted">{msg.message_time}</p>
                             </div>
                             <div className="d-flex flex-row justify-content-start">
