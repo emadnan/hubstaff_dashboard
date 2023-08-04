@@ -572,9 +572,9 @@ function AllFSF() {
     })
       .then((response) => {
         if (response.ok) {
-          handleButtonClick5()
+          getAssignedFsfToUser(local.token)
         } else {
-          handleButtonClick6()
+          // handleButtonClick6()
         }
       })
       .catch((error) => {
@@ -665,6 +665,7 @@ function AllFSF() {
       <br></br>
       <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
         {local.Users.role === 6 || local.Users.role === 7 ? (
+          
           <CTableHead color="light">
             <CTableRow>
 
@@ -729,7 +730,7 @@ function AllFSF() {
                     </CTableHeaderCell>
                   ) : null
                 }
-                {local.Users.role === 6 ? (
+                {local.Users.role === 6 || local.Users.role === 7 ? (
                   <CTableHeaderCell className="text-center" style={mystyle2}>
                     <IconButton
                       aria-label="comment"
@@ -737,17 +738,6 @@ function AllFSF() {
                       onClick={() => showModal7(fsf.id)}
                     >
                       <ChatBubbleIcon htmlColor="#0070ff" />
-                    </IconButton>
-                  </CTableHeaderCell>
-                ) : null}
-                {local.Users.role === 7 || local.Users.role === 6 ? (
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
-                    <IconButton
-                      aria-label="view"
-                      title="View FSF"
-                      onClick={() => showModal(fsf.id)}
-                    >
-                      <VisibilityIcon htmlColor="#28B463" />
                     </IconButton>
                   </CTableHeaderCell>
                 ) : null}
@@ -775,20 +765,17 @@ function AllFSF() {
                 ) : null}
                 {local.Users.role === 7 ? (
                   <CTableHeaderCell className="text-center" style={mystyle2}>
-                    <IconButton
-                      aria-label="status"
-                      title="Status"
-                      onClick={() => showModal5(fsf.id)}
-                    >
-                      <DehazeIcon htmlColor="#0070ff" />
-                    </IconButton>
-                  </CTableHeaderCell>
+                  <IconButton
+                    aria-label="view"
+                    title="View FSF"
+                    onClick={() => showModal(fsf.id)}
+                  >
+                    <VisibilityIcon htmlColor="#28B463" />
+                  </IconButton>
+                </CTableHeaderCell>
                 ) : null}
                 {local.Users.role === 6 ? (
                   <CTableHeaderCell className="text-center" style={mystyle2}>
-                    {/* <IconButton aria-label="update">
-                          <EditIcon htmlColor='#28B463' />
-                        </IconButton> */}
                     <IconButton aria-label="delete" onClick={() => showModal3(fsf.id)}>
                       <DeleteIcon htmlColor="#FF0000" />
                     </IconButton>
@@ -807,10 +794,13 @@ function AllFSF() {
                 WRICEF ID
               </CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle}>
-                View FSF
+                Assigned By
               </CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle}>
                 Status
+              </CTableHeaderCell>
+              <CTableHeaderCell className="text-center" style={mystyle}>
+                Actions
               </CTableHeaderCell>
             </CTableRow>
 
@@ -823,6 +813,19 @@ function AllFSF() {
                   {assigned.wricef_id}
                 </CTableHeaderCell>
                 <CTableHeaderCell className="text-center" style={mystyle2}>
+                  {assigned.team_lead_details.name}
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle2}>
+                  {assigned.assign_status} 
+                  <IconButton
+                    aria-label="status"
+                    title="Update Status"
+                    onClick={() => showModal2(assigned.fsf_id)}
+                  >
+                    <CreateIcon htmlColor="#0070ff" />
+                  </IconButton>
+                </CTableHeaderCell>
+                <CTableHeaderCell className="text-center" style={mystyle2}>
                   <IconButton
                     aria-label="view"
                     title="View FSF"
@@ -831,21 +834,13 @@ function AllFSF() {
                     <VisibilityIcon htmlColor="#28B463" />
                   </IconButton>
                 </CTableHeaderCell>
-                <CTableHeaderCell className="text-center" style={mystyle2}>
-                  <IconButton
-                    aria-label="status"
-                    title="Status"
-                    onClick={() => showModal2(assigned.fsf_id)}
-                  >
-                    <DehazeIcon htmlColor="#0070ff" />
-                  </IconButton>
-                </CTableHeaderCell>
               </CTableRow>
             ))}
           </CTableHead>
         ) : null}
 
         <CTableBody>
+
           {/* Modal for Assign Members */}
           <Modal
             title="Assign Members"
@@ -1152,7 +1147,7 @@ function AllFSF() {
                   </Form.Item>
                 </div>
 
-                <div className="form-outline mb-3">
+                {/* <div className="form-outline mb-3">
                   <label>Comment</label>
                   <input
                     type="text"
@@ -1161,7 +1156,7 @@ function AllFSF() {
                     className="form-control form-control-lg"
                     placeholder="Enter Comment"
                   />
-                </div>
+                </div> */}
               </div>
             ))}
           </Modal>
@@ -1295,7 +1290,7 @@ function AllFSF() {
                               <>
                                 <div className="d-flex justify-content-between">
                                   <p className="small mb-1">{msg.crf_chat_sender_detailes[0]?.name}</p>
-                                  <p className="small mb-1 text-muted">{msg.created_at}</p>
+                                  <p className="small mb-1 text-muted">{msg.message_time}</p>
                                 </div>
                                 <div className="d-flex flex-row justify-content-start">
                                   <div>
