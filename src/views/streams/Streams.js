@@ -13,6 +13,15 @@ function Streams() {
 
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'))
+  const permissions = local.permissions
+  const perm = permissions.map((permission) => ({
+    name: permission.name,
+  }))
+
+  //Role & Permissions check
+  const isCreateButtonEnabled = perm.some((item) => item.name === 'Create_Stream')
+  const isEditButtonEnabled = perm.some((item) => item.name === 'Edit_Stream')
+  const isDeleteButtonEnabled = perm.some((item) => item.name === 'Delete_Stream')
 
   // CSS Stylings
   const modalStyle = {
@@ -71,9 +80,9 @@ function Streams() {
     fetch(`${BASE_URL}/api/get-streams`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
+        if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.Streams
-        } else if (local.Users.role === 3) {
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.Streams.filter((user) => user.company_id === local.Users.company_id)
         }
         setStreams(filteredUsers)
@@ -358,14 +367,17 @@ function Streams() {
         </div>
         <div className="col-md 6">
           {/* Add Roles Button */}
-          <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>
-            Add Stream
-          </Button>
+          {isCreateButtonEnabled ? (
+            <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>
+              Add Stream
+            </Button>
+          ) : null
+          }
         </div>
       </div>
       <div className="row mt-2 mb-2 justify-content-between">
         <div className="col-md-4">
-          {local.Users.role === 1 || local.Users.role === 3 ? (
+          {perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data') ? (
             <div className="d-flex">
               <Form form={form} style={{ width: '100%' }}>
                 <Form.Item name="select" hasFeedback>
@@ -404,9 +416,12 @@ function Streams() {
             <CTableHeaderCell className="text-center" style={mystyle}>
               Stream Name
             </CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>
-              Actions
-            </CTableHeaderCell>
+            {isEditButtonEnabled || isDeleteButtonEnabled ? (
+              <CTableHeaderCell className="text-center" style={mystyle}>
+                Actions
+              </CTableHeaderCell>
+            ) : null
+            }
           </CTableRow>
 
           {/* Get API Stream */}
@@ -426,14 +441,23 @@ function Streams() {
                 <CTableHeaderCell className="text-center" style={mystyle2}>
                   {stream.stream_name}
                 </CTableHeaderCell>
-                <CTableHeaderCell className="text-center" style={mystyle2}>
-                  <IconButton aria-label="update" onClick={() => showModal2(stream.id)}>
-                    <EditIcon htmlColor="#28B463" />
-                  </IconButton>
-                  <IconButton aria-label="delete" onClick={() => showModal3(stream.id)}>
-                    <DeleteIcon htmlColor="#FF0000" />
-                  </IconButton>
-                </CTableHeaderCell>
+                {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                    {isEditButtonEnabled ? (
+                      <IconButton aria-label="update" onClick={() => showModal2(stream.id)}>
+                        <EditIcon htmlColor="#28B463" />
+                      </IconButton>
+                    ) : null
+                    }
+                    {isDeleteButtonEnabled ? (
+                      <IconButton aria-label="delete" onClick={() => showModal3(stream.id)}>
+                        <DeleteIcon htmlColor="#FF0000" />
+                      </IconButton>
+                    ) : null
+                    }
+                  </CTableHeaderCell>
+                ) : null
+                }
               </CTableRow>
             ))}
         </CTableHead>

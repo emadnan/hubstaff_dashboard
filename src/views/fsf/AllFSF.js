@@ -729,7 +729,6 @@ function AllFSF() {
           </Form>
         </div>
 
-      <br></br>
       <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
         {local.Users.role === 6 || local.Users.role === 7 ? (
 

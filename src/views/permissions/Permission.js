@@ -365,14 +365,23 @@ const Permission = () => {
                             <CTableRow key={perm.id}>
                                 <CTableHeaderCell className="text-center" style={mystyle2}>{index + 1}</CTableHeaderCell>
                                 <CTableHeaderCell className="text-center" style={mystyle2}>{perm.name}</CTableHeaderCell>
-                                <CTableHeaderCell className="text-center" style={mystyle2}>
-                                    <IconButton aria-label="update" onClick={() => showModal3(perm.id)}>
-                                        <EditIcon htmlColor='#28B463' />
-                                    </IconButton>
-                                    <IconButton aria-label="delete" onClick={() => showModal2(perm.id)}>
-                                        <DeleteIcon htmlColor='#FF0000' />
-                                    </IconButton>
-                                </CTableHeaderCell>
+                                {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                                        {isEditButtonEnabled ? (
+                                            <IconButton aria-label="update" onClick={() => showModal3(perm.id)}>
+                                                <EditIcon htmlColor='#28B463' />
+                                            </IconButton>
+                                        ) : null
+                                        }
+                                        {isDeleteButtonEnabled ? (
+                                            <IconButton aria-label="delete" onClick={() => showModal2(perm.id)}>
+                                                <DeleteIcon htmlColor='#FF0000' />
+                                            </IconButton>
+                                        ) : null
+                                        }
+                                    </CTableHeaderCell>
+                                ) : null
+                                }
                             </CTableRow>
                         ))
                     }

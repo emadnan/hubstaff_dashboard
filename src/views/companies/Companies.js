@@ -39,15 +39,6 @@ const Companies = () => {
     left: '40%',
   }
 
-  // const perStyle = {
-  //   fontSize: 14,
-  // };
-
-  // const headStyle = {
-  //   color: "#0070ff",
-  //   fontWeight: "bold",
-  // };
-
   const modalStyle2 = {
     position: 'fixed',
     top: '10%',
@@ -232,21 +223,6 @@ const Companies = () => {
     })
   }
 
-  // Functions for Show Details Modal
-  // const [isModalOpen4, setIsModalOpen4] = useState(false);
-  // const showModal4 = (id) => {
-  //   getCompanyById(id)
-  //   setIsModalOpen4(id)
-  // };
-
-  // const handleOk4 = () => {
-  //   setIsModalOpen4(false);
-  // };
-
-  // const handleCancel4 = () => {
-  //   setIsModalOpen4(false);
-  // };
-
   // Functions for Add Company Success
   const [showAlert1, setShowAlert1] = useState(false)
 
@@ -377,7 +353,7 @@ const Companies = () => {
   const handleCountryChange = (value) => {
     setEnableChangeCity(true)
     setCountry(value)
-    setCity('') // Reset the city value
+    setCity('')
     form.setFieldsValue({ city: null })
   }
 
@@ -403,11 +379,11 @@ const Companies = () => {
     fetch(`${BASE_URL}/api/getcompany`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
+        if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.companies
-        } else if (local.Users.role === 3) {
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
-        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+        } else if (perm.some((item) => item.name === 'User_Data')) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
         }
         setUsers(filteredUsers)

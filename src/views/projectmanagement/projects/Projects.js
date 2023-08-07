@@ -537,11 +537,11 @@ const Projects = () => {
     fetch(`${BASE_URL}/api/getproject`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
+        if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.projects
-        } else if (local.Users.role === 3) {
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
-        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+        } else if (perm.some((item) => item.name === 'User_Data')) {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
         }
         setProjects(filteredUsers)
@@ -578,11 +578,11 @@ const Projects = () => {
     fetch(`${BASE_URL}/api/getcompany`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
+        if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.companies
-        } else if (local.Users.role === 3) {
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
-        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+        } else if (perm.some((item) => item.name === 'User_Data')) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
         }
         setCompanies(filteredUsers)
@@ -594,11 +594,11 @@ const Projects = () => {
     fetch(`${BASE_URL}/api/get_users`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
+        if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.Users
-        } else if (local.Users.role === 3) {
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id)
-        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+        } else if (perm.some((item) => item.name === 'User_Data')) {
           filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
         }
         setUsers(filteredUsers.slice(1))
@@ -610,8 +610,8 @@ const Projects = () => {
     await fetch(`${BASE_URL}/api/get_users`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1 || local.Users.role === 3 ) {
-          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && (user.role === 6 || user.role === 7))
+        if (perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data') ) {
+          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && (perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data')))
         }
         setByUsers(filteredUsers)
       })
@@ -622,9 +622,9 @@ const Projects = () => {
     fetch(`${BASE_URL}/api/getdepartment`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
+        if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.Departments
-        } else if (local.Users.role === 3) {
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.Departments.filter(
             (user) => user.company_id === local.Users.company_id,
           )
@@ -638,7 +638,7 @@ const Projects = () => {
     fetch(`${BASE_URL}/api/get-streams`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 3) {
+        if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.Streams.filter(
             (stream) => stream.company_id === local.Users.company_id,
           )
@@ -817,7 +817,7 @@ const Projects = () => {
         </div>
       </div>
 
-      {isCreateButtonEnabled && (local.Users.role === 1 || local.Users.role === 3) && (
+      {isCreateButtonEnabled && (perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data')) && (
         <div className="row mt-2 mb-2 justify-content-between">
           <Form form={form} className="d-flex w-100">
             <div className="col-md-3">
@@ -933,7 +933,7 @@ const Projects = () => {
           </CTableRow>
 
           {/* Get API Projects */}
-          {local.Users.role === 1 || local.Users.role === 3
+          {perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data')
             ? projects
                 .filter((project) => {
                   // Apply Department filter

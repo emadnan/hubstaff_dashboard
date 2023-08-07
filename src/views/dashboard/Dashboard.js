@@ -6,6 +6,10 @@ const BASE_URL = process.env.REACT_APP_BASE_URL
 const Dashboard = () => {
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'))
+  const permissions = local.permissions
+  const perm = permissions.map((permission) => ({
+    name: permission.name,
+  }))
   const session = JSON.parse(sessionStorage.getItem('user-info'))
   const session_token = session.token
   useEffect(() => {
@@ -99,11 +103,11 @@ const Dashboard = () => {
     await fetch(`${BASE_URL}/api/getcompany`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
+        if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.companies
-        } else if (local.Users.role === 3) {
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
-        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+        } else if (perm.some((item) => item.name === 'User_Data')) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
         }
         setUsers(filteredUsers)
@@ -115,9 +119,9 @@ const Dashboard = () => {
     await fetch(`${BASE_URL}/api/getproject`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
+        if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.projects
-        } else if (local.Users.role === 3) {
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
         }
         setProjects(filteredUsers)
@@ -130,9 +134,9 @@ const Dashboard = () => {
     await fetch(`${BASE_URL}/api/getdepartment`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
+        if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.Departments
-        } else if (local.Users.role === 3) {
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.Departments.filter(
             (user) => user.company_id === local.Users.company_id,
           )
@@ -146,13 +150,13 @@ const Dashboard = () => {
     await fetch(`${BASE_URL}/api/get_assign_projects`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
+        if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.Project_Assigns
-        } else if (local.Users.role === 3) {
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.Project_Assigns.filter(
             (user) => user.company_id === local.Users.company_id,
           )
-        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+        } else if (perm.some((item) => item.name === 'User_Data')) {
           filteredUsers = data.Project_Assigns.filter(
             (user) => user.assign_projects_user_id === local.Users.user_id,
           )
@@ -215,13 +219,13 @@ const Dashboard = () => {
     await fetch(`${BASE_URL}/api/get_Project_Screenshots`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
+        if (perm.some((item) => item.name === 'All_Data')) {
           screenfilter = data.projectscreenshot
-        } else if (local.Users.role === 3) {
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
           screenfilter = data.projectscreenshot.filter(
             (screenshot) => screenshot.company_id === local.Users.company_id,
           )
-        } else {
+        } else if (perm.some((item) => item.name === 'User_Data')) {
           screenfilter = data.projectscreenshot.filter(
             (screenshot) => screenshot.user_id === local.Users.user_id,
           )
@@ -248,7 +252,7 @@ const Dashboard = () => {
         <div className="row">
           <div className="col-md-2">
             <h6 style={head}>TOTAL PROJECTS</h6>
-            <h3 style={subhead}>{local.Users.role === 3 ? totalProjects : totalUserProjects}</h3>
+            <h3 style={subhead}>{perm.some((item) => item.name === 'Company_Data') ? totalProjects : totalUserProjects}</h3>
           </div>
           <div className="col-md-2">
             <h6 style={head}>TODAY ACTIVITY</h6>
@@ -282,33 +286,6 @@ const Dashboard = () => {
 
       <div className="row">
         <div className="col-md-6">
-          {/* Card for Recent Activity Starts */}
-          {/* <Card style={cardStyle2}>
-            <h5 style={head}>RECENT ACTIVITY</h5>
-            <Divider /> */}
-          {/* {screenshot.map((image) => {
-              return (
-                <div key={image.id} style={{ display: 'flex', justifyContent: 'center' }}>
-                  {image.get_timings.map((timing) => (
-                    <div key={timing.id} style={timingStyle}>
-                      {timing.getattechments.slice(0, 1).map((attach) => (
-                        <div key={attach.id} style={{ marginRight: '10px' }}>
-                          <a href={attach.path_url}>
-                            <img className='card' src={attach.path_url} width={150} height={100} />
-                          </a>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              );
-            })} */}
-          {/* <Divider /> */}
-          {/* <div className='text-center'>
-              <Button type="link" href="/activity/screenshots">View recent activity &gt;</Button>
-            </div>
-          </Card> */}
-          {/* Card for Recent Activity Ends */}
 
           {/* Card for Companies Modal Starts */}
           <Card style={cardStyle2}>
@@ -363,7 +340,7 @@ const Dashboard = () => {
           <br></br>
 
           {/* Card for Departments Modal Starts  */}
-          {local.Users.role === 1 || local.Users.role === 3 ? (
+          {perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data') ? (
             <Card style={cardStyle2}>
               <h5 style={head}>DEPARTMENTS</h5>
               <CTable
@@ -412,8 +389,8 @@ const Dashboard = () => {
 
         <div className="col-md-6">
           {/* Card for Projects Modal Starts */}
-          {local.Users.role === 1 ||
-            (local.Users.role === 3 && (
+          {perm.some((item) => item.name === 'All_Data') ||
+            (perm.some((item) => item.name === 'Company_Data') && (
               <Card style={cardStyle2}>
                 <h5 style={head}>PROJECTS</h5>
                 <CTable

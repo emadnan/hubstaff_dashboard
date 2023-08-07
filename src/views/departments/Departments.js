@@ -40,15 +40,6 @@ const Departments = () => {
     left: '40%',
   }
 
-  // const perStyle = {
-  //     fontSize: 14,
-  // };
-
-  // const headStyle = {
-  //     color: "#0070ff",
-  //     fontWeight: "bold",
-  // };
-
   const modalStyle2 = {
     position: 'fixed',
     top: '10%',
@@ -81,7 +72,6 @@ const Departments = () => {
   // Functions for Add Department Modal
   const [isModalOpen, setIsModalOpen] = useState(false)
   const showModal = () => {
-    console.log(perm)
     setIsModalOpen(true)
   }
   const handleOk = () => {
@@ -336,14 +326,12 @@ const Departments = () => {
     fetch(`${BASE_URL}/api/getdepartment`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
+        if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.Departments
-        } else if (local.Users.role === 3) {
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.Departments.filter(
             (user) => user.company_id === local.Users.company_id,
           )
-        } else {
-          return null
         }
         setDepartment(filteredUsers)
       })
@@ -354,11 +342,11 @@ const Departments = () => {
     fetch(`${BASE_URL}/api/getcompany`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
+        if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.companies
-        } else if (local.Users.role === 3) {
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
-        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+        } else if (perm.some((item) => item.name === 'User_Data')) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
         }
         setCompanies(filteredUsers)
@@ -494,7 +482,7 @@ const Departments = () => {
       {isCreateButtonEnabled ? (
         <div className="row mt-2 mb-2 justify-content-between">
           <div className="col-md-4">
-            {local.Users.role === 1 || local.Users.role === 3 ? (
+            {perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data') ? (
               <div className="d-flex">
                 <Form form={form} style={{ width: '100%' }}>
                   <Form.Item name="select" hasFeedback>

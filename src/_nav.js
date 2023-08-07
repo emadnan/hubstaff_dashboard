@@ -18,6 +18,15 @@ import {
 } from '@coreui/icons'
 import { CNavGroup, CNavItem } from '@coreui/react'
 
+//Local Storage data
+const local = JSON.parse(localStorage.getItem('user-info'))
+const permissions = local.permissions
+const perm = permissions.map((permission) => ({
+  name: permission.name,
+}))
+
+const isNavDashboardEnabled = perm.some((item) => item.name === 'Nav_Dashboard')
+
 export const _navAdmin = [
   {
     component: CNavItem,

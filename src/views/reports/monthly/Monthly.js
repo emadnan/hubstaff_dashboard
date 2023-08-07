@@ -89,7 +89,11 @@ export default function Dashboard() {
   const [isReportPreview, setIsReportPreview] = useState(false)
   const [selectedDate, setSelectedDate] = useState(null)
 
-  let local = JSON.parse(localStorage.getItem('user-info'))
+  const local = JSON.parse(localStorage.getItem('user-info'))
+  const permissions = local.permissions
+  const perm = permissions.map((permission) => ({
+    name: permission.name,
+  }))
 
   const handleUserChange = (value) => {
     const selectedUser = users.filter((user) => user.id === value)
@@ -131,15 +135,14 @@ export default function Dashboard() {
     await fetch(`${BASE_URL}/api/get_users`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
+        if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.Users
-        } else if (local.Users.role === 3) {
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.Users.filter(
             (user) =>
               user.company_id === local.Users.company_id && user.role !== 3 && user.role !== 1,
           )
-          // console.log('filteredUsers in getUsers: ', filteredUsers)
-        } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+        } else if (perm.some((item) => item.name === 'User_Data')) {
           filteredUsers = data.Users.filter((user) => user.id === local.Users.id)
         }
         setUsers(filteredUsers)
@@ -248,8 +251,8 @@ export default function Dashboard() {
         )
         setTotalWorkingHoursOfMonth(`
            ${data.hours.toString().padStart(2, '0')}: ${data.minutes
-          .toString()
-          .padStart(2, '0')}: ${data.seconds.toString().padStart(2, '0')}
+            .toString()
+            .padStart(2, '0')}: ${data.seconds.toString().padStart(2, '0')}
         `)
 
         processDataOnMonthSelection(data)

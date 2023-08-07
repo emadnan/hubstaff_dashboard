@@ -16,7 +16,6 @@ const Users = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [role, setRole] = useState('')
-  const [role2, setRole2] = useState('')
   const [team_id, setTeamId] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
@@ -351,13 +350,7 @@ const Users = () => {
 
   //Get calls handling
   const handleRoleChange = (value) => {
-    if (value > 20 && value < 32) {
-      setRole2(5)
-      setRole(value)
-    } else {
-      setRole(value)
-      setRole2(value)
-    }
+    setRole(value)
   }
 
   const handleTeamChange = (value) => {
@@ -372,11 +365,11 @@ const Users = () => {
 
       let filteredUsers = []
 
-      if (local.Users.role === 1) {
+      if (perm.some((item) => item.name === 'All_Data')) {
         filteredUsers = data.Users
-      } else if (local.Users.role === 3) {
+      } else if (perm.some((item) => item.name === 'Company_Data')) {
         filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id)
-      } else if (local.Users.role === 5 || local.Users.role === 6 || local.Users.role === 7) {
+      } else if (perm.some((item) => item.name === 'User_Data')) {
         filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
       }
 
@@ -397,7 +390,6 @@ const Users = () => {
     fetch(`${BASE_URL}/api/getroles`)
       .then((response) => response.json())
       .then((data) => {
-        // Filter the roles based on the condition
         const filteredRoles = data.roles.filter((role) => role.id !== 1)
         setRoles(filteredRoles)
       })
@@ -408,9 +400,9 @@ const Users = () => {
     fetch(`${BASE_URL}/api/get_teams`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
+        if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.Teams
-        } else if (local.Users.role === 3) {
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.Teams.filter((tem) => tem.team_company_id === local.Users.company_id)
         }
         setTeam(filteredUsers)
@@ -436,7 +428,7 @@ const Users = () => {
       name: name,
       email: email,
       password: password,
-      role: role2,
+      role: role,
       company_id: local.Users.company_id,
       team_id: team_id,
     }
@@ -560,7 +552,7 @@ const Users = () => {
       {isCreateButtonEnabled ? (
         <div className="row mt-2 mb-2 justify-content-between">
           <div className="col-md-4">
-            {local.Users.role === 1 || local.Users.role === 3 ? (
+            {perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data') ? (
               <div className="d-flex">
                 <Form form={form} style={{ width: '100%' }}>
                   <Form.Item name="select" hasFeedback>
@@ -615,7 +607,7 @@ const Users = () => {
                 <CTableHeaderCell className="text-center" style={mystyle}>
                   Email
                 </CTableHeaderCell>
-                {local.Users.role === 1 ? (
+                {perm.some((item) => item.name === 'All_Data') ? (
                   <CTableHeaderCell className="text-center" style={mystyle}>
                     Role
                   </CTableHeaderCell>
@@ -647,7 +639,7 @@ const Users = () => {
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       {user.email}
                     </CTableHeaderCell>
-                    {local.Users.role === 1 ? (
+                    {perm.some((item) => item.name === 'All_Data') ? (
                       <CTableHeaderCell className="text-center" style={mystyle2}>
                         {user.role}
                       </CTableHeaderCell>

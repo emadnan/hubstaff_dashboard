@@ -26,6 +26,8 @@ const Team = () => {
 
   //Role & Permissions check
   const isCreateButtonEnabled = perm.some((item) => item.name === 'Create_Team')
+  const isEditButtonEnabled = perm.some((item) => item.name === 'Edit_Team')
+  const isDeleteButtonEnabled = perm.some((item) => item.name === 'Delete_Team')
 
   //CSS Styling
   const mystyle = {
@@ -323,9 +325,9 @@ const Team = () => {
     fetch(`${BASE_URL}/api/get_teams`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 1) {
+        if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.Teams
-        } else if (local.Users.role === 3) {
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.Teams.filter((tem) => tem.team_company_id === local.Users.company_id)
         }
         setTeams(filteredUsers)
@@ -471,9 +473,11 @@ const Team = () => {
             <CTableHeaderCell className="text-center" style={mystyle}>
               Assign Team
             </CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>
-              Actions
-            </CTableHeaderCell>
+            {isEditButtonEnabled || isDeleteButtonEnabled ? (
+              <CTableHeaderCell className="text-center" style={mystyle}>
+                Action
+              </CTableHeaderCell>
+            ) : null}
           </CTableRow>
 
           {/* Get API Users */}
@@ -490,14 +494,23 @@ const Team = () => {
                   <AssignmentIndIcon htmlColor="#28B463" />
                 </IconButton>
               </CTableHeaderCell>
-              <CTableHeaderCell className="text-center" style={mystyle2}>
-                <IconButton aria-label="Update" onClick={() => showModal3(tem.id)}>
-                  <EditIcon htmlColor="#28B463" />
-                </IconButton>
-                <IconButton aria-label="Delete" onClick={() => showModal2(tem.id)}>
-                  <DeleteIcon htmlColor="#FF0000" />
-                </IconButton>
-              </CTableHeaderCell>
+              {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                <CTableHeaderCell className="text-center" style={mystyle2}>
+                  {isEditButtonEnabled ? (
+                    <IconButton aria-label="Update" onClick={() => showModal3(tem.id)}>
+                      <EditIcon htmlColor="#28B463" />
+                    </IconButton>
+                  ) : null
+                  }
+                  {isDeleteButtonEnabled ? (
+                    <IconButton aria-label="Delete" onClick={() => showModal2(tem.id)}>
+                      <DeleteIcon htmlColor="#FF0000" />
+                    </IconButton>
+                  ) : null
+                  }
+                </CTableHeaderCell>
+              ) : null
+              }
             </CTableRow>
           ))}
         </CTableHead>
