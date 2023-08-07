@@ -245,9 +245,12 @@ function CRFform() {
   }
 
   const handleFsfChange = (value) => {
-    console.log(value)
+    console.log('handleFsfChange executed with value:', value);
+    console.log('fsf_id:', fsf_id);
+    console.log('fsfbyprojectandmodule:', fsfbyprojectandmodule);
     if (value === '0') {
-      setIsModalVisible(true)
+      setIsModalVisible(true);
+      setFsfId('');
     } else {
       handleReference(value)
     }
@@ -754,8 +757,7 @@ function CRFform() {
                   title="Create FSF"
                   open={isModalVisible}
                   onCancel={() => {
-                    setIsModalVisible(false)
-                    setFsfId('')
+                    setIsModalVisible(false);
                   }}
                   okButtonProps={{ style: { background: 'blue' } }}
                   style={modalStyle}
