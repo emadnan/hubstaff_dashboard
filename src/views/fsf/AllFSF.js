@@ -39,11 +39,14 @@ function AllFSF() {
     getAssignedFsfToUser(local.token)
   }, [])
 
+  let [form] = Form.useForm()
+
   //Role & Permissions check
   const isCreateButtonEnabled = perm.some((item) => item.name === 'Create_Fsf')
 
   const navigate = useNavigate()
   const [fsf, setFsf] = useState([])
+  const [filterfsf, setFilterFsf] = useState([])
   const [fsfbyid, setFsfById] = useState([])
   const [fsfonTeamId, setFsfOnTeamId] = useState([])
   const [members, setMembers] = useState([])
@@ -61,6 +64,7 @@ function AllFSF() {
   const [assignedstatusteam, setAssignedStatusTeam] = useState([])
   const [bymessage, setByMessage] = useState([])
   var filteredUsers = []
+  const [selectedFsf, setSelectedFsf] = useState('')
 
   //CSS Stylings
   const buttonStyle = {
@@ -144,6 +148,20 @@ function AllFSF() {
     await fetch(`${BASE_URL}/api/getFunctionalSpecificationForm`)
       .then((response) => response.json())
       .then((data) => setFsf(data.Functional))
+      .catch((error) => console.log(error))
+  }
+
+  async function getFsfbyFunctional() {
+    await fetch(`${BASE_URL}/api/getFunctionalSpecificationForm`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === 6) {
+          filteredUsers = data.Functional.filter((user) => user.functional_lead_id === local.Users.user_id)
+        } else if (local.Users.role === 7) {
+          filteredUsers = data.Functional.filter((user) => user.ABAP_team_lead_id === local.Users.user_id)
+        }
+        setFilterFsf(filteredUsers)
+      })
       .catch((error) => console.log(error))
   }
 
@@ -259,11 +277,26 @@ function AllFSF() {
   useEffect(() => {
     getFsf()
     getMembers()
+    getFsfbyFunctional()
   }, [])
 
   useEffect(() => {
     setSelectedUsers(hasmembers)
   }, [hasmembers])
+
+  // Filter on the basis of Project
+  const handleFsfSelectAndSearch = (value) => {
+    setSelectedFsf(value)
+  }
+
+  const handleSearch = (inputValue, option) => {
+    return option.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0;
+  };
+
+  const clearFilter = () => {
+    form.resetFields()
+    setSelectedFsf('')
+  }
 
   // Functions for Delete FSF Success
   const [showAlert1, setShowAlert1] = useState(false)
@@ -662,6 +695,40 @@ function AllFSF() {
           ) : null}
         </div>
       </div>
+
+        <div className="row mt-2 mb-2 justify-content-between">
+          <Form form={form} className="d-flex w-100">
+            <div className="col-md-3">
+              <div className="d-flex align-items-center">
+                <Form.Item name="fsfSelect" hasFeedback style={{ width: '100%' }}>
+                  <Select
+                    placeholder="Select FSF"
+                    onChange={handleFsfSelectAndSearch}
+                    value={selectedFsf}
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {filterfsf.map((fsf) => (
+                      <Select.Option value={fsf.id} key={fsf.id}>
+                        {fsf.wricef_id}-{fsf.fsf_version}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className="col-md-4">
+              <div className="d-flex align-items-center">
+                <Button type="default" onClick={clearFilter} className="ml-2">
+                  Clear Filter
+                </Button>
+              </div>
+            </div>
+          </Form>
+        </div>
+
       <br></br>
       <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
         {local.Users.role === 6 || local.Users.role === 7 ? (
@@ -703,7 +770,12 @@ function AllFSF() {
 
             </CTableRow>
 
-            {fsfonTeamId.map((fsf, index) => (
+            {fsfonTeamId.filter((fsf) => {
+                  if (selectedFsf !== '') {
+                    return fsf.id === selectedFsf
+                  }
+                  return true
+                }).map((fsf, index) => (
               <CTableRow key={fsf.id}>
                 <CTableHeaderCell className="text-center" style={mystyle2}>
                   {index + 1}
@@ -790,7 +862,12 @@ function AllFSF() {
               </CTableHeaderCell>
             </CTableRow>
 
-            {assignedfsf.map((assigned, index) => (
+            {assignedfsf.filter((assigned) => {
+                  if (selectedFsf !== '') {
+                    return assigned.id === selectedFsf
+                  }
+                  return true
+                }).map((assigned, index) => (
               <CTableRow key={assigned.id}>
                 <CTableHeaderCell className="text-center" style={mystyle2}>
                   {index + 1}

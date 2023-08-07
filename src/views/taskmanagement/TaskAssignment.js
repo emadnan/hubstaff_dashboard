@@ -1009,15 +1009,6 @@ function TaskAssignment() {
                           >
                             {task.project_name}
                           </CTableHeaderCell>
-                          {/* <CTableHeaderCell
-                        className="text-center"
-                        style={{ ...mystyle2, width: '200px' }}
-                      >
-                        {task.task_description}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {task.priorites}
-                      </CTableHeaderCell> */}
                           <CTableHeaderCell className="text-center" style={mystyle2}>
                             {task.status}
                           </CTableHeaderCell>
@@ -1127,12 +1118,6 @@ function TaskAssignment() {
                     <CTableHeaderCell className="text-center" style={mystyle}>
                       Project
                     </CTableHeaderCell>
-                    {/* <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task Details
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task Priority
-                  </CTableHeaderCell> */}
                     <CTableHeaderCell className="text-center" style={mystyle}>
                       Task Status
                     </CTableHeaderCell>
@@ -1181,15 +1166,6 @@ function TaskAssignment() {
                           >
                             {task.project_name}
                           </CTableHeaderCell>
-                          {/* <CTableHeaderCell
-                        className="text-center"
-                        style={{ ...mystyle2, width: '200px' }}
-                      >
-                        {task.task_description}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {task.priorites}
-                      </CTableHeaderCell> */}
                           <CTableHeaderCell className="text-center" style={mystyle2}>
                             {task.status}
                           </CTableHeaderCell>
@@ -1301,12 +1277,6 @@ function TaskAssignment() {
                     <CTableHeaderCell className="text-center" style={mystyle}>
                       Project
                     </CTableHeaderCell>
-                    {/* <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task Details
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task Priority
-                  </CTableHeaderCell> */}
                     <CTableHeaderCell className="text-center" style={mystyle}>
                       Task Status
                     </CTableHeaderCell>
@@ -1356,15 +1326,6 @@ function TaskAssignment() {
                           >
                             {task.project_name}
                           </CTableHeaderCell>
-                          {/* <CTableHeaderCell
-                        className="text-center"
-                        style={{ ...mystyle2, width: '200px' }}
-                      >
-                        {task.task_description}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {task.priorites}
-                      </CTableHeaderCell> */}
                           <CTableHeaderCell className="text-center" style={mystyle2}>
                             {task.status}
                           </CTableHeaderCell>
