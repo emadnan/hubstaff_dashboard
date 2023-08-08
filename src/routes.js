@@ -1,5 +1,5 @@
 import React from 'react'
-import { isAuthenticated, getUserRole } from './auth'
+import { isAuthenticated, getUserNavPermision } from './auth'
 
 //Define routes for views
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
@@ -11,7 +11,9 @@ const Viewedit = React.lazy(() => import('./views/timesheets/viewedit/Viewedit')
 const Projects = React.lazy(() => import('./views/projectmanagement/projects/Projects'))
 const Client = React.lazy(() => import('./views/projectmanagement/client/Client'))
 const Todos = React.lazy(() => import('./views/projectmanagement/todos/Todos'))
-const AssignedProjects = React.lazy(() =>import('./views/projectmanagement/assigned/AssignedProjects'))
+const AssignedProjects = React.lazy(() =>
+  import('./views/projectmanagement/assigned/AssignedProjects'),
+)
 const Companies = React.lazy(() => import('./views/companies/Companies'))
 const Departments = React.lazy(() => import('./views/departments/Departments'))
 const Insights = React.lazy(() => import('./views/insights/Insights'))
@@ -38,18 +40,25 @@ const FSFform = React.lazy(() => import('./views/fsf/FSFform'))
 const AllCRF = React.lazy(() => import('./views/crf/AllCRF'))
 const CRFform = React.lazy(() => import('./views/crf/CRFform'))
 const TaskAssignment = React.lazy(() => import('./views/taskmanagement/TaskAssignment'))
-const TaskAssignmentUserSide = React.lazy(() => import('./views/taskmanagement/TaskAssignmentUserSide'))
+const TaskAssignmentUserSide = React.lazy(() =>
+  import('./views/taskmanagement/TaskAssignmentUserSide'),
+)
 const NotFound = React.lazy(() => import('./views/notFoundPage/NotFound'))
 
 // Function to check if the user has access to a specific route based on their role
-const hasAccess = (requiredRoles, userRole) => {
-  return requiredRoles.includes(userRole)
+const hasAccess = (requiredNavPermision, userNavPermision) => {
+  return requiredNavPermision.includes(userNavPermision)
 }
 
 //Path setting for routes
 const routes = [
   { path: '/', exact: true, name: 'Home', requiredRoles: [1, 3, 5, 6, 7] },
-  { path: '/dashboard', name: 'Dashboard', element: Dashboard, requiredRoles: [1, 3, 5, 6, 7] },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    element: Dashboard,
+    requiredNavPermision: 'Nav_Dashboard',
+  },
   {
     path: '/activity-screenshots',
     name: 'Screenshots',
@@ -195,11 +204,12 @@ const routes = [
 
 export const filteredRoutes = routes.filter((route) => {
   // If the route doesn't have any required roles specified, allow access to all authenticated users
-  if (!route.requiredRoles || route.requiredRoles.length === 0) {
+  if (!route.requiredNavPermision || route.requiredNavPermision.length === 0) {
     return isAuthenticated()
   }
 
   // If the route has required roles, check if the user has access
-  const userRole = getUserRole()
-  return hasAccess(route.requiredRoles, userRole)
+  const permissionNames = getUserNavPermision()
+  console.log('permissionNames: ', permissionNames)
+  return hasAccess(permissionNames, route.requiredNavPermision)
 })

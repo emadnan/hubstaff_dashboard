@@ -6,10 +6,13 @@ export const isAuthenticated = () => {
   return localStorage.getItem(user.token) !== null
 }
 
-// Example user role retrieval
-export const getUserRole = () => {
-  // Get the user's role from your user object or token
-  // Replace this with your own logic to retrieve the user's role
+// Example user Permision retrieval
+export const getUserNavPermision = () => {
   const user = JSON.parse(localStorage.getItem('user-info'))
-  return user ? user.Users.role : null
+  if (user) {
+    // Extract the permission names from the permissions array
+    const permissions = user.permissions.map((permission) => permission.name)
+    return permissions
+  }
+  return null
 }
