@@ -375,7 +375,7 @@ const TaskAssignmentUserSide = () => {
                       {task.project_name} - {task.task_managements_id}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.team_lead_details.name}
+                      {task.team_lead_details?.name}
                     </CTableHeaderCell>
                     <CTableHeaderCell
                       className="text-center"
