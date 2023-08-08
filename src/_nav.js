@@ -25,8 +25,6 @@ const perm = permissions.map((permission) => ({
   name: permission.name,
 }))
 
-const isNavDashboardEnabled = perm.some((item) => item.name === 'Nav_Dashboard')
-
 export const _navAdmin = [
   {
     component: CNavItem,

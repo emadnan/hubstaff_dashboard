@@ -34,7 +34,7 @@ const AppSidebar = () => {
     } else if (userRole === 7) {
       navConfig = _navTeamLead
     } else {
-      return
+      navConfig = _navEmployee
     }
 
     setNavigation(navConfig)
