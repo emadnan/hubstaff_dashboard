@@ -10,6 +10,9 @@ const BASE_URL = process.env.REACT_APP_BASE_URL
 function Streams() {
   // Variable declarations
   const [stream_name, setStreamName] = useState('')
+  const [formErrors, setFormErrors] = useState({
+    stream_name,
+  })
 
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'))
@@ -105,14 +108,37 @@ function Streams() {
   const showModal = () => {
     setIsModalOpen(true)
   }
+
   const handleOk = () => {
-    addStream()
-    setIsModalOpen(false)
-    setStreamName('')
+    if (stream_name) {
+      addStream()
+      setIsModalOpen(false)
+      setStreamName('')
+      form.resetFields()
+      setStreamName('')
+      setFormErrors({
+        stream_name: '',
+      })
+    } else {
+      callErrors(stream_name)
+    }
   }
+
+  const callErrors = (stream_name) => {
+    const errors = {}
+    if (!stream_name) {
+      errors.stream_name = 'Enter the Stream Name'
+    }
+    setFormErrors(errors)
+  }
+
   const handleCancel = () => {
     setIsModalOpen(false)
+    form.resetFields()
     setStreamName('')
+    setFormErrors({
+      stream_name: '',
+    })
   }
 
   // Functions for Update Stream Modal
@@ -123,6 +149,18 @@ function Streams() {
   }
 
   const handleOk2 = () => {
+    if (stream_name !== '') {
+      updateStream(isModalOpen2)
+    setIsModalOpen2(false)
+    setStreamName('')
+      form.resetFields()
+      setStreamName('')
+      setFormErrors({
+        stream_name: '',
+      })
+    } else {
+      callErrors(stream_name)
+    }
     updateStream(isModalOpen2)
     setIsModalOpen2(false)
     setStreamName('')
@@ -130,7 +168,11 @@ function Streams() {
 
   const handleCancel2 = () => {
     setIsModalOpen2(false)
+    form.resetFields()
     setStreamName('')
+    setFormErrors({
+      stream_name: '',
+    })
   }
 
   // Functions for Delete Stream Modal
@@ -359,6 +401,15 @@ function Streams() {
     setSearchedStream('')
   }
 
+  const handleFocus = (e) => {
+    const { name } = e.target
+
+    setFormErrors((prevFormErrors) => ({
+      ...prevFormErrors,
+      [name]: '',
+    }))
+  }
+
   return (
     <>
       <div className="row">
@@ -478,12 +529,17 @@ function Streams() {
         <div className="form-outline mb-3">
           <label>Stream</label>
           <input
+            name="stream_name"
             type="text"
             value={stream_name}
+            onFocus={handleFocus}
             onChange={(e) => setStreamName(e.target.value)}
             className="form-control form-control-lg"
             placeholder="Enter Stream Name"
           />
+          {formErrors.stream_name && (
+          <div className="text-danger">{formErrors.stream_name}</div>
+        )}
         </div>
       </Modal>
 
@@ -502,13 +558,18 @@ function Streams() {
           <div key={str.id}>
             <div className="form-outline mb-3">
               <input
+                name="stream_name"
                 type="text"
                 defaultValue={str.stream_name}
+                onFocus={handleFocus}
                 onChange={(e) => setStreamName(e.target.value)}
                 className="form-control form-control-lg"
                 placeholder="Enter Stream Name"
               />
             </div>
+            {formErrors.stream_name && (
+          <div className="text-danger">{formErrors.stream_name}</div>
+        )}
           </div>
         ))}
       </Modal>

@@ -72,7 +72,7 @@ const AssignedProjects = () => {
       if (perm.some((item) => item.name === 'All_Data')) {
         filteredUsers = data.Users
       } else if (perm.some((item) => item.name === 'Company_Data')) {
-        filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id)
+        filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && user.email !== local.Users.email)
       } else if (perm.some((item) => item.name === 'User_Data')) {
         filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
       }

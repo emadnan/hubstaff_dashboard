@@ -14,7 +14,6 @@ const Departments = () => {
   const [department_name, setDepartmentName] = useState('')
   const [description, setDescription] = useState('')
   const [formErrors, setFormErrors] = useState({
-    company_id,
     department_name,
     description,
   })
@@ -75,28 +74,23 @@ const Departments = () => {
     setIsModalOpen(true)
   }
   const handleOk = () => {
-    if (company_id && department_name && description) {
+    if (department_name && description) {
       addDepartment()
       setIsModalOpen(false)
       form.resetFields()
-      setCompanyId('')
       setDepartmentName('')
       setDescription('')
       setFormErrors({
-        company_id: '',
         department_name: '',
         description: '',
       })
     } else {
-      callErrors(company_id, department_name, description)
+      callErrors(department_name, description)
     }
   }
 
-  const callErrors = (company_id, department_name, description) => {
+  const callErrors = (department_name, description) => {
     const errors = {}
-    if (!company_id) {
-      errors.company_id = 'Select a Company'
-    }
     if (!department_name) {
       errors.department_name = 'Select a department'
     }
@@ -109,11 +103,9 @@ const Departments = () => {
   const handleCancel = () => {
     setIsModalOpen(false)
     form.resetFields()
-    setCompanyId('')
     setDepartmentName('')
     setDescription('')
     setFormErrors({
-      company_id: '',
       department_name: '',
       description: '',
     })
@@ -142,37 +134,27 @@ const Departments = () => {
   }
 
   const handleOk3 = () => {
-    console.log(
-      "company_id !== '' && department_name !== '' && description !== '' : ",
-      company_id,
-      department_name,
-      description,
-    )
-    if (company_id !== '' && department_name !== '' && description !== '') {
+    if (department_name !== '' && description !== '') {
       updateDepartment(isModalOpen3)
       setIsModalOpen3(false)
       form.resetFields()
-      setCompanyId('')
       setDepartmentName('')
       setDescription('')
       setFormErrors({
-        company_id: '',
         department_name: '',
         description: '',
       })
     } else {
-      callErrors(company_id, department_name, description)
+      callErrors(department_name, description)
     }
   }
 
   const handleCancel3 = () => {
     setIsModalOpen3(false)
     form.resetFields()
-    setCompanyId('')
     setDepartmentName('')
     setDescription('')
     setFormErrors({
-      company_id: '',
       department_name: '',
       description: '',
     })
@@ -368,7 +350,7 @@ const Departments = () => {
 
   // Add API call
   async function addDepartment() {
-    let item = { company_id, department_name, description }
+    let item = { company_id: local.Users.company_id, department_name, description }
 
     console.log(item)
 
@@ -425,7 +407,7 @@ const Departments = () => {
       },
       body: JSON.stringify({
         id: newid,
-        company_id: company_id,
+        company_id: local.Users.company_id,
         department_name: department_name,
         description: description,
       }),
@@ -589,31 +571,6 @@ const Departments = () => {
           >
             <br></br>
 
-            <Form form={form}>
-              <div className="form-outline mt-3">
-                <label>Company</label>
-                <Form.Item
-                  name="company_name"
-                  validateStatus={formErrors.company_id ? 'error' : ''}
-                  help={formErrors.company_id}
-                >
-                  <Select
-                    name="company_name"
-                    placeholder="Select Company"
-                    onChange={handleCompanyChange}
-                    onFocus={handleFocus}
-                    value={company_id}
-                  >
-                    {company.map((count) => (
-                      <Select.Option value={count.name} key={count.id}>
-                        {count.company_name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </div>
-            </Form>
-
             <div className="form-outline mt-3">
               <label>Department</label>
               <input
@@ -658,31 +615,6 @@ const Departments = () => {
 
             {bydepartment.map((dept) => (
               <div key={dept.id}>
-                <Form form={form}>
-                  <div className="form-outline mt-3">
-                    <label>Company</label>
-                    <Form.Item
-                      name="company_name"
-                      validateStatus={formErrors.company_name ? 'error' : ''}
-                      help={formErrors.company_name}
-                    >
-                      <Select
-                        name="company_name"
-                        placeholder="Select Company"
-                        onChange={handleCompanyChange}
-                        onFocus={handleFocus}
-                        defaultValue={dept.company_name}
-                      >
-                        {company.map((count) => (
-                          <Select.Option value={count.name} key={count.id}>
-                            {count.company_name}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </div>
-                </Form>
-
                 <div className="form-outline mt-3">
                   <label>Department</label>
                   <input
