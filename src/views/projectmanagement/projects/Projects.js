@@ -29,6 +29,7 @@ const Projects = () => {
   const [selectedProject, setSelectedProject] = useState('')
   const [selectedProjectManager, setSelectedProjectManager] = useState('')
   const [selectedUser, setSelectedUser] = useState('')
+  const [selectedStream, setSelectedStream] = useState('')
 
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'))
@@ -46,7 +47,6 @@ const Projects = () => {
 
   // Separate initial state values for formErrors
   const [formErrors, setFormErrors] = useState({
-    company_id: '',
     department_id: '',
     project_name: '',
     description: '',
@@ -491,7 +491,7 @@ const Projects = () => {
   }
 
   // Array declaration for API calls
-  const [projects, setProjects] = useState([])
+  const [projects, setProjects] = useState([]) 
   const [company, setCompanies] = useState([])
   const [users, setUsers] = useState([])
   const [byusers, setByUsers] = useState([])
@@ -740,7 +740,7 @@ const Projects = () => {
       body: JSON.stringify({
         id: newid,
         department_id: department_id,
-        company_id: company_id,
+        company_id: local.Users.company_id,
         project_name: project_name,
         description: description,
         project_manager: project_manager,
@@ -792,12 +792,17 @@ const Projects = () => {
     setSelectedUser(value)
   }
 
+  const handleStreamSelect = (value) => {
+    setSelectedStream(value)
+  }
+
   const clearFilter = () => {
     form.resetFields()
     setSelectedDepartment('')
     setSelectedProject('')
     setSelectedProjectManager('')
     setSelectedUser('')
+    setSelectedStream('')
   }
 
   return (
@@ -1162,28 +1167,6 @@ const Projects = () => {
               <div key={proj.id}>
                 <Form form={form}>
                   <div className="form-outline mt-3">
-                    <label>Company</label>
-                    <Form.Item
-                      validateStatus={formErrors.company_id ? 'error' : ''}
-                      help={formErrors.company_id}
-                    >
-                      <Select
-                        placeholder="Select Company"
-                        name="company_id"
-                        onChange={handleCompanyChange}
-                        onFocus={handleFocus}
-                        value={company_id}
-                      >
-                        {company.map((company) => (
-                          <Select.Option value={company.id} key={company.id}>
-                            {company.company_name}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </div>
-
-                  <div className="form-outline mt-3">
                     <label>Department</label>
                     <Form.Item
                       validateStatus={formErrors.department_id ? 'error' : ''}
@@ -1344,7 +1327,40 @@ const Projects = () => {
             okButtonProps={{ style: { background: 'blue' } }}
           >
             <h3 style={headStyle2}>Streams</h3>
+            <br></br>
+            <div className="col-md-3" style={{ width: '1500px' }}>
+              <Form form={form} className="d-flex w-200">
+                <div className="col-md-3">
+                  <div className="d-flex align-items-center">
+                    <Form.Item name="streamSelect" hasFeedback style={{ width: '100%' }}>
+                      <Select
+                        showSearch
+                        placeholder="Select Stream"
+                        onChange={handleStreamSelect}
+                        value={stream_id}
+                        filterOption={(input, option) =>
+                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                      >
+                        {stream.map((str) => (
+                          <Select.Option value={str.id} key={str.id}>
+                            {str.stream_name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </div>
+                </div>
 
+                <div className="col-md-4">
+                  <div className="d-flex align-items-center">
+                    <Button type="default" onClick={clearFilter} className="ml-2">
+                      Clear Filter
+                    </Button>
+                  </div>
+                </div>
+              </Form>
+            </div>
             <br></br>
             <div className="row">
               <div className="col md-2 text-center">
@@ -1362,7 +1378,14 @@ const Projects = () => {
               <Divider></Divider>
             </div>
 
-            {stream.map((str, index) => (
+            {stream.filter((stream) => {
+              // Apply User filter
+              if (selectedStream !== '') {
+                return stream.id === selectedStream
+              }
+              return true
+            })
+              .map((str, index) => (
               <div className="row" key={str.id}>
                 <div className="col md-2 text-center">
                   <h6 style={perStyle}>{index + 1}</h6>
@@ -1387,12 +1410,13 @@ const Projects = () => {
 
           {/* Modal for Assign User */}
           <Modal
-            title="Assign Users"
+            title=""
             open={isModalOpen4}
             onOk={handleOk4}
             onCancel={handleCancel4}
             okButtonProps={{ style: { background: 'blue' } }}
           >
+            <h3 style={headStyle2}>Assign Users</h3>
             <br></br>
             <div className="col-md-3" style={{ width: '1500px' }}>
               <Form form={form} className="d-flex w-200">
@@ -1409,10 +1433,10 @@ const Projects = () => {
                         }
                       >
                         {users.map((user) => (
-                          <Select.Option value={user.id} key={user.id}>
-                            {user.name}
-                          </Select.Option>
-                        ))}
+                            <Select.Option value={user.id} key={user.id}>
+                              {user.name}
+                            </Select.Option>
+                          ))}
                       </Select>
                     </Form.Item>
                   </div>

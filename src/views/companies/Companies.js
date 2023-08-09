@@ -191,7 +191,7 @@ const Companies = () => {
   }
 
   const handleOk3 = () => {
-    if (company_name && address && company_email && city && country && contact_no) {
+    if (company_name && address && city && country && contact_no) {
       updateCompany(isModalOpen3)
       setIsModalOpen3(false)
       setEnableChangeCity(false)
@@ -199,13 +199,12 @@ const Companies = () => {
       setFormErrors({
         company_name: '',
         address: '',
-        company_email: '',
         city: '',
         country: '',
         contact_no: '',
       })
     } else {
-      callErrors(company_name, address, company_email, city, country, contact_no)
+      callErrors(company_name, address, city, country, contact_no)
     }
   }
 
@@ -216,7 +215,6 @@ const Companies = () => {
     setFormErrors({
       company_name: '',
       address: '',
-      company_email: '',
       city: '',
       country: '',
       contact_no: '',
@@ -479,7 +477,7 @@ const Companies = () => {
         id: newid,
         company_name: company_name,
         address: address,
-        company_email: company_email,
+        company_email: local.Users.email,
         contact_no: contact_no,
         city: city,
         country: country,
@@ -655,7 +653,7 @@ const Companies = () => {
             <div className="form-outline mt-3">
               <label>Contact</label>
               <input
-                type="number"
+                type="tel"
                 name="contact_no"
                 value={contact_no}
                 onFocus={handleFocus}
@@ -768,7 +766,7 @@ const Companies = () => {
                 </div>
                 {formErrors.address && <div className="text-danger">{formErrors.address}</div>}
 
-                <div className="form-outline mt-3">
+                {/* <div className="form-outline mt-3">
                   <label>Company</label>
                   <input
                     type="text"
@@ -782,7 +780,7 @@ const Companies = () => {
                 </div>
                 {formErrors.company_email && (
                   <div className="text-danger">{formErrors.company_email}</div>
-                )}
+                )} */}
 
                 <div className="form-outline mt-3">
                   <label>Contact</label>
