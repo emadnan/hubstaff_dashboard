@@ -252,7 +252,7 @@ const Dashboard = () => {
         <div className="row">
           <div className="col-md-2">
             <h6 style={head}>TOTAL PROJECTS</h6>
-            <h3 style={subhead}>{perm.some((item) => item.name === 'Company_Data') ? totalProjects : totalUserProjects}</h3>
+            <h3 style={subhead}>{perm.some((item) => item.name === 'Company_Data' || perm.some((item) => item.name === 'All_Data')) ? totalProjects : totalUserProjects}</h3>
           </div>
           <div className="col-md-2">
             <h6 style={head}>TODAY ACTIVITY</h6>

@@ -14,7 +14,7 @@ export default function InitialMessegeForCompany() {
         <Card style={cardStyle}>
           <Box className="row">
             <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }}>
-              PLEASE SELECT THE EMPLOYEE, WHOM YOU WANNA SEE SCREENSHOTS
+              PLEASE SELECT THE EMPLOYEE NAME FOR WHOM YOU WISH TO GENERATE THE REPORT
             </Typography>
           </Box>
         </Card>

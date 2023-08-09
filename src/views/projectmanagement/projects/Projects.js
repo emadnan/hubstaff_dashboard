@@ -22,11 +22,13 @@ const Projects = () => {
   const [stream_id, setStreamId] = useState('')
   const [project_id, setProjectId] = useState('')
   const [proj_id, setProjId] = useState('')
+  const [user_id, setUserId] = useState('')
 
   // Filter Projects
   const [selectedDepartment, setSelectedDepartment] = useState('')
   const [selectedProject, setSelectedProject] = useState('')
   const [selectedProjectManager, setSelectedProjectManager] = useState('')
+  const [selectedUser, setSelectedUser] = useState('')
 
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'))
@@ -117,7 +119,7 @@ const Projects = () => {
     setIsModalOpen(true)
   }
   const handleOk = () => {
-    if (company_id && department_id && project_name && description && project_manager && start_date && dead_line) {
+    if (department_id && project_name && description && project_manager && start_date && dead_line) {
       addProject()
       setIsModalOpen(false)
       form.resetFields()
@@ -129,7 +131,6 @@ const Projects = () => {
       setStartDate('')
       setDeadLine('')
       setFormErrors({
-        company_id: '',
         department_id: '',
         project_name: '',
         description: '',
@@ -138,12 +139,11 @@ const Projects = () => {
         dead_line: '',
       })
     } else {
-      callErrors(company_id, department_id, project_name, description, project_manager, start_date, dead_line)
+      callErrors(department_id, project_name, description, project_manager, start_date, dead_line)
     }
   }
 
   const callErrors = (
-    company_id,
     department_id,
     project_name,
     description,
@@ -152,9 +152,6 @@ const Projects = () => {
     dead_line,
   ) => {
     const errors = {}
-    if (!company_id) {
-      errors.company_id = 'Select a Company'
-    }
     if (!department_id) {
       errors.department_id = 'Select a department'
     }
@@ -187,7 +184,6 @@ const Projects = () => {
     setStartDate('')
     setDeadLine('')
     setFormErrors({
-      company_id: '',
       department_id: '',
       project_name: '',
       description: '',
@@ -220,7 +216,7 @@ const Projects = () => {
   }
 
   const handleOk3 = () => {
-    if (department_id && company_id && project_name && description && project_manager && start_date && dead_line) {
+    if (department_id && project_name && description && project_manager && start_date && dead_line) {
       updateProject(isModalOpen3)
       setIsModalOpen3(false)
       form.resetFields()
@@ -232,7 +228,6 @@ const Projects = () => {
       setStartDate('')
       setDeadLine('')
       setFormErrors({
-        company_id: '',
         department_id: '',
         project_name: '',
         description: '',
@@ -241,7 +236,7 @@ const Projects = () => {
         dead_line: '',
       })
     } else {
-      callErrors(company_id, department_id, project_name, description, project_manager, start_date, dead_line)
+      callErrors(department_id, project_name, description, project_manager, start_date, dead_line)
     }
   }
 
@@ -256,7 +251,6 @@ const Projects = () => {
     setStartDate('')
     setDeadLine('')
     setFormErrors({
-      company_id: '',
       department_id: '',
       project_name: '',
       description: '',
@@ -610,7 +604,7 @@ const Projects = () => {
     await fetch(`${BASE_URL}/api/get_users`)
       .then((response) => response.json())
       .then((data) => {
-        if (perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data') ) {
+        if (perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && (user.role === 6 || user.role === 7))
         }
         setByUsers(filteredUsers)
@@ -662,7 +656,7 @@ const Projects = () => {
 
   // Add API call
   async function addProject() {
-    let user = { department_id, company_id, project_name, description, project_manager, start_date, dead_line }
+    let user = { department_id, company_id: local.Users.company_id, project_name, description, project_manager, start_date, dead_line }
     console.log(user)
 
     await fetch(`${BASE_URL}/api/add_project`, {
@@ -794,11 +788,16 @@ const Projects = () => {
     setSelectedProjectManager(value)
   }
 
+  const handleUserSelect = (value) => {
+    setSelectedUser(value)
+  }
+
   const clearFilter = () => {
     form.resetFields()
     setSelectedDepartment('')
     setSelectedProject('')
     setSelectedProjectManager('')
+    setSelectedUser('')
   }
 
   return (
@@ -935,93 +934,93 @@ const Projects = () => {
           {/* Get API Projects */}
           {perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data')
             ? projects
-                .filter((project) => {
-                  // Apply Department filter
-                  if (selectedDepartment !== '') {
-                    return project.department_id === selectedDepartment
-                  }
-                  return true
-                })
-                .filter((project) => {
-                  // Apply Project filter
-                  if (selectedProject !== '') {
-                    return project.id === selectedProject
-                  }
-                  return true
-                })
-                .filter((project) => {
-                  // Apply Project Manager filter
-                  if (selectedProjectManager !== '') {
-                    return project.project_manager === selectedProjectManager
-                  }
-                  return true
-                })
-                .map((project, index) => {
-                  const startDate = moment(project.start_date).format('DD-MM-YYYY')
-                  const deadline = moment(project.dead_line).format('DD-MM-YYYY')
+              .filter((project) => {
+                // Apply Department filter
+                if (selectedDepartment !== '') {
+                  return project.department_id === selectedDepartment
+                }
+                return true
+              })
+              .filter((project) => {
+                // Apply Project filter
+                if (selectedProject !== '') {
+                  return project.id === selectedProject
+                }
+                return true
+              })
+              .filter((project) => {
+                // Apply Project Manager filter
+                if (selectedProjectManager !== '') {
+                  return project.project_manager === selectedProjectManager
+                }
+                return true
+              })
+              .map((project, index) => {
+                const startDate = moment(project.start_date).format('DD-MM-YYYY')
+                const deadline = moment(project.dead_line).format('DD-MM-YYYY')
 
-                  return (
-                    <CTableRow key={project.id}>
+                return (
+                  <CTableRow key={project.id}>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {index + 1}
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {project.project_name}
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {project.department_name}
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {project.project_manager_details[0]?.name}
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {startDate}
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {deadline}
+                    </CTableHeaderCell>
+                    {isEditButtonEnabled || isViewButtonEnabled || isDeleteButtonEnabled ? (
                       <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {index + 1}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {project.project_name}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {project.department_name}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {project.project_manager_details[0]?.name}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {startDate}
-                      </CTableHeaderCell>
-                      <CTableHeaderCell className="text-center" style={mystyle2}>
-                        {deadline}
-                      </CTableHeaderCell>
-                      {isEditButtonEnabled || isViewButtonEnabled || isDeleteButtonEnabled ? (
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
-                          {isViewButtonEnabled ? (
-                            <IconButton
-                              aria-label="view"
-                              onClick={() => showModal5(project.project_id)}
-                            >
-                              <VisibilityIcon htmlColor="#0070ff" />
-                            </IconButton>
-                          ) : null}
-                          {isEditButtonEnabled ? (
-                            <IconButton
-                              aria-label="update"
-                              onClick={() => showModal3(project.project_id)}
-                            >
-                              <EditIcon htmlColor="#28B463" />
-                            </IconButton>
-                          ) : null}
-                          {isDeleteButtonEnabled ? (
-                            <IconButton
-                              aria-label="delete"
-                              onClick={() => showModal2(project.project_id)}
-                            >
-                              <DeleteIcon htmlColor="#FF0000" />
-                            </IconButton>
-                          ) : null}
-                        </CTableHeaderCell>
-                      ) : null}
-                      {isAssignProjectEnabled ? (
-                        <CTableHeaderCell className="text-center" style={mystyle2}>
+                        {isViewButtonEnabled ? (
                           <IconButton
-                            aria-label="assign"
-                            title="Assign Project"
-                            onClick={() => showModal6(project.project_id)}
+                            aria-label="view"
+                            onClick={() => showModal5(project.project_id)}
                           >
-                            <PermContactCalendarIcon htmlColor="#0070ff" />
+                            <VisibilityIcon htmlColor="#0070ff" />
                           </IconButton>
-                        </CTableHeaderCell>
-                      ) : null}
-                    </CTableRow>
-                  )
-                })
+                        ) : null}
+                        {isEditButtonEnabled ? (
+                          <IconButton
+                            aria-label="update"
+                            onClick={() => showModal3(project.project_id)}
+                          >
+                            <EditIcon htmlColor="#28B463" />
+                          </IconButton>
+                        ) : null}
+                        {isDeleteButtonEnabled ? (
+                          <IconButton
+                            aria-label="delete"
+                            onClick={() => showModal2(project.project_id)}
+                          >
+                            <DeleteIcon htmlColor="#FF0000" />
+                          </IconButton>
+                        ) : null}
+                      </CTableHeaderCell>
+                    ) : null}
+                    {isAssignProjectEnabled ? (
+                      <CTableHeaderCell className="text-center" style={mystyle2}>
+                        <IconButton
+                          aria-label="assign"
+                          title="Assign Project"
+                          onClick={() => showModal6(project.project_id)}
+                        >
+                          <PermContactCalendarIcon htmlColor="#0070ff" />
+                        </IconButton>
+                      </CTableHeaderCell>
+                    ) : null}
+                  </CTableRow>
+                )
+              })
             : null}
         </CTableHead>
         <CTableBody>
@@ -1034,43 +1033,24 @@ const Projects = () => {
             onCancel={handleCancel}
             maskClosable={false}
           >
-            <br></br>
 
             <Form form={form}>
               <div className="form-outline mt-3">
-                <label>Company</label>
-                <Form.Item
-                  validateStatus={formErrors.company_id ? 'error' : ''}
-                  help={formErrors.company_id}
-                >
-                  <Select
-                    name="company_id"
-                    placeholder="Select Company"
-                    onChange={handleCompanyChange}
-                    onFocus={handleFocus}
-                    value={company_id}
-                  >
-                    {company.map((company) => (
-                      <Select.Option value={company.id} key={company.id}>
-                        {company.company_name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </div>
-
-              <div className="form-outline mt-3">
                 <label>Department</label>
                 <Form.Item
+                  name="departmentSelect"
+                  hasFeedback style={{ width: '100%' }}
                   validateStatus={formErrors.department_id ? 'error' : ''}
-                  help={formErrors.department_id}
-                >
+                  help={formErrors.department_id}>
                   <Select
-                    name="department_id"
                     placeholder="Select Department"
                     onChange={handleDepartmentChange}
-                    onFocus={handleFocus}
                     value={department_id}
+                    showSearch
+                    onFocus={handleFocus}
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
                   >
                     {department.map((department) => (
                       <Select.Option value={department.id} key={department.id}>
@@ -1084,15 +1064,19 @@ const Projects = () => {
               <div className="form-outline mt-3">
                 <label>Project Manager</label>
                 <Form.Item
+                  name="projectManagerSelect"
+                  hasFeedback style={{ width: '100%' }}
                   validateStatus={formErrors.project_manager ? 'error' : ''}
-                  help={formErrors.project_manager}
-                >
+                  help={formErrors.project_manager}>
                   <Select
-                    name="project_manager"
                     placeholder="Select Project Manager"
                     onChange={handleProjectManagerChange}
-                    onFocus={handleFocus}
                     value={project_manager}
+                    showSearch
+                    onFocus={handleFocus}
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
                   >
                     {byusers.map((user) => (
                       <Select.Option value={user.id} key={user.id}>
@@ -1410,6 +1394,40 @@ const Projects = () => {
             okButtonProps={{ style: { background: 'blue' } }}
           >
             <br></br>
+            <div className="col-md-3" style={{ width: '1500px' }}>
+              <Form form={form} className="d-flex w-200">
+                <div className="col-md-3">
+                  <div className="d-flex align-items-center">
+                    <Form.Item name="userSelect" hasFeedback style={{ width: '100%' }}>
+                      <Select
+                        showSearch
+                        placeholder="Select User"
+                        onChange={handleUserSelect}
+                        value={user_id}
+                        filterOption={(input, option) =>
+                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                      >
+                        {users.map((user) => (
+                          <Select.Option value={user.id} key={user.id}>
+                            {user.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </div>
+                </div>
+
+                <div className="col-md-4">
+                  <div className="d-flex align-items-center">
+                    <Button type="default" onClick={clearFilter} className="ml-2">
+                      Clear Filter
+                    </Button>
+                  </div>
+                </div>
+              </Form>
+            </div>
+            <br></br>
             <div className="row">
               <div className="col md-2 text-center">
                 <h6>Sr/No</h6>
@@ -1426,26 +1444,33 @@ const Projects = () => {
               <Divider></Divider>
             </div>
 
-            {users.map((user, index) => (
-              <div className="row" key={user.id}>
-                <div className="col md-2 text-center">
-                  <h6 style={perStyle}>{index + 1}</h6>
+            {users.filter((project) => {
+              // Apply User filter
+              if (selectedUser !== '') {
+                return project.id === selectedUser
+              }
+              return true
+            })
+              .map((user, index) => (
+                <div className="row" key={user.id}>
+                  <div className="col md-2 text-center">
+                    <h6 style={perStyle}>{index + 1}</h6>
+                  </div>
+                  <div className="col md-3"></div>
+                  <div className="col md-2 text-center">
+                    <h6 style={perStyle}>{user.name}</h6>
+                  </div>
+                  <div className="col md-3"></div>
+                  <div className="col md-2 text-center">
+                    <Checkbox
+                      checked={selectedUsers.includes(user.id)}
+                      onChange={(e) => handleSelectUser(e, user.id)}
+                    />
+                  </div>
+                  &nbsp;
+                  <Divider></Divider>
                 </div>
-                <div className="col md-3"></div>
-                <div className="col md-2 text-center">
-                  <h6 style={perStyle}>{user.name}</h6>
-                </div>
-                <div className="col md-3"></div>
-                <div className="col md-2 text-center">
-                  <Checkbox
-                    checked={selectedUsers.includes(user.id)}
-                    onChange={(e) => handleSelectUser(e, user.id)}
-                  />
-                </div>
-                &nbsp;
-                <Divider></Divider>
-              </div>
-            ))}
+              ))}
           </Modal>
 
           {/* Alert for Add Project Success*/}
