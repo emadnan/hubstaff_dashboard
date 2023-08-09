@@ -611,7 +611,7 @@ const Projects = () => {
       .then((response) => response.json())
       .then((data) => {
         if (perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data') ) {
-          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && (perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data')))
+          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && (user.role === 6 || user.role === 7))
         }
         setByUsers(filteredUsers)
       })
