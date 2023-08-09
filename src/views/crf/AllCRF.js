@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react'
-import { Divider, Modal, Select, Form } from 'antd'
+import { Divider, Modal, Select, Form, Button } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { Box } from '@mui/material'
@@ -11,7 +11,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import CommentIcon from '@mui/icons-material/Comment'
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import Alert from '@mui/material/Alert'
-import Button from '@mui/material/Button';
+// import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 import {
   MDBRow,
@@ -226,10 +226,13 @@ function AllCRF() {
   //Initial rendering through useEffect
   useEffect(() => {
     getCrf()
+    getCrfbyRole()
   }, [])
 
   const [showAlert1, setShowAlert1] = useState(false)
   const [showAlert2, setShowAlert2] = useState(false)
+
+  let [form] = Form.useForm()
 
   function handleButtonClick1() {
     setShowAlert1(true)
@@ -263,11 +266,23 @@ function AllCRF() {
     setStatus(value)
   }
 
+  // Filter on the basis of Project
+  const handleCrfSelectAndSearch = (value) => {
+    setSelectedCrf(value)
+  }
+
+  const clearFilter = () => {
+    form.resetFields()
+    setSelectedCrf('')
+  }
+
   //Array declarations for GET methods
   const [crf, setCrf] = useState([])
   const [bycrf, setCrfById] = useState([])
   const [bycrfid, setByCrfId] = useState([])
   const [bymessage, setByMessage] = useState([])
+  const [filtercrf, setFilterCrf] = useState([])
+  const [selectedCrf, setSelectedCrf] = useState('')
   var filteredUsers = []
 
   //GET API calls
@@ -289,6 +304,20 @@ function AllCRF() {
           )
         }
         setCrf(filteredUsers)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  async function getCrfbyRole() {
+    await fetch(`${BASE_URL}/api/getChangeRequestForm`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (local.Users.role === 6) {
+          filteredUsers = data.CRForm.filter((user) => user.functional_id === local.Users.user_id)
+        } else if (local.Users.role === 7) {
+          filteredUsers = data.CRForm.filter((user) => user.project_manager === local.Users.user_id)
+        }
+        setFilterCrf(filteredUsers)
       })
       .catch((error) => console.log(error))
   }
@@ -497,7 +526,40 @@ function AllCRF() {
           ) : null}
         </div>
       </div>
-      <br></br>
+
+      <div className="row mt-2 mb-2 justify-content-between">
+          <Form form={form} className="d-flex w-100">
+            <div className="col-md-3">
+              <div className="d-flex align-items-center">
+                <Form.Item name="crfSelect" hasFeedback style={{ width: '100%' }}>
+                  <Select
+                    placeholder="Select CRF"
+                    onChange={handleCrfSelectAndSearch}
+                    value={selectedCrf}
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {filtercrf.map((crf) => (
+                      <Select.Option value={crf.id} key={crf.id}>
+                        {crf.doc_ref_no}-{crf.crf_version}.{crf.crf_version_float}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className="col-md-4">
+              <div className="d-flex align-items-center">
+                <Button type="default" onClick={clearFilter} className="ml-2">
+                  Clear Filter
+                </Button>
+              </div>
+            </div>
+          </Form>
+        </div>
+        
       <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
         <CTableHead color="light">
           <CTableRow>
@@ -534,7 +596,12 @@ function AllCRF() {
           </CTableRow>
 
           {/* Get API Users */}
-          {crf.map((crf, index) =>
+          {crf.filter((crf) => {
+                  if (selectedCrf !== '') {
+                    return crf.id === selectedCrf
+                  }
+                  return true
+                }).map((crf, index) =>
             crf.crs_details === null ? (
               ''
             ) : (
