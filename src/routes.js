@@ -182,13 +182,13 @@ const routes = [
     path: '/taskmanagement-createnewtask',
     name: 'Task Assignment',
     element: TaskAssignment,
-    requiredNavPermision: 'Nav_TaskAssignment',
+    requiredNavPermision: 'Nav_CreateNewTask',
   },
   {
     path: '/taskmanagement-assignedtask',
     name: 'Task Assignment',
     element: TaskAssignmentUserSide,
-    requiredNavPermision: 'Nav_TaskAssignmentUser',
+    requiredNavPermision: 'Nav_AssignedTask',
   },
   { path: '/404', name: '404 Page', element: NotFound, requiredNavPermision: 'Nav_NotFound', },
 ]

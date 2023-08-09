@@ -20,24 +20,6 @@ const AppSidebar = () => {
   const [navigation, setNavigation] = useState([])
 
   useEffect(() => {
-    // const userRole = JSON.parse(localStorage.getItem('user-info'))?.Users?.role
-
-    // let navConfig
-    // if (userRole === 1) {
-    //   navConfig = _navAdmin
-    // } else if (userRole === 3) {
-    //   navConfig = _navCompanyAdmin
-    // } else if (userRole === 5) {
-    //   navConfig = _navEmployee
-    // } else if (userRole === 6) {
-    //   navConfig = _navFunctional
-    // } else if (userRole === 7) {
-    //   navConfig = _navTeamLead
-    // } else {
-    //   navConfig = _navEmployee
-    // }
-
-    console.log('navigationConfig: ', navigationConfig)
     setNavigation(navigationConfig)
   }, [])
 

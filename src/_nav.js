@@ -10,7 +10,6 @@ import {
   cilCash,
   cilUser,
   cilTask,
-  // cilLocationPin,
   cilUserFollow,
   cilStream,
   cilLineWeight,
@@ -21,7 +20,6 @@ import { CNavGroup, CNavItem } from '@coreui/react'
 //Local Storage data
 const local = JSON.parse(localStorage.getItem('user-info'))
 const permissions = local.permissions
-
 const permissionNames = permissions.map((permission) => permission.name)
 
 const _navAdmin = [
@@ -110,19 +108,19 @@ const _navAdmin = [
     component: CNavGroup,
     name: 'Task Management',
     icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
-    permission: 'Nav_TaskAssignment',
+    permission: 'Nav_TaskManagement',
     items: [
       {
         component: CNavItem,
         name: 'Assigned Task',
         to: '/taskmanagement-assignedtask',
-        permission: 'Nav_TaskAssignmentUser',
+        permission: 'Nav_AssignedTask',
       },
       {
         component: CNavItem,
         name: 'Create New Task',
         to: '/taskmanagement-createnewtask',
-        permission: 'Nav_TaskAssignmentTeamLead',
+        permission: 'Nav_CreateNewTask',
       },
     ],
   },
@@ -276,316 +274,3 @@ const filterNavItems = (items) => {
 const filteredBaseNavItems = filterNavItems(_navAdmin)
 
 export const navigationConfig = [...filteredBaseNavItems]
-
-// const filteredNavAdmin = _navAdmin.filter(navItem => {
-//   // Check if the permission is available in the 'perm' array
-//   return perm.some(permission => permission.name === navItem.permission);
-// });
-
-// // Now you can render the filtered navigation items
-// export const navigationItems = filteredNavAdmin.map((navItem, index) => (
-//   <navItem.component key={index} {...navItem} />
-// ));
-
-// export const _navCompanyAdmin = [
-//   {
-//     component: CNavItem,
-//     name: 'Dashboard',
-//     to: '/dashboard',
-//     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavGroup,
-//     name: 'Activity',
-//     to: '/activity',
-//     icon: <CIcon icon={cilChartLine} customClassName="nav-icon" />,
-//     items: [
-//       {
-//         component: CNavItem,
-//         name: 'Screenshots',
-//         to: '/activity-screenshots',
-//       },
-//     ],
-//   },
-//   {
-//     component: CNavGroup,
-//     name: 'Project Management',
-//     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
-//     items: [
-//       {
-//         component: CNavItem,
-//         name: 'Projects',
-//         to: '/projectmanagement-projects',
-//       },
-//       {
-//         component: CNavItem,
-//         name: 'Assigned Projects',
-//         to: '/projectmanagement-assigned',
-//       },
-//     ],
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'Companies',
-//     to: '/companies-Companies',
-//     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'Departments',
-//     to: '/departments-Departments',
-//     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'Users',
-//     to: '/users-Users',
-//     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'Clients',
-//     to: '/projectmanagement-client',
-//     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'Streams',
-//     to: '/streams',
-//     icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavGroup,
-//     name: 'Reports',
-//     icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
-//     items: [
-//       {
-//         component: CNavItem,
-//         name: 'Monthly',
-//         to: '/reports-monthly',
-//       },
-//     ],
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'Teams',
-//     to: '/teams',
-//     icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'Subscribed Plan',
-//     to: '/subscribed-Plan',
-//     icon: <CIcon icon={cilDollar} customClassName="nav-icon" />,
-//   },
-// ]
-
-// export const _navEmployee = [
-//   {
-//     component: CNavItem,
-//     name: 'Dashboard',
-//     to: '/dashboard',
-//     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavGroup,
-//     name: 'Activity',
-//     to: '/activity',
-//     icon: <CIcon icon={cilChartLine} customClassName="nav-icon" />,
-//     items: [
-//       {
-//         component: CNavItem,
-//         name: 'Screenshots',
-//         to: '/activity-screenshots',
-//       },
-//     ],
-//   },
-//   {
-//     component: CNavGroup,
-//     name: 'Project Management',
-//     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
-//     items: [
-//       {
-//         component: CNavItem,
-//         name: 'Assigned Projects',
-//         to: '/projectmanagement-assigned',
-//       },
-//     ],
-//   },
-//   {
-//     component: CNavGroup,
-//     name: 'Task Management',
-//     icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
-//     items: [
-//       {
-//         component: CNavItem,
-//         name: 'Assigned Task',
-//         to: '/taskmanagement-assignedtask',
-//       },
-//     ],
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'Company',
-//     to: '/companies-Companies',
-//     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'User',
-//     to: '/users-Users',
-//     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'Teams',
-//     to: '/teams',
-//     icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'FSF',
-//     to: '/fsf',
-//     icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
-//   },
-// ]
-
-// export const _navFunctional = [
-//   {
-//     component: CNavItem,
-//     name: 'Dashboard',
-//     to: '/dashboard',
-//     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavGroup,
-//     name: 'Activity',
-//     to: '/activity',
-//     icon: <CIcon icon={cilChartLine} customClassName="nav-icon" />,
-//     items: [
-//       {
-//         component: CNavItem,
-//         name: 'Screenshots',
-//         to: '/activity-screenshots',
-//       },
-//     ],
-//   },
-//   {
-//     component: CNavGroup,
-//     name: 'Project Management',
-//     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
-//     items: [
-//       {
-//         component: CNavItem,
-//         name: 'Assigned Projects',
-//         to: '/projectmanagement-assigned',
-//       },
-//     ],
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'Company',
-//     to: '/companies-Companies',
-//     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'User',
-//     to: '/users-Users',
-//     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'Teams',
-//     to: '/teams',
-//     icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'FSF',
-//     to: '/fsf',
-//     icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'CRF',
-//     to: '/allcrf',
-//     icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
-//   },
-// ]
-
-// export const _navTeamLead = [
-//   {
-//     component: CNavItem,
-//     name: 'Dashboard',
-//     to: '/dashboard',
-//     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavGroup,
-//     name: 'Activity',
-//     to: '/activity',
-//     icon: <CIcon icon={cilChartLine} customClassName="nav-icon" />,
-//     items: [
-//       {
-//         component: CNavItem,
-//         name: 'Screenshots',
-//         to: '/activity-screenshots',
-//       },
-//     ],
-//   },
-//   {
-//     component: CNavGroup,
-//     name: 'Project Management',
-//     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
-//     items: [
-//       {
-//         component: CNavItem,
-//         name: 'Assigned Projects',
-//         to: '/projectmanagement-assigned',
-//       },
-//     ],
-//   },
-//   {
-//     component: CNavGroup,
-//     name: 'Task Management',
-//     icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
-//     items: [
-//       {
-//         component: CNavItem,
-//         name: 'Create New Task',
-//         to: '/taskmanagement-createnewtask',
-//       },
-//     ],
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'Company',
-//     to: '/companies-Companies',
-//     icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'User',
-//     to: '/users-Users',
-//     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'Teams',
-//     to: '/teams',
-//     icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'FSF',
-//     to: '/fsf',
-//     icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
-//   },
-//   {
-//     component: CNavItem,
-//     name: 'CRF',
-//     to: '/allcrf',
-//     icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
-//   },
-// ]
