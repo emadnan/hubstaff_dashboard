@@ -20,7 +20,7 @@ function Streams() {
 
   //Role & Permissions check
   const isCreateButtonEnabled = perm.some((item) => item.name === 'Create_Stream')
-  const isEditButtonEnabled = perm.some((item) => item.name === 'Edit_Stream')
+  const isEditButtonEnabled = perm.some((item) => item.name === 'Update_Stream')
   const isDeleteButtonEnabled = perm.some((item) => item.name === 'Delete_Stream')
 
   // CSS Stylings
@@ -405,7 +405,7 @@ function Streams() {
           ) : null}
         </div>
       </div>
-      <br></br>
+
       <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
         <CTableHead color="light">
           {/* Users table heading */}

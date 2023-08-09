@@ -98,12 +98,19 @@ const _navAdmin = [
       },
       {
         component: CNavItem,
-        name: 'Clients',
-        to: '/projectmanagement-client',
-        permission: 'Nav_Clients',
+        name: 'Streams',
+        to: '/streams',
+        // icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
+        permission: 'Nav_Streams',
       },
     ],
   },
+  // {
+  //   component: CNavItem,
+  //   name: 'Clients',
+  //   to: '/projectmanagement-client',
+  //   permission: 'Nav_Clients',
+  // },
   {
     component: CNavGroup,
     name: 'Task Management',
@@ -217,13 +224,6 @@ const _navAdmin = [
     to: '/teams',
     icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
     permission: 'Nav_Teams',
-  },
-  {
-    component: CNavItem,
-    name: 'Streams',
-    to: '/streams',
-    icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
-    permission: 'Nav_Streams',
   },
   {
     component: CNavItem,
