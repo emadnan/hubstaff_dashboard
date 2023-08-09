@@ -10,7 +10,7 @@ import SimpleBar from 'simplebar-react'
 import 'simplebar/dist/simplebar.min.css'
 
 // sidebar nav config
-import { _navAdmin, _navCompanyAdmin, _navEmployee, _navFunctional, _navTeamLead, navigationItems } from '../_nav'
+import { navigationConfig } from '../_nav'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
@@ -20,24 +20,25 @@ const AppSidebar = () => {
   const [navigation, setNavigation] = useState([])
 
   useEffect(() => {
-    const userRole = JSON.parse(localStorage.getItem('user-info'))?.Users?.role
+    // const userRole = JSON.parse(localStorage.getItem('user-info'))?.Users?.role
 
-    let navConfig
-    if (userRole === 1) {
-      navConfig = _navAdmin
-    } else if (userRole === 3) {
-      navConfig = _navCompanyAdmin
-    } else if (userRole === 5) {
-      navConfig = _navEmployee
-    } else if (userRole === 6) {
-      navConfig = _navFunctional
-    } else if (userRole === 7) {
-      navConfig = _navTeamLead
-    } else {
-      navConfig = _navEmployee
-    }
+    // let navConfig
+    // if (userRole === 1) {
+    //   navConfig = _navAdmin
+    // } else if (userRole === 3) {
+    //   navConfig = _navCompanyAdmin
+    // } else if (userRole === 5) {
+    //   navConfig = _navEmployee
+    // } else if (userRole === 6) {
+    //   navConfig = _navFunctional
+    // } else if (userRole === 7) {
+    //   navConfig = _navTeamLead
+    // } else {
+    //   navConfig = _navEmployee
+    // }
 
-    setNavigation(navConfig)
+    console.log('navigationConfig: ', navigationConfig)
+    setNavigation(navigationConfig)
   }, [])
 
   return (
