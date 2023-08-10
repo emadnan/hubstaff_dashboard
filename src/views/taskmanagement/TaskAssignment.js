@@ -140,18 +140,6 @@ function TaskAssignment() {
     setProjectId(value)
   }
 
-  // const applyFilters = () => {
-  //   if (selectedUser && selectedProject) {
-  //     getTaskByProjectAndUserId()
-  //   } else if (selectedProject && !selectedUser) {
-  //     getTaskByProjectId()
-  //   } else if (!selectedProject && selectedUser) {
-  //     getTasksByUserId()
-  //   } else {
-  //     return
-  //   }
-  // }
-
   const clearFilters = () => {
     getTasks()
     form.resetFields()
@@ -442,66 +430,6 @@ function TaskAssignment() {
       console.log(error)
     }
   }
-
-  // async function getTasksByUserId() {
-  //   await fetch(`${BASE_URL}/api/getTaskByUserId/${selectedUser}`)
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       if (local.Users.role === 7) {
-  //         const filteredUsersTask = data.task.filter((user) => user.team_lead_id === local.Users.id)
-  //         const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
-  //         const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
-  //         const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
-  //         setPendingTasks(todoTasks)
-  //         setInProgressTasks(in_progressTasks)
-  //         setCompletedTasks(doneTasks)
-  //         setTotalItemsPending(todoTasks.length)
-  //         setTotalItemsInProgress(in_progressTasks.length)
-  //         setTotalItemsCompleted(doneTasks.length)
-  //       }
-  //     })
-  //     .catch((error) => console.log(error))
-  // }
-
-  // const getTaskByProjectId = async () => {
-  //   await fetch(`${BASE_URL}/api/getTaskByProjectId/${selectedProject}`)
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       if (local.Users.role === 7) {
-  //         const filteredUsersTask = data.task.filter((task) => task.team_lead_id === local.Users.id)
-  //         const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
-  //         const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
-  //         const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
-  //         setPendingTasks(todoTasks)
-  //         setInProgressTasks(in_progressTasks)
-  //         setCompletedTasks(doneTasks)
-  //         setTotalItemsPending(todoTasks.length)
-  //         setTotalItemsInProgress(in_progressTasks.length)
-  //         setTotalItemsCompleted(doneTasks.length)
-  //       }
-  //     })
-  //     .catch((error) => console.log(error))
-  // }
-
-  // const getTaskByProjectAndUserId = async () => {
-  //   await fetch(`${BASE_URL}/api/getTaskByUserIdAndProjectId/${selectedUser}/${selectedProject}`)
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       if (local.Users.role === 7) {
-  //         const filteredUsersTask = data.task.filter((task) => task.team_lead_id === local.Users.id)
-  //         const todoTasks = filteredUsersTask.filter((task) => task.status === 'Pending')
-  //         const in_progressTasks = filteredUsersTask.filter((task) => task.status === 'InProgress')
-  //         const doneTasks = filteredUsersTask.filter((task) => task.status === 'Completed')
-  //         setPendingTasks(todoTasks)
-  //         setInProgressTasks(in_progressTasks)
-  //         setCompletedTasks(doneTasks)
-  //         setTotalItemsPending(todoTasks.length)
-  //         setTotalItemsInProgress(in_progressTasks.length)
-  //         setTotalItemsCompleted(doneTasks.length)
-  //       }
-  //     })
-  //     .catch((error) => console.log(error))
-  // }
 
   async function getUsers() {
     let filteredUsers = []
@@ -928,8 +856,8 @@ function TaskAssignment() {
       ) : (
         <div>
           {isPendingTasksTab === true &&
-          pendingTasks.length > 0 &&
-          currentItemsPending.length > 0 ? (
+            pendingTasks.length > 0 &&
+            currentItemsPending.length > 0 ? (
             <div>
               <div className="row">
                 <div className="col-md 6">
@@ -955,12 +883,6 @@ function TaskAssignment() {
                     <CTableHeaderCell className="text-center" style={mystyle}>
                       Project
                     </CTableHeaderCell>
-                    {/* <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task Details
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle}>
-                    Task Priority
-                  </CTableHeaderCell> */}
                     <CTableHeaderCell className="text-center" style={mystyle}>
                       Task Status
                     </CTableHeaderCell>
@@ -1091,8 +1013,8 @@ function TaskAssignment() {
           )}
 
           {isInProgressTasksTab === true &&
-          inProgressTasks.length > 0 &&
-          currentItemsInProgress.length > 0 ? (
+            inProgressTasks.length > 0 &&
+            currentItemsInProgress.length > 0 ? (
             <div>
               <div className="row">
                 <div className="col-md 6">
@@ -1250,8 +1172,8 @@ function TaskAssignment() {
           )}
 
           {isCompletedTaskTab === true &&
-          completedTask.length > 0 &&
-          currentItemsCompleted.length > 0 ? (
+            completedTask.length > 0 &&
+            currentItemsCompleted.length > 0 ? (
             <div>
               <div className="row">
                 <div className="col-md 6">
@@ -1425,16 +1347,21 @@ function TaskAssignment() {
           <div className="form-outline mt-3">
             <label>User</label>
             <Form.Item
-              name="user_id"
+              name="selectUser"
+              hasFeedback style={{ width: '100%' }}
               validateStatus={formErrors.user_id ? 'error' : ''}
               help={formErrors.user_id}
             >
               <Select
                 placeholder="Select Employee"
                 onChange={handleUserChange}
-                onFocus={handleFocus}
-                name="user_id"
+                name="selectUser"
                 value={user_id}
+                showSearch
+                onFocus={handleFocus}
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
               >
                 {users.map((user) => (
                   <Select.Option value={user.id} key={user.id}>
@@ -1448,15 +1375,21 @@ function TaskAssignment() {
           <div className="form-outline mt-3">
             <label>Project</label>
             <Form.Item
-              name="project_id"
+              name="selectProject"
+              hasFeedback style={{ width: '100%' }}
               validateStatus={formErrors.project_id ? 'error' : ''}
               help={formErrors.project_id}
             >
               <Select
                 placeholder="Select Project"
+                name="selectProject"
                 onChange={handleProjectChange}
-                onFocus={handleFocus}
                 value={project_id}
+                showSearch
+                onFocus={handleFocus}
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
               >
                 {projects.map((pro) => (
                   <Select.Option value={pro.id} key={pro.id}>

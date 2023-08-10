@@ -231,6 +231,8 @@ function AllCRF() {
 
   const [showAlert1, setShowAlert1] = useState(false)
   const [showAlert2, setShowAlert2] = useState(false)
+  const [showAlert3, setShowAlert3] = useState(false)
+  const [showAlert4, setShowAlert4] = useState(false)
 
   let [form] = Form.useForm()
 
@@ -240,6 +242,30 @@ function AllCRF() {
 
   function handleButtonClick2() {
     setShowAlert2(true)
+  }
+
+  function handleButtonClick3() {
+    setShowAlert3(true)
+  }
+
+  function handleButtonClick4() {
+    setShowAlert4(true)
+  }
+
+  function handleCloseAlert1() {
+    setShowAlert1(false)
+  }
+
+  function handleCloseAlert2() {
+    setShowAlert2(false)
+  }
+
+  function handleCloseAlert3() {
+    setShowAlert3(false)
+  }
+
+  function handleCloseAlert4() {
+    setShowAlert4(false)
   }
 
   useEffect(() => {
@@ -261,6 +287,26 @@ function AllCRF() {
       return () => clearTimeout(timer)
     }
   }, [showAlert2])
+
+  useEffect(() => {
+    if (showAlert3) {
+      const timer = setTimeout(() => {
+        setShowAlert3(false)
+      }, 2000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert3])
+
+  useEffect(() => {
+    if (showAlert4) {
+      const timer = setTimeout(() => {
+        setShowAlert4(false)
+      }, 2000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert4])
 
   const handleStatusChange = (value) => {
     setStatus(value)
@@ -432,7 +478,10 @@ function AllCRF() {
     })
       .then((response) => {
         if (response.ok) {
-          getCrf()
+          getCrf();
+          handleButtonClick3();
+        } else {
+          handleButtonClick4();
         }
       })
       .catch((error) => {
@@ -1052,15 +1101,29 @@ function AllCRF() {
 
       {/* Alert for Delete CRF Success*/}
       {showAlert1 && (
-        <Alert severity="success" style={modalStyle2}>
+        <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
           CRF Deleted Successfully
         </Alert>
       )}
 
       {/* Alert for Delete CRF Failure*/}
       {showAlert2 && (
-        <Alert severity="error" style={modalStyle2}>
+        <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
           CRF Deleted Successfully
+        </Alert>
+      )}
+
+      {/* Alert for Update Status Success*/}
+      {showAlert3 && (
+        <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
+          Status Updated Successfully
+        </Alert>
+      )}
+
+      {/* Alert for Update Status Failure*/}
+      {showAlert4 && (
+        <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
+          Failed to Update Status
         </Alert>
       )}
     </>

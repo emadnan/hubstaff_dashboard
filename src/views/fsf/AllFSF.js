@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
-import { Button, Modal, Checkbox, Divider, Alert, Select, Form } from 'antd'
+import { Button, Modal, Checkbox, Divider, Select, Form } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import IconButton from '@mui/material/IconButton'
 import VisibilityIcon from '@mui/icons-material/Visibility'
@@ -11,6 +11,7 @@ import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar'
 import PeopleIcon from '@mui/icons-material/People'
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import SendIcon from '@mui/icons-material/Send';
+import Alert from '@mui/material/Alert'
 import {
   MDBRow,
   MDBCol,
@@ -39,8 +40,6 @@ function AllFSF() {
     getAssignedFsfToUser(local.token)
   }, [])
 
-  let [form] = Form.useForm()
-
   //Role & Permissions check
   const isCreateButtonEnabled = perm.some((item) => item.name === 'Create_Fsf')
 
@@ -65,6 +64,11 @@ function AllFSF() {
   const [bymessage, setByMessage] = useState([])
   var filteredUsers = []
   const [selectedFsf, setSelectedFsf] = useState('')
+  const [member_id, setMemberId] = useState('')
+
+  const [selectedMember, setSelectedMember] = useState('')
+
+  let [form] = Form.useForm()
 
   //CSS Stylings
   const buttonStyle = {
@@ -116,6 +120,11 @@ function AllFSF() {
 
   const headStyle = {
     color: '#0070ff',
+    fontWeight: 'bold',
+  }
+
+  const headStyle2 = {
+    color: '#black',
     fontWeight: 'bold',
   }
 
@@ -296,6 +305,7 @@ function AllFSF() {
   const clearFilter = () => {
     form.resetFields()
     setSelectedFsf('')
+    setSelectedMember('')
   }
 
   // Functions for Delete FSF Success
@@ -504,8 +514,8 @@ function AllFSF() {
   }
 
   const handleCancel5 = () => {
-    setIsModalOpen5(false)
-    setTeamStatus('')
+    setTeamStatus('');
+    setIsModalOpen5(false);
   }
 
   // Functions for Assigned Status Modal
@@ -628,7 +638,10 @@ function AllFSF() {
     })
       .then((response) => {
         if (response.ok) {
-          getFsfonTeamLeadId(local.token)
+          getFsfonTeamLeadId(local.token);
+          handleButtonClick5();
+        } else {
+          handleButtonClick6();
         }
       })
       .catch((error) => {
@@ -674,6 +687,9 @@ function AllFSF() {
     return concatinatedImage
   }
 
+  const handleMemberSelect = (value) => {
+    setSelectedMember(value)
+  }
   return (
     <>
       <div className="row">
@@ -905,12 +921,47 @@ function AllFSF() {
 
           {/* Modal for Assign Members */}
           <Modal
-            title="Assign Members"
+            title=""
             open={isModalOpen4}
             onOk={handleOk4}
             okButtonProps={{ style: { background: 'blue' } }}
             onCancel={handleCancel4}
           >
+            <h3 style={headStyle2}>Assign Members</h3>
+            <br></br>
+            <div className="col-md-3" style={{ width: '1500px' }}>
+              <Form form={form} className="d-flex w-200">
+                <div className="col-md-3">
+                  <div className="d-flex align-items-center">
+                    <Form.Item name="memberSelect" hasFeedback style={{ width: '100%' }}>
+                      <Select
+                        showSearch
+                        placeholder="Select Members"
+                        onChange={handleMemberSelect}
+                        value={member_id}
+                        filterOption={(input, option) =>
+                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                      >
+                        {members.map((mem) => (
+                          <Select.Option value={mem.id} key={mem.id}>
+                            {mem.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </div>
+                </div>
+
+                <div className="col-md-4">
+                  <div className="d-flex align-items-center">
+                    <Button type="default" onClick={clearFilter} className="ml-2">
+                      Clear Filter
+                    </Button>
+                  </div>
+                </div>
+              </Form>
+            </div>
             <br></br>
             <div className="row">
               <div className="col md-2 text-center">
@@ -929,7 +980,13 @@ function AllFSF() {
             </div>
 
             <div>
-              {members.map((mem, index) => (
+              {members.filter((mem) => {
+                if (selectedMember !== '') {
+                  return mem.id === selectedMember
+                }
+                return true
+              })
+              .map((mem, index) => (
                 <div className="row" key={mem.id}>
                   <div className="col md-2 text-center">
                     <h6>{index + 1}</h6>
@@ -986,13 +1043,6 @@ function AllFSF() {
                   <h6 style={perStyle}>Authorization Role</h6>
                   <p>{fsf.authorization_role}</p>
                   <h6 style={perStyle}>Development Logic</h6>
-                  {/* <Editor
-                  apiKey="46tu7q2m7kbsfpbdoc5mwnyn5hs97kdpefj8dnpuvz65aknl"
-                  cloudChannel="dev"
-                  value={fsf.development_logic}
-                  modules={{ toolbar: false }}
-                  readOnly={true}
-                  /> */}
                   <p>{fsf.development_logic}</p>
                   <div style={{ display: 'flex', justifyContent: 'left' }}>
                     <a href={fsf.attachment}>
@@ -1208,17 +1258,6 @@ function AllFSF() {
                     </Select>
                   </Form.Item>
                 </div>
-
-                {/* <div className="form-outline mb-3">
-                  <label>Comment</label>
-                  <input
-                    type="text"
-                    defaultValue={assigned.comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    className="form-control form-control-lg"
-                    placeholder="Enter Comment"
-                  />
-                </div> */}
               </div>
             ))}
           </Modal>
@@ -1273,10 +1312,6 @@ function AllFSF() {
               <div className="col md-2 text-center">
                 <h6 style={heading}>Status</h6>
               </div>
-              {/* <div className="col md-3"></div>
-              <div className="col md-2 text-center">
-                <h6 style={heading}>Comment</h6>
-              </div> */}
               &nbsp;
               <Divider></Divider>
             </div>
@@ -1295,10 +1330,6 @@ function AllFSF() {
                   <div className="col md-2 text-center">
                     <h6>{stat.status}</h6>
                   </div>
-                  {/* <div className="col md-3"></div>
-                  <div className="col md-2 text-center">
-                    <h6>{stat.comment}</h6>
-                  </div> */}
                   &nbsp;
                   <Divider />
                 </div>
@@ -1453,6 +1484,7 @@ function AllFSF() {
               Failed to Update Status
             </Alert>
           )}
+
         </CTableBody>
       </CTable>
     </>
