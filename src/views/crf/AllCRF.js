@@ -589,7 +589,7 @@ function AllCRF() {
                       option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                     }
                   >
-                    {filtercrf.map((crf) => (
+                    {crf.map((crf) => (
                       <Select.Option value={crf.id} key={crf.id}>
                         {crf.doc_ref_no}-{crf.crf_version}.{crf.crf_version_float}
                       </Select.Option>

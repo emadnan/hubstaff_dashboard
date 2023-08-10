@@ -73,7 +73,7 @@ const {
   },
 }
 
-export default function Dashboard() {
+export default function Monthly() {
   const tableRef = useRef(null)
   const [totalWorkingHoursOfMonth, setTotalWorkingHoursOfMonth] = useState('')
   const [userId, setUserId] = useState()
@@ -332,7 +332,7 @@ export default function Dashboard() {
     // Calculate the percentages for each project in each day
     Object.values(processedData).forEach((dayData) => {
       const totalDaySeconds = timeInSeconds(dayData.totalWorkingHourOfDay)
-      const totalSecondsPerDay = 7 * 3600 // Total seconds for 7 hours per day
+      const totalSecondsPerDay = 8 * 3600 // Total seconds for 7 hours per day
 
       if (totalDaySeconds !== 0) {
         dayData.projects.forEach((projectData) => {
@@ -733,3 +733,5 @@ export default function Dashboard() {
     </Box>
   )
 }
+
+
