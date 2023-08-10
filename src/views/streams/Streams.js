@@ -5,11 +5,15 @@ import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import Alert from '@mui/material/Alert'
+import moment from 'moment'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 function Streams() {
   // Variable declarations
   const [stream_name, setStreamName] = useState('')
+  const [project_id, setProjectId] = useState('')
+  const [start_time, setStartTime] = useState('')
+  const [end_time, setEndTime] = useState('')
   const [formErrors, setFormErrors] = useState({
     stream_name,
   })
@@ -70,12 +74,14 @@ function Streams() {
 
   const [getstreams, setStreams] = useState([])
   const [bystream, setStreamById] = useState([])
+  const [projects, setProjects] = useState([])
   var filteredUsers = []
   let [form] = Form.useForm()
 
   //Initial rendering through useEffect
   useEffect(() => {
     getStreams()
+    getProjects()
   }, [])
 
   // Get API call
@@ -99,6 +105,27 @@ function Streams() {
       .then((data) => {
         setStreamById(data.streams)
         setStreamName(data.streams[0].stream_name)
+        setProjectId(data.streams[0].project_id)
+        const formattedStartTime = moment(data.streams[0].start_time).format('YYYY-MM-DD')
+        setStartTime(formattedStartTime)
+        const formattedEndTime = moment(data.streams[0].end_time).format('YYYY-MM-DD')
+        setEndTime(formattedEndTime)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  function getProjects() {
+    fetch(`${BASE_URL}/api/getproject`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (perm.some((item) => item.name === 'All_Data')) {
+          filteredUsers = data.projects
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
+          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
+        } else if (perm.some((item) => item.name === 'User_Data')) {
+          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
+        }
+        setProjects(filteredUsers)
       })
       .catch((error) => console.log(error))
   }
@@ -110,35 +137,60 @@ function Streams() {
   }
 
   const handleOk = () => {
-    if (stream_name) {
+    if (stream_name !== '' && project_id !== '' && start_time !== '' && end_time !== '') {
       addStream()
       setIsModalOpen(false)
       setStreamName('')
+      setProjectId('')
+      setStartTime('')
+      setEndTime('')
       form.resetFields()
       setStreamName('')
+      setProjectId('')
+      setStartTime('')
+      setEndTime('')
       setFormErrors({
         stream_name: '',
+        project_id: '',
+        start_time: '',
+        end_time: '',
       })
     } else {
-      callErrors(stream_name)
+      callErrors(stream_name, project_id, start_time, end_time)
     }
-  }
-
-  const callErrors = (stream_name) => {
-    const errors = {}
-    if (!stream_name) {
-      errors.stream_name = 'Enter the Stream Name'
-    }
-    setFormErrors(errors)
   }
 
   const handleCancel = () => {
     setIsModalOpen(false)
     form.resetFields()
     setStreamName('')
+    setProjectId('')
+    setStartTime('')
+    setEndTime('')
     setFormErrors({
       stream_name: '',
+      project_id: '',
+      start_time: '',
+      end_time: '',
     })
+  }
+
+  const callErrors = (stream_name, project_id, start_time, end_time) => {
+    const errors = {}
+    if (!stream_name) {
+      errors.stream_name = 'Enter the Stream Name'
+    }
+    if (!project_id) {
+      errors.project_id = 'Select a Project'
+    }
+    if (!start_time) {
+      errors.start_time = 'Select a Start Time'
+    }
+    if (!end_time) {
+      errors.end_time = 'Select a End Time'
+    }
+
+    setFormErrors(errors)
   }
 
   // Functions for Update Stream Modal
@@ -149,30 +201,46 @@ function Streams() {
   }
 
   const handleOk2 = () => {
-    if (stream_name !== '') {
+    if (stream_name !== '' && project_id !== '' && start_time !== '' && end_time !== '') {
       updateStream(isModalOpen2)
-    setIsModalOpen2(false)
-    setStreamName('')
+      setIsModalOpen2(false)
+      setStreamName('')
+      setProjectId('')
+      setStartTime('')
+      setEndTime('')
       form.resetFields()
       setStreamName('')
+      setProjectId('')
+      setStartTime('')
+      setEndTime('')
       setFormErrors({
         stream_name: '',
+        project_id: '',
+        start_time: '',
+        end_time: '',
       })
     } else {
-      callErrors(stream_name)
+      callErrors(stream_name, project_id, start_time, end_time)
     }
-    updateStream(isModalOpen2)
-    setIsModalOpen2(false)
-    setStreamName('')
   }
 
   const handleCancel2 = () => {
     setIsModalOpen2(false)
     form.resetFields()
     setStreamName('')
+    setProjectId('')
+    setStartTime('')
+    setEndTime('')
     setFormErrors({
       stream_name: '',
+      project_id: '',
+      start_time: '',
+      end_time: '',
     })
+  }
+
+  const handleProjectChange = (value) => {
+    setProjectId(value)
   }
 
   // Functions for Delete Stream Modal
@@ -318,7 +386,7 @@ function Streams() {
 
   // Add API call
   async function addStream() {
-    let addstream = { stream_name, company_id: local.Users.company_id }
+    let addstream = { stream_name, company_id: local.Users.company_id, project_id, start_time, end_time }
 
     await fetch(`${BASE_URL}/api/addStreams`, {
       method: 'POST',
@@ -375,6 +443,9 @@ function Streams() {
         id: newid,
         company_id: local.Users.company_id,
         stream_name: stream_name,
+        project_id: project_id,
+        start_time: start_time,
+        end_time: end_time,
       }),
     })
       .then((response) => {
@@ -467,6 +538,15 @@ function Streams() {
             <CTableHeaderCell className="text-center" style={mystyle}>
               Stream Name
             </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Project Name
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Start Date
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              End Date
+            </CTableHeaderCell>
             {isEditButtonEnabled || isDeleteButtonEnabled ? (
               <CTableHeaderCell className="text-center" style={mystyle}>
                 Actions
@@ -484,33 +564,47 @@ function Streams() {
               }
               return true
             })
-            .map((stream, index) => (
-              <CTableRow key={index}>
-                <CTableHeaderCell className="text-center" style={mystyle2}>
-                  {index + 1}
-                </CTableHeaderCell>
-                <CTableHeaderCell className="text-center" style={mystyle2}>
-                  {stream.stream_name}
-                </CTableHeaderCell>
-                {isEditButtonEnabled || isDeleteButtonEnabled ? (
+            .map((stream, index) => {
+              const starttime = moment(stream.start_time).format('DD-MM-YYYY')
+              const endtime = moment(stream.end_time).format('DD-MM-YYYY')
+              return (
+                <CTableRow key={index}>
                   <CTableHeaderCell className="text-center" style={mystyle2}>
-                    {isEditButtonEnabled ? (
-                      <IconButton aria-label="update" onClick={() => showModal2(stream.id)}>
-                        <EditIcon htmlColor="#28B463" />
-                      </IconButton>
-                    ) : null
-                    }
-                    {isDeleteButtonEnabled ? (
-                      <IconButton aria-label="delete" onClick={() => showModal3(stream.id)}>
-                        <DeleteIcon htmlColor="#FF0000" />
-                      </IconButton>
-                    ) : null
-                    }
+                    {index + 1}
                   </CTableHeaderCell>
-                ) : null
-                }
-              </CTableRow>
-            ))}
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                    {stream.stream_name}
+                  </CTableHeaderCell>
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                    {stream.project_details?.project_name}
+                  </CTableHeaderCell>
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                    {starttime}
+                  </CTableHeaderCell>
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                    {endtime}
+                  </CTableHeaderCell>
+                  {isEditButtonEnabled || isDeleteButtonEnabled ? (
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      {isEditButtonEnabled ? (
+                        <IconButton aria-label="update" onClick={() => showModal2(stream.id)}>
+                          <EditIcon htmlColor="#28B463" />
+                        </IconButton>
+                      ) : null
+                      }
+                      {isDeleteButtonEnabled ? (
+                        <IconButton aria-label="delete" onClick={() => showModal3(stream.id)}>
+                          <DeleteIcon htmlColor="#FF0000" />
+                        </IconButton>
+                      ) : null
+                      }
+                    </CTableHeaderCell>
+                  ) : null
+                  }
+                </CTableRow>
+              )
+
+            })}
         </CTableHead>
         <CTableBody></CTableBody>
       </CTable>
@@ -538,9 +632,66 @@ function Streams() {
             placeholder="Enter Stream Name"
           />
           {formErrors.stream_name && (
-          <div className="text-danger">{formErrors.stream_name}</div>
-        )}
+            <div className="text-danger">{formErrors.stream_name}</div>
+          )}
         </div>
+
+        <Form form={form}>
+          <div className="form-outline mt-3">
+            <label>Project</label>
+            <Form.Item
+              name="projectSelect"
+              hasFeedback style={{ width: '100%' }}
+              validateStatus={formErrors.project_id ? 'error' : ''}
+              help={formErrors.project_id}>
+              <Select
+                placeholder="Select Project"
+                onChange={handleProjectChange}
+                value={project_id}
+                showSearch
+                onFocus={handleFocus}
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                {projects.map((proj) => (
+                  <Select.Option value={proj.id} key={proj.id}>
+                    {proj.project_name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </div>
+        </Form>
+
+        <div className="form-outline mt-3">
+          <label>Start Time</label>
+          <input
+            type="date"
+            name="start_time"
+            value={start_time}
+            onFocus={handleFocus}
+            onChange={(e) => setStartTime(e.target.value)}
+            className="form-control form-control-lg"
+            placeholder="Enter Start Time"
+          />
+        </div>
+        {formErrors.start_time && <div className="text-danger">{formErrors.start_time}</div>}
+
+        <div className="form-outline mt-3">
+          <label>End Time</label>
+          <input
+            type="date"
+            value={end_time}
+            name="end_time"
+            onFocus={handleFocus}
+            onChange={(e) => setEndTime(e.target.value)}
+            className="form-control form-control-lg"
+            placeholder="Enter End Time"
+          />
+        </div>
+        {formErrors.end_time && <div className="text-danger">{formErrors.end_time}</div>}
+
       </Modal>
 
       {/* Modal for Update Role */}
@@ -568,8 +719,64 @@ function Streams() {
               />
             </div>
             {formErrors.stream_name && (
-          <div className="text-danger">{formErrors.stream_name}</div>
-        )}
+              <div className="text-danger">{formErrors.stream_name}</div>)}
+
+            <Form form={form}>
+              <div className="form-outline mt-3">
+                <label>Project</label>
+                <Form.Item
+                  // name="projectSelect"
+                  hasFeedback style={{ width: '100%' }}
+                  validateStatus={formErrors.project_id ? 'error' : ''}
+                  help={formErrors.project_id}>
+                  <Select
+                    placeholder="Select Project"
+                    name="projectSelect"
+                    onChange={handleProjectChange}
+                    value={project_id}
+                    showSearch
+                    onFocus={handleFocus}
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {projects.map((proj) => (
+                      <Select.Option value={proj.id} key={proj.id}>
+                        {proj.project_name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+            </Form>
+
+            <div className="form-outline mt-3">
+              <label>Start Time</label>
+              <input
+                type="date"
+                name="start_time"
+                value={start_time}
+                onFocus={handleFocus}
+                onChange={(e) => setStartTime(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Start Time"
+              />
+            </div>
+            {formErrors.start_time && <div className="text-danger">{formErrors.start_time}</div>}
+
+            <div className="form-outline mt-3">
+              <label>End Time</label>
+              <input
+                type="date"
+                value={end_time}
+                name="end_time"
+                onFocus={handleFocus}
+                onChange={(e) => setEndTime(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter End Time"
+              />
+            </div>
+            {formErrors.end_time && <div className="text-danger">{formErrors.end_time}</div>}
           </div>
         ))}
       </Modal>
