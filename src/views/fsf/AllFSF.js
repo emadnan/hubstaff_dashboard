@@ -65,8 +65,11 @@ function AllFSF() {
   var filteredUsers = []
   const [selectedFsf, setSelectedFsf] = useState('')
   const [member_id, setMemberId] = useState('')
-
+  const [selectedProject, setSelectedProject] = useState('')
+  const [selectedModule, setSelectedModule] = useState('')
   const [selectedMember, setSelectedMember] = useState('')
+  const [projects, setProjects] = useState([])
+  const [modules, setModules] = useState([])
 
   let [form] = Form.useForm()
 
@@ -282,11 +285,30 @@ function AllFSF() {
       .catch((error) => console.log(error))
   }
 
+  async function getProjects() {
+    await fetch(`${BASE_URL}/api/getproject`)
+      .then((response) => response.json())
+      .then((data) => {
+          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
+        setProjects(filteredUsers)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  async function getModules() {
+    await fetch(`${BASE_URL}/api/getModules`)
+      .then((response) => response.json())
+      .then((data) => setModules(data.Module))
+      .catch((error) => console.log(error))
+  }
+
   //Initial rendering through useEffect
   useEffect(() => {
     getFsf()
     getMembers()
     getFsfbyFunctional()
+    getProjects()
+    getModules()
   }, [])
 
   useEffect(() => {
@@ -298,6 +320,15 @@ function AllFSF() {
     setSelectedFsf(value)
   }
 
+  const handleProjectSelect = (value) => {
+    setSelectedProject(value)
+  }
+
+  const handleModuleSelect = (value) => {
+    setSelectedModule(value)
+  }
+
+
   const handleSearch = (inputValue, option) => {
     return option.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0;
   };
@@ -306,6 +337,8 @@ function AllFSF() {
     form.resetFields()
     setSelectedFsf('')
     setSelectedMember('')
+    setSelectedProject('')
+    setSelectedModule('')
   }
 
   // Functions for Delete FSF Success
@@ -714,20 +747,43 @@ function AllFSF() {
 
         <div className="row mt-2 mb-2 justify-content-between">
           <Form form={form} className="d-flex w-100">
-            <div className="col-md-3">
+          <div className="col-md-3">
               <div className="d-flex align-items-center">
-                <Form.Item name="fsfSelect" hasFeedback style={{ width: '100%' }}>
+                <Form.Item name="projectSelect" hasFeedback style={{ width: '100%' }}>
                   <Select
-                    placeholder="Select FSF"
-                    onChange={handleFsfSelectAndSearch}
-                    value={selectedFsf}
+                    placeholder="Select Project"
+                    onChange={handleProjectSelect}
+                    value={selectedProject}
+                    showSearch
                     filterOption={(input, option) =>
                       option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                     }
                   >
-                    {filterfsf.map((fsf) => (
-                      <Select.Option value={fsf.id} key={fsf.id}>
-                        {fsf.wricef_id}-{fsf.fsf_version}
+                    {projects.map((pro) => (
+                      <Select.Option value={pro.id} key={pro.id}>
+                        {pro.project_name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className="col-md-3">
+              <div className="d-flex align-items-center">
+                <Form.Item name="moduleSelect" hasFeedback style={{ width: '100%' }}>
+                  <Select
+                    placeholder="Select Module"
+                    onChange={handleModuleSelect}
+                    value={selectedModule}
+                    showSearch
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {modules.map((mod) => (
+                      <Select.Option value={mod.id} key={mod.id}>
+                        {mod.name}
                       </Select.Option>
                     ))}
                   </Select>
@@ -785,12 +841,21 @@ function AllFSF() {
 
             </CTableRow>
 
-            {fsfonTeamId.filter((fsf) => {
-                  if (selectedFsf !== '') {
-                    return fsf.id === selectedFsf
-                  }
-                  return true
-                }).map((fsf, index) => (
+            {fsfonTeamId.filter((project) => {
+                // Apply Project filter
+                if (selectedProject !== '') {
+                  return project.project_id === selectedProject
+                }
+                return true
+              })
+              .filter((project) => {
+                // Apply Module filter
+                if (selectedModule !== '') {
+                  return project.module_id === selectedModule
+                }
+                return true
+              })
+              .map((fsf, index) => (
               <CTableRow key={fsf.id}>
                 <CTableHeaderCell className="text-center" style={mystyle2}>
                   {index + 1}
