@@ -405,7 +405,7 @@ function CRFform() {
       .then((response) => response.json())
       .then((data) => {
         if (local.Users.role === 6) {
-          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && (user.role === 6 || user.role === 7))
+          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && (user.role === 6 || user.role === 7) &&  user.email !== local.Users.email)
         }
         setByUsers(filteredUsers)
       })

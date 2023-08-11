@@ -201,10 +201,12 @@ function AllCRF() {
   const handleOk4 = () => {
     updateCommentandStatus(isModalOpen4)
     setIsModalOpen4(false)
+    setStatus("")
   }
 
   const handleCancel4 = () => {
     setIsModalOpen4(false)
+    setStatus("")
   }
 
   // Functions for Update CRF Modal
@@ -227,6 +229,8 @@ function AllCRF() {
   useEffect(() => {
     getCrf()
     getCrfbyRole()
+    getProjects()
+    getModules()
   }, [])
 
   const [showAlert1, setShowAlert1] = useState(false)
@@ -317,9 +321,19 @@ function AllCRF() {
     setSelectedCrf(value)
   }
 
+  const handleProjectSelect = (value) => {
+    setSelectedProject(value)
+  }
+
+  const handleModuleSelect = (value) => {
+    setSelectedModule(value)
+  }
+
   const clearFilter = () => {
     form.resetFields()
     setSelectedCrf('')
+    setSelectedProject('')
+    setSelectedModule('')
   }
 
   //Array declarations for GET methods
@@ -329,6 +343,10 @@ function AllCRF() {
   const [bymessage, setByMessage] = useState([])
   const [filtercrf, setFilterCrf] = useState([])
   const [selectedCrf, setSelectedCrf] = useState('')
+  const [selectedProject, setSelectedProject] = useState('')
+  const [selectedModule, setSelectedModule] = useState('')
+  const [projects, setProjects] = useState([])
+  const [modules, setModules] = useState([])
   var filteredUsers = []
 
   //GET API calls
@@ -365,6 +383,23 @@ function AllCRF() {
         }
         setFilterCrf(filteredUsers)
       })
+      .catch((error) => console.log(error))
+  }
+
+  async function getProjects() {
+    await fetch(`${BASE_URL}/api/getproject`)
+      .then((response) => response.json())
+      .then((data) => {
+          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
+        setProjects(filteredUsers)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  async function getModules() {
+    await fetch(`${BASE_URL}/api/getModules`)
+      .then((response) => response.json())
+      .then((data) => setModules(data.Module))
       .catch((error) => console.log(error))
   }
 
@@ -441,29 +476,6 @@ function AllCRF() {
       })
   }
 
-  // API Calls through Fetch
-  async function updateComment(newid) {
-    await fetch(`${BASE_URL}/api/updateComment`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: newid,
-        comment: comment,
-      }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          getCrf()
-        }
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-  }
-
-  // API Calls through Fetch
   async function updateCommentandStatus(newid) {
     await fetch(`${BASE_URL}/api/updateStatusAndComment`, {
       method: 'POST',
@@ -580,18 +592,41 @@ function AllCRF() {
           <Form form={form} className="d-flex w-100">
             <div className="col-md-3">
               <div className="d-flex align-items-center">
-                <Form.Item name="crfSelect" hasFeedback style={{ width: '100%' }}>
+                <Form.Item name="projectSelect" hasFeedback style={{ width: '100%' }}>
                   <Select
-                    placeholder="Select CRF"
-                    onChange={handleCrfSelectAndSearch}
-                    value={selectedCrf}
+                    placeholder="Select Project"
+                    onChange={handleProjectSelect}
+                    value={selectedProject}
+                    showSearch
                     filterOption={(input, option) =>
                       option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                     }
                   >
-                    {crf.map((crf) => (
-                      <Select.Option value={crf.id} key={crf.id}>
-                        {crf.doc_ref_no}-{crf.crf_version}.{crf.crf_version_float}
+                    {projects.map((pro) => (
+                      <Select.Option value={pro.id} key={pro.id}>
+                        {pro.project_name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className="col-md-3">
+              <div className="d-flex align-items-center">
+                <Form.Item name="moduleSelect" hasFeedback style={{ width: '100%' }}>
+                  <Select
+                    placeholder="Select Module"
+                    onChange={handleModuleSelect}
+                    value={selectedModule}
+                    showSearch
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {modules.map((mod) => (
+                      <Select.Option value={mod.id} key={mod.id}>
+                        {mod.name}
                       </Select.Option>
                     ))}
                   </Select>
@@ -645,12 +680,21 @@ function AllCRF() {
           </CTableRow>
 
           {/* Get API Users */}
-          {crf.filter((crf) => {
-                  if (selectedCrf !== '') {
-                    return crf.id === selectedCrf
-                  }
-                  return true
-                }).map((crf, index) =>
+          {crf.filter((project) => {
+                // Apply Project filter
+                if (selectedProject !== '') {
+                  return project.project_id === selectedProject
+                }
+                return true
+              })
+              .filter((project) => {
+                // Apply Module filter
+                if (selectedModule !== '') {
+                  return project.module_id === selectedModule
+                }
+                return true
+              })
+              .map((crf, index) =>
             crf.crs_details === null ? (
               ''
             ) : (

@@ -165,10 +165,10 @@ function Streams() {
   }
 
   function getHasUsers(id) {
-    fetch(`${BASE_URL}/api/get-permission-by-id/${id}`)
+    fetch(`${BASE_URL}/api/getUsersByStreamsId/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        const temp_array = data.Permission.map((element) => element.permission_id)
+        const temp_array = data.Streams.map((element) => element.user_id)
         setHasUsers(temp_array)
         console.log(temp_array)
       })
@@ -524,14 +524,14 @@ function Streams() {
 
   //Assign Users API call
   async function assignUsers(newid) {
-    await fetch(`${BASE_URL}/api/role-permissions`, {
+    await fetch(`${BASE_URL}/api/assignStreamsToUsers`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        role_id: newid,
-        permissions: selectedUsers,
+        stream_id: newid,
+        user_ids: selectedUsers,
       }),
     })
       .then((response) => {
