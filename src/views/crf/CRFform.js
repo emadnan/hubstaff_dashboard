@@ -148,53 +148,20 @@ function CRFform() {
       callErrors(
         project_id,
         module_id,
-        fsf_id,
-        reference,
-        project_manager,
-        implementation_partner,
-        issuance_date,
-        author,
-        doc_ref_no,
-        crf_id,
-        crf_title,
-        type_of_requirement,
-        priority,
-        with_in_project_scope,
-        requirement,
-        required_time_no,
-        required_time_type,
-        functional_resource,
-        Technical_resource,
       )
     }
   }
 
   const handleNext2 = () => {
-    if (fsf_id && project_manager && reference && implementation_partner && issuance_date && author && doc_ref_no) {
+    if (fsf_id && project_manager && reference) {
       setShowLevel2(false)
       setShowLevel3(true)
       setFormErrors('')
     } else {
       callErrors(
-        project_id,
-        module_id,
         fsf_id,
         reference,
         project_manager,
-        implementation_partner,
-        issuance_date,
-        author,
-        doc_ref_no,
-        crf_id,
-        crf_title,
-        type_of_requirement,
-        priority,
-        with_in_project_scope,
-        requirement,
-        required_time_no,
-        required_time_type,
-        functional_resource,
-        Technical_resource,
       )
     }
   }
@@ -210,12 +177,26 @@ function CRFform() {
   }
 
   const handleNext3 = () => {
-    setShowLevel3(false)
-    addCrfForm()
-    setFormErrors('')
-    setTimeout(() => {
-      navigate('/allcrf')
-    }, 2000)
+    if (crf_title && type_of_requirement && priority && with_in_project_scope && requirement && required_time_no && required_time_type && functional_resource && Technical_resource) {
+      setShowLevel3(false)
+      addCrfForm()
+      setFormErrors('')
+      setTimeout(() => {
+        navigate('/allcrf')
+      }, 2000)
+    } else {
+      callErrors(
+        crf_title,
+        type_of_requirement,
+        priority,
+        with_in_project_scope,
+        requirement,
+        required_time_no,
+        required_time_type,
+        functional_resource,
+        Technical_resource,
+      )
+    }
   }
 
   //Initial rendering
@@ -240,14 +221,10 @@ function CRFform() {
   }
 
   const handleCrfReference = (value) => {
-    console.log(value)
     setReference(value)
   }
 
   const handleFsfChange = (value) => {
-    console.log('handleFsfChange executed with value:', value);
-    console.log('fsf_id:', fsf_id);
-    console.log('fsfbyprojectandmodule:', fsfbyprojectandmodule);
     if (value === '0') {
       setIsModalVisible(true);
       setFsfId('');

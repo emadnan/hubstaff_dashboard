@@ -104,7 +104,7 @@ const Screenshots = () => {
         } else if (perm.some((item) => item.name === 'User_Data')) {
           filteredUsers = data.Users.filter((user) => user.id === user_id)
         }
-        setUsers(filteredUsers.slice(1))
+        setUsers(filteredUsers)
       })
       .catch((error) => console.log(error))
   }

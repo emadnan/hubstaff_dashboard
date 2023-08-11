@@ -1,10 +1,11 @@
 import { React, useState, useEffect } from 'react'
-import { Modal, Button, Form, Select } from 'antd'
+import { Modal, Button, Form, Select, Divider, Checkbox } from 'antd'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import Alert from '@mui/material/Alert'
+import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar'
 import moment from 'moment'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -29,6 +30,7 @@ function Streams() {
   const isCreateButtonEnabled = perm.some((item) => item.name === 'Create_Stream')
   const isEditButtonEnabled = perm.some((item) => item.name === 'Update_Stream')
   const isDeleteButtonEnabled = perm.some((item) => item.name === 'Delete_Stream')
+  const isAssignStreamEnabled = perm.some((item) => item.name === 'Assign_Stream')
 
   // CSS Stylings
   const modalStyle = {
@@ -48,6 +50,20 @@ function Streams() {
     top: '10%',
     left: '55%',
     transform: 'translateX(-50%)',
+  }
+
+  const perStyle = {
+    fontSize: 14,
+  }
+
+  const headStyle = {
+    color: '#0070ff',
+    fontWeight: 'bold',
+  }
+
+  const headStyle2 = {
+    color: '#black',
+    fontWeight: 'bold',
   }
 
   const mystyle = {
@@ -75,6 +91,7 @@ function Streams() {
   const [getstreams, setStreams] = useState([])
   const [bystream, setStreamById] = useState([])
   const [projects, setProjects] = useState([])
+  const [users, setUsers] = useState([])
   var filteredUsers = []
   let [form] = Form.useForm()
 
@@ -82,6 +99,7 @@ function Streams() {
   useEffect(() => {
     getStreams()
     getProjects()
+    getUsers()
   }, [])
 
   // Get API call
@@ -126,6 +144,33 @@ function Streams() {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
         }
         setProjects(filteredUsers)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  function getUsers() {
+    fetch(`${BASE_URL}/api/get_users`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (perm.some((item) => item.name === 'All_Data')) {
+          filteredUsers = data.Users
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
+          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && user.email !== local.Users.email)
+        } else if (perm.some((item) => item.name === 'User_Data')) {
+          filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
+        }
+        setUsers(filteredUsers)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  function getHasUsers(id) {
+    fetch(`${BASE_URL}/api/get-permission-by-id/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        const temp_array = data.Permission.map((element) => element.permission_id)
+        setHasUsers(temp_array)
+        console.log(temp_array)
       })
       .catch((error) => console.log(error))
   }
@@ -256,6 +301,22 @@ function Streams() {
 
   const handleCancel3 = () => {
     setIsModalOpen3(false)
+  }
+
+  // Functions for Assign Stream Modal
+  const [isModalOpen4, setIsModalOpen4] = useState(false)
+  const showModal4 = (id) => {
+    getHasUsers(id)
+    setIsModalOpen4(id)
+  }
+
+  const handleOk4 = () => {
+    assignUsers(isModalOpen4)
+    setIsModalOpen4(false)
+  }
+
+  const handleCancel4 = () => {
+    setIsModalOpen4(false)
   }
 
   // Functions for Add Stream Success
@@ -461,7 +522,34 @@ function Streams() {
       })
   }
 
+  //Assign Users API call
+  async function assignUsers(newid) {
+    await fetch(`${BASE_URL}/api/role-permissions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        role_id: newid,
+        permissions: selectedUsers,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          // handleButtonClick7()
+          getUsers()
+        } else {
+          // handleButtonClick8()
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
+
   const [searchedStream, setSearchedStream] = useState('')
+  const [selectedUsers, setSelectedUsers] = useState([])
+  const [hasUsers, setHasUsers] = useState([])
 
   const handleStreamSearch = (value) => {
     setSearchedStream(value)
@@ -479,6 +567,19 @@ function Streams() {
       ...prevFormErrors,
       [name]: '',
     }))
+  }
+
+  useEffect(() => {
+    setSelectedUsers(hasUsers)
+  }, [hasUsers])
+
+  //Function for checkbox handling
+  const handleSelectUser = (e, userId) => {
+    if (e.target.checked) {
+      setSelectedUsers([...selectedUsers, userId])
+    } else {
+      setSelectedUsers(selectedUsers.filter((id) => id !== userId))
+    }
   }
 
   return (
@@ -553,6 +654,12 @@ function Streams() {
               </CTableHeaderCell>
             ) : null
             }
+            {isAssignStreamEnabled ? (
+              <CTableHeaderCell className="text-center" style={mystyle}>
+                Assign Stream
+              </CTableHeaderCell>
+            ) : null
+            }
           </CTableRow>
 
           {/* Get API Stream */}
@@ -598,6 +705,18 @@ function Streams() {
                         </IconButton>
                       ) : null
                       }
+                    </CTableHeaderCell>
+                  ) : null
+                  }
+                  {isAssignStreamEnabled ? (
+                    <CTableHeaderCell className="text-center" style={mystyle2}>
+                      <IconButton
+                        aria-label="assign"
+                        title="Assign Stream"
+                        onClick={() => showModal4(stream.id)}
+                      >
+                        <PermContactCalendarIcon htmlColor="#0070ff" />
+                      </IconButton>
                     </CTableHeaderCell>
                   ) : null
                   }
@@ -777,6 +896,54 @@ function Streams() {
               />
             </div>
             {formErrors.end_time && <div className="text-danger">{formErrors.end_time}</div>}
+          </div>
+        ))}
+      </Modal>
+
+      {/* Modal for Assign User */}
+      <Modal
+        title=""
+        open={isModalOpen4}
+        onOk={handleOk4}
+        onCancel={handleCancel4}
+        okButtonProps={{ style: { background: 'blue' } }}
+      >
+        <h3 style={headStyle2}>Assign Users</h3>
+        <br></br>
+        <div className="row">
+          <div className="col md-2 text-center">
+            <h6>Sr/No</h6>
+          </div>
+          <div className="col md-3"></div>
+          <div className="col md-2 text-center">
+            <h6>Users</h6>
+          </div>
+          <div className="col md-3"></div>
+          <div className="col md-2 text-center">
+            <h6 style={heading}>Select</h6>
+          </div>
+          &nbsp;
+          <Divider></Divider>
+        </div>
+
+        {users.map((user, index) => (
+          <div className="row" key={user.id}>
+            <div className="col md-2 text-center">
+              <h6 style={perStyle}>{index + 1}</h6>
+            </div>
+            <div className="col md-3"></div>
+            <div className="col md-2 text-center">
+              <h6 style={perStyle}>{user.name}</h6>
+            </div>
+            <div className="col md-3"></div>
+            <div className="col md-2 text-center">
+              <Checkbox
+                checked={selectedUsers.includes(user.id)}
+                onChange={(e) => handleSelectUser(e, user.id)}
+              />
+            </div>
+            &nbsp;
+            <Divider></Divider>
           </div>
         ))}
       </Modal>
