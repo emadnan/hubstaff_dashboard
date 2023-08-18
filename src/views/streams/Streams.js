@@ -319,6 +319,21 @@ function Streams() {
     setIsModalOpen4(false)
   }
 
+  // Functions for Assigned Users Modal
+  const [isModalOpen5, setIsModalOpen5] = useState(false)
+  const showModal5 = (id) => {
+    getHasUsers(id)
+    setIsModalOpen5(id)
+  }
+
+  const handleOk5 = () => {
+    setIsModalOpen4(false)
+  }
+
+  const handleCancel5 = () => {
+    setIsModalOpen5(false)
+  }
+
   // Functions for Add Stream Success
   const [showAlert1, setShowAlert1] = useState(false)
 
@@ -660,6 +675,9 @@ function Streams() {
               </CTableHeaderCell>
             ) : null
             }
+            <CTableHeaderCell className="text-center" style={mystyle}>
+              Assigned Users
+            </CTableHeaderCell>
           </CTableRow>
 
           {/* Get API Stream */}
@@ -720,6 +738,15 @@ function Streams() {
                     </CTableHeaderCell>
                   ) : null
                   }
+                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                      <IconButton
+                        aria-label="assigned"
+                        title="Assigned"
+                        onClick={() => showModal5(stream.id)}
+                      >
+                        <PermContactCalendarIcon htmlColor="#0070ff" />
+                      </IconButton>
+                    </CTableHeaderCell>
                 </CTableRow>
               )
 
@@ -947,6 +974,52 @@ function Streams() {
           </div>
         ))}
       </Modal>
+
+      {/* Modal for Check Assigned Status Permissions */}
+      <Modal
+            title="Assigned Users"
+            open={isModalOpen5}
+            onOk={handleOk5}
+            okButtonProps={{ style: { background: 'blue' } }}
+            onCancel={handleCancel5}
+          >
+            <br></br>
+            <div className="row">
+              <div className="col md-2 text-center">
+                <h6 style={heading}>Sr/No</h6>
+              </div>
+              <div className="col md-3"></div>
+              <div className="col md-2 text-center">
+                <h6 style={heading}>User Name</h6>
+              </div>
+              <div className="col md-3"></div>
+              <div className="col md-2 text-center">
+                <h6 style={heading}>Assigned</h6>
+              </div>
+              &nbsp;
+              <Divider></Divider>
+            </div>
+
+            <div>
+              {hasUsers.map((user, index) => (
+                <div className="row" key={user.id}>
+                  <div className="col md-2 text-center">
+                    <h6>{index + 1}</h6>+
+                  </div>
+                  <div className="col md-3"></div>
+                  <div className="col md-2 text-center">
+                    <h6>{user.name}</h6>
+                  </div>
+                  <div className="col md-3"></div>
+                  <div className="col md-2 text-center">
+                    <h6>{user.status}</h6>
+                  </div>
+                  &nbsp;
+                  <Divider />
+                </div>
+              ))}
+            </div>
+          </Modal>
 
       {/* Modal for Deletion Confirmation */}
       <Modal
