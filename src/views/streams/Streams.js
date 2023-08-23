@@ -100,6 +100,7 @@ function Streams() {
     getStreams()
     getProjects()
     getUsers()
+    getStreamHasUsers()
   }, [])
 
   // Get API call
@@ -175,6 +176,16 @@ function Streams() {
       .catch((error) => console.log(error))
   }
 
+  function getStreamHasUsers(id) {
+    fetch(`${BASE_URL}/api/getUsersByStreamsId/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        const temp_array = data.Streams
+        setStreamHasUsers(temp_array)
+        console.log(temp_array)
+      })
+      .catch((error) => console.log(error))
+  }
   // Functions for Add Stream Modal
   const [isModalOpen, setIsModalOpen] = useState(false)
   const showModal = () => {
@@ -322,7 +333,7 @@ function Streams() {
   // Functions for Assigned Users Modal
   const [isModalOpen5, setIsModalOpen5] = useState(false)
   const showModal5 = (id) => {
-    getHasUsers(id)
+    getStreamHasUsers(id)
     setIsModalOpen5(id)
   }
 
@@ -562,9 +573,45 @@ function Streams() {
       })
   }
 
+  async function assigningtype() {
+    await fetch(`${BASE_URL}/api/assignStreamsTypes`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        stream_id: assignStreamId,
+        user_ids: assignUserId,
+        assigning_type_id: assignType,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          // handleButtonClick7()
+          getUsers()
+        } else {
+          // handleButtonClick8()
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
+
   const [searchedStream, setSearchedStream] = useState('')
   const [selectedUsers, setSelectedUsers] = useState([])
   const [hasUsers, setHasUsers] = useState([])
+  const [streamHasUsers, setStreamHasUsers] = useState([])
+  const [assignType, setAssignType] = useState('')
+  const [assignUserId, setAssignUserId] = useState('')
+  const [assignStreamId, setAssignStreamId] = useState('')
+
+  const handleAssingType = (value, user_id, stream_id) => {
+    setAssignType(value)
+    setAssignUserId(user_id)
+    setAssignStreamId(stream_id)
+    assigningtype()
+  }
 
   const handleStreamSearch = (value) => {
     setSearchedStream(value)
@@ -989,31 +1036,46 @@ function Streams() {
                 <h6 style={heading}>Sr/No</h6>
               </div>
               <div className="col md-3"></div>
-              <div className="col md-2 text-center">
+              <div className="col md-2 text-left">
                 <h6 style={heading}>User Name</h6>
               </div>
               <div className="col md-3"></div>
               <div className="col md-2 text-center">
-                <h6 style={heading}>Assigned</h6>
+                <h6 style={heading}>Assigned Type</h6>
               </div>
               &nbsp;
               <Divider></Divider>
             </div>
 
             <div>
-              {hasUsers.map((user, index) => (
-                <div className="row" key={user.id}>
-                  <div className="col md-2 text-center">
-                    <h6>{index + 1}</h6>+
+              {streamHasUsers.map((demo, index) => (
+                <div className="row" key={demo.id}>
+                  <div className="col md-3 text-center">
+                    <h6>{index + 1}</h6>
                   </div>
-                  <div className="col md-3"></div>
-                  <div className="col md-2 text-center">
-                    <h6>{user.name}</h6>
+                  <div className="col md-3 text-center">  
+                    <h6>{demo.user_details.name}</h6>
                   </div>
-                  <div className="col md-3"></div>
-                  <div className="col md-2 text-center">
-                    <h6>{user.status}</h6>
-                  </div>
+                  {/* <div className="col md-3"></div> */}
+                  {/* <div className="col md-2 text-center">
+                    <h6>{demo.assigning_type_id}</h6>
+                  </div> */}
+                  <div className="col-auto  ">
+                  {/* <label>Assign Type</label> */}
+                  <Form.Item
+                    validateStatus={formErrors.assignType ? 'error' : ''}
+                    help={formErrors.assignType}
+                  >
+                    <Select
+                      placeholder="Select Assign Type"
+                      onChange={handleAssingType(demo.user_id , demo.stream_id)}
+                      value={demo.assignType}
+                    >
+                      <Select.Option value="1">Assign Partially</Select.Option>
+                      <Select.Option value="2">Assign Fully</Select.Option>
+                    </Select>
+                  </Form.Item>
+                </div>
                   &nbsp;
                   <Divider />
                 </div>
