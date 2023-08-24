@@ -4,8 +4,9 @@ import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@co
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
-import CreateIcon from '@mui/icons-material/Create';
+import CreateIcon from '@mui/icons-material/Create'
 import Alert from '@mui/material/Alert'
+import ChecklistIcon from '@mui/icons-material/Checklist'
 import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar'
 import moment from 'moment'
 const BASE_URL = process.env.REACT_APP_BASE_URL
@@ -24,6 +25,8 @@ function Streams() {
   const [assignStreamId, setAssignStreamId] = useState('')
   const [successmessage, setSuccessMessage] = useState('')
   const [failuremessage, setFailureMessage] = useState('')
+  const [selectedUser, setSelectedUser] = useState('')
+  const [user_id, setUserId] = useState('')
 
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'))
@@ -690,9 +693,14 @@ function Streams() {
     setSearchedStream(value)
   }
 
+  const handleUserSelect = (value) => {
+    setSelectedUser(value)
+  }
+
   const clearFilter = () => {
     form.resetFields()
     setSearchedStream('')
+    setSelectedUser('')
   }
 
   const handleFocus = (e) => {
@@ -796,7 +804,7 @@ function Streams() {
             ) : null
             }
             <CTableHeaderCell className="text-center" style={mystyle}>
-              Assigned Users
+              Assign Type
             </CTableHeaderCell>
           </CTableRow>
 
@@ -864,7 +872,7 @@ function Streams() {
                       title="Assigned"
                       onClick={() => showModal5(stream.id)}
                     >
-                      <PermContactCalendarIcon htmlColor="#0070ff" />
+                      <ChecklistIcon htmlColor="#0070ff" />
                     </IconButton>
                   </CTableHeaderCell>
                 </CTableRow>
@@ -1056,6 +1064,39 @@ function Streams() {
         okButtonProps={{ style: { background: 'blue' } }}
       >
         <h3 style={headStyle2}>Assign Users</h3>
+        <div className="col-md-3" style={{ width: '1500px' }}>
+          <Form form={form} className="d-flex w-200">
+            <div className="col-md-3">
+              <div className="d-flex align-items-center">
+                <Form.Item name="userSelect" hasFeedback style={{ width: '100%' }}>
+                  <Select
+                    showSearch
+                    placeholder="Select User"
+                    onChange={handleUserSelect}
+                    value={user_id}
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {users.map((user) => (
+                      <Select.Option value={user.id} key={user.id}>
+                        {user.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className="col-md-4">
+              <div className="d-flex align-items-center">
+                <Button type="default" onClick={clearFilter} className="ml-2">
+                  Clear Filter
+                </Button>
+              </div>
+            </div>
+          </Form>
+        </div>
         <br></br>
         <div className="row">
           <div className="col md-2 text-center">
@@ -1073,26 +1114,33 @@ function Streams() {
           <Divider></Divider>
         </div>
 
-        {users.map((user, index) => (
-          <div className="row" key={user.id}>
-            <div className="col md-2 text-center">
-              <h6 style={perStyle}>{index + 1}</h6>
+        {users.filter((user) => {
+          // Apply User filter
+          if (selectedUser !== '') {
+            return user.id === selectedUser
+          }
+          return true
+        })
+          .map((user, index) => (
+            <div className="row" key={user.id}>
+              <div className="col md-2 text-center">
+                <h6 style={perStyle}>{index + 1}</h6>
+              </div>
+              <div className="col md-3"></div>
+              <div className="col md-2 text-center">
+                <h6 style={perStyle}>{user.name}</h6>
+              </div>
+              <div className="col md-3"></div>
+              <div className="col md-2 text-center">
+                <Checkbox
+                  checked={selectedUsers.includes(user.id)}
+                  onChange={(e) => handleSelectUser(e, user.id)}
+                />
+              </div>
+              &nbsp;
+              <Divider></Divider>
             </div>
-            <div className="col md-3"></div>
-            <div className="col md-2 text-center">
-              <h6 style={perStyle}>{user.name}</h6>
-            </div>
-            <div className="col md-3"></div>
-            <div className="col md-2 text-center">
-              <Checkbox
-                checked={selectedUsers.includes(user.id)}
-                onChange={(e) => handleSelectUser(e, user.id)}
-              />
-            </div>
-            &nbsp;
-            <Divider></Divider>
-          </div>
-        ))}
+          ))}
       </Modal>
 
       {/* Modal for Check Assigned Status Permissions */}
@@ -1162,8 +1210,8 @@ function Streams() {
               onChange={handleAssigningType}
               value={assignType}
             >
-              <Select.Option value="1">Assign Partially</Select.Option>
-              <Select.Option value="2">Assign Fully</Select.Option>
+              <Select.Option value="1">Partially Assigned</Select.Option>
+              <Select.Option value="2">Fully Assigned</Select.Option>
             </Select>
           </Form.Item>
         </div>
