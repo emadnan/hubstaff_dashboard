@@ -4,6 +4,7 @@ import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@co
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
+import CreateIcon from '@mui/icons-material/Create';
 import Alert from '@mui/material/Alert'
 import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar'
 import moment from 'moment'
@@ -18,6 +19,11 @@ function Streams() {
   const [formErrors, setFormErrors] = useState({
     stream_name,
   })
+  const [assignType, setAssignType] = useState('')
+  const [assignUserId, setAssignUserId] = useState('')
+  const [assignStreamId, setAssignStreamId] = useState('')
+  const [successmessage, setSuccessMessage] = useState('')
+  const [failuremessage, setFailureMessage] = useState('')
 
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'))
@@ -92,6 +98,7 @@ function Streams() {
   const [bystream, setStreamById] = useState([])
   const [projects, setProjects] = useState([])
   const [users, setUsers] = useState([])
+  const [typeassigningdata, setTypeAssigningData] = useState([])
   var filteredUsers = []
   let [form] = Form.useForm()
 
@@ -171,21 +178,32 @@ function Streams() {
       .then((data) => {
         const temp_array = data.Streams.map((element) => element.user_id)
         setHasUsers(temp_array)
-        console.log(temp_array)
       })
       .catch((error) => console.log(error))
   }
 
-  function getStreamHasUsers(id) {
-    fetch(`${BASE_URL}/api/getUsersByStreamsId/${id}`)
+  async function getStreamHasUsers(id) {
+    await fetch(`${BASE_URL}/api/getUsersByStreamsId/${id}`)
       .then((response) => response.json())
       .then((data) => {
         const temp_array = data.Streams
         setStreamHasUsers(temp_array)
-        console.log(temp_array)
       })
       .catch((error) => console.log(error))
   }
+
+  async function getAssignedType(id) {
+    await fetch(`${BASE_URL}/api/getAssignedTypeId/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setTypeAssigningData(data.Assigned_Type_Id)
+        setAssignStreamId(data.Assigned_Type_Id.stream_id)
+        setAssignType(data.Assigned_Type_Id.assigning_type_id)
+        setAssignUserId(data.Assigned_Type_Id.user_id)
+      })
+      .catch((error) => console.log(error))
+  }
+
   // Functions for Add Stream Modal
   const [isModalOpen, setIsModalOpen] = useState(false)
   const showModal = () => {
@@ -338,11 +356,29 @@ function Streams() {
   }
 
   const handleOk5 = () => {
-    setIsModalOpen4(false)
+    setIsModalOpen5(false)
   }
 
   const handleCancel5 = () => {
     setIsModalOpen5(false)
+  }
+
+  // Functions for Change Assign Type Modal
+  const [isModalOpen6, setIsModalOpen6] = useState(false)
+  const showModal6 = (id) => {
+    getAssignedType(id)
+    setIsModalOpen6(id)
+  }
+
+  const handleOk6 = () => {
+    assigningtype(isModalOpen6)
+    setIsModalOpen6(false)
+    setAssignType('');
+  }
+
+  const handleCancel6 = () => {
+    setIsModalOpen6(false);
+    setAssignType('');
   }
 
   // Functions for Add Stream Success
@@ -471,6 +507,48 @@ function Streams() {
     }
   }, [showAlert6])
 
+  // Functions for Assigning Success Message 
+  const [showAlert7, setShowAlert7] = useState(false)
+
+  function handleButtonClick7() {
+    setShowAlert7(true)
+  }
+
+  function handleCloseAlert7() {
+    setShowAlert7(false)
+  }
+
+  useEffect(() => {
+    if (showAlert7) {
+      const timer = setTimeout(() => {
+        setShowAlert7(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert7])
+
+  // Functions for Assigning Failure Message 
+  const [showAlert8, setShowAlert8] = useState(false)
+
+  function handleButtonClick8() {
+    setShowAlert8(true)
+  }
+
+  function handleCloseAlert8() {
+    setShowAlert8(false)
+  }
+
+  useEffect(() => {
+    if (showAlert8) {
+      const timer = setTimeout(() => {
+        setShowAlert8(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert8])
+
   // Add API call
   async function addStream() {
     let addstream = { stream_name, company_id: local.Users.company_id, project_id, start_time, end_time }
@@ -550,7 +628,7 @@ function Streams() {
 
   //Assign Users API call
   async function assignUsers(newid) {
-    await fetch(`${BASE_URL}/api/assignStreamsToUsers`, {
+    const response = await fetch(`${BASE_URL}/api/assignStreamsToUsers`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -559,58 +637,53 @@ function Streams() {
         stream_id: newid,
         user_ids: selectedUsers,
       }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          // handleButtonClick7()
-          getUsers()
-        } else {
-          // handleButtonClick8()
-        }
-      })
-      .catch((error) => {
-        console.error(error)
-      })
+    });
+    if (response.ok) {
+      const data = await response.json();
+      const msg = data.message;
+      setSuccessMessage(msg);
+      handleButtonClick7();
+    } else {
+      const data = await response.json();
+      const msg = data.message;
+      setFailureMessage(msg);
+      handleButtonClick8();
+    }
   }
 
-  async function assigningtype() {
-    await fetch(`${BASE_URL}/api/assignStreamsTypes`, {
+  async function assigningtype(newid) {
+    const response = await fetch(`${BASE_URL}/api/updateAssignedStreamType`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         stream_id: assignStreamId,
-        user_ids: assignUserId,
+        user_id: assignUserId,
         assigning_type_id: assignType,
       }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          // handleButtonClick7()
-          getUsers()
-        } else {
-          // handleButtonClick8()
-        }
-      })
-      .catch((error) => {
-        console.error(error)
-      })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const msg = data.message;
+      setSuccessMessage(msg);
+      handleButtonClick7();
+    } else {
+      const data = await response.json();
+      const msg = data.message;
+      setFailureMessage(msg);
+      handleButtonClick8();
+    }
   }
 
   const [searchedStream, setSearchedStream] = useState('')
   const [selectedUsers, setSelectedUsers] = useState([])
   const [hasUsers, setHasUsers] = useState([])
   const [streamHasUsers, setStreamHasUsers] = useState([])
-  const [assignType, setAssignType] = useState('')
-  const [assignUserId, setAssignUserId] = useState('')
-  const [assignStreamId, setAssignStreamId] = useState('')
 
-  const handleAssingType = (value, user_id, stream_id) => {
+  const handleAssigningType = (value) => {
     setAssignType(value)
-    setAssignUserId(user_id)
-    setAssignStreamId(stream_id)
-    assigningtype()
   }
 
   const handleStreamSearch = (value) => {
@@ -786,14 +859,14 @@ function Streams() {
                   ) : null
                   }
                   <CTableHeaderCell className="text-center" style={mystyle2}>
-                      <IconButton
-                        aria-label="assigned"
-                        title="Assigned"
-                        onClick={() => showModal5(stream.id)}
-                      >
-                        <PermContactCalendarIcon htmlColor="#0070ff" />
-                      </IconButton>
-                    </CTableHeaderCell>
+                    <IconButton
+                      aria-label="assigned"
+                      title="Assigned"
+                      onClick={() => showModal5(stream.id)}
+                    >
+                      <PermContactCalendarIcon htmlColor="#0070ff" />
+                    </IconButton>
+                  </CTableHeaderCell>
                 </CTableRow>
               )
 
@@ -1024,64 +1097,77 @@ function Streams() {
 
       {/* Modal for Check Assigned Status Permissions */}
       <Modal
-            title="Assigned Users"
-            open={isModalOpen5}
-            onOk={handleOk5}
-            okButtonProps={{ style: { background: 'blue' } }}
-            onCancel={handleCancel5}
-          >
-            <br></br>
-            <div className="row">
+        title="Assigned Users"
+        open={isModalOpen5}
+        onOk={handleOk5}
+        okButtonProps={{ style: { background: 'blue' } }}
+        onCancel={handleCancel5}
+      >
+        <br></br>
+        <div className="row">
+          <div className="col md-2 text-center">
+            <h6 style={heading}>Sr/No</h6>
+          </div>
+          <div className="col md-3"></div>
+          <div className="col md-2 text-left">
+            <h6 style={heading}>User Name</h6>
+          </div>
+          <div className="col md-3"></div>
+          <div className="col md-2 text-center">
+            <h6 style={heading}>Assigned Type</h6>
+          </div>
+          &nbsp;
+          <Divider></Divider>
+        </div>
+
+        <div>
+          {streamHasUsers.map((demo, index) => (
+            <div className="row" key={demo.id}>
               <div className="col md-2 text-center">
-                <h6 style={heading}>Sr/No</h6>
+                <h6>{index + 1}</h6>
               </div>
-              <div className="col md-3"></div>
-              <div className="col md-2 text-left">
-                <h6 style={heading}>User Name</h6>
-              </div>
-              <div className="col md-3"></div>
               <div className="col md-2 text-center">
-                <h6 style={heading}>Assigned Type</h6>
+                <h6>{demo.user_details.name}</h6>
+              </div>
+              <div className="col md-4 text-center">
+                <h6>{demo.assign_type_details.assign_type_name}</h6>
+                <IconButton
+                  aria-label="assign_type"
+                  title="Assign Type"
+                  onClick={() => showModal6(demo.id)}
+                >
+                  <CreateIcon htmlColor="#0070ff" />
+                </IconButton>
               </div>
               &nbsp;
-              <Divider></Divider>
+              <Divider />
             </div>
+          ))}
+        </div>
+      </Modal>
 
-            <div>
-              {streamHasUsers.map((demo, index) => (
-                <div className="row" key={demo.id}>
-                  <div className="col md-3 text-center">
-                    <h6>{index + 1}</h6>
-                  </div>
-                  <div className="col md-3 text-center">  
-                    <h6>{demo.user_details.name}</h6>
-                  </div>
-                  {/* <div className="col md-3"></div> */}
-                  {/* <div className="col md-2 text-center">
-                    <h6>{demo.assigning_type_id}</h6>
-                  </div> */}
-                  <div className="col-auto  ">
-                  {/* <label>Assign Type</label> */}
-                  <Form.Item
-                    validateStatus={formErrors.assignType ? 'error' : ''}
-                    help={formErrors.assignType}
-                  >
-                    <Select
-                      placeholder="Select Assign Type"
-                      onChange={handleAssingType(demo.user_id , demo.stream_id)}
-                      value={demo.assignType}
-                    >
-                      <Select.Option value="1">Assign Partially</Select.Option>
-                      <Select.Option value="2">Assign Fully</Select.Option>
-                    </Select>
-                  </Form.Item>
-                </div>
-                  &nbsp;
-                  <Divider />
-                </div>
-              ))}
-            </div>
-          </Modal>
+      {/* Modal for Change Assign Type */}
+      <Modal
+        title="Assign Type"
+        open={isModalOpen6}
+        onOk={handleOk6}
+        okButtonProps={{ style: { background: 'blue' } }}
+        onCancel={handleCancel6}
+      >
+        <div className="form-outline mb-3">
+          <label>Assign Type</label>
+          <Form.Item>
+            <Select
+              placeholder="Select Status"
+              onChange={handleAssigningType}
+              value={assignType}
+            >
+              <Select.Option value="1">Assign Partially</Select.Option>
+              <Select.Option value="2">Assign Fully</Select.Option>
+            </Select>
+          </Form.Item>
+        </div>
+      </Modal>
 
       {/* Modal for Deletion Confirmation */}
       <Modal
@@ -1132,6 +1218,20 @@ function Streams() {
       {showAlert6 && (
         <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
           Failed to Update Stream
+        </Alert>
+      )}
+
+      {/* Alert for Assign Stream Success*/}
+      {showAlert7 && (
+        <Alert onClose={handleCloseAlert7} severity="success" style={modalStyle2}>
+          {successmessage}
+        </Alert>
+      )}
+
+      {/* Alert for Assign Stream Failure*/}
+      {showAlert8 && (
+        <Alert onClose={handleCloseAlert8} severity="error" style={modalStyle2}>
+          {failuremessage}
         </Alert>
       )}
     </>
