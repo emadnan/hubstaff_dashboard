@@ -940,12 +940,21 @@ function AllFSF() {
               </CTableHeaderCell>
             </CTableRow>
 
-            {assignedfsf.filter((assigned) => {
-                  if (selectedFsf !== '') {
-                    return assigned.id === selectedFsf
-                  }
-                  return true
-                }).map((assigned, index) => (
+            {assignedfsf.filter((project) => {
+                // Apply Project filter
+                if (selectedProject !== '') {
+                  return project.project_id === selectedProject
+                }
+                return true
+              })
+              .filter((project) => {
+                // Apply Module filter
+                if (selectedModule !== '') {
+                  return project.module_id === selectedModule
+                }
+                return true
+              })
+              .map((assigned, index) => (
               <CTableRow key={assigned.id}>
                 <CTableHeaderCell className="text-center" style={mystyle2}>
                   {index + 1}
