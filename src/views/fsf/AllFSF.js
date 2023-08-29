@@ -490,13 +490,11 @@ function AllFSF() {
   const handleOk2 = () => {
     updateAssignedFsf(isModalOpen2)
     setIsModalOpen2(false)
-    setComment('')
     setStatus('')
   }
 
   const handleCancel2 = () => {
     setIsModalOpen2(false)
-    setComment('')
     setStatus('')
   }
 
@@ -647,8 +645,9 @@ function AllFSF() {
       .then((response) => {
         if (response.ok) {
           getAssignedFsfToUser(local.token)
+          handleButtonClick5()
         } else {
-          // handleButtonClick6()
+          handleButtonClick6()
         }
       })
       .catch((error) => {
