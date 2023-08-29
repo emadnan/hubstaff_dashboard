@@ -102,6 +102,7 @@ function Streams() {
   const [projects, setProjects] = useState([])
   const [users, setUsers] = useState([])
   const [typeassigningdata, setTypeAssigningData] = useState([])
+  const [useravailability, setUserAvailability] = useState([])
   var filteredUsers = []
   let [form] = Form.useForm()
 
@@ -171,6 +172,16 @@ function Streams() {
           filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
         }
         setUsers(filteredUsers)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  function getUsersAvailability(id) {
+    fetch(`${BASE_URL}/api/getUserAvailability/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+          filteredUsers = data.Users_With_Assigning_Type
+          setUserAvailability(filteredUsers)
       })
       .catch((error) => console.log(error))
   }
@@ -339,6 +350,7 @@ function Streams() {
   const [isModalOpen4, setIsModalOpen4] = useState(false)
   const showModal4 = (id) => {
     getHasUsers(id)
+    getUsersAvailability(local.Users.company_id)
     setIsModalOpen4(id)
   }
 
@@ -1110,11 +1122,15 @@ function Streams() {
           <div className="col md-2 text-center">
             <h6 style={heading}>Select</h6>
           </div>
+          <div className="col md-3"></div>
+          <div className="col md-2 text-center">
+            <h6 style={heading}>Availability</h6>
+          </div>
           &nbsp;
           <Divider></Divider>
         </div>
 
-        {users.filter((user) => {
+        {useravailability.filter((user) => {
           // Apply User filter
           if (selectedUser !== '') {
             return user.id === selectedUser
@@ -1136,6 +1152,10 @@ function Streams() {
                   checked={selectedUsers.includes(user.id)}
                   onChange={(e) => handleSelectUser(e, user.id)}
                 />
+              </div>
+              <div className="col md-3"></div>
+              <div className="col md-2 text-center">
+                <h6 style={perStyle}>{user.availability}</h6>
               </div>
               &nbsp;
               <Divider></Divider>

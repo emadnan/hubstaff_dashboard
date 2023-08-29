@@ -634,7 +634,6 @@ function AllFSF() {
     var formData = new FormData()
     formData.append('status', status)
     formData.append('fsf_id', newid)
-    formData.append('comment', comment)
     await fetch(`${BASE_URL}/api/updateStatusByLogin`, {
       method: 'POST',
       headers: {
