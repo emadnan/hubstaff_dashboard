@@ -163,7 +163,7 @@ const TaskAssignmentUserSide = () => {
         setUserName(data.task.user_name)
         setTaskDescription(data.task.task_description)
         setTaskPriority(data.task.priorites)
-        setTeamleadName(data.task.team_lead_details.name)
+        setTeamleadName(data.task.team_lead_details?.name)
         setStartDate(data.task.task_managements_start_date)
         setDeadLine(data.task.task_managements_dead_line)
         setTaskStatus(data.task.status)
@@ -504,9 +504,8 @@ const TaskAssignmentUserSide = () => {
                       {task.project_name} - {task.task_managements_id}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.team_lead_details.name}
+                      {task.team_lead_details?.name}
                     </CTableHeaderCell>
-
                     <CTableHeaderCell
                       className="text-center"
                       style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
@@ -639,7 +638,7 @@ const TaskAssignmentUserSide = () => {
                       {task.project_name} - {task.task_managements_id}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.team_lead_details.name}
+                      {task.team_lead_details?.name}
                     </CTableHeaderCell>
 
                     <CTableHeaderCell
