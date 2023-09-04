@@ -26,6 +26,7 @@ const Register = React.lazy(() => import('./views/pages/register/Register'))
 const Changepassword = React.lazy(() => import('./views/pages/changepassword/Changepassword'))
 const LandingPage = React.lazy(() => import('./landingpage/LandingPage'))
 const SelectedPlan = React.lazy(() => import('./views/pages/SelectedPlan/SelectedPlan'))
+const ForgetPassword = React.lazy(() => import('./views/pages/forgetpassword/ForgetPassword'))
 
 const SelectedPlanWrapper = () => {
   const location = useLocation()
@@ -54,6 +55,8 @@ const App = () => {
           <Route exact path="/register" name="Register Page" element={<Register />} />
           <Route exact path="/selectedPlan" name="Login Page" element={<SelectedPlanWrapper />} />
           <Route exact path="/changepassword" name="Change Password" element={<Changepassword />} />
+          <Route exact path="/forgetpassword" name="Forget Password" element={<ForgetPassword />} />
+
           <Route path="*" name="Home" element={<DefaultLayout />} />
         </Routes>
       </Suspense>

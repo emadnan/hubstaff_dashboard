@@ -65,6 +65,10 @@ const Login = () => {
     }
   })
 
+  const forgetPassword = () => {
+    navigate('/forgetpassword')
+  }
+
   const handleFocus = (e) => {
     const { name } = e.target
 
@@ -105,6 +109,7 @@ const Login = () => {
           'Content-Type': 'application/json',
         },
       })
+
       if (result.status === 400) {
         handleButtonClick1()
       } else if (result.status === 500) {
@@ -319,6 +324,18 @@ const Login = () => {
                       Don&apos;t have an account?{' '}
                       <a href="/register" className="link-primary">
                         Register
+                      </a>
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+              <Grid container>
+                <Grid item xs>
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      Forget Password{' '}
+                      <a onClick={() => forgetPassword()} className="link-primary">
+                        Forget Password
                       </a>
                     </Typography>
                   </Box>
