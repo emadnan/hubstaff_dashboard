@@ -67,6 +67,7 @@ const Screenshots = () => {
     setIsAdminLogin(true)
     setSelectedDate(null)
     getScreenshots()
+    setIsRecordNotFound(false)
   }
 
   // Array Declaration for API Calls

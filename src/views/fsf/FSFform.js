@@ -1544,12 +1544,17 @@ function FSFform() {
                   <Form.Item
                     validateStatus={formErrors.reference_id ? 'error' : ''}
                     help={formErrors.reference_id}
+                    hasFeedback
+                    name="referenceIdSelect"
                   >
                     <Select
                       placeholder="Select Reference Id"
                       onChange={handleReferenceIdChange}
                       value={reference_id}
-                      name="reference_id"
+                      showSearch
+                      filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
                       onFocus={handleFocus}
                     >
                       <Select.Option value="0" key="none">
@@ -1569,13 +1574,18 @@ function FSFform() {
                   <Form.Item
                     validateStatus={formErrors.project_id ? 'error' : ''}
                     help={formErrors.project_id}
+                    hasFeedback
+                    name="projectSelect"
                   >
                     <Select
                       placeholder="Select Project"
                       onChange={handleProjectChange}
                       value={project_id}
-                      name="project_id"
                       onFocus={handleFocus}
+                      showSearch
+                      filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
                     >
                       {project.map((pro) => (
                         <Select.Option value={pro.id} key={pro.id} project_name={pro.project_name}>
@@ -1591,13 +1601,18 @@ function FSFform() {
                   <Form.Item
                     validateStatus={formErrors.module_id ? 'error' : ''}
                     help={formErrors.module_id}
+                    hasFeedback
+                    name="moduleSelect"
                   >
                     <Select
                       placeholder="Select Module"
                       onChange={handleModuleChange}
                       value={module_id}
-                      name="module_id"
                       onFocus={handleFocus}
+                      showSearch
+                      filterOption={(input, option) =>
+                        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
                     >
                       {projectmodule.map((proj) => (
                         <Select.Option value={proj.id} key={proj.id} module_name={proj.name}>
@@ -1613,13 +1628,18 @@ function FSFform() {
                   <Form.Item
                     validateStatus={formErrors.type_of_development ? 'error' : ''}
                     help={formErrors.type_of_development}
+                    hasFeedback
+                    name="typeOfDevelopmentSelect"
                   >
                     <Select
                       placeholder="Select Type of Development"
                       onChange={handleTypeOfDevelopmentChange}
                       value={type_of_development}
-                      name="type_of_development"
                       onFocus={handleFocus}
+                      showSearch
+                      filterOption={(input, option) =>
+                        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
                     >
                       <Select.Option value="Workflow">Workflow</Select.Option>
                       <Select.Option value="Report">Report</Select.Option>
@@ -1678,11 +1698,17 @@ function FSFform() {
                   <Form.Item
                     validateStatus={formErrors.ABAP_team_lead_id ? 'error' : ''}
                     help={formErrors.ABAP_team_lead_id}
+                    hasFeedback
+                    name="abapTeamLeadSelect"
                   >
                     <Select
                       placeholder="Select ABAP Team Lead"
                       onChange={handleAbapTeamLeadId}
                       value={ABAP_team_lead_id}
+                      showSearch
+                      filterOption={(input, option) =>
+                        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
                     >
                       {teamlead.map((team) => (
                         <Select.Option value={team.id} key={team.id}>
@@ -1693,32 +1719,22 @@ function FSFform() {
                   </Form.Item>
                 </div>
 
-                {/* <div className="form-outline mb-3">
-                  <label>Requested Date</label>
-                  <Form.Item
-                    validateStatus={formErrors.requested_date ? 'error' : ''}
-                    help={formErrors.requested_date}
-                  >
-                    <input
-                      type="date"
-                      value={requested_date}
-                      onChange={(e) => setRequestedDate(e.target.value)}
-                      className="form-control form-control-lg"
-                      placeholder="Enter Requested Date"
-                    />
-                  </Form.Item>
-                </div> */}
-
                 <div className="form-outline mb-3">
                   <label>Priority</label>
                   <Form.Item
                     validateStatus={formErrors.priority ? 'error' : ''}
                     help={formErrors.priority}
+                    hasFeedback
+                    name="prioritySelect"
                   >
                     <Select
                       placeholder="Select Priority"
                       onChange={handlePriorityChange}
                       value={priority}
+                      showSearch
+                      filterOption={(input, option) =>
+                        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
                     >
                       <Select.Option value="Low">Low</Select.Option>
                       <Select.Option value="Medium">Medium</Select.Option>
@@ -1734,11 +1750,17 @@ function FSFform() {
                   <Form.Item
                     validateStatus={formErrors.usage_frequency ? 'error' : ''}
                     help={formErrors.usage_frequency}
+                    hasFeedback
+                    name="usageFrequencySelect"
                   >
                     <Select
                       placeholder="Select Usage Frequency"
                       onChange={handleUsageFrequencyChange}
                       value={usage_frequency}
+                      showSearch
+                      filterOption={(input, option) =>
+                        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
                     >
                       <Select.Option value="Daily">Daily</Select.Option>
                       <Select.Option value="Weekly">Weekly</Select.Option>
@@ -1870,13 +1892,6 @@ function FSFform() {
                   </div>
                 )}
 
-                {/* <Editor
-                  apiKey="46tu7q2m7kbsfpbdoc5mwnyn5hs97kdpefj8dnpuvz65aknl"
-                  cloudChannel="dev"
-                  init={editorConfig}
-                  onEditorChange={handleEditorChange}
-                /> */}
-
                 <br></br>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -1935,14 +1950,6 @@ function FSFform() {
               mb: 2,
             }}
           >
-            {/* <Button
-              onClick={handleBack4}
-              style={dangerButtonStyle}
-              onMouseEnter={handleMouseEnterDanger}
-              onMouseLeave={handleMouseLeaveDanger}
-            >
-              Back
-            </Button> */}
             <input
               type="file"
               onChange={handleFileUpload}
@@ -1972,7 +1979,6 @@ function FSFform() {
 
           {selectedImage && (
             <div>
-              {/* <h4>Selected Image:</h4> */}
               <img src={selectedImage} alt="Selected" />
             </div>
           )}
@@ -2531,14 +2537,6 @@ function FSFform() {
               mb: 2,
             }}
           >
-            {/* <Button
-          onClick={handleBack6}
-          style={dangerButtonStyle}
-          onMouseEnter={handleMouseEnterDanger}
-          onMouseLeave={handleMouseLeaveDanger}
-        >
-          Back
-        </Button> */}
             <input
               type="file"
               onChange={handleFileUpload2}

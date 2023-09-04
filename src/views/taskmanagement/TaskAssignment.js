@@ -104,7 +104,7 @@ function TaskAssignment() {
 
   const alertStyle = {
     position: 'fixed',
-    top: '10%',
+    top: '85%',
     left: '55%',
     transform: 'translateX(-50%)',
   }
@@ -396,7 +396,6 @@ function TaskAssignment() {
       if (local.Users.role === 7) {
         const filteredUsersTask = data.task.filter((user) => user.team_lead_id === local.Users.id)
 
-        // Step 1: Concatenate Ticket No with Project Name
         const tasksWithConcatenatedNames = filteredUsersTask.map((task) => {
           const project_name = task.project_name
           const initials = project_name
@@ -406,7 +405,6 @@ function TaskAssignment() {
           const ticket_no = task.ticket_no
           const concatenatedName = initials + '-' + String(ticket_no).padStart(2, '0')
 
-          // Adding the new property "concatenatedName" to the task object
           return {
             ...task,
             concatenatedName,
@@ -608,9 +606,10 @@ function TaskAssignment() {
         getTasks()
         form.resetFields()
         setTaskComment('')
+        handleButtonTaskStatusSuccess()
       })
       .catch((error) => {
-        console.error('Error:', error)
+        handleButtonTaskStatusFailure()
       })
   }
 
@@ -664,6 +663,8 @@ function TaskAssignment() {
   const [showAlertDeleteFailure, setShowAlertDeleteFailure] = useState(false)
   const [showAlertUpdate, setShowAlertUpdate] = useState(false)
   const [showAlertUpdateFailure, setShowAlertUpdateFailure] = useState(false)
+  const [showAlertTaskStatusSuccess, setShowAlertTaskStatusSuccess] = useState(false)
+  const [showAlertTaskStatusFailure, setShowAlertTaskStatusFailure] = useState(false)
 
   const handleButtonAddedClick = () => {
     setShowAlertAdded(true)
@@ -683,6 +684,13 @@ function TaskAssignment() {
   const handleButtonUpdateFailureClick = () => {
     setShowAlertUpdateFailure(true)
   }
+  const handleButtonTaskStatusSuccess = () => {
+    setShowAlertTaskStatusSuccess(true)
+  }
+  const handleButtonTaskStatusFailure = () => {
+    setShowAlertTaskStatusFailure(true)
+  }
+
 
   const handleCloseAddedAlert = () => {
     setShowAlertAdded(false)
@@ -701,6 +709,12 @@ function TaskAssignment() {
   }
   const handleCloseUpdateFailureAlert = () => {
     setShowAlertUpdateFailure(false)
+  }
+  const handleCloseTaskStatusSuccess = () => {
+    setShowAlertTaskStatusSuccess(false)
+  }
+  const handleCloseTaskStatusFailure = () => {
+    setShowAlertTaskStatusFailure(false)
   }
 
   useEffect(() => {
@@ -762,6 +776,26 @@ function TaskAssignment() {
       return () => clearTimeout(timer)
     }
   }, [showAlertDeleteFailure])
+
+  useEffect(() => {
+    if (showAlertTaskStatusSuccess) {
+      const timer = setTimeout(() => {
+        setShowAlertTaskStatusSuccess(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlertTaskStatusSuccess])
+
+  useEffect(() => {
+    if (showAlertTaskStatusFailure) {
+      const timer = setTimeout(() => {
+        setShowAlertTaskStatusFailure(false)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlertTaskStatusFailure])
 
   return (
     <>
@@ -838,10 +872,6 @@ function TaskAssignment() {
             className="col-md-3 d-flex justify-content-end"
             sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}
           >
-            {/* <Button type="default" onClick={applyFilters}>
-              Apply Filter
-            </Button> */}
-
             <Button type="default" onClick={clearFilters} danger>
               Clear Filter
             </Button>
@@ -901,14 +931,12 @@ function TaskAssignment() {
                   {pendingTasks.length > 0 &&
                     currentItemsPending
                       .filter((user) => {
-                        // Apply User filter
                         if (selectedUser !== '') {
                           return user.user_id === selectedUser
                         }
                         return true
                       })
                       .filter((project) => {
-                        // Apply Project filter
                         if (selectedProject !== '') {
                           return project.project_id === selectedProject
                         }
@@ -1058,14 +1086,12 @@ function TaskAssignment() {
                   {inProgressTasks.length > 0 &&
                     currentItemsInProgress
                       .filter((user) => {
-                        // Apply User filter
                         if (selectedUser !== '') {
                           return user.user_id === selectedUser
                         }
                         return true
                       })
                       .filter((project) => {
-                        // Apply Project filter
                         if (selectedProject !== '') {
                           return project.project_id === selectedProject
                         }
@@ -1217,14 +1243,12 @@ function TaskAssignment() {
                   {completedTask.length > 0 &&
                     currentItemsCompleted
                       .filter((user) => {
-                        // Apply User filter
                         if (selectedUser !== '') {
                           return user.user_id === selectedUser
                         }
                         return true
                       })
                       .filter((project) => {
-                        // Apply Project filter
                         if (selectedProject !== '') {
                           return project.project_id === selectedProject
                         }
@@ -1707,6 +1731,18 @@ function TaskAssignment() {
       {showAlertUpdateFailure && (
         <Alert onClose={handleCloseUpdateFailureAlert} severity="error" style={alertStyle}>
           Failed to Update Task
+        </Alert>
+      )}
+
+      {showAlertTaskStatusSuccess && (
+        <Alert onClose={handleCloseTaskStatusSuccess} severity="success" style={alertStyle}>
+          Task Status Updated Successfully
+        </Alert>
+      )}
+
+      {showAlertTaskStatusFailure && (
+        <Alert onClose={handleCloseTaskStatusFailure} severity="error" style={alertStyle}>
+          Failed to Update Task Status
         </Alert>
       )}
     </>

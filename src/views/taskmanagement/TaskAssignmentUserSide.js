@@ -13,6 +13,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import moment from 'moment'
 import { Modal, Button, Form, Select, Radio, Space } from 'antd'
 import Box from '@mui/material/Box'
+import Alert from '@mui/material/Alert';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -30,6 +31,13 @@ const TaskAssignmentUserSide = () => {
 
   const mystyle2 = {
     backgroundColor: 'white ',
+  }
+
+  const modalStyle2 = {
+    position: "fixed",
+    top: "80%",
+    left: "55%",
+    transform: "translateX(-50%)",
   }
 
   const local = JSON.parse(localStorage.getItem('user-info'))
@@ -127,9 +135,10 @@ const TaskAssignmentUserSide = () => {
       .then((data) => {
         getTasks()
         setTaskComment('')
+        handleButtonClick1()
       })
       .catch((error) => {
-        console.error('Error:', error)
+        handleButtonClick2()
       })
   }
 
@@ -163,7 +172,7 @@ const TaskAssignmentUserSide = () => {
         setUserName(data.task.user_name)
         setTaskDescription(data.task.task_description)
         setTaskPriority(data.task.priorites)
-        setTeamleadName(data.task.team_lead_details.name)
+        setTeamleadName(data.task.team_lead_details?.name)
         setStartDate(data.task.task_managements_start_date)
         setDeadLine(data.task.task_managements_dead_line)
         setTaskStatus(data.task.status)
@@ -275,6 +284,48 @@ const TaskAssignmentUserSide = () => {
       return 'blue'
     }
   }
+
+  // Functions for Status Change Success
+  const [showAlert1, setShowAlert1] = useState(false);
+
+  function handleButtonClick1() {
+      setShowAlert1(true);
+  }
+
+  function handleCloseAlert1() {
+      setShowAlert1(false);
+  }
+
+  useEffect(() => {
+      if (showAlert1) {
+          const timer = setTimeout(() => {
+              setShowAlert1(false);
+          }, 3000);
+
+          return () => clearTimeout(timer);
+      }
+  }, [showAlert1]);
+
+  // Functions for Status Change Failure
+  const [showAlert2, setShowAlert2] = useState(false);
+
+  function handleButtonClick2() {
+      setShowAlert2(true);
+  }
+
+  function handleCloseAlert2() {
+      setShowAlert2(false);
+  }
+
+  useEffect(() => {
+      if (showAlert2) {
+          const timer = setTimeout(() => {
+              setShowAlert2(false);
+          }, 3000);
+
+          return () => clearTimeout(timer);
+      }
+  }, [showAlert2]);
 
   return (
     <>
@@ -504,9 +555,8 @@ const TaskAssignmentUserSide = () => {
                       {task.project_name} - {task.task_managements_id}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.team_lead_details.name}
+                      {task.team_lead_details?.name}
                     </CTableHeaderCell>
-
                     <CTableHeaderCell
                       className="text-center"
                       style={{ ...mystyle2, textAlign: 'left', width: '200px' }}
@@ -639,7 +689,7 @@ const TaskAssignmentUserSide = () => {
                       {task.project_name} - {task.task_managements_id}
                     </CTableHeaderCell>
                     <CTableHeaderCell className="text-center" style={mystyle2}>
-                      {task.team_lead_details.name}
+                      {task.team_lead_details?.name}
                     </CTableHeaderCell>
 
                     <CTableHeaderCell
@@ -810,6 +860,21 @@ const TaskAssignmentUserSide = () => {
             </div>
           </div>
         </Modal>
+
+        {/* Alert for Status Change Success*/}
+        {showAlert1 && (
+          <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
+            Task Status Changed Successfully
+          </Alert>
+        )}
+
+        {/* Alert for Status Change Failure*/}
+        {showAlert2 && (
+          <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
+            Failed to Change Task Status
+          </Alert>
+        )}
+
       </div>
     </>
   )

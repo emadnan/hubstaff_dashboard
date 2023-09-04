@@ -490,13 +490,11 @@ function AllFSF() {
   const handleOk2 = () => {
     updateAssignedFsf(isModalOpen2)
     setIsModalOpen2(false)
-    setComment('')
     setStatus('')
   }
 
   const handleCancel2 = () => {
     setIsModalOpen2(false)
-    setComment('')
     setStatus('')
   }
 
@@ -636,7 +634,6 @@ function AllFSF() {
     var formData = new FormData()
     formData.append('status', status)
     formData.append('fsf_id', newid)
-    formData.append('comment', comment)
     await fetch(`${BASE_URL}/api/updateStatusByLogin`, {
       method: 'POST',
       headers: {
@@ -647,8 +644,9 @@ function AllFSF() {
       .then((response) => {
         if (response.ok) {
           getAssignedFsfToUser(local.token)
+          handleButtonClick5()
         } else {
-          // handleButtonClick6()
+          handleButtonClick6()
         }
       })
       .catch((error) => {
@@ -940,12 +938,21 @@ function AllFSF() {
               </CTableHeaderCell>
             </CTableRow>
 
-            {assignedfsf.filter((assigned) => {
-                  if (selectedFsf !== '') {
-                    return assigned.id === selectedFsf
-                  }
-                  return true
-                }).map((assigned, index) => (
+            {assignedfsf.filter((project) => {
+                // Apply Project filter
+                if (selectedProject !== '') {
+                  return project.project_id === selectedProject
+                }
+                return true
+              })
+              .filter((project) => {
+                // Apply Module filter
+                if (selectedModule !== '') {
+                  return project.module_id === selectedModule
+                }
+                return true
+              })
+              .map((assigned, index) => (
               <CTableRow key={assigned.id}>
                 <CTableHeaderCell className="text-center" style={mystyle2}>
                   {index + 1}
