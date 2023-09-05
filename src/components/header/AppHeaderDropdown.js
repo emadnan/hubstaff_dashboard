@@ -79,11 +79,6 @@ const AppHeaderDropdown = () => {
             Profile
           </CDropdownItem>
 
-          <CDropdownItem href="#">
-            <CIcon icon={cilSettings} className="me-2" />
-            Change Password
-          </CDropdownItem> 
-
           <CDropdownItem onClick={showModal}>
             <CIcon icon={cilSettings} className="me-2" />
             Settings
@@ -95,6 +90,11 @@ const AppHeaderDropdown = () => {
             <CIcon icon={cilAccountLogout} className="me-2" />
             Logout
           </CDropdownItem>
+          <CDropdownItem href="/changepassword">
+            <CIcon icon={cilSettings} className="me-2" />
+            Change Password
+          </CDropdownItem> 
+          
         </CDropdownMenu>
       </CDropdown>
 
