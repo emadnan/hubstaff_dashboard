@@ -222,6 +222,12 @@ const _navAdmin = [
         to: '/reports-monthly',
         permission: 'Nav_MonthlyReports',
       },
+      {
+        component: CNavItem,
+        name: 'Dayend Report',
+        to: '/report-dayend',
+        permission: 'Nav_DayendReports',
+      },
     ],
   },
   {

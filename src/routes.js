@@ -30,6 +30,7 @@ const Timenactivity = React.lazy(() => import('./views/reports/timenactivity/Tim
 const Monthly = React.lazy(() => import('./views/reports/monthly/Monthly'))
 const Weekly = React.lazy(() => import('./views/reports/weekly/Weekly'))
 const Daily = React.lazy(() => import('./views/reports/daily/Daily'))
+const Dayend = React.lazy(() => import('./views/reports/dayend/Dayend'))
 const Teams = React.lazy(() => import('./views/teams/Teams'))
 const Subscriptions = React.lazy(() => import('./views/subscriptions/Subscriptions'))
 const SubscribedPlan = React.lazy(() => import('./views/subscriptions/SubscribedPlan'))
@@ -154,6 +155,7 @@ const routes = [
     requiredNavPermision: 'Nav_TimeNactivity',
   },
   { path: '/reports-monthly', name: 'Monthly', element: Monthly, requiredNavPermision: 'Nav_MonthlyReports', },
+  { path: '/report-dayend', name: 'Dayend', element: Dayend, requiredNavPermision: 'Nav_DayendReports', },
   { path: '/teams', name: 'Teams', element: Teams, requiredNavPermision: 'Nav_Teams', },
   {
     path: '/subscriptions',
