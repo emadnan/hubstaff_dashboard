@@ -103,6 +103,7 @@ const Dayend = () => {
 
 
     const handleUserChange = (value) => {
+        setIsRecordNotFound(true)
         setSelectedDate("");
         setIsEmployeeSelected(true)
         setIsAdminLogin(true)
@@ -213,23 +214,20 @@ const Dayend = () => {
                                 renderNoRecordFoundMessage()
                             ) : (
                                 <Card>
-                                <div className="report-card">
-                                    {dayendreport.map((data, index) => (
-                                        <div key={index} className="report-item">
-                                            <p>Date: {new Date(data.created_at).toLocaleDateString()}</p>
-                                            <p>Summary: {data.day_report}</p>
-                                            {/* Add other report data fields */}
-                                        </div>
-                                    ))}
-                                </div>
+                                    <div className="report-card">
+                                        {dayendreport.map((data, index) => (
+                                            <div key={index} className="report-item ml-5 mt-3">
+                                                <p>Date: {new Date(data.created_at).toLocaleDateString()}</p>
+                                                <p>Report: {data.day_report}</p>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </Card>
                             )
                         ) : (
-
                             renderInitialMessage()
                         )
                     }
-
                 </div>
 
             </Box>
