@@ -88,12 +88,12 @@ const Dayend = () => {
 
             const data = await response.json();
 
-            if (data.error && data.error === 'DayEndReport not found') {
+            if (data.dayEndReport.length === 0) {
                 setNotFoundMessage(true);
             } else {
                 setNotFoundMessage(false);
                 console.log('Data', data)
-                setDayendReport([data.Day_end_report]);
+                setDayendReport(data.dayEndReport);
                 console.log('Report', dayendreport);
             }
         } catch (error) {
@@ -103,7 +103,7 @@ const Dayend = () => {
 
 
     const handleUserChange = (value) => {
-        setIsRecordNotFound(true)
+        setNotFoundMessage(true)
         setSelectedDate("");
         setIsEmployeeSelected(true)
         setIsAdminLogin(true)
@@ -215,12 +215,14 @@ const Dayend = () => {
                             ) : (
                                 <Card>
                                     <div className="report-card">
+                                        <h4 className='mt-3 ml-5'>Report Summary</h4>
+                                        <br></br>
                                         {dayendreport.map((data, index) => (
-                                            <div key={index} className="report-item ml-5 mt-3">
-                                                <p>Date: {new Date(data.created_at).toLocaleDateString()}</p>
-                                                <p>Report: {data.day_report}</p>
+                                            <div key={index} className="report-item ml-5 mt-1">
+                                                <span>&#8227;</span>  {data.day_report}
                                             </div>
                                         ))}
+                                        <br></br>
                                     </div>
                                 </Card>
                             )

@@ -224,7 +224,7 @@ const _navAdmin = [
       },
       {
         component: CNavItem,
-        name: 'Dayend Report',
+        name: 'Day-End Reports',
         to: '/report-dayend',
         permission: 'Nav_DayendReports',
       },

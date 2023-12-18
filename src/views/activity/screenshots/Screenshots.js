@@ -72,6 +72,7 @@ const Screenshots = () => {
 
   // Array Declaration for API Calls
   const [images, setImages] = useState([])
+  const [user_data, setUserData] = useState([])
   const [users, setUsers] = useState([])
   const [addresses, setAddresses] = useState([])
   const [user_id, setUserId] = useState('')
@@ -101,7 +102,7 @@ const Screenshots = () => {
         if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.Users
         } else if (perm.some((item) => item.name === 'Company_Data')) {
-          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id  && user.email !== local.Users.email)
+          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && user.email !== local.Users.email)
         } else if (perm.some((item) => item.name === 'User_Data')) {
           filteredUsers = data.Users.filter((user) => user.id === user_id)
         }
@@ -156,9 +157,11 @@ const Screenshots = () => {
       const data = await response.json()
 
       let screenfilter = []
+      let userdata = []
 
       if (perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data')) {
         screenfilter = data.projectscreenshot
+        userdata = data.projectscreenshot
       } else {
         screenfilter = data.projectscreenshot.filter(
           (screenshot) => screenshot.user_id === local.Users.user_id,
@@ -175,6 +178,7 @@ const Screenshots = () => {
       }
 
       setImages(screenfilter)
+      setUserData(userdata);
     } catch (error) {
       console.log(error)
     } finally {
@@ -313,6 +317,22 @@ const Screenshots = () => {
               Total Worked {alltotalhours}:{alltotalminutes}:{alltotalseconds}
             </h3>
           ) : null}
+          {
+            alltotalhours || alltotalminutes || alltotalseconds ? (
+              <Card>
+                <h5>System Details</h5>
+                {user_data.map((user) => (
+                  <div key={user.id}>
+                    <h6>Platform : {user.platform}</h6>
+                    <h6>Type : {user.type}</h6>
+                    <h6>Release : {user.release}</h6>
+                    <h6>Hostname : {user.hostname}</h6>
+                    <h6>IP : {user.ip}</h6>
+                  </div>
+                ))}
+              </Card>
+            ) : null
+          }
         </div>
       ) : null}
       {perm.some((item) => item.name === 'User_Data') ? (
