@@ -1,5 +1,7 @@
 import React from 'react'
 import landingPageImg2 from './images/feature_3.png'
+import WindowIcon from '@mui/icons-material/Window';
+import AppleIcon from '@mui/icons-material/Apple';
 
 const LandingAboutUs = () => {
   return (
@@ -25,16 +27,27 @@ const LandingAboutUs = () => {
             unlock your true productivity potential.
           </p>
           <div className="flex justify-center">
-            <button className="inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg">
-              <a
-                href="http://effy.biafotech.com/releases/WorkLogSetup.zip"
-                target="blank"
-                style={{ textDecoration: 'none', color: 'white' }}
-              >
-                Download for Windows
-              </a>
-            </button>
-          </div>
+  <button className="inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg">
+    <a
+      href="http://effy.biafotech.com/releases/WorkLogSetup.zip"
+      target="blank"
+      style={{ textDecoration: 'none', color: 'white' }}
+    >
+      <WindowIcon className="mr-2" /> Download for Windows
+    </a>
+  </button> 
+  
+  <button className="inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg ml-4">
+    <a
+      href="http://effy.biafotech.com/releases/Worklog_Mac.zip"
+      target="blank"
+      style={{ textDecoration: 'none', color: 'white' }}
+    >
+      <AppleIcon className="mr-2" /> Download for Mac
+    </a>
+  </button>
+</div>
+
         </div>
         <div className="lg:max-w-lg lg:w-full md:w-1/2 w-5/6">
           <img className="object-cover object-center rounded" alt="hero" src={landingPageImg2} />
