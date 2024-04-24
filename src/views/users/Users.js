@@ -397,13 +397,13 @@ const Users = () => {
   }
 
   function getTeams() {
-    fetch(`${BASE_URL}/api/get_teams`)
+    fetch(`${BASE_URL}/api/get-teams`)
       .then((response) => response.json())
       .then((data) => {
         if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.Teams
         } else if (perm.some((item) => item.name === 'Company_Data')) {
-          filteredUsers = data.Teams.filter((tem) => tem.team_company_id === local.Users.company_id)
+          filteredUsers = data.Teams.filter((tem) => tem.company_id === local.Users.company_id)
         }
         setTeam(filteredUsers)
       })
@@ -760,17 +760,25 @@ const Users = () => {
 
             <div className="form-outline mt-3">
               <label>Team</label>
-              <Form.Item>
+              <Form.Item
+                name="teamSelect"
+                hasFeedback style={{ width: '100%' }}
+              // validateStatus={formErrors.department_id ? 'error' : ''}
+              // help={formErrors.department_id}
+              >
                 <Select
                   placeholder="Select Team"
-                  name="team"
                   onChange={handleTeamChange}
-                  onFocus={handleFocus}
                   value={team_id}
+                  showSearch
+                  // onFocus={handleFocus}
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
                 >
-                  {team.map((tem) => (
-                    <Select.Option value={tem.id} key={tem.id}>
-                      {tem.team_name}
+                  {team.map((team) => (
+                    <Select.Option value={team.id} key={team.id}>
+                      {team.team_name}
                     </Select.Option>
                   ))}
                 </Select>

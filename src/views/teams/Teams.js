@@ -1,6 +1,6 @@
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { React, useState, useEffect } from 'react'
-import { Button, Modal, Divider, Checkbox } from 'antd'
+import { Button, Modal, Divider, Checkbox, Select, Form, } from 'antd'
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
@@ -12,9 +12,17 @@ const Team = () => {
   //Variable Declarations
   const [team_name, setTeamName] = useState('')
   const [description, setDescription] = useState('')
+  const [department_id, setDepartmentId] = useState('');
+  const [team_lead_id, setTeamLeadId] = useState('');
   const [teams, setTeams] = useState([])
   const [byteam, setTeamById] = useState([])
   const [selectedUsers, setSelectedUsers] = useState([])
+  const [department, setDepartment] = useState([])
+  const [byusers, setByUsers] = useState([])
+  const [users, setUsers] = useState([])
+  const [selectedUser, setSelectedUser] = useState('')
+  const [user_id, setUserId] = useState('')
+  const [hasusers, setHasUsers] = useState([])
   var filteredUsers = []
 
   //Local Storage data
@@ -26,8 +34,10 @@ const Team = () => {
 
   //Role & Permissions check
   const isCreateButtonEnabled = perm.some((item) => item.name === 'Create_Team')
-  const isEditButtonEnabled = perm.some((item) => item.name === 'Edit_Team')
+  const isEditButtonEnabled = perm.some((item) => item.name === 'Update_Team')
   const isDeleteButtonEnabled = perm.some((item) => item.name === 'Delete_Team')
+
+  let [form] = Form.useForm()
 
   //CSS Styling
   const mystyle = {
@@ -45,6 +55,19 @@ const Team = () => {
     float: 'right',
   }
 
+  const perStyle = {
+    fontSize: 14,
+  }
+
+  const headStyle = {
+    color: '#0070ff',
+    fontWeight: 'bold',
+  }
+
+  const headStyle2 = {
+    color: '#black',
+    fontWeight: 'bold',
+  }
   const buttonStyle = {
     float: 'right',
     padding: '2px',
@@ -126,7 +149,7 @@ const Team = () => {
   // Functions for Assign Users to Team
   const [isModalOpen4, setIsModalOpen4] = useState(false)
   const showModal4 = (id) => {
-    // getHasUsers(id)
+    getHasUsers(id)
     setIsModalOpen4(id)
   }
 
@@ -310,7 +333,14 @@ const Team = () => {
   //Initial rendering through useEffect
   useEffect(() => {
     getTeams()
+    getDepartment()
+    getProjectManagers()
+    getUsers()
   }, [])
+
+  useEffect(() => {
+    setSelectedUsers(hasusers)
+  }, [hasusers])
 
   //Function for checkbox handling
   const handleSelectUser = (e, permId) => {
@@ -321,14 +351,19 @@ const Team = () => {
     }
   }
 
+  const clearFilter = () => {
+    form.resetFields()
+    setSelectedUser('')
+  }
+
   function getTeams() {
-    fetch(`${BASE_URL}/api/get_teams`)
+    fetch(`${BASE_URL}/api/get-teams`)
       .then((response) => response.json())
       .then((data) => {
         if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.Teams
         } else if (perm.some((item) => item.name === 'Company_Data')) {
-          filteredUsers = data.Teams.filter((tem) => tem.team_company_id === local.Users.company_id)
+          filteredUsers = data.Teams.filter((tem) => tem.company_id === local.Users.company_id)
         }
         setTeams(filteredUsers)
       })
@@ -336,20 +371,76 @@ const Team = () => {
   }
 
   function getTeamById(id) {
-    fetch(`${BASE_URL}/api/getTeam/${id}`)
+    fetch(`${BASE_URL}/api/get-team/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setTeamById(data.Team)
         setTeamName(data.Team[0].team_name)
         setDescription(data.Team[0].description)
+        setDepartmentId(data.Team[0].department_id)
+        setTeamLeadId(data.Team[0].team_lead_id)
       })
       .catch((error) => console.log(error))
   }
 
+  function getDepartment() {
+    fetch(`${BASE_URL}/api/getdepartment`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (perm.some((item) => item.name === 'All_Data')) {
+          filteredUsers = data.Departments
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
+          filteredUsers = data.Departments.filter(
+            (user) => user.company_id === local.Users.company_id,
+          )
+        }
+        setDepartment(filteredUsers)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  async function getProjectManagers() {
+    await fetch(`${BASE_URL}/api/get_users`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data')) {
+          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && (user.role === 6 || user.role === 7))
+        }
+        setByUsers(filteredUsers)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  function getUsers() {
+    fetch(`${BASE_URL}/api/get_users`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (perm.some((item) => item.name === 'All_Data')) {
+          filteredUsers = data.Users
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
+          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && user.email !== local.Users.email)
+        } else if (perm.some((item) => item.name === 'User_Data')) {
+          filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
+        }
+        setUsers(filteredUsers)
+      })
+      .catch((error) => console.log(error))
+  }
+  
+  function getHasUsers(id) {
+    fetch(`${BASE_URL}/api/get-user-by-team-id/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        const temp_array = data.users.map((element) => element.user_id)
+        setHasUsers(temp_array)
+        console.log(temp_array)
+      })
+      .catch((error) => console.log(error))
+  }
   // Add API call
   async function addTeam() {
-    let addteam = { team_name, team_company_id: local.Users.company_id, description }
-    await fetch(`${BASE_URL}/api/add_team`, {
+    let addteam = { team_name, company_id: local.Users.company_id, description, department_id, team_lead_id }
+    await fetch(`${BASE_URL}/api/add-team`, {
       method: 'POST',
       body: JSON.stringify(addteam),
       headers: {
@@ -371,14 +462,14 @@ const Team = () => {
 
   // Delete API call
   async function deleteTeam(newid) {
-    await fetch(`${BASE_URL}/api/delete_team`, {
+    await fetch(`${BASE_URL}/api/delete-team/${newid}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        id: newid,
-      }),
+      // body: JSON.stringify({
+      //   id: newid,
+      // }),
     })
       .then((response) => {
         if (response.ok) {
@@ -395,16 +486,17 @@ const Team = () => {
 
   // Update API call
   async function updateTeam(newid) {
-    await fetch(`${BASE_URL}/api/updateteam`, {
+    await fetch(`${BASE_URL}/api/update-team/${newid}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        id: newid,
         team_name: team_name,
         description: description,
-        team_company_id: local.Users.company_id,
+        company_id: local.Users.company_id,
+        department_id: department_id,
+        team_lead_id: team_lead_id,
       }),
     })
       .then((response) => {
@@ -422,14 +514,14 @@ const Team = () => {
 
   //Assign Users to Team API call
   async function assignUsersToTeam(newid) {
-    await fetch(`${BASE_URL}/api/role-permissions`, {
+    await fetch(`${BASE_URL}/api/team-has-users`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        role_id: newid,
-        permissions: selectedUsers,
+        team_id: newid,
+        user_ids: selectedUsers,
       }),
     })
       .then((response) => {
@@ -443,6 +535,28 @@ const Team = () => {
         console.error(error)
       })
   }
+
+  const handleDepartmentChange = (value) => {
+    setDepartmentId(value)
+  }
+
+  const handleTeamLeadChange = (value) => {
+    setTeamLeadId(value)
+  }
+
+  const handleUserSelect = (value) => {
+    setSelectedUser(value)
+  }
+
+  // const handleFocus = (e) => {
+  //   const { name } = e.target
+
+  //   setFormErrors((prevFormErrors) => ({
+  //     ...prevFormErrors,
+  //     [name]: '',
+  //   }))
+  // }
+
 
   return (
     <>
@@ -548,6 +662,60 @@ const Team = () => {
                 placeholder="Enter Description"
               />
             </div>
+
+            <div className="form-outline mt-3">
+              <label>Department</label>
+              <Form.Item
+                name="departmentSelect"
+                hasFeedback style={{ width: '100%' }}
+              // validateStatus={formErrors.department_id ? 'error' : ''}
+              // help={formErrors.department_id}
+              >
+                <Select
+                  placeholder="Select Department"
+                  onChange={handleDepartmentChange}
+                  value={department_id}
+                  showSearch
+                  // onFocus={handleFocus}
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {department.map((department) => (
+                    <Select.Option value={department.id} key={department.id}>
+                      {department.department_name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
+
+            <div className="form-outline mt-3">
+              <label>Team Lead</label>
+              <Form.Item
+                name="teamLeadSelect"
+                hasFeedback style={{ width: '100%' }}
+              // validateStatus={formErrors.project_manager ? 'error' : ''}
+              // help={formErrors.project_manager}
+              >
+                <Select
+                  placeholder="Select Team Lead"
+                  onChange={handleTeamLeadChange}
+                  value={team_lead_id}
+                  showSearch
+                  // onFocus={handleFocus}
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {byusers.map((user) => (
+                    <Select.Option value={user.id} key={user.id}>
+                      {user.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
           </Modal>
 
           {/* Modal for Update Team */}
@@ -584,18 +752,98 @@ const Team = () => {
                     placeholder="Enter Description"
                   />
                 </div>
+
+                <div className="form-outline mt-3">
+                  <label>Department Name</label>
+                  <Form.Item
+                  // validateStatus={formErrors.department_id ? 'error' : ''}
+                  // help={formErrors.department_id}
+                  >
+                    <Select
+                      name="departmentName"
+                      placeholder="Select Department"
+                      // onFocus={handleFocus}
+                      onChange={handleDepartmentChange}
+                      value={department_id}
+                    >
+                      {department.map((department) => (
+                        <Select.Option value={department.id} key={department.id}>
+                          {department.department_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+
+                <div className="form-outline mt-3">
+                  <label>Team Lead</label>
+                  <Form.Item
+                  // validateStatus={formErrors.department_id ? 'error' : ''}
+                  // help={formErrors.department_id}
+                  >
+                    <Select
+                      name="teamLead"
+                      placeholder="Select Team Lead"
+                      // onFocus={handleFocus}
+                      onChange={handleTeamLeadChange}
+                      value={team_lead_id}
+                    >
+                      {byusers.map((user) => (
+                        <Select.Option value={user.id} key={user.id}>
+                          {user.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+
               </div>
             ))}
           </Modal>
 
-          {/* Modal for Assign Users to Team */}
+          {/* Modal for Assign User */}
           <Modal
-            title="Assign Users"
+            title=""
             open={isModalOpen4}
             onOk={handleOk4}
             onCancel={handleCancel4}
             okButtonProps={{ style: { background: 'blue' } }}
           >
+            <h3 style={headStyle2}>Assign Users</h3>
+            <br></br>
+            <div className="col-md-3" style={{ width: '1500px' }}>
+              <Form form={form} className="d-flex w-200">
+                <div className="col-md-3">
+                  <div className="d-flex align-items-center">
+                    <Form.Item name="userSelect" hasFeedback style={{ width: '100%' }}>
+                      <Select
+                        showSearch
+                        placeholder="Select User"
+                        onChange={handleUserSelect}
+                        value={user_id}
+                        filterOption={(input, option) =>
+                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                      >
+                        {users.map((user) => (
+                          <Select.Option value={user.id} key={user.id}>
+                            {user.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </div>
+                </div>
+
+                <div className="col-md-4">
+                  <div className="d-flex align-items-center">
+                    <Button type="default" onClick={clearFilter} className="ml-2">
+                      Clear Filter
+                    </Button>
+                  </div>
+                </div>
+              </Form>
+            </div>
             <br></br>
             <div className="row">
               <div className="col md-2 text-center">
@@ -612,6 +860,34 @@ const Team = () => {
               &nbsp;
               <Divider></Divider>
             </div>
+
+            {users.filter((project) => {
+              // Apply User filter
+              if (selectedUser !== '') {
+                return project.id === selectedUser
+              }
+              return true
+            })
+              .map((user, index) => (
+                <div className="row" key={user.id}>
+                  <div className="col md-2 text-center">
+                    <h6 style={perStyle}>{index + 1}</h6>
+                  </div>
+                  <div className="col md-3"></div>
+                  <div className="col md-2 text-center">
+                    <h6 style={perStyle}>{user.name}</h6>
+                  </div>
+                  <div className="col md-3"></div>
+                  <div className="col md-2 text-center">
+                    <Checkbox
+                      checked={selectedUsers.includes(user.id)}
+                      onChange={(e) => handleSelectUser(e, user.id)}
+                    />
+                  </div>
+                  &nbsp;
+                  <Divider></Divider>
+                </div>
+              ))}
           </Modal>
 
           {/* Modal for Deletion Confirmation */}
