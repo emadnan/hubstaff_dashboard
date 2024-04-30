@@ -611,7 +611,7 @@ const Team = () => {
           </CTableRow>
 
           {/* Get API Users */}
-          {users.map((tem, index) => (
+          {teams.map((tem, index) => (
             <CTableRow key={tem.id}>
               <CTableHeaderCell className="text-center" style={mystyle2}>
                 {index + 1}
