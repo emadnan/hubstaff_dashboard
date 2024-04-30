@@ -24,6 +24,7 @@ function TaskAssignment() {
   const ITEMS_PER_PAGE = 10
   const session = JSON.parse(sessionStorage.getItem('user-info'))
   const local = JSON.parse(localStorage.getItem('user-info'))
+  const team_lead_id = local.Users.id;
   const session_token = session.token
 
   const [user_id, setUserId] = useState('')
@@ -431,15 +432,10 @@ function TaskAssignment() {
 
   async function getUsers() {
     let filteredUsers = []
-    await fetch(`${BASE_URL}/api/get_users`)
+    await fetch(`${BASE_URL}/api/get-user-by-team-lead-id/${team_lead_id}`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 7) {
-          filteredUsers = data.Users.filter(
-            (user) =>
-              user.company_id === local.Users.company_id && (user.role === 5 || user.role === 7),
-          )
-        }
+          filteredUsers = data.team
         setAllUsers(filteredUsers)
       })
       .catch((error) => console.log(error))
@@ -447,14 +443,10 @@ function TaskAssignment() {
 
   async function getProjects() {
     let filteredProjects = []
-    await fetch(`${BASE_URL}/api/getproject`)
+    await fetch(`${BASE_URL}/api/get-projects-by-team-lead-id/${team_lead_id}`)
       .then((response) => response.json())
       .then((data) => {
-        if (local.Users.role === 7) {
-          filteredProjects = data.projects.filter(
-            (user) => user.company_id === local.Users.company_id,
-          )
-        }
+          filteredProjects = data.Projects
         setProjects(filteredProjects)
       })
       .catch((error) => console.log(error))

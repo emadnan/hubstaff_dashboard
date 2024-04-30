@@ -23,10 +23,12 @@ const Team = () => {
   const [selectedUser, setSelectedUser] = useState('')
   const [user_id, setUserId] = useState('')
   const [hasusers, setHasUsers] = useState([])
+  const [team_members, setAllTeamMembers] = useState([])
   var filteredUsers = []
 
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'))
+  const teamLeadId = local.Users.id;
   const permissions = local.permissions
   const perm = permissions.map((permission) => ({
     name: permission.name,
@@ -336,6 +338,7 @@ const Team = () => {
     getDepartment()
     getProjectManagers()
     getUsers()
+    getTeamMembers()
   }, [])
 
   useEffect(() => {
@@ -423,6 +426,17 @@ const Team = () => {
           filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
         }
         setUsers(filteredUsers)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  async function getTeamMembers() {
+    let filteredUsers = []
+    await fetch(`${BASE_URL}/api/get-user-by-team-lead-id/${teamLeadId}`)
+      .then((response) => response.json())
+      .then((data) => {
+          filteredUsers = data.team
+        setAllTeamMembers(filteredUsers)
       })
       .catch((error) => console.log(error))
   }
@@ -575,7 +589,9 @@ const Team = () => {
       </div>
       <br></br>
       <CTable align="middle" className="mb-0 border" hover responsive style={{ marginTop: '20px' }}>
-        <CTableHead color="light">
+      {perm.some((item) => item.name === 'Company_Data')
+            ? 
+        ( <CTableHead color="light">
           {/* Teams table heading */}
           <CTableRow>
             <CTableHeaderCell className="text-center" style={mystyle}>
@@ -595,7 +611,7 @@ const Team = () => {
           </CTableRow>
 
           {/* Get API Users */}
-          {teams.map((tem, index) => (
+          {users.map((tem, index) => (
             <CTableRow key={tem.id}>
               <CTableHeaderCell className="text-center" style={mystyle2}>
                 {index + 1}
@@ -604,30 +620,54 @@ const Team = () => {
                 {tem.team_name}
               </CTableHeaderCell>
               <CTableHeaderCell className="text-center" style={mystyle2}>
-                <IconButton aria-label="Assign Team" onClick={() => showModal4(tem.id)}>
-                  <AssignmentIndIcon htmlColor="#28B463" />
-                </IconButton>
+              <IconButton aria-label="Assign Team" onClick={() => showModal4(tem.id)}>
+                <AssignmentIndIcon htmlColor="#28B463" />
+              </IconButton>
+            </CTableHeaderCell>
+            {isEditButtonEnabled || isDeleteButtonEnabled ? (
+              <CTableHeaderCell className="text-center" style={mystyle2}>
+                {isEditButtonEnabled ? (
+                  <IconButton aria-label="Update" onClick={() => showModal3(tem.id)}>
+                    <EditIcon htmlColor="#28B463" />
+                  </IconButton>
+                ) : null
+                }
+                {isDeleteButtonEnabled ? (
+                  <IconButton aria-label="Delete" onClick={() => showModal2(tem.id)}>
+                    <DeleteIcon htmlColor="#FF0000" />
+                  </IconButton>
+                ) : null
+                }
               </CTableHeaderCell>
-              {isEditButtonEnabled || isDeleteButtonEnabled ? (
-                <CTableHeaderCell className="text-center" style={mystyle2}>
-                  {isEditButtonEnabled ? (
-                    <IconButton aria-label="Update" onClick={() => showModal3(tem.id)}>
-                      <EditIcon htmlColor="#28B463" />
-                    </IconButton>
-                  ) : null
-                  }
-                  {isDeleteButtonEnabled ? (
-                    <IconButton aria-label="Delete" onClick={() => showModal2(tem.id)}>
-                      <DeleteIcon htmlColor="#FF0000" />
-                    </IconButton>
-                  ) : null
-                  }
-                </CTableHeaderCell>
-              ) : null
-              }
+            ) : null
+            }
             </CTableRow>
           ))}
-        </CTableHead>
+        </CTableHead> ) : 
+        ( <CTableHead color="light">
+        {/* Teams table heading */}
+        <CTableRow>
+          <CTableHeaderCell className="text-center" style={mystyle}>
+            Sr/No
+          </CTableHeaderCell>
+          <CTableHeaderCell className="text-center" style={mystyle}>
+            Member Name
+          </CTableHeaderCell>
+        </CTableRow>
+
+        {/* Get API Users */}
+        {team_members.map((tem, index) => (
+          <CTableRow key={tem.id}>
+            <CTableHeaderCell className="text-center" style={mystyle2}>
+              {index + 1}
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle2}>
+              {tem.name}
+            </CTableHeaderCell>
+          </CTableRow>
+        ))}
+      </CTableHead> )
+      }
         <CTableBody>
           {/* Modal for Add Team */}
           <Modal
