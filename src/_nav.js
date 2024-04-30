@@ -66,6 +66,12 @@ const _navAdmin = [
       },
       {
         component: CNavItem,
+        name: 'TeamScreenshots',
+        to: '/activity-team-screenshots',
+        permission: 'Nav_TeamScreenshots',
+      },
+      {
+        component: CNavItem,
         name: 'Apps',
         to: '/activity-apps',
         permission: 'Nav_Apps',

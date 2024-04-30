@@ -4,6 +4,7 @@ import { isAuthenticated, getUserNavPermision } from './auth'
 //Define routes for views
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Screenshots = React.lazy(() => import('./views/activity/screenshots/Screenshots'))
+const TeamScreenshots = React.lazy(() => import('./views/activity/screenshots/TeamScreenshots'))
 const Apps = React.lazy(() => import('./views/activity/apps/Apps'))
 const Urls = React.lazy(() => import('./views/activity/urls/Urls'))
 const Approvals = React.lazy(() => import('./views/timesheets/approvals/Approvals'))
@@ -65,6 +66,12 @@ const routes = [
     name: 'Screenshots',
     element: Screenshots,
     requiredNavPermision: 'Nav_Screenshots',
+  },
+  {
+    path: '/activity-team-screenshots',
+    name: 'Team Screenshots',
+    element: TeamScreenshots,
+    requiredNavPermision: 'Nav_TeamScreenshots',
   },
   { path: '/activity-apps', name: 'Apps', element: Apps, requiredNavPermision: 'Nav_Apps', },
   { path: '/activity-urls', name: 'Urls', element: Urls, requiredNavPermision: 'Nav_URLs', },
