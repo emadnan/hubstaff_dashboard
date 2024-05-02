@@ -162,7 +162,6 @@ const renderNoRecordFoundMessage = () => {
                                 clearIcon={null}
                                 style={{
                                     width: '100%',
-                                    marginRight: '10px'
                                 }}
                             />
                             <Form
