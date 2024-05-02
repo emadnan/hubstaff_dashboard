@@ -234,6 +234,12 @@ const _navAdmin = [
         to: '/report-dayend',
         permission: 'Nav_DayendReports',
       },
+      {
+        component: CNavItem,
+        name: 'Team Reports',
+        to: '/team-report',
+        permission: 'Nav_AllReports',
+      },
     ],
   },
   {

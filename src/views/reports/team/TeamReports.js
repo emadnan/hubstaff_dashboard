@@ -20,7 +20,7 @@ import { saveAs } from 'file-saver'
 import dayjs from 'dayjs'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
-export default function Download() {
+export default function TeamReports() {
 
     const buttonStyle = {
         padding: '2px',
@@ -107,14 +107,35 @@ export default function Download() {
         }
 
       const handleExport = () => {
-        console.log('EXCEL Download');
-        const worksheet = XLSX.utils.json_to_sheet(report.data);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    
-        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
-        saveAs(blob, "report.xlsx");
+      
+        if(api === 'get-daily-report-of-users-for-teamlead') {
+            const worksheet = XLSX.utils.json_to_sheet(report.data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Online Users");
+        
+            const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+            saveAs(blob, `Online_users_report${[selectedDate]}.xlsx`);
+        }
+        else if(api === 'get-daily-report-of-offline-users-by-teamlead') {
+            const worksheet = XLSX.utils.json_to_sheet(report.data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Offline Users");
+        
+            const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+            saveAs(blob, `Offline_users_report[${selectedDate}].xlsx`);
+        }
+        else if(api === 'get-daily-report-of-both-offline-or-online') {
+            const AllUsers = [...report.data, ...report.offlineUsers];
+            const worksheet = XLSX.utils.json_to_sheet(AllUsers);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+        
+            const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+            saveAs(blob, `All_users_report[${selectedDate}].xlsx`);
+        }
       }
       const handleMembers = (value)=> {
         setApi(value);
@@ -123,7 +144,7 @@ export default function Download() {
     return (
         <>
         <Box>
-                <h2>Download Reports</h2>
+                <h2>Team Reports</h2>
                 <br></br>
                 <div className="row mt-2 mb-2 justify-content-between">
                     <div className="col-md-6">
@@ -159,7 +180,7 @@ export default function Download() {
                     </div>
                     <div className='col-md-4'>
                         <Button className={selectedDate ? "btn btn-primary float-right" : "btn btn-secondary text-light float-right" } disabled={!selectedDate} style={buttonStyle} onClick={handleExport}>
-                            Download Report
+                            Export
                         </Button>
                     </div>
                 </div>
@@ -184,9 +205,10 @@ export default function Download() {
                                         <h4 className='mt-3 ml-5'>Report Summary</h4>
                                         
                                         <br></br>
-
                                         {
                                             api === 'get-daily-report-of-users-for-teamlead' ? 
+                                            <>
+                                        <h6 className='mt-3 ml-5'>Online Members</h6>
                                             <div className="report-item ml-5 mt-1">
                                             {/* <span>&#8227;</span>  {data.name} */}
                                             <Table>
@@ -218,8 +240,12 @@ export default function Download() {
 
                                                 </TableBody>
                                             </Table>
-                                        </div> :
+                                        </div>
+                                        </>
+                                         :
                                         api === 'get-daily-report-of-offline-users-by-teamlead' ?
+                                        <>
+                                            <h6 className='mt-3 ml-5'>Offline Members</h6>
                                         <div className="report-item ml-5 mt-1">
                                                 {/* <span>&#8227;</span>  {data.name} */}
                                                 <Table>
@@ -245,11 +271,12 @@ export default function Download() {
 
                                                     </TableBody>
                                                 </Table>
-                                            </div> :
+                                            </div>
+                                            </>
+                                             :
                                             <>
-                                            <h6 className='mt-3 ml-5'>Online Members</h6>
                                             {
-                                                report.data?.length === 0 ? 
+                                                report.data?.length === 0 && report.offlineUsers?.length === 0  ? 
                                                 <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }}>
                                                 NO RECORDS FOUND
                                               </Typography>
@@ -270,7 +297,7 @@ export default function Download() {
                                                         </TableCell>
                                                     </TableHead>
                                                     <TableBody>
-                                        {report.data?.map((online, index) => (
+                                                    {report.data?.map((online, index) => (
                                                         <TableRow key={index}>
                                                             <TableCell>
                                                                 {online.name}
@@ -282,34 +309,8 @@ export default function Download() {
                                                                 {online.totalHours}:{online.totalMinutes}:{online.totalSeconds}
                                                             </TableCell>
                                                         </TableRow>
-                                        ))}
-
-                                                    </TableBody>
-                                                </Table>
-                                            </div>
-                                            </>
-                                            }
-                                            <h6 className='mt-3 ml-5'>Offline Members</h6>
-                                            {
-                                                report.offlineUsers?.length === 0 ? 
-                                                <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }}>
-                                                NO RECORDS FOUND
-                                              </Typography>
-                                                :
-                                                <>
-                                        <div className="report-item ml-5 mt-1">
-                                        {/* <span>&#8227;</span>  {data.name} */}
-                                        <Table>
-                                            <TableHead>
-                                                <TableCell>
-                                                    Name
-                                                </TableCell>
-                                                <TableCell>
-                                                    Email
-                                                </TableCell>
-                                            </TableHead>
-                                            <TableBody>
-                                {report.offlineUsers?.map((data, index) => (
+                                                    ))}
+                                                {report.offlineUsers?.map((data, index) => (
                                                 <TableRow key={index}>
                                                     <TableCell>
                                                         {data.name}
@@ -317,18 +318,17 @@ export default function Download() {
                                                     <TableCell>
                                                         {data.email}
                                                     </TableCell>
+                                                    <TableCell>---</TableCell>
                                                 </TableRow>
-                                ))}
+                                                ))}
 
-                                            </TableBody>
-                                        </Table>
-                                    </div>
+                                                    </TableBody>
+                                                </Table>
+                                            </div>
+                                            </>
+                                            }
                                     </>
                                             }
-                                          
-                                    </>
-                                        }
-                                            
                                         <br></br>
                                     </div>
                                 </Card>
