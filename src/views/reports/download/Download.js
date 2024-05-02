@@ -127,7 +127,7 @@ export default function Download() {
                                     width: '100%',
                                 }}
                             />
-                            <Button type="default" onClick={onTodayButtonClicked} className="ml-2 bg-white">
+                            <Button type="default" onClick={onTodayButtonClicked} className="ml-2 bg-white p-0 color-secondary">
                                 Today
                             </Button>
                         </div>
