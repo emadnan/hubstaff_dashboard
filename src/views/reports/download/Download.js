@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import * as XLSX from 'xlsx';
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
@@ -16,13 +17,7 @@ import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@co
 import { DatePicker,Select, Form , Button } from 'antd'
 import { Card } from '@mui/material'
 import { saveAs } from 'file-saver'
-import json2csv from 'json2csv'
-import moment from 'moment'
 import dayjs from 'dayjs'
-import PictureAsPdfSharpIcon from '@mui/icons-material/PictureAsPdfSharp'
-import html2pdf from 'html2pdf.js'
-import NoRecordsMessegeComponent from 'src/components/noRecordsMessegeComponent/NoRecordsMessegeComponent'
-import InitialMessegeForCompany from 'src/components/intialMessegeForCompany/InitialMessegeForCompany'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 export default function Download() {
@@ -64,8 +59,9 @@ export default function Download() {
         useEffect(() => {
             if (perm.some((item) => item.name === 'Company_Data')) {
                 setIsAdminLogin(false)
-            } else if (perm.some((item) => item.name === 'User_Data')) {
+            } else if (perm.some((item) => item.name === 'ProjectManager_Data')) {
                 setUserId(local.Users.user_id)
+                console.log(user_id);
             }
         }, [])
 
@@ -106,12 +102,13 @@ export default function Download() {
         const onDateChange = (date, dateString) => {
             setIsAdminLogin(true)
             setSelectedDate(dateString)
+            setIsRecordNotFound(false)
             getReport(api , dateString)
         }
 
       const handleExport = () => {
         console.log('EXCEL Download');
-        const worksheet = XLSX.utils.json_to_sheet(report);
+        const worksheet = XLSX.utils.json_to_sheet(report.data);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
     
@@ -158,10 +155,6 @@ export default function Download() {
                                     </Select.Option>
                                 </Select>
                             </Form>
-                            <Button onClick={onTodayButtonClicked}>
-                            Get Report
-                            </Button>
-                           
                         </div>
                     </div>
                     <div className='col-md-4'>
