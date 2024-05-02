@@ -52,7 +52,7 @@ const AssignedProjects = () => {
           filteredUsers = data.Project_Assigns.filter(
             (user) => user.company_id === local.Users.company_id,
           )
-        } else if (perm.some((item) => item.name === 'User_Data')) {
+        } else if (perm.some((item) => item.name === 'User_Data' || item.name === 'ProjectManager_Data')) {
           filteredUsers = data.Project_Assigns.filter(
             (user) => user.assign_projects_user_id === local.Users.user_id,
           )

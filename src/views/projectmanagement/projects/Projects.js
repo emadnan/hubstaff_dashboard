@@ -537,6 +537,8 @@ const Projects = () => {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
         } else if (perm.some((item) => item.name === 'User_Data')) {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
+        } else if (perm.some((item) => item.name === 'ProjectManager_Data')) {
+          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id && (user.project_manager === local.Users.user_id))
         }
         setProjects(filteredUsers)
       })
@@ -578,6 +580,8 @@ const Projects = () => {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
         } else if (perm.some((item) => item.name === 'User_Data')) {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
+        } else if (perm.some((item) => item.name === 'ProjectManager_Data')) {
+          filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
         }
         setCompanies(filteredUsers)
       })
@@ -594,6 +598,8 @@ const Projects = () => {
           filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && user.email !== local.Users.email)
         } else if (perm.some((item) => item.name === 'User_Data')) {
           filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
+        } else if (perm.some((item) => item.name === 'ProjectManager_Data')) {
+          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && user.email !== local.Users.email)
         }
         setUsers(filteredUsers)
       })
@@ -606,6 +612,8 @@ const Projects = () => {
       .then((data) => {
         if (perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && (user.role === 6 || user.role === 7))
+        } if (perm.some((item) => item.name === 'ProjectManager_Data')) {
+          filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
         }
         setByUsers(filteredUsers)
       })
@@ -619,6 +627,10 @@ const Projects = () => {
         if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.Departments
         } else if (perm.some((item) => item.name === 'Company_Data')) {
+          filteredUsers = data.Departments.filter(
+            (user) => user.company_id === local.Users.company_id,
+          )
+        } else if (perm.some((item) => item.name === 'ProjectManager_Data')) {
           filteredUsers = data.Departments.filter(
             (user) => user.company_id === local.Users.company_id,
           )
@@ -636,7 +648,11 @@ const Projects = () => {
           filteredUsers = data.Streams.filter(
             (stream) => stream.company_id === local.Users.company_id,
           )
-        }
+        } else if (perm.some((item) => item.name === 'ProjectManager_Data')) {
+          filteredUsers = data.Streams.filter(
+            (stream) => stream.company_id === local.Users.company_id,
+          )
+        } 
         setStream(filteredUsers)
       })
       .catch((error) => console.log(error))
@@ -937,7 +953,7 @@ const Projects = () => {
           </CTableRow>
 
           {/* Get API Projects */}
-          {perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data')
+          {perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data') || perm.some((item) => item.name === 'ProjectManager_Data')
             ? projects
               .filter((project) => {
                 // Apply Department filter
