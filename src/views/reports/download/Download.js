@@ -20,7 +20,8 @@ import moment from 'moment'
 import dayjs from 'dayjs'
 import PictureAsPdfSharpIcon from '@mui/icons-material/PictureAsPdfSharp'
 import html2pdf from 'html2pdf.js'
-import { Button } from '@mui/material'
+import { Button } from 'antd'
+const BASE_URL = process.env.REACT_APP_BASE_URL
 
 export default function Download() {
 
@@ -60,15 +61,36 @@ export default function Download() {
 
         function onTodayButtonClicked() {
             setIsAdminLogin(true)
-            setSelectedDate(null)
+            // setSelectedDate(null)
             setIsRecordNotFound(false)
-            const today = new Date()
-            const day = today.getDate()
-            const month = today.getMonth() + 1
-            const year = today.getFullYear()
-            const todayDate = `${year}-${month}-${day}`
-            // getReport(todayDate)
+            // const today = new Date()
+            // const day = today.getDate()
+            // const month = today.getMonth() + 1
+            // const year = today.getFullYear()
+            // const todayDate = `${year}-${month}-${day}`
+            // setSelectedDate(todayDate)
+            // console.log(selectedDate);
+            getReport(selectedDate)
         }
+
+        async function getReport(date) {
+        try {
+            const response = await fetch(`${BASE_URL}/api/getDayEndReportById/${user_id}/${date}`);
+
+            const data = await response.json();
+
+            if (data.dayEndReport.length === 0) {
+                setNotFoundMessage(true);
+            } else {
+                setNotFoundMessage(false);
+                console.log('Data', data)
+                setDayendReport(data.dayEndReport);
+                console.log('Report', dayendreport);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
         const onDateChange = (date, dateString) => {
             setSelectedDate(dateString)
@@ -125,14 +147,19 @@ export default function Download() {
                                 clearIcon={null}
                                 style={{
                                     width: '100%',
+                                    marginRight: '10px'
                                 }}
                             />
-                            <Button type="default" onClick={onTodayButtonClicked} className="ml-2 bg-white p-0 color-secondary">
-                                Today
+                            <Button onClick={onTodayButtonClicked}>
+                            Get Report
                             </Button>
+                           
                         </div>
                     </div>
-                    </div>
+                    <Button className={selectedDate ? "btn btn-primary float-right" : "btn btn-secondary text-light float-right" } disabled={!selectedDate} style={buttonStyle} onClick={handleExport}>
+                        Download Report
+                    </Button>
+                </div>
 
                     {/* <div className="col-md-4">
                         {perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data') ? (
