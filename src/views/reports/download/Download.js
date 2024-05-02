@@ -122,13 +122,12 @@ export default function Download() {
                                 value={selectedDate ? dayjs(selectedDate, 'YYYY-MM-DD') : null}
                                 onChange={onDateChange}
                                 disabled={!user_id}
-                                disabledDate={disabledDate}
                                 clearIcon={null}
                                 style={{
                                     width: '100%',
                                 }}
                             />
-                            <Button type="default" onClick={onTodayButtonClicked} className="ml-2">
+                            <Button type="default" onClick={onTodayButtonClicked} className="ml-2 bg-white">
                                 Today
                             </Button>
                         </div>
