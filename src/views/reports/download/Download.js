@@ -58,20 +58,33 @@ export default function Download() {
             }
         }, [])
 
-    const onDateChange = (date, dateString) => {
-        setSelectedDate(dateString)
-        setIsAdminLogin(true)
-        setSelectedDate(dateString)
-        // getReport(dateString)
-        console.log(dateString);
-      }
+        function onTodayButtonClicked() {
+            setIsAdminLogin(true)
+            setSelectedDate(null)
+            setIsRecordNotFound(false)
+            const today = new Date()
+            const day = today.getDate()
+            const month = today.getMonth() + 1
+            const year = today.getFullYear()
+            const todayDate = `${year}-${month}-${day}`
+            // getReport(todayDate)
+        }
+
+        const onDateChange = (date, dateString) => {
+            setSelectedDate(dateString)
+            setIsAdminLogin(true)
+            setSelectedDate(dateString)
+            // getReport(dateString)
+            console.log(dateString);
+        }
 
       const handleExport = () => {
         console.log('EXCEL Download');
       }
 
     return (
-        <Box>
+        <>
+        {/* <Box>
             <Box className="row">
                 <Box className="col-md 6">
                 <Typography variant="h4">Download Reports</Typography>
@@ -88,14 +101,100 @@ export default function Download() {
                         width: '100%',
                     }}
                 />
+                <Button type="default" onClick={onTodayButtonClicked} className="ml-2">
+                    Today
+                </Button>
                 </Box>
             </Box>
             <Box>
-                <button className="btn btn-primary mt-5" style={buttonStyle} onClick={handleExport}>
+                <button className={selectedDate ? "btn btn-primary mt-5" : "btn btn-secondary mt-5" } style={buttonStyle} onClick={handleExport}>
                     Download Report
                 </button>
             </Box>
-        </Box>
+        </Box> */}
+        <Box>
+                <h2>Day-End Reports</h2>
+                <br></br>
+                <div className="row mt-2 mb-2 justify-content-between">
+                    <div className="col-md-4">
+                        <div className="d-flex align-items-center">
+                            <DatePicker
+                                value={selectedDate ? dayjs(selectedDate, 'YYYY-MM-DD') : null}
+                                onChange={onDateChange}
+                                disabled={!user_id}
+                                disabledDate={disabledDate}
+                                clearIcon={null}
+                                style={{
+                                    width: '100%',
+                                }}
+                            />
+                            <Button type="default" onClick={onTodayButtonClicked} className="ml-2">
+                                Today
+                            </Button>
+                        </div>
+                    </div>
+                    </div>
+
+                    {/* <div className="col-md-4">
+                        {perm.some((item) => item.name === 'All_Data') || perm.some((item) => item.name === 'Company_Data') ? (
+                            <div className="d-flex align-items-center">
+                                <Form.Item
+                                    name="select"
+                                    hasFeedback
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                >
+                                    <Select
+                                        placeholder="Members"
+                                        onChange={handleUserChange}
+                                        value={user_id}
+                                        showSearch
+                                        filterOption={(input, option) =>
+                                            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                        }
+                                    >
+                                        {users.map((user) => (
+                                            <Select.Option value={user.id} key={user.id}>
+                                                {user.name}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                        ) : null}
+                    </div>
+                </div>
+
+                <Divider />
+
+                <div>
+                    {
+                        user_id ? (
+                            notfoundmessage ? (
+                                renderNoRecordFoundMessage()
+                            ) : (
+                                <Card>
+                                    <div className="report-card">
+                                        <h4 className='mt-3 ml-5'>Report Summary</h4>
+                                        <br></br>
+                                        {dayendreport.map((data, index) => (
+                                            <div key={index} className="report-item ml-5 mt-1">
+                                                <span>&#8227;</span>  {data.day_report}
+                                            </div>
+                                        ))}
+                                        <br></br>
+                                    </div>
+                                </Card>
+                            )
+                        ) : (
+                            renderInitialMessage()
+                        )
+                    }
+                </div> */}
+
+            </Box>
+            </>
     )
 
 }
