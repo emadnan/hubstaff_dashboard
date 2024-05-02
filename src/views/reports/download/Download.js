@@ -13,7 +13,7 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
-import { DatePicker,Select, Form } from 'antd'
+import { DatePicker,Select, Form , Button } from 'antd'
 import { Card } from '@mui/material'
 import { saveAs } from 'file-saver'
 import json2csv from 'json2csv'
@@ -21,7 +21,6 @@ import moment from 'moment'
 import dayjs from 'dayjs'
 import PictureAsPdfSharpIcon from '@mui/icons-material/PictureAsPdfSharp'
 import html2pdf from 'html2pdf.js'
-import { Button } from 'antd'
 import NoRecordsMessegeComponent from 'src/components/noRecordsMessegeComponent/NoRecordsMessegeComponent'
 import InitialMessegeForCompany from 'src/components/intialMessegeForCompany/InitialMessegeForCompany'
 const BASE_URL = process.env.REACT_APP_BASE_URL
@@ -57,6 +56,7 @@ export default function Download() {
         const [online , setOnline] = useState(false)
         const [all_users , setAllUsers] = useState(false)
         const [default_api , setDefaultApi] = useState(true)
+        const [api , setApi] = useState('get-daily-report-of-both-offline-or-online')
     
         // Images URLs State
         const [imagesUrls, setImagesUrls] = useState([])
@@ -80,12 +80,13 @@ export default function Download() {
             // const todayDate = `${year}-${month}-${day}`
             // setSelectedDate(todayDate)
             // console.log(selectedDate);
-            getReport(selectedDate)
+            getReport(api,selectedDate)
         }
 
-        async function getReport(date) {
+        async function getReport(api , date) {
+            console.log(api);
         try {
-            const response = await fetch(`${BASE_URL}/api/get-daily-report-of-users-for-teamlead/${user_id}/${date}`);
+            const response = await fetch(`${BASE_URL}/api/${api}/${user_id}/${date}`);
 
             const data = await response.json();
 
@@ -94,7 +95,7 @@ export default function Download() {
             } else {
                 setNotFoundMessage(false);
                 console.log('Data', data)
-                setReport(data.data);
+                setReport(data);
                 console.log('Report', report);
             }
         } catch (error) {
@@ -105,50 +106,25 @@ export default function Download() {
         const onDateChange = (date, dateString) => {
             setIsAdminLogin(true)
             setSelectedDate(dateString)
-            getReport(dateString)
+            getReport(api , dateString)
         }
 
       const handleExport = () => {
         console.log('EXCEL Download');
+        const worksheet = XLSX.utils.json_to_sheet(report);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    
+        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+        saveAs(blob, "report.xlsx");
       }
-   // Static Messeges
-   const renderInitialMessage = () => {
-    return <InitialMessegeForCompany />
-}
-
-const renderNoRecordFoundMessage = () => {
-    return <NoRecordsMessegeComponent />
-}
+      const handleMembers = (value)=> {
+        setApi(value);
+        getReport(value , selectedDate);
+      }
     return (
         <>
-        {/* <Box>
-            <Box className="row">
-                <Box className="col-md 6">
-                <Typography variant="h4">Download Reports</Typography>
-                </Box>
-            </Box>
-            <Box className="row justify-content-between" sx={{ mt: 1 }}>
-                <Box className="col-md-3">
-                <DatePicker
-                    value={selectedDate ? dayjs(selectedDate, 'YYYY-MM-DD') : null}
-                    onChange={onDateChange}
-                    disabled={!user_id}
-                    clearIcon={null}
-                    style={{
-                        width: '100%',
-                    }}
-                />
-                <Button type="default" onClick={onTodayButtonClicked} className="ml-2">
-                    Today
-                </Button>
-                </Box>
-            </Box>
-            <Box>
-                <button className={selectedDate ? "btn btn-primary mt-5" : "btn btn-secondary mt-5" } style={buttonStyle} onClick={handleExport}>
-                    Download Report
-                </button>
-            </Box>
-        </Box> */}
         <Box>
                 <h2>Download Reports</h2>
                 <br></br>
@@ -162,6 +138,7 @@ const renderNoRecordFoundMessage = () => {
                                 clearIcon={null}
                                 style={{
                                     width: '100%',
+                                    
                                 }}
                             />
                             <Form
@@ -169,30 +146,30 @@ const renderNoRecordFoundMessage = () => {
                                     width: '100%',
                                 }}
                             >
-                                <Select placeholder="Filter Members...">
-                                    <Select.Option>
+                                <Select placeholder="Filter Members..." onChange={handleMembers}>
+                                    <Select.Option value='get-daily-report-of-both-offline-or-online'>
                                         All Members
                                     </Select.Option>
-                                    <Select.Option>
+                                    <Select.Option  value='get-daily-report-of-users-for-teamlead'>
                                         Online Members
                                     </Select.Option>
-                                    <Select.Option>
+                                    <Select.Option  value='get-daily-report-of-offline-users-by-teamlead'>
                                         Offline Members
                                     </Select.Option>
                                 </Select>
                             </Form>
-                            <Button  style={{ width: '100%', }}  onClick={onTodayButtonClicked}>
+                            <Button onClick={onTodayButtonClicked}>
                             Get Report
                             </Button>
                            
                         </div>
                     </div>
-                    <Button className={selectedDate ? "btn btn-primary float-right" : "btn btn-secondary text-light float-right" } disabled={!selectedDate} style={buttonStyle} onClick={handleExport}>
-                        Download Report
-                    </Button>
+                    <div className='col-md-4'>
+                        <Button className={selectedDate ? "btn btn-primary float-right" : "btn btn-secondary text-light float-right" } disabled={!selectedDate} style={buttonStyle} onClick={handleExport}>
+                            Download Report
+                        </Button>
+                    </div>
                 </div>
-
-
 
                 <div>
                     {
@@ -212,7 +189,79 @@ const renderNoRecordFoundMessage = () => {
                                 <Card>
                                     <div className="report-card ">
                                         <h4 className='mt-3 ml-5'>Report Summary</h4>
+                                        
                                         <br></br>
+
+                                        {
+                                            api === 'get-daily-report-of-users-for-teamlead' ? 
+                                            <div className="report-item ml-5 mt-1">
+                                            {/* <span>&#8227;</span>  {data.name} */}
+                                            <Table>
+                                                <TableHead>
+                                                    <TableCell>
+                                                        Name
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        Email
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        Online Time
+                                                    </TableCell>
+                                                </TableHead>
+                                                <TableBody>
+                                    {report.data?.map((data, index) => (
+                                                    <TableRow key={index}>
+                                                        <TableCell>
+                                                            {data.name}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {data.email}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {data.totalHours}:{data.totalMinutes}:{data.totalSeconds}
+                                                        </TableCell>
+                                                    </TableRow>
+                                    ))}
+
+                                                </TableBody>
+                                            </Table>
+                                        </div> :
+                                        api === 'get-daily-report-of-offline-users-by-teamlead' ?
+                                        <div className="report-item ml-5 mt-1">
+                                                {/* <span>&#8227;</span>  {data.name} */}
+                                                <Table>
+                                                    <TableHead>
+                                                        <TableCell>
+                                                            Name
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            Email
+                                                        </TableCell>
+                                                    </TableHead>
+                                                    <TableBody>
+                                        {report.data?.map((data, index) => (
+                                                        <TableRow key={index}>
+                                                            <TableCell>
+                                                                {data.name}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {data.email}
+                                                            </TableCell>
+                                                        </TableRow>
+                                        ))}
+
+                                                    </TableBody>
+                                                </Table>
+                                            </div> :
+                                            <>
+                                            <h6 className='mt-3 ml-5'>Online Members</h6>
+                                            {
+                                                report.data?.length === 0 ? 
+                                                <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }}>
+                                                NO RECORDS FOUND
+                                              </Typography>
+                                                :
+                                                    <>
                                             <div className="report-item ml-5 mt-1">
                                                 {/* <span>&#8227;</span>  {data.name} */}
                                                 <Table>
@@ -228,16 +277,16 @@ const renderNoRecordFoundMessage = () => {
                                                         </TableCell>
                                                     </TableHead>
                                                     <TableBody>
-                                        {report.map((data, index) => (
+                                        {report.data?.map((online, index) => (
                                                         <TableRow key={index}>
                                                             <TableCell>
-                                                                {data.name}
+                                                                {online.name}
                                                             </TableCell>
                                                             <TableCell>
-                                                                {data.email}
+                                                                {online.email}
                                                             </TableCell>
                                                             <TableCell>
-                                                                {data.totalHours}:{data.totalMinutes}:{data.totalSeconds}
+                                                                {online.totalHours}:{online.totalMinutes}:{online.totalSeconds}
                                                             </TableCell>
                                                         </TableRow>
                                         ))}
@@ -245,6 +294,48 @@ const renderNoRecordFoundMessage = () => {
                                                     </TableBody>
                                                 </Table>
                                             </div>
+                                            </>
+                                            }
+                                            <h6 className='mt-3 ml-5'>Offline Members</h6>
+                                            {
+                                                report.offlineUsers?.length === 0 ? 
+                                                <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }}>
+                                                NO RECORDS FOUND
+                                              </Typography>
+                                                :
+                                                <>
+                                        <div className="report-item ml-5 mt-1">
+                                        {/* <span>&#8227;</span>  {data.name} */}
+                                        <Table>
+                                            <TableHead>
+                                                <TableCell>
+                                                    Name
+                                                </TableCell>
+                                                <TableCell>
+                                                    Email
+                                                </TableCell>
+                                            </TableHead>
+                                            <TableBody>
+                                {report.offlineUsers?.map((data, index) => (
+                                                <TableRow key={index}>
+                                                    <TableCell>
+                                                        {data.name}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {data.email}
+                                                    </TableCell>
+                                                </TableRow>
+                                ))}
+
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                    </>
+                                            }
+                                          
+                                    </>
+                                        }
+                                            
                                         <br></br>
                                     </div>
                                 </Card>
@@ -263,7 +354,6 @@ const renderNoRecordFoundMessage = () => {
                         )
                     }
                 </div>
-
             </Box>
             </>
     )
