@@ -238,7 +238,7 @@ const _navAdmin = [
         component: CNavItem,
         name: 'Team Reports',
         to: '/team-report',
-        permission: 'Nav_AllReports',
+        permission: 'Nav_TeamReports',
       },
     ],
   },

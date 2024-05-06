@@ -163,7 +163,7 @@ const routes = [
     requiredNavPermision: 'Nav_TimeNactivity',
   },
   { path: '/reports-monthly', name: 'Monthly', element: Monthly, requiredNavPermision: 'Nav_MonthlyReports', },
-  { path: '/team-report', name: 'TeamReports', element: Team_Reports,  requiredNavPermision: 'Nav_AllReports', },
+  { path: '/team-report', name: 'TeamReports', element: Team_Reports,  requiredNavPermision: 'Nav_TeamReports', },
   { path: '/report-dayend', name: 'Dayend', element: Dayend, requiredNavPermision: 'Nav_DayendReports', },
   { path: '/teams', name: 'Teams', element: Teams, requiredNavPermision: 'Nav_Teams', },
   {

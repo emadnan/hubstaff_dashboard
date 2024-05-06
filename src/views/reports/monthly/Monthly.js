@@ -137,12 +137,12 @@ export default function Monthly() {
       .then((data) => {
         if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.Users
-        } else if (perm.some((item) => item.name === 'Company_Data')) {
+        } else if (perm.some((item) => item.name === 'Company_Data') || perm.some((item) => item.name === 'ProjectManager_Data')) {
           filteredUsers = data.Users.filter(
             (user) =>
               user.company_id === local.Users.company_id && user.role !== 3 && user.role !== 1,
           )
-        } else if (perm.some((item) => item.name === 'User_Data')) {
+        }  else if (perm.some((item) => item.name === 'User_Data')) {
           filteredUsers = data.Users.filter((user) => user.id === local.Users.id)
         }
         setUsers(filteredUsers)
