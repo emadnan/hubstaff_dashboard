@@ -240,6 +240,12 @@ const _navAdmin = [
         to: '/team-report',
         permission: 'Nav_TeamReports',
       },
+      {
+        component: CNavItem,
+        name: 'Team Reports',
+        to: '/team-report-for-company',
+        permission: 'Nav_DayendReports',
+      },
     ],
   },
   {

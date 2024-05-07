@@ -32,6 +32,7 @@ const Monthly = React.lazy(() => import('./views/reports/monthly/Monthly'))
 const Weekly = React.lazy(() => import('./views/reports/weekly/Weekly'))
 const Daily = React.lazy(() => import('./views/reports/daily/Daily'))
 const Team_Reports = React.lazy(() => import('./views/reports/team/TeamReports'))
+const Team_Report_For_Company = React.lazy(() => import('./views/reports/team/TeamReportForCompany'))
 const Dayend = React.lazy(() => import('./views/reports/dayend/Dayend'))
 const Teams = React.lazy(() => import('./views/teams/Teams'))
 const Subscriptions = React.lazy(() => import('./views/subscriptions/Subscriptions'))
@@ -164,6 +165,7 @@ const routes = [
   },
   { path: '/reports-monthly', name: 'Monthly', element: Monthly, requiredNavPermision: 'Nav_MonthlyReports', },
   { path: '/team-report', name: 'TeamReports', element: Team_Reports,  requiredNavPermision: 'Nav_TeamReports', },
+  { path: '/team-report-for-company', name: 'TeamReportForCompany', element: Team_Report_For_Company,  requiredNavPermision: 'Nav_MonthlyReports', },
   { path: '/report-dayend', name: 'Dayend', element: Dayend, requiredNavPermision: 'Nav_DayendReports', },
   { path: '/teams', name: 'Teams', element: Teams, requiredNavPermision: 'Nav_Teams', },
   {
