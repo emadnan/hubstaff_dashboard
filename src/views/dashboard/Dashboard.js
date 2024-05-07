@@ -272,11 +272,11 @@ const Dashboard = () => {
                 </h3>
             </div>
             <div className="col-md-2">
-              <h6 style={head}>COMPLETED PROJECTS</h6>
+              <h6 style={head}>ONLINE EMPLOYEES</h6>
               <h3 style={subhead}>10</h3>
             </div>
             <div className="col-md-2">
-              <h6 style={head}>DEPARTMENTS</h6>
+              <h6 style={head}>OFFLINE EMPLOYEES</h6>
               <h3 style={subhead}>
                  10
               </h3>
@@ -286,15 +286,11 @@ const Dashboard = () => {
               <h3 style={subhead}>5</h3>
             </div>
              </> 
-            ) : (
+            ) : role_id === 6 || role_id === 7 ? (
               <>
                 <div className="col-md-2">
-                  <h6 style={head}>TOTAL PROJECTS</h6>
+                  <h6 style={head}>ASSIGNED PROJECTS</h6>
                   <h3 style={subhead}>{perm.some((item) => item.name === 'Company_Data' || perm.some((item) => item.name === 'All_Data')) ? totalProjects : totalUserProjects}</h3>
-                </div>
-                <div className="col-md-2">
-                  <h6 style={head}>TODAY ACTIVITY</h6>
-                  <h3 style={subhead}>0%</h3>
                 </div>
                 <div className="col-md-2">
                   <h6 style={head}>TODAY WORKED</h6>
@@ -303,14 +299,45 @@ const Dashboard = () => {
                   </h3>
                 </div>
                 <div className="col-md-2">
-                  <h6 style={head}>WEEKLY ACTIVITY</h6>
-                  <h3 style={subhead}>0%</h3>
+                  <h6 style={head}>WORKED THIS WEEK</h6>
+                  <h3 style={subhead}>
+                    {totalweeklyhours}:{totalweeklyminutes}:{totalweeklyseconds}
+                  </h3>
+                </div>
+                <div className="col-md-2">
+                  <h6 style={head}>ONLINE TEAM MEMBERS</h6>
+                  <h3 style={subhead}>10</h3>
+                </div>
+                <div className="col-md-2">
+                  <h6 style={head}>OFFLINE TEAM MEMBERS</h6>
+                  <h3 style={subhead}>10</h3>
+                </div>
+                <div className="col-md-2">
+                  <h6 style={head}>EARNED AMOUNT</h6>
+                  <h3 style={subhead}>-</h3>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="col-md-2">
+                  <h6 style={head}>ASSIGNED PROJECTS</h6>
+                  <h3 style={subhead}>{perm.some((item) => item.name === 'Company_Data' || perm.some((item) => item.name === 'All_Data')) ? totalProjects : totalUserProjects}</h3>
+                </div>
+                <div className="col-md-2">
+                  <h6 style={head}>TODAY WORKED</h6>
+                  <h3 style={subhead}>
+                    {totalhours}:{totalminutes}:{totalseconds}
+                  </h3>
                 </div>
                 <div className="col-md-2">
                   <h6 style={head}>WORKED THIS WEEK</h6>
                   <h3 style={subhead}>
                     {totalweeklyhours}:{totalweeklyminutes}:{totalweeklyseconds}
                   </h3>
+                </div>
+                <div className="col-md-2">
+                  <h6 style={head}>TEAM</h6>
+                  <h3 style={subhead}>TEAM NAME</h3>
                 </div>
                 <div className="col-md-2">
                   <h6 style={head}>EARNED AMOUNT</h6>
