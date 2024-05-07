@@ -123,6 +123,8 @@ function Streams() {
           filteredUsers = data.Streams
         } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.Streams.filter((user) => user.company_id === local.Users.company_id)
+        } else if (perm.some((item) => item.name === 'ProjectManager_Data')) {
+          filteredUsers = data.Streams.filter((user) => user.user_id === local.Users.user_id)
         }
         setStreams(filteredUsers)
       })
@@ -150,7 +152,7 @@ function Streams() {
       .then((data) => {
         if (perm.some((item) => item.name === 'All_Data')) {
           filteredUsers = data.projects
-        } else if (perm.some((item) => item.name === 'Company_Data')) {
+        } else if (perm.some((item) => item.name === 'Company_Data') || perm.some((item) => item.name === 'ProjectManager_Data')) {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
         } else if (perm.some((item) => item.name === 'User_Data')) {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
@@ -225,26 +227,17 @@ function Streams() {
   }
 
   const handleOk = () => {
-    if (stream_name !== '' && project_id !== '' && start_time !== '' && end_time !== '') {
+    if (stream_name !== '') {
       addStream()
       setIsModalOpen(false)
       setStreamName('')
-      setProjectId('')
-      setStartTime('')
-      setEndTime('')
       form.resetFields()
       setStreamName('')
-      setProjectId('')
-      setStartTime('')
-      setEndTime('')
       setFormErrors({
         stream_name: '',
-        project_id: '',
-        start_time: '',
-        end_time: '',
       })
     } else {
-      callErrors(stream_name, project_id, start_time, end_time)
+      callErrors(stream_name)
     }
   }
 
@@ -252,30 +245,15 @@ function Streams() {
     setIsModalOpen(false)
     form.resetFields()
     setStreamName('')
-    setProjectId('')
-    setStartTime('')
-    setEndTime('')
     setFormErrors({
       stream_name: '',
-      project_id: '',
-      start_time: '',
-      end_time: '',
     })
   }
 
-  const callErrors = (stream_name, project_id, start_time, end_time) => {
+  const callErrors = (stream_name) => {
     const errors = {}
     if (!stream_name) {
       errors.stream_name = 'Enter the Stream Name'
-    }
-    if (!project_id) {
-      errors.project_id = 'Select a Project'
-    }
-    if (!start_time) {
-      errors.start_time = 'Select a Start Time'
-    }
-    if (!end_time) {
-      errors.end_time = 'Select a End Time'
     }
 
     setFormErrors(errors)
@@ -289,26 +267,17 @@ function Streams() {
   }
 
   const handleOk2 = () => {
-    if (stream_name !== '' && project_id !== '' && start_time !== '' && end_time !== '') {
+    if (stream_name !== '') {
       updateStream(isModalOpen2)
       setIsModalOpen2(false)
       setStreamName('')
-      setProjectId('')
-      setStartTime('')
-      setEndTime('')
       form.resetFields()
       setStreamName('')
-      setProjectId('')
-      setStartTime('')
-      setEndTime('')
       setFormErrors({
         stream_name: '',
-        project_id: '',
-        start_time: '',
-        end_time: '',
       })
     } else {
-      callErrors(stream_name, project_id, start_time, end_time)
+      callErrors(stream_name)
     }
   }
 
@@ -316,14 +285,8 @@ function Streams() {
     setIsModalOpen2(false)
     form.resetFields()
     setStreamName('')
-    setProjectId('')
-    setStartTime('')
-    setEndTime('')
     setFormErrors({
       stream_name: '',
-      project_id: '',
-      start_time: '',
-      end_time: '',
     })
   }
 
@@ -566,7 +529,8 @@ function Streams() {
 
   // Add API call
   async function addStream() {
-    let addstream = { stream_name, company_id: local.Users.company_id, project_id, start_time, end_time }
+    // let addstream = { stream_name, company_id: local.Users.company_id, project_id, start_time, end_time }
+    let addstream = { stream_name, company_id: local.Users.company_id, user_id: local.Users.user_id }
 
     await fetch(`${BASE_URL}/api/addStreams`, {
       method: 'POST',
@@ -623,9 +587,7 @@ function Streams() {
         id: newid,
         company_id: local.Users.company_id,
         stream_name: stream_name,
-        project_id: project_id,
-        start_time: start_time,
-        end_time: end_time,
+        user_id: local.Users.user_id,
       }),
     })
       .then((response) => {
@@ -794,7 +756,7 @@ function Streams() {
             <CTableHeaderCell className="text-center" style={mystyle}>
               Stream Name
             </CTableHeaderCell>
-            <CTableHeaderCell className="text-center" style={mystyle}>
+            {/* <CTableHeaderCell className="text-center" style={mystyle}>
               Project Name
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
@@ -802,22 +764,22 @@ function Streams() {
             </CTableHeaderCell>
             <CTableHeaderCell className="text-center" style={mystyle}>
               End Date
-            </CTableHeaderCell>
+            </CTableHeaderCell> */}
             {isEditButtonEnabled || isDeleteButtonEnabled ? (
               <CTableHeaderCell className="text-center" style={mystyle}>
                 Actions
               </CTableHeaderCell>
             ) : null
             }
-            {isAssignStreamEnabled ? (
+            {/* {isAssignStreamEnabled ? (
               <CTableHeaderCell className="text-center" style={mystyle}>
                 Assign Stream
               </CTableHeaderCell>
             ) : null
-            }
-            <CTableHeaderCell className="text-center" style={mystyle}>
+            } */}
+            {/* <CTableHeaderCell className="text-center" style={mystyle}>
               Assign Type
-            </CTableHeaderCell>
+            </CTableHeaderCell> */}
           </CTableRow>
 
           {/* Get API Stream */}
@@ -840,7 +802,7 @@ function Streams() {
                   <CTableHeaderCell className="text-center" style={mystyle2}>
                     {stream.stream_name}
                   </CTableHeaderCell>
-                  <CTableHeaderCell className="text-center" style={mystyle2}>
+                  {/* <CTableHeaderCell className="text-center" style={mystyle2}>
                     {stream.project_details?.project_name}
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle2}>
@@ -848,7 +810,7 @@ function Streams() {
                   </CTableHeaderCell>
                   <CTableHeaderCell className="text-center" style={mystyle2}>
                     {endtime}
-                  </CTableHeaderCell>
+                  </CTableHeaderCell> */}
                   {isEditButtonEnabled || isDeleteButtonEnabled ? (
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       {isEditButtonEnabled ? (
@@ -866,7 +828,7 @@ function Streams() {
                     </CTableHeaderCell>
                   ) : null
                   }
-                  {isAssignStreamEnabled ? (
+                  {/* {isAssignStreamEnabled ? (
                     <CTableHeaderCell className="text-center" style={mystyle2}>
                       <IconButton
                         aria-label="assign"
@@ -886,7 +848,7 @@ function Streams() {
                     >
                       <ChecklistIcon htmlColor="#0070ff" />
                     </IconButton>
-                  </CTableHeaderCell>
+                  </CTableHeaderCell> */}
                 </CTableRow>
               )
 
@@ -895,7 +857,7 @@ function Streams() {
         <CTableBody></CTableBody>
       </CTable>
 
-      {/* Modal for Add Role */}
+      {/* Modal for Add Stream */}
       <Modal
         title="Add a Stream"
         open={isModalOpen}
@@ -921,7 +883,7 @@ function Streams() {
             <div className="text-danger">{formErrors.stream_name}</div>
           )}
         </div>
-
+{/* 
         <Form form={form}>
           <div className="form-outline mt-3">
             <label>Project</label>
@@ -948,9 +910,9 @@ function Streams() {
               </Select>
             </Form.Item>
           </div>
-        </Form>
+        </Form> */}
 
-        <div className="form-outline mt-3">
+        {/* <div className="form-outline mt-3">
           <label>Start Time</label>
           <input
             type="date"
@@ -962,9 +924,9 @@ function Streams() {
             placeholder="Enter Start Time"
           />
         </div>
-        {formErrors.start_time && <div className="text-danger">{formErrors.start_time}</div>}
+        {formErrors.start_time && <div className="text-danger">{formErrors.start_time}</div>} */}
 
-        <div className="form-outline mt-3">
+        {/* <div className="form-outline mt-3">
           <label>End Time</label>
           <input
             type="date"
@@ -976,7 +938,7 @@ function Streams() {
             placeholder="Enter End Time"
           />
         </div>
-        {formErrors.end_time && <div className="text-danger">{formErrors.end_time}</div>}
+        {formErrors.end_time && <div className="text-danger">{formErrors.end_time}</div>} */}
 
       </Modal>
 
@@ -1007,7 +969,7 @@ function Streams() {
             {formErrors.stream_name && (
               <div className="text-danger">{formErrors.stream_name}</div>)}
 
-            <Form form={form}>
+            {/* <Form form={form}>
               <div className="form-outline mt-3">
                 <label>Project</label>
                 <Form.Item
@@ -1034,8 +996,8 @@ function Streams() {
                   </Select>
                 </Form.Item>
               </div>
-            </Form>
-
+            </Form> */}
+{/* 
             <div className="form-outline mt-3">
               <label>Start Time</label>
               <input
@@ -1062,7 +1024,7 @@ function Streams() {
                 placeholder="Enter End Time"
               />
             </div>
-            {formErrors.end_time && <div className="text-danger">{formErrors.end_time}</div>}
+            {formErrors.end_time && <div className="text-danger">{formErrors.end_time}</div>} */}
           </div>
         ))}
       </Modal>
