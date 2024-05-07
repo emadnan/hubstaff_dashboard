@@ -724,7 +724,7 @@ export default function Monthly() {
           <Card style={cardStyle}>
             <Box className="row">
               <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }}>
-                PLEASE SELECT THE EMPLOYEE, WHOM YOU WANNA GENERATE REPORT
+                    PLEASE SELECT THE EMPLOYEE TO GENERATE REPORT
               </Typography>
             </Box>
           </Card>
