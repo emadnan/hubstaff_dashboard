@@ -15,8 +15,8 @@ const Dashboard = () => {
   useEffect(() => {
     getTotalTimeUser(session_token)
     setRoleId(local.Users.role)
+    setUserId(local.Users.id)
     setCompanyId(local.Users.company_id)
-    console.log(local.Users.role);
   }, [])
 
   //CSS Stylings
@@ -92,6 +92,10 @@ const Dashboard = () => {
   const [team_leads, setTeamLeads] = useState('')
   const [company_id, setCompanyId] = useState('')
   const [role_id, setRoleId] = useState('')
+  const [user_id, setUserId] = useState('')
+  const [today_date , setTodayDate] = useState('')
+  const [online_members , setOnlineMembers] = useState('')
+  const [offline_members , setOfflineMembers] = useState('')
   var screenfilter = []
   var filteredUsers = []
 
@@ -107,7 +111,18 @@ const Dashboard = () => {
     getWeeklyWorked()
     getEmployees()
     getTeamLeads()
+    getTodayDate()
+    getTeamMembers()
   }, [])
+
+  function getTodayDate () {
+    const today = new Date()
+    const day = today.getDate()
+    const month = today.getMonth() + 1
+    const year = today.getFullYear()
+    const todayDate = `${year}-${month}-${day}`
+    setTodayDate(todayDate)
+  }
 
   //GET API calls
   async function getCompanies() {
@@ -151,6 +166,29 @@ const Dashboard = () => {
       })
       .catch((error) => console.log(error))
   }
+
+  async function getTeamMembers() {
+    try {
+        const response = await fetch(`${BASE_URL}/api/get-daily-report-of-both-offline-or-online/${user_id}/${today_date}`);
+
+        const data = await response.json();
+
+        setOnlineMembers(data.data.length)
+        setOfflineMembers(data.offlineUsers.length)
+
+        // if (data.data.length === 0) {
+
+        // } else {
+        //     setExportDisable(false)
+        //     setNotFoundMessage(false);
+        //     console.log('Data', data)
+        //     setReport(data);
+        //     console.log('Report', report);
+        // }
+    } catch (error) {
+        console.log(error);
+    }
+}
 
   async function getProjects() {
     await fetch(`${BASE_URL}/api/getproject`)
@@ -340,11 +378,11 @@ const Dashboard = () => {
                 </div>
                 <div className="col-md-2">
                   <h6 style={head}>ONLINE TEAM MEMBERS</h6>
-                  <h3 style={subhead}>10</h3>
+                  <h3 style={subhead}>{online_members}</h3>
                 </div>
                 <div className="col-md-2">
                   <h6 style={head}>OFFLINE TEAM MEMBERS</h6>
-                  <h3 style={subhead}>10</h3>
+                  <h3 style={subhead}>{offline_members}</h3>
                 </div>
                 <div className="col-md-2">
                   <h6 style={head}>EARNED AMOUNT</h6>
@@ -369,10 +407,10 @@ const Dashboard = () => {
                     {totalweeklyhours}:{totalweeklyminutes}:{totalweeklyseconds}
                   </h3>
                 </div>
-                <div className="col-md-2">
+                {/* <div className="col-md-2">
                   <h6 style={head}>TEAM</h6>
                   <h3 style={subhead}>TEAM NAME</h3>
-                </div>
+                </div> */}
                 <div className="col-md-2">
                   <h6 style={head}>EARNED AMOUNT</h6>
                   <h3 style={subhead}>-</h3>
