@@ -90,6 +90,7 @@ const Dashboard = () => {
   const [totalweeklyminutes, setTotalWeeklyMinutes] = useState('')
   const [totalweeklyseconds, setTotalWeeklySeconds] = useState('')
   const [team_leads, setTeamLeads] = useState('')
+  const [team_count, setTeamsCount] = useState('')
   const [company_id, setCompanyId] = useState('')
   const [role_id, setRoleId] = useState('')
   const [user_id, setUserId] = useState('')
@@ -113,6 +114,7 @@ const Dashboard = () => {
     getTeamLeads()
     getTodayDate()
     getTeamMembers()
+    getTeamsCount()
   }, [])
 
   function getTodayDate () {
@@ -166,7 +168,15 @@ const Dashboard = () => {
       })
       .catch((error) => console.log(error))
   }
-
+  async function getTeamsCount() {
+    await fetch(`${BASE_URL}/api/get-team-by-company/${company_id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setTeamsCount(data.teams)
+      })
+      .catch((error) => console.log(error))
+  }
+  
   async function getTeamMembers() {
     try {
         const response = await fetch(`${BASE_URL}/api/get-daily-report-of-both-offline-or-online/${user_id}/${today_date}`);
@@ -355,7 +365,7 @@ const Dashboard = () => {
             </div>
             <div className="col-md-2">
               <h6 style={head}>TEAMS</h6>
-              <h3 style={subhead}>5</h3>
+              <h3 style={subhead}>{team_count}</h3>
             </div>
              </> 
             ) : role_id === 6 || role_id === 7 ? (

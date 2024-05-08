@@ -53,9 +53,6 @@ export default function TeamReports() {
         const [default_api , setDefaultApi] = useState(true)
         const [api , setApi] = useState('get-daily-report-of-both-offline-or-online')
     
-        // Images URLs State
-        const [imagesUrls, setImagesUrls] = useState([])
-  
         useEffect(() => {
             if (perm.some((item) => item.name === 'Company_Data')) {
                 setIsAdminLogin(false)
