@@ -15,6 +15,7 @@ const Dashboard = () => {
   useEffect(() => {
     getTotalTimeUser(session_token)
     setRoleId(local.Users.role)
+    setCompanyId(local.Users.company_id)
     console.log(local.Users.role);
   }, [])
 
@@ -70,6 +71,9 @@ const Dashboard = () => {
   //Declarations for API calls
   const [users, setUsers] = useState([])
   const [projects, setProjects] = useState([])
+  const [all_employees, setAllEmployees] = useState('')
+  const [online_employees, setOnlineEmployees] = useState('')
+  const [offline_employees, setOfflineEmployees] = useState('')
   const [departments, setDepartments] = useState([])
   const [clients, setClients] = useState([])
   const [screenshot, setScreenshot] = useState([])
@@ -85,6 +89,8 @@ const Dashboard = () => {
   const [totalweeklyhours, setTotalWeeklyHours] = useState('')
   const [totalweeklyminutes, setTotalWeeklyMinutes] = useState('')
   const [totalweeklyseconds, setTotalWeeklySeconds] = useState('')
+  const [team_leads, setTeamLeads] = useState('')
+  const [company_id, setCompanyId] = useState('')
   const [role_id, setRoleId] = useState('')
   var screenfilter = []
   var filteredUsers = []
@@ -99,6 +105,8 @@ const Dashboard = () => {
     getProjectScreenshots()
     getAssigns()
     getWeeklyWorked()
+    getEmployees()
+    getTeamLeads()
   }, [])
 
   //GET API calls
@@ -114,6 +122,32 @@ const Dashboard = () => {
           filteredUsers = data.companies.filter((user) => user.id === local.Users.company_id)
         }
         setUsers(filteredUsers)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  async function getEmployees() {
+    await fetch(`${BASE_URL}/api/get-users-by-company/${company_id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        // if (perm.some((item) => item.name === 'All_Data')) {
+        //   filteredUsers = data.projects
+        // } else if (perm.some((item) => item.name === 'Company_Data')) {
+        //   filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
+        // }
+        setAllEmployees(data.total_users)
+        setOnlineEmployees(data.online_users)
+        setOfflineEmployees(data.offline_users)
+       
+      })
+      .catch((error) => console.log(error))
+  }
+
+  async function getTeamLeads() {
+    await fetch(`${BASE_URL}/api/get-team-leads-by-company/${company_id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setTeamLeads(data.total_users)
       })
       .catch((error) => console.log(error))
   }
@@ -263,7 +297,7 @@ const Dashboard = () => {
             </div>
             <div className="col-md-2">
               <h6 style={head}>EMPLOYEES</h6>
-              <h3 style={subhead}>100</h3>
+              <h3 style={subhead}>{all_employees}</h3>
             </div>
             <div className="col-md-2">
                 <h6 style={head}>TEAM LEADS</h6>
@@ -273,12 +307,12 @@ const Dashboard = () => {
             </div>
             <div className="col-md-2">
               <h6 style={head}>ONLINE EMPLOYEES</h6>
-              <h3 style={subhead}>10</h3>
+              <h3 style={subhead}>{online_employees}</h3>
             </div>
             <div className="col-md-2">
               <h6 style={head}>OFFLINE EMPLOYEES</h6>
               <h3 style={subhead}>
-                 10
+                 {offline_employees}
               </h3>
             </div>
             <div className="col-md-2">
