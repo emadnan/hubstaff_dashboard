@@ -115,7 +115,7 @@ const Dashboard = () => {
     getTodayDate()
     getTeamMembers()
     getTeamsCount()
-  }, [])
+  }, [company_id])
 
   function getTodayDate () {
     const today = new Date()
@@ -164,12 +164,13 @@ const Dashboard = () => {
     await fetch(`${BASE_URL}/api/get-team-leads-by-company/${company_id}`)
       .then((response) => response.json())
       .then((data) => {
-        setTeamLeads(data.total_users)
+        setTeamLeads(data.teamLeads)
+        console.log(data.teamLeads);
       })
       .catch((error) => console.log(error))
   }
   async function getTeamsCount() {
-    await fetch(`${BASE_URL}/api/get-team-by-company/${company_id}`)
+    await fetch(`${BASE_URL}/api/get-team-by-company-id/${company_id}`)
       .then((response) => response.json())
       .then((data) => {
         setTeamsCount(data.teams)
@@ -350,7 +351,7 @@ const Dashboard = () => {
             <div className="col-md-2">
                 <h6 style={head}>TEAM LEADS</h6>
                 <h3 style={subhead}>
-                  20
+                  {team_leads}
                 </h3>
             </div>
             <div className="col-md-2">
