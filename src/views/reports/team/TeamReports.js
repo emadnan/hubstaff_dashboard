@@ -336,7 +336,7 @@ export default function TeamReports() {
                                 <Card style={cardStyle}>
                                 <Box className="row">
                                     <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }} className='p-2'>
-                                    PLEASE SELECT THE DATE TO GENERATE THE REPORT
+                                    PLEASE SELECT DATE TO GENERATE THE REPORT
                                     </Typography>
                                 </Box>
                                 </Card>
