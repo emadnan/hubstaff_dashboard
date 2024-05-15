@@ -23,6 +23,8 @@ const Projects = () => {
   const [project_id, setProjectId] = useState('')
   const [proj_id, setProjId] = useState('')
   const [user_id, setUserId] = useState('')
+  const [user_role , setUserRole] = useState('')
+  const [team_members, setAllTeamMembers] = useState([])
 
   // Filter Projects
   const [selectedDepartment, setSelectedDepartment] = useState('')
@@ -44,6 +46,15 @@ const Projects = () => {
   const isViewButtonEnabled = perm.some((item) => item.name === 'View_Project')
   const isDeleteButtonEnabled = perm.some((item) => item.name === 'Delete_Project')
   const isAssignProjectEnabled = perm.some((item) => item.name === 'Assign_Project')
+
+  useEffect(() => {
+    setUserId(local.Users.id)
+    setUserRole(local.Users.role) 
+
+    if(local.Users.role === 6 || local.Users.role === 7) {
+      getAllTeamMembers(local.Users.id)
+    }
+  } , [])
 
   // Separate initial state values for formErrors
   const [formErrors, setFormErrors] = useState({
@@ -119,6 +130,11 @@ const Projects = () => {
     setIsModalOpen(true)
   }
   const handleOk = () => {
+
+   if(user_role === 6 || user_role === 7) {
+    setProjectManager(local.Users.id);
+   }
+
     if (department_id && project_name && description && project_manager && start_date && dead_line) {
       addProject()
       setIsModalOpen(false)
@@ -535,12 +551,21 @@ const Projects = () => {
           filteredUsers = data.projects
         } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
-        } else if (perm.some((item) => item.name === 'User_Data')) {
-          filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
-        } else if (perm.some((item) => item.name === 'ProjectManager_Data')) {
+        } else if (perm.some((item) => item.name === 'User_Data') && perm.some((item) => item.name === 'ProjectManager_Data')) {
           filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id && (user.project_manager === local.Users.user_id))
         }
         setProjects(filteredUsers)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  async function getAllTeamMembers(teamLeadId) {
+    let filteredUsers = []
+    await fetch(`${BASE_URL}/api/get-user-by-team-lead-id/${teamLeadId}`)
+      .then((response) => response.json())
+      .then((data) => {
+          filteredUsers = data.team
+        setAllTeamMembers(filteredUsers)
       })
       .catch((error) => console.log(error))
   }
@@ -596,10 +621,8 @@ const Projects = () => {
           filteredUsers = data.Users
         } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && user.email !== local.Users.email)
-        } else if (perm.some((item) => item.name === 'User_Data')) {
+        } else if (perm.some((item) => item.name === 'User_Data' || perm.some((item) => item.name === 'ProjectManager_Data'))) {
           filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
-        } else if (perm.some((item) => item.name === 'ProjectManager_Data')) {
-          filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && user.email !== local.Users.email)
         }
         setUsers(filteredUsers)
       })
@@ -672,7 +695,7 @@ const Projects = () => {
 
   // Add API call
   async function addProject() {
-    let user = { department_id, company_id: local.Users.company_id, project_name, description, project_manager, start_date, dead_line }
+    let user = { department_id, company_id: local.Users.company_id, project_name, description, project_manager : user_id, start_date, dead_line }
     console.log(user)
 
     await fetch(`${BASE_URL}/api/add_project`, {
@@ -1081,8 +1104,12 @@ const Projects = () => {
                   </Select>
                 </Form.Item>
               </div>
-
-              <div className="form-outline mt-3">
+              {
+                user_role === 6 || user_role === 7 ? (
+                  null
+                ) : (
+                  <>
+                  <div className="form-outline mt-3">
                 <label>Project Manager</label>
                 <Form.Item
                   name="projectManagerSelect"
@@ -1107,6 +1134,9 @@ const Projects = () => {
                   </Select>
                 </Form.Item>
               </div>
+                  </>
+                )
+              } 
             </Form>
 
             <div className="form-outline mt-3">
@@ -1448,11 +1478,19 @@ const Projects = () => {
                           option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                         }
                       >
-                        {users.map((user) => (
+                        {
+                          user_role === 6 || user_role === 7 ? 
+                          team_members.map((user) => (
                             <Select.Option value={user.id} key={user.id}>
                               {user.name}
                             </Select.Option>
-                          ))}
+                          )) :
+                          users.map((user) => (
+                            <Select.Option value={user.id} key={user.id}>
+                              {user.name}
+                            </Select.Option>
+                          ))
+                        }
                       </Select>
                     </Form.Item>
                   </div>
@@ -1484,7 +1522,9 @@ const Projects = () => {
               <Divider></Divider>
             </div>
 
-            {users.filter((project) => {
+            {
+              user_role === 6 || user_role === 7 ?
+            team_members.filter((project) => {
               // Apply User filter
               if (selectedUser !== '') {
                 return project.id === selectedUser
@@ -1510,7 +1550,35 @@ const Projects = () => {
                   &nbsp;
                   <Divider></Divider>
                 </div>
-              ))}
+              )) : 
+              users.filter((project) => {
+                // Apply User filter
+                if (selectedUser !== '') {
+                  return project.id === selectedUser
+                }
+                return true
+              })
+                .map((user, index) => (
+                  <div className="row" key={user.id}>
+                    <div className="col md-2 text-center">
+                      <h6 style={perStyle}>{index + 1}</h6>
+                    </div>
+                    <div className="col md-3"></div>
+                    <div className="col md-2 text-center">
+                      <h6 style={perStyle}>{user.name}</h6>
+                    </div>
+                    <div className="col md-3"></div>
+                    <div className="col md-2 text-center">
+                      <Checkbox
+                        checked={selectedUsers.includes(user.id)}
+                        onChange={(e) => handleSelectUser(e, user.id)}
+                      />
+                    </div>
+                    &nbsp;
+                    <Divider></Divider>
+                  </div>
+                ))
+            }
           </Modal>
 
           {/* Alert for Add Project Success*/}

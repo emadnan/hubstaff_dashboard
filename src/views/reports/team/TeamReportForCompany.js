@@ -72,9 +72,6 @@ const TeamReportForCompany = () => {
     const [notfoundmessage, setNotFoundMessage] = useState(true)
     const [export_disable, setExportDisable] = useState(true)
 
-    // Images URLs State
-    const [imagesUrls, setImagesUrls] = useState([])
-
     // Initial rendering through useEffect
     useEffect(() => {
         setCompanyId(local.Users.company_id)
