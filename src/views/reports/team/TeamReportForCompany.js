@@ -132,11 +132,6 @@ const TeamReportForCompany = () => {
         const todayDate = `${year}-${month}-${day}`
     }
 
-    const handleClick = useCallback((imageUrl) => {
-        let urls = imageUrl.map((url) => `${BASE_URL}/screenshots/${url.path_url}`)
-        setImagesUrls(urls)
-    }, [])
-
     // Helper function to wrap fetch in a Promise
     function fetchPromise(url) {
         return new Promise((resolve, reject) => {
@@ -144,12 +139,6 @@ const TeamReportForCompany = () => {
                 .then((response) => resolve(response))
                 .catch((error) => reject(error))
         })
-    }
-
-    // Logic to concatenate the base URL with the image URL
-    const url = (imageUrl) => {
-        const concatinatedImage = `${BASE_URL}/screenshots/${imageUrl}`
-        return concatinatedImage
     }
 
     // Disable Dates
