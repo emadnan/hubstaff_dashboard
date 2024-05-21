@@ -673,7 +673,7 @@ const Projects = () => {
           )
         } else if (perm.some((item) => item.name === 'ProjectManager_Data')) {
           filteredUsers = data.Streams.filter(
-            (stream) => stream.company_id === local.Users.company_id,
+            (stream) => stream.user_id === local.Users.id,
           )
         } 
         setStream(filteredUsers)
