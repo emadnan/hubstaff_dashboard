@@ -16,8 +16,16 @@ import dayjs from 'dayjs'
 import {FormLabel } from '@mui/material'
 import Card from '@mui/joy/Card'
 import { saveAs } from 'file-saver'
+import Paper from '@mui/material/Paper'
+import Tooltip from '@mui/material/Tooltip'
+import IconButton from '@mui/material/IconButton'
+import PictureAsPdfSharpIcon from '@mui/icons-material/PictureAsPdfSharp'
+import FileDownloadIcon from '@mui/icons-material/FileDownload'
+import Toolbar from '@mui/material/Toolbar'
 import NoRecordsMessegeComponent from 'src/components/noRecordsMessegeComponent/NoRecordsMessegeComponent'
 import InitialMessegeForCompany from 'src/components/intialMessegeForCompany/InitialMessegeForCompany'
+import json2csv from 'json2csv'
+import html2pdf from 'html2pdf.js'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 dayjs.extend(customParseFormat)
 const Allreports = () => {
@@ -76,7 +84,10 @@ const Allreports = () => {
     },
   }
     const [company_id , setCompanyId] = useState('')
-    // Local Storage data
+    const [currentUser, setCurrentUser] = useState([])
+    const [companies, setCompanies] = useState([])
+
+  // Local Storage data
     const local = JSON.parse(localStorage.getItem('user-info'))
     const permissions = local.permissions
     const perm = permissions.map((permission) => ({
@@ -95,7 +106,7 @@ const Allreports = () => {
     const tableRef = useRef(null)
 
     useEffect(() => {
-        if (perm.some((item) => item.name === 'Comp any_Data')) {
+        if (perm.some((item) => item.name === 'Company_Data')) {
             setIsAdminLogin(false)
         } else if (perm.some((item) => item.name === 'User_Data')) {
             setUserId(local.Users.user_id)
@@ -136,7 +147,6 @@ const Allreports = () => {
      useEffect(() => {
       setCompanyId(local.Users.company_id)
       getUsers(local.Users.company_id)
-      // console.log(company_id);
   }, [])
 
   const handleExport = () => {
@@ -160,6 +170,9 @@ const Allreports = () => {
   }
 
   const handleUserChange = (value) => {
+    const selectedUser = users.filter((user) => user.id === value)
+    getCompanies(selectedUser)
+    setCurrentUser(selectedUser)
     setNotFoundMessage(true)
     setFromSelectedDate("");
     getAssignedProjects(value)
@@ -195,7 +208,6 @@ async function getReport() {
       } else {
           setExportDisable(false)
           setNotFoundMessage(false);
-          console.log('Data', data)
 
           setTotalWorkingHours(`
           ${data.hours.toString().padStart(2,'0')}:
@@ -223,7 +235,7 @@ async function getReport() {
              ${averageMinutes.toString().padStart(2, '0')}`
           )
 
-          const projectDates = data.project.map((project) => new Date(project.date))
+          const projectDates = data.everyDays.map((project) => new Date(project.date))
           processData(data);
       }
   } catch (error) {
@@ -247,6 +259,19 @@ function getUsers(company_id) {
             })
             .catch((error) => console.log(error))
 }
+
+async function getCompanies(selectedUser) {
+  const companyId = selectedUser[0].company_id
+  let filteredCompanies = []
+  await fetch(`${BASE_URL}/api/getcompany`)
+    .then((response) => response.json())
+    .then((data) => {
+      filteredCompanies = data.companies.filter((company) => company.id === companyId)
+      setCompanies(filteredCompanies)
+    })
+    .catch((error) => console.log(error))
+}
+
 
 async function getAssignedProjects(userId) {
   if (!local) {
@@ -295,7 +320,7 @@ const timeInSeconds = (timeString) => {
     const processedData = {}
 
     // Iterate over each object in the "project" array of the JSON data
-    jsonData.project.forEach((project) => {
+    jsonData.everyDays.forEach((project) => {
       // Extract the relevant properties from the project object
       const { date, hours, minutes, seconds, project_name } = project
 
@@ -368,15 +393,67 @@ const timeInSeconds = (timeString) => {
       return <NoRecordsMessegeComponent />
   }
 
+  const handleDownloadCSV = () => {
+    const employeeName = currentUser[0].name
+    const startDate = fromSelectedDate
+    const endDate = toSelectedDate
+    // Flatten the nested data structure
+    const flattenedData = report
+      .map((item) => {
+        const flattenedProjects = item.projects.map((project) => ({
+          DATE: item.date,
+          'TOTAL DAY HOURS': item.totalWorkingHourOfDay,
+          PROJECT: project.project,
+          HOURS: project.HOURS,
+          ACTIVITY: project.ACTIVITY,
+        }))
+
+        return flattenedProjects
+      })
+      .flat()
+
+    // Generate the CSV data
+    const csvData = json2csv.parse(flattenedData, {
+      fields: ['DATE', 'TOTAL DAY HOURS', 'PROJECT', 'HOURS', 'ACTIVITY'],
+      header: false, // We will manually add the header later
+    })
+
+    // Create the header row
+    const headerRow = 'DATE,TOTAL DAY HOURS,PROJECT,HOURS,ACTIVITY'
+
+    // Create the merged cell row with the Monthly Report, Employee name, and Month Date Range
+    const mergedCellRow = `Monthly Report\nEmployee: ${employeeName}\Margins: ${startDate}-${endDate}\nTotal Hours of ${startDate}-${endDate}: ${totalWorkingHours}\nAVG. Working Hours of Day in ${startDate}-${endDate}: ${averageWorkingHours}\n`
+
+    // Combine the merged cell row, header row, and CSV data
+    const modifiedCsvData = `${mergedCellRow}\n${headerRow}\n${csvData}`
+
+    const csvBlob = new Blob([modifiedCsvData], { type: 'text/csv;charset=utf-8' })
+    saveAs(csvBlob, `${currentUser[0].name} Monthly-Report.csv`)
+  }
+
+  const handleDownloadPDF = () => {
+    const input = tableRef.current
+
+    html2pdf()
+      .set({
+        margin: 0.5,
+        filename: `${currentUser[0].name} Monthly-Report.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, logging: true },
+        jsPDF: { unit: 'mm', format: 'a3' },
+      })
+      .from(input)
+      .save()
+  }
 
   return (
     <>
     <Box>
     <div className='row justify-content-between'>
         <h2 className='col-md-6'>Team Reports</h2>
-        <Button className={!export_disable ? "btn btn-primary float-right col-md-6" : "btn btn-secondary text-light float-right col-md-6" } disabled={export_disable} style={buttonStyle} onClick={handleExport}>
+        {/* <Button className={!export_disable ? "btn btn-primary float-right col-md-6" : "btn btn-secondary text-light float-right col-md-6" } disabled={export_disable} style={buttonStyle} onClick={handleExport}>
             Export
-        </Button>
+        </Button> */}
     </div>
     <br></br>
     <div className="row mt-2 mb-2 justify-content-between">
@@ -539,107 +616,105 @@ const timeInSeconds = (timeString) => {
                       </CTable>
                     </Card>
                   </Box>
-                  </div>
-                //   <Box sx={{ width: '100%', mt: 2 }}>
-                //     <Paper sx={{ width: '100%', mb: 2 }}>
-                //       <Toolbar
-                //         sx={{
-                //           pl: { sm: 4 },
-                //           pr: { xs: 2, sm: 2 },
-                //           pt: 2,
-                //           mb: 2,
-                //         }}
-                //       >
-                //         {companies.map((company) => (
-                //           <Typography
-                //             sx={{ flex: '1 1 100%', color: 'blue' }}
-                //             variant="h4"
-                //             id="tableTitle"
-                //             component="div"
-                //             key={company.id}
-                //           >
-                //             {company.company_name}
-                //             <span style={{ fontSize: 'medium', color: 'gray', ml: 4 }}>{company.city}</span>
-                //           </Typography>
-                //         ))}{' '}
-                //         <Tooltip title="Generate CSV Report">
-                //           <IconButton>
-                //             <FileDownloadIcon onClick={handleDownloadCSV} />
-                //           </IconButton>
-                //         </Tooltip>
-                //         <Tooltip title="Generate PDF Report">
-                //           <IconButton>
-                //             <PictureAsPdfSharpIcon onClick={handleDownloadPDF} />
-                //           </IconButton>
-                //         </Tooltip>
-                //       </Toolbar>
+                  <Box sx={{ width: '100%', mt: 2 }}>
+                    <Paper sx={{ width: '100%', mb: 2 }}>
+                      <Toolbar
+                        sx={{
+                          pl: { sm: 4 },
+                          pr: { xs: 2, sm: 2 },
+                          pt: 2,
+                          mb: 2,
+                        }}
+                      >
+                        {companies.map((company) => (
+                          <Typography
+                            sx={{ flex: '1 1 100%', color: 'blue' }}
+                            variant="h4"
+                            id="tableTitle"
+                            component="div"
+                            key={company.id}
+                          >
+                            {company.company_name}
+                            <span style={{ fontSize: 'medium', color: 'gray', ml: 4 }}>{company.city}</span>
+                          </Typography>
+                        ))}{' '}
+                        <Tooltip title="Generate CSV Report">
+                          <IconButton>
+                            <FileDownloadIcon onClick={handleDownloadCSV} />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Generate PDF Report">
+                          <IconButton>
+                            <PictureAsPdfSharpIcon onClick={handleDownloadPDF} />
+                          </IconButton>
+                        </Tooltip>
+                      </Toolbar>
         
-                //       <Box className="row" style={{ width: '90%', margin: 'auto' }}>
-                //         <Box className="col-md-6">
-                //           <Typography variant="h5" sx={head}>
-                //             EMPLOYEE NAME
-                //           </Typography>
-                //           <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                //             {currentUser[0].name}
-                //           </Typography>
-                //         </Box>
-                //         <Box className="col-md-6">
-                //           <Typography variant="h5" sx={head}>
-                //             MONTH DATE RANGE
-                //           </Typography>
-                //           <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                //             {month}
-                //           </Typography>
-                //         </Box>
-                //       </Box>
+                      <Box className="row" style={{ width: '90%', margin: 'auto' }}>
+                        <Box className="col-md-6">
+                          <Typography variant="h5" sx={head}>
+                            EMPLOYEE NAME
+                          </Typography>
+                          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                            {currentUser[0].name}
+                          </Typography>
+                        </Box>
+                        <Box className="col-md-6">
+                          <Typography variant="h5" sx={head}>
+                            DATE RANGE
+                          </Typography>
+                          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                            {fromSelectedDate}-{toSelectedDate}
+                          </Typography>
+                        </Box>
+                      </Box>
         
-                //       <div style={{ width: '90%', margin: 'auto', justifyItems: 'center' }}>
-                //         <TableContainer>
-                //           <Table sx={{ minWidth: 650, mb: 4 }}>
-                //             <TableHead>
-                //               <TableRow>
-                //                 <TableCell sx={tableHeaderCellStyle}>DATE</TableCell>
-                //                 <TableCell sx={tableHeaderCellStyle}>TOTAL DAY HOURS</TableCell>
-                //                 <TableCell sx={tableHeaderCellStyle}>PROJECTS</TableCell>
-                //               </TableRow>
-                //             </TableHead>
-                //             <TableBody>
-                //               {monthlyReportData.map((item) => (
-                //                 <TableRow key={item.date}>
-                //                   <TableCell style={{ fontSize: 'large' }}>{item.date}</TableCell>
-                //                   <TableCell style={{ fontSize: 'large' }}>
-                //                     {item.totalWorkingHourOfDay}
-                //                   </TableCell>
-                //                   <TableCell>
-                //                     <Table>
-                //                       <TableHead>
-                //                         <TableRow>
-                //                           <TableCell sx={tableHeaderCellStyle}>PROJECT</TableCell>
-                //                           <TableCell sx={tableHeaderCellStyle}>HOURS</TableCell>
-                //                           <TableCell sx={tableHeaderCellStyle}>ACTIVITY</TableCell>
-                //                         </TableRow>
-                //                       </TableHead>
-                //                       <TableBody>
-                //                         {item.projects.map((project, index) => (
-                //                           <TableRow key={index}>
-                //                             <TableCell>{project.project}</TableCell>
-                //                             <TableCell>{project.HOURS}</TableCell>
-                //                             <TableCell>{project.ACTIVITY}</TableCell>
-                //                           </TableRow>
-                //                         ))}
-                //                       </TableBody>
-                //                     </Table>
-                //                   </TableCell>
-                //                 </TableRow>
-                //               ))}
-                //             </TableBody>
-                //           </Table>
-                //         </TableContainer>
-                //       </div>
-                //     </Paper>
-                //   </Box>
-                // </div>
-                // <Card>Report</Card>
+                      <div style={{ width: '90%', margin: 'auto', justifyItems: 'center' }}>
+                        <TableContainer>
+                          <Table sx={{ minWidth: 650, mb: 4 }}>
+                            <TableHead>
+                              <TableRow>
+                                <TableCell sx={tableHeaderCellStyle}>DATE</TableCell>
+                                <TableCell sx={tableHeaderCellStyle}>TOTAL DAY HOURS</TableCell>
+                                <TableCell sx={tableHeaderCellStyle}>PROJECTS</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {report.map((item) => (
+                                <TableRow key={item.date}>
+                                  <TableCell style={{ fontSize: 'large' }}>{item.date}</TableCell>
+                                  <TableCell style={{ fontSize: 'large' }}>
+                                    {item.totalWorkingHourOfDay}
+                                  </TableCell>
+                                  <TableCell>
+                                    <Table>
+                                      <TableHead>
+                                        <TableRow>
+                                          <TableCell sx={tableHeaderCellStyle}>PROJECT</TableCell>
+                                          <TableCell sx={tableHeaderCellStyle}>HOURS</TableCell>
+                                          <TableCell sx={tableHeaderCellStyle}>ACTIVITY</TableCell>
+                                        </TableRow>
+                                      </TableHead>
+                                      <TableBody>
+                                        {item.projects.map((project, index) => (
+                                          <TableRow key={index}>
+                                            <TableCell>{project.project}</TableCell>
+                                            <TableCell>{project.HOURS}</TableCell>
+                                            <TableCell>{project.ACTIVITY}</TableCell>
+                                          </TableRow>
+                                        ))}
+                                      </TableBody>
+                                    </Table>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      </div>
+                    </Paper>
+                  </Box>
+                </div>
               )
               )
             )
