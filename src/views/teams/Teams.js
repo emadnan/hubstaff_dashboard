@@ -24,6 +24,7 @@ const Team = () => {
   const [user_id, setUserId] = useState('')
   const [hasusers, setHasUsers] = useState([])
   const [team_members, setAllTeamMembers] = useState([])
+  const [user_role , setUserRole] = useState('')
   var filteredUsers = []
 
   //Local Storage data
@@ -95,6 +96,11 @@ const Team = () => {
     left: '55%',
     transform: 'translateX(-50%)',
   }
+
+  useEffect(() => {
+    setUserId(local.Users.id)
+    setUserRole(local.Users.role) 
+  } , [])
 
   // Functions for Add Team Modal
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -367,6 +373,8 @@ const Team = () => {
           filteredUsers = data.Teams
         } else if (perm.some((item) => item.name === 'Company_Data')) {
           filteredUsers = data.Teams.filter((tem) => tem.company_id === local.Users.company_id)
+        } else if (perm.some((item) => item.name === 'ProjectManager_Data')) {
+          filteredUsers = data.Teams.filter((tem) => tem.team_lead_id === local.Users.id)
         }
         setTeams(filteredUsers)
       })
@@ -424,6 +432,8 @@ const Team = () => {
           filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && user.email !== local.Users.email)
         } else if (perm.some((item) => item.name === 'User_Data')) {
           filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
+        } else if (perm.some((item) => item.name === 'User_Data') && perm.some((item) => item.name === 'ProjectManager_Data')) {
+          filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
         }
         setUsers(filteredUsers)
       })
@@ -436,6 +446,7 @@ const Team = () => {
       .then((response) => response.json())
       .then((data) => {
           filteredUsers = data.team
+          console.log(data.team);
         setAllTeamMembers(filteredUsers)
       })
       .catch((error) => console.log(error))
@@ -447,7 +458,6 @@ const Team = () => {
       .then((data) => {
         const temp_array = data.users.map((element) => element.user_id)
         setHasUsers(temp_array)
-        console.log(temp_array)
       })
       .catch((error) => console.log(error))
   }
@@ -865,11 +875,19 @@ const Team = () => {
                           option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                         }
                       >
-                        {users.map((user) => (
-                          <Select.Option value={user.id} key={user.id}>
-                            {user.name}
-                          </Select.Option>
-                        ))}
+                      {
+                          user_role === 6 || user_role === 7 ? 
+                          team_members.map((user) => (
+                            <Select.Option value={user.id} key={user.id}>
+                              {user.name}
+                            </Select.Option>
+                          )) :
+                          users.map((user) => (
+                            <Select.Option value={user.id} key={user.id}>
+                              {user.name}
+                            </Select.Option>
+                          ))
+                        }
                       </Select>
                     </Form.Item>
                   </div>
@@ -901,7 +919,9 @@ const Team = () => {
               <Divider></Divider>
             </div>
 
-            {users.filter((project) => {
+            {
+              user_role === 6 || user_role === 7 ?
+            team_members.filter((project) => {
               // Apply User filter
               if (selectedUser !== '') {
                 return project.id === selectedUser
@@ -927,7 +947,35 @@ const Team = () => {
                   &nbsp;
                   <Divider></Divider>
                 </div>
-              ))}
+              )) : 
+              users.filter((project) => {
+                // Apply User filter
+                if (selectedUser !== '') {
+                  return project.id === selectedUser
+                }
+                return true
+              })
+                .map((user, index) => (
+                  <div className="row" key={user.id}>
+                    <div className="col md-2 text-center">
+                      <h6 style={perStyle}>{index + 1}</h6>
+                    </div>
+                    <div className="col md-3"></div>
+                    <div className="col md-2 text-center">
+                      <h6 style={perStyle}>{user.name}</h6>
+                    </div>
+                    <div className="col md-3"></div>
+                    <div className="col md-2 text-center">
+                      <Checkbox
+                        checked={selectedUsers.includes(user.id)}
+                        onChange={(e) => handleSelectUser(e, user.id)}
+                      />
+                    </div>
+                    &nbsp;
+                    <Divider></Divider>
+                  </div>
+                ))
+            }
           </Modal>
 
           {/* Modal for Deletion Confirmation */}
