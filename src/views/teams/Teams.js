@@ -445,7 +445,7 @@ const Team = () => {
     await fetch(`${BASE_URL}/api/get-user-by-team-lead-id/${teamLeadId}`)
       .then((response) => response.json())
       .then((data) => {
-          filteredUsers = data.team
+          filteredUsers = data.team_users
           console.log(data.team);
         setAllTeamMembers(filteredUsers)
       })
