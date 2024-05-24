@@ -6,16 +6,23 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd'
 import Alert from '@mui/material/Alert'
+import { PlusCircleIcon } from '@heroicons/react/24/outline'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 const Team = () => {
   //Variable Declarations
   const [team_name, setTeamName] = useState('')
+  const [team_id, setTeamId] = useState('')
+  const [group_name, setGroupName] = useState('')
   const [description, setDescription] = useState('')
+  const [group_description, setGroupDescription] = useState('')
   const [department_id, setDepartmentId] = useState('');
   const [team_lead_id, setTeamLeadId] = useState('');
+  const [group_lead_id, setGroupLeadId] = useState('');
   const [teams, setTeams] = useState([])
+  const [groups, setGroups] = useState([])
   const [byteam, setTeamById] = useState([])
+  const [byGroup, setGroupById] = useState([])
   const [selectedUsers, setSelectedUsers] = useState([])
   const [department, setDepartment] = useState([])
   const [byusers, setByUsers] = useState([])
@@ -24,8 +31,13 @@ const Team = () => {
   const [user_id, setUserId] = useState('')
   const [hasusers, setHasUsers] = useState([])
   const [team_members, setAllTeamMembers] = useState([])
+  const [filtered_members, setFilteredMembers] = useState([])
   const [user_role , setUserRole] = useState('')
+  const [default_group , setDefaultGroup] = useState(true)
+  const [show_all , setShowALLButton] = useState(false)
+  const [hide_all , setHideALLButton] = useState(true)
   var filteredUsers = []
+  var filteredTeamMembers= []
 
   //Local Storage data
   const local = JSON.parse(localStorage.getItem('user-info'))
@@ -39,7 +51,10 @@ const Team = () => {
   const isCreateButtonEnabled = perm.some((item) => item.name === 'Create_Team')
   const isEditButtonEnabled = perm.some((item) => item.name === 'Update_Team')
   const isDeleteButtonEnabled = perm.some((item) => item.name === 'Delete_Team')
-
+  const isCreateGroupButtonEnabled = perm.some((item) => item.name === 'Create_Group')
+  const isEditGroupButtonEnabled = perm.some((item) => item.name === 'Update_Group')
+  const isDeleteGroupButtonEnabled = perm.some((item) => item.name === 'Delete_Group')
+  const isAssignGroupEnabled = perm.some((item) => item.name === 'Assign_Users_To_Group')
   let [form] = Form.useForm()
 
   //CSS Styling
@@ -119,6 +134,8 @@ const Team = () => {
     setDescription('')
   }
 
+  
+
   // Functions for Delete Team Modal
   const [isModalOpen2, setIsModalOpen2] = useState(false)
   const showModal2 = (id) => {
@@ -133,6 +150,22 @@ const Team = () => {
   const handleCancel2 = () => {
     setIsModalOpen2(false)
   }
+
+   // Functions for Delete Group Modal
+   const [isModalOpen8, setIsModalOpen8] = useState(false)
+   const showModal8 = (id) => {
+     setIsModalOpen8(id)
+   }
+ 
+   const handleOk8 = () => {
+     deleteGroup(isModalOpen8)
+     setIsModalOpen8(false)
+   }
+ 
+   const handleCancel8 = () => {
+     setIsModalOpen8(false)
+   }
+ 
 
   // Functions for Update Team Modal
   const [isModalOpen3, setIsModalOpen3] = useState(false)
@@ -154,6 +187,26 @@ const Team = () => {
     setDescription('')
   }
 
+   // Functions for Update Group Modal
+   const [isModalOpen7, setIsModalOpen7] = useState(false)
+   const showModal7 = (id) => {
+     getGroupById(id)
+     setIsModalOpen7(id)
+   }
+ 
+   const handleOk7 = () => {
+     updateGroup(isModalOpen7)
+     setIsModalOpen7(false)
+     setGroupName('')
+     setGroupDescription('')
+   }
+ 
+   const handleCancel7 = () => {
+     setIsModalOpen7(false)
+     setGroupName('')
+     setGroupDescription('')
+   }
+
   // Functions for Assign Users to Team
   const [isModalOpen4, setIsModalOpen4] = useState(false)
   const showModal4 = (id) => {
@@ -168,6 +221,39 @@ const Team = () => {
 
   const handleCancel4 = () => {
     setIsModalOpen4(false)
+  }
+
+   // Functions for Add Group Modal
+   const [isModalOpen5, setIsModalOpen5] = useState(false)
+   const showModal5 = () => {
+     setIsModalOpen5(true)
+   }
+   const handleOk5 = () => {
+     addGroup()
+     setIsModalOpen5(false)
+     setGroupName('')
+     setGroupDescription('')
+   }
+   const handleCancel5 = () => {
+     setIsModalOpen5(false)
+     setGroupName('')
+     setGroupDescription('')
+   }
+
+   // Functions for Assign Users to Group
+  const [isModalOpen6, setIsModalOpen6] = useState(false)
+  const showModal6 = (teamId , groupId) => {
+    getHasUsers(teamId)
+    setIsModalOpen6(groupId)
+  }
+
+  const handleOk6 = () => {
+    assignUsersToGroup(isModalOpen6)
+    setIsModalOpen6(false)
+  }
+
+  const handleCancel6 = () => {
+    setIsModalOpen6(false)
   }
 
   // Functions for Add Team Success
@@ -377,6 +463,19 @@ const Team = () => {
           filteredUsers = data.Teams.filter((tem) => tem.team_lead_id === local.Users.id)
         }
         setTeams(filteredUsers)
+        setTeamId(filteredUsers[0].id)
+        getGroups(filteredUsers[0].id)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  function getGroups(team_id) {
+    fetch(`${BASE_URL}/api/get-group-by-team-id/${team_id}`)
+      .then((response) => response.json())
+      .then((data) => {
+          filteredUsers = data.groups
+          setGroups(filteredUsers)
+          handleDefaultMembers()
       })
       .catch((error) => console.log(error))
   }
@@ -390,6 +489,18 @@ const Team = () => {
         setDescription(data.Team[0].description)
         setDepartmentId(data.Team[0].department_id)
         setTeamLeadId(data.Team[0].team_lead_id)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  function getGroupById(id) {
+    fetch(`${BASE_URL}/api/get-group-by-id/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setGroupById(data.group)
+        setGroupName(data.group[0].team_name)
+        setGroupDescription(data.group[0].description)
+        setGroupLeadId(data.Team[0].group_lead_id)
       })
       .catch((error) => console.log(error))
   }
@@ -445,9 +556,10 @@ const Team = () => {
     await fetch(`${BASE_URL}/api/get-user-by-team-lead-id/${teamLeadId}`)
       .then((response) => response.json())
       .then((data) => {
-          filteredUsers = data.team_users
+          filteredUsers = data.team
           console.log(data.team);
         setAllTeamMembers(filteredUsers)
+        getTeams()
       })
       .catch((error) => console.log(error))
   }
@@ -484,9 +596,55 @@ const Team = () => {
       })
   }
 
+  async function addGroup() {
+    let addGroup = {team_id, group_name, company_id: local.Users.company_id, group_description, group_lead_id }
+    await fetch(`${BASE_URL}/api/create-group`, {
+      method: 'POST',
+      body: JSON.stringify(addGroup),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          handleButtonClick1()
+          getTeams()
+        } else {
+          handleButtonClick2()
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
+
   // Delete API call
   async function deleteTeam(newid) {
     await fetch(`${BASE_URL}/api/delete-team/${newid}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // body: JSON.stringify({
+      //   id: newid,
+      // }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          handleButtonClick3()
+          getTeams()
+        } else {
+          handleButtonClick4()
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
+
+  // Delete API call
+  async function deleteGroup(newid) {
+    await fetch(`${BASE_URL}/api/delete-group/${newid}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -536,6 +694,33 @@ const Team = () => {
       })
   }
 
+  async function updateGroup(newid) {
+    await fetch(`${BASE_URL}/api/update-group/${newid}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        group_name: group_name,
+        team_id: team_id,
+        description: group_description,
+        company_id: local.Users.company_id,
+        group_lead_id: group_lead_id,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          handleButtonClick5()
+          getTeams()
+        } else {
+          handleButtonClick6()
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
+
   //Assign Users to Team API call
   async function assignUsersToTeam(newid) {
     await fetch(`${BASE_URL}/api/team-has-users`, {
@@ -560,6 +745,31 @@ const Team = () => {
       })
   }
 
+  //Assign Users to Group API call
+  async function assignUsersToGroup(newid) {
+    await fetch(`${BASE_URL}/api/group-has-users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        group_id: newid,
+        user_ids: selectedUsers,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          getTeams()
+          handleButtonClick7()
+        } else {
+          handleButtonClick8()
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
+
   const handleDepartmentChange = (value) => {
     setDepartmentId(value)
   }
@@ -568,10 +778,40 @@ const Team = () => {
     setTeamLeadId(value)
   }
 
+  const handleGroupLeadChange = (value) => {
+    setGroupLeadId(value)
+  }
+
   const handleUserSelect = (value) => {
     setSelectedUser(value)
   }
 
+  // const handleDefaultMembers = () => {
+  //   const groupFilteredMembers = team_members;
+  //   groups.forEach((group) => {
+  //     const groupUserIds = group.users.map(user => user.id);
+  //     groupFilteredMembers = groupFilteredMembers.filter(member => !groupUserIds.includes(member.id));
+      
+  //     filteredTeamMembers = filteredTeamMembers.concat(groupFilteredMembers);
+  //   });
+  //   setFilteredMembers(filteredTeamMembers);
+    
+  //   if(filteredTeamMembers.length === 0){
+  //     setDefaultGroup(false)
+  //   }
+  //   else {
+  //     setDefaultGroup(true)
+  //   }
+  //   console.log(filteredTeamMembers);
+  //   filteredTeamMembers = []
+  //   console.log(team_members);
+  //   }
+
+    const handleDefaultMembers = () => {
+      default_group === false ? setDefaultGroup(true) : setDefaultGroup(false)
+      show_all === true ? setShowALLButton(false) : setShowALLButton(true)
+      hide_all === false ? setHideALLButton(true) : setHideALLButton(false)
+    }
   // const handleFocus = (e) => {
   //   const { name } = e.target
 
@@ -589,7 +829,12 @@ const Team = () => {
           <h3>Teams</h3>
         </div>
         <div className="col-md 6">
-          {/* Add Teams Button */}
+          {/* Add Buttons */}
+          {isCreateGroupButtonEnabled ? (
+              <Button className="btn btn-primary ml-1" style={buttonStyle} onClick={showModal5}>
+              Add Group
+            </Button>
+          ) : null}
           {isCreateButtonEnabled ? (
             <Button className="btn btn-primary" style={buttonStyle} onClick={showModal}>
               Add Team
@@ -654,20 +899,83 @@ const Team = () => {
             </CTableRow>
           ))}
         </CTableHead> ) : 
-        ( <CTableHead color="light">
+        ( <>
+        <CTableHead color="light">
         {/* Teams table heading */}
         <CTableRow>
           <CTableHeaderCell className="text-center" style={mystyle}>
             Sr/No
           </CTableHeaderCell>
-          <CTableHeaderCell className="text-center" style={mystyle}>
+          <CTableHeaderCell className="text-center flex flex-row" style={mystyle}>
             Member Name
           </CTableHeaderCell>
         </CTableRow>
-
+        </CTableHead>
         {/* Get API Users */}
-        {team_members.map((tem, index) => (
-          <CTableRow key={tem.id}>
+      {
+        groups?.map((group , group_index)=> (
+            <CTableHead color="light" key={group.id}>
+          <CTableRow>
+            <CTableHeaderCell className="text-end pl-0" style={mystyle2}>
+              {group.group.group_name}
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-end" style={mystyle2}>
+              {
+                isAssignGroupEnabled ? (
+                  <IconButton aria-label="Assign Team" onClick={() => showModal6(group.group.team_id , group.group.id)}>
+                    <AssignmentIndIcon htmlColor="#0070ff" />
+                  </IconButton>
+                ) : null
+              }
+                
+                  {isEditGroupButtonEnabled ? (
+                      <IconButton
+                        aria-label="update"
+                        onClick={() => showModal7(group.group.id)}
+                      >
+                        <EditIcon htmlColor="#28B463" />
+                      </IconButton>
+                    ) : null}
+                    {isDeleteGroupButtonEnabled ? (
+                      <IconButton
+                        aria-label="delete"
+                        onClick={() => showModal8(group.group.id)}
+                      >
+                        <DeleteIcon htmlColor="#FF0000" />
+                      </IconButton>
+                    ) : null}
+            </CTableHeaderCell>
+          </CTableRow>
+        {
+          group.users?.map((member , index) =>(
+            <CTableRow key={member.id}>
+            <CTableHeaderCell className="text-center" style={mystyle2}>
+              {index + 1}
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle2}>
+              {member.name}
+            </CTableHeaderCell>
+          </CTableRow>
+          ))
+        }
+        </CTableHead>
+        ))
+      }
+      <CTableHead>
+      {/* {
+          default_group ? (
+            <CTableRow>
+            <CTableHeaderCell className="text-end pl-0" style={mystyle2}>
+             Default Group
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-end" style={mystyle2}>
+            </CTableHeaderCell>
+          </CTableRow>
+          ) : null
+        }
+        {
+          filtered_members.map((tem , index) => (
+            <CTableRow key={tem.id}>
             <CTableHeaderCell className="text-center" style={mystyle2}>
               {index + 1}
             </CTableHeaderCell>
@@ -675,8 +983,41 @@ const Team = () => {
               {tem.name}
             </CTableHeaderCell>
           </CTableRow>
-        ))}
-      </CTableHead> )
+          ))
+        } */}
+        </CTableHead>
+        { default_group ? (
+            <CTableHead>
+              <CTableRow>
+            <CTableHeaderCell className="text-end" style={mystyle2}>
+              ALL TEAM MEMBERS
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-end" style={mystyle2}>
+            </CTableHeaderCell>
+              </CTableRow>
+                {
+          team_members.map((tem , index) => (
+            <CTableRow key={tem.id}>
+            <CTableHeaderCell className="text-center" style={mystyle2}>
+              {index + 1}
+            </CTableHeaderCell>
+            <CTableHeaderCell className="text-center" style={mystyle2}>
+              {tem.name}
+            </CTableHeaderCell>
+          </CTableRow>
+          ))
+        }
+            </CTableHead>):null
+          
+        }
+       {
+        show_all ? 
+        <div className='w-full text-end text-primary font-bold' style={{cursor:'pointer'}} onClick={handleDefaultMembers}>show all</div>
+        :
+        <div className='w-full text-end text-primary font-bold' style={{cursor:'pointer'}} onClick={handleDefaultMembers}>hide all</div>
+      }
+     </>
+       )
       }
         <CTableBody>
           {/* Modal for Add Team */}
@@ -766,6 +1107,124 @@ const Team = () => {
                 </Select>
               </Form.Item>
             </div>
+          </Modal>
+
+          {/* Modal for Add Group */}
+          <Modal
+            title="Add a Group"
+            open={isModalOpen5}
+            onOk={handleOk5}
+            onCancel={handleCancel5}
+            okButtonProps={{ style: { background: 'blue' } }}
+            style={modalStyle}
+            maskClosable={false}
+          >
+            <br></br>
+
+            <div className="form-outline mb-3">
+              <label>Group Name</label>
+              <input
+                type="text"
+                value={group_name}
+                onChange={(e) => setGroupName(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Group Name"
+              />
+            </div>
+
+            <div className="form-outline mb-3">
+              <label>Description</label>
+              <input
+                type="text"
+                value={group_description}
+                onChange={(e) => setGroupDescription(e.target.value)}
+                className="form-control form-control-lg"
+                placeholder="Enter Description"
+              />
+            </div>
+            <div className="form-outline mt-3">
+                  <label>Group Lead</label>
+                  <Form.Item
+                  >
+                    <Select
+                      name="groupLead"
+                      placeholder="Select Group Lead"
+                      // onFocus={handleFocus}
+                      onChange={handleGroupLeadChange}
+                      value={group_lead_id}
+                    >
+                      {team_members.map((user) => (
+                        <Select.Option value={user.id} key={user.id}>
+                          {user.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+          </Modal>
+
+          {/* Modal for Update Group */}
+          <Modal
+            title="Update a Group"
+            open={isModalOpen7}
+            onOk={handleOk7}
+            onCancel={handleCancel7}
+            okButtonProps={{ style: { background: 'blue' } }}
+            style={modalStyle}
+            maskClosable={false}
+          >
+            <br></br>
+            {
+              byGroup.map((group) => (
+                <div key={group.id}>
+                <div className="form-outline mb-3">
+                  <label>Group Name</label>
+                  <input
+                    type="text"
+                    defaultValue={group.group_name}
+                    onChange={(e) => setGroupName(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Group Name"
+                  />
+                </div>
+
+                <div className="form-outline mb-3">
+                  <label>Description</label>
+                  <input
+                    type="text"
+                    defaultValue={group.description}
+                    onChange={(e) => setGroupDescription(e.target.value)}
+                    className="form-control form-control-lg"
+                    placeholder="Enter Description"
+                  />
+                </div>
+
+                <div className="form-outline mt-3">
+                  <label>Group Lead</label>
+                  <Form.Item
+                  // validateStatus={formErrors.department_id ? 'error' : ''}
+                  // help={formErrors.department_id}
+                  >
+                    <Select
+                      name="GroupLead"
+                      placeholder="Select Group Lead"
+                      // onFocus={handleFocus}
+                      onChange={handleGroupLeadChange}
+                      value={group_lead_id}
+                    >
+                      {team_members.map((user) => (
+                        <Select.Option value={user.id} key={user.id}>
+                          {user.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+
+              </div>
+              ))
+              
+            }
           </Modal>
 
           {/* Modal for Update Team */}
@@ -978,12 +1437,150 @@ const Team = () => {
             }
           </Modal>
 
+          {/* Modal for Assign User to Group */}
+          <Modal
+            title=""
+            open={isModalOpen6}
+            onOk={handleOk6}
+            onCancel={handleCancel6}
+            okButtonProps={{ style: { background: 'blue' } }}
+          >
+            <h3 style={headStyle2}>Assign Users</h3>
+            <br></br>
+            <div className="col-md-3" style={{ width: '1500px' }}>
+              <Form form={form} className="d-flex w-200">
+                <div className="col-md-3">
+                  <div className="d-flex align-items-center">
+                    <Form.Item name="userSelect" hasFeedback style={{ width: '100%' }}>
+                      <Select
+                        showSearch
+                        placeholder="Select User"
+                        onChange={handleUserSelect}
+                        value={user_id}
+                        filterOption={(input, option) =>
+                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                      >
+                      {
+                          user_role === 6 || user_role === 7 ? 
+                          team_members.map((user) => (
+                            <Select.Option value={user.id} key={user.id}>
+                              {user.name}
+                            </Select.Option>
+                          )) :
+                          users.map((user) => (
+                            <Select.Option value={user.id} key={user.id}>
+                              {user.name}
+                            </Select.Option>
+                          ))
+                        }
+                      </Select>
+                    </Form.Item>
+                  </div>
+                </div>
+
+                <div className="col-md-4">
+                  <div className="d-flex align-items-center">
+                    <Button type="default" onClick={clearFilter} className="ml-2">
+                      Clear Filter
+                    </Button>
+                  </div>
+                </div>
+              </Form>
+            </div>
+            <br></br>
+            <div className="row">
+              <div className="col md-2 text-center">
+                <h6>Sr/No</h6>
+              </div>
+              <div className="col md-3"></div>
+              <div className="col md-2 text-center">
+                <h6>Users</h6>
+              </div>
+              <div className="col md-3"></div>
+              <div className="col md-2 text-center">
+                <h6 style={heading}>Select</h6>
+              </div>
+              &nbsp;
+              <Divider></Divider>
+            </div>
+
+            {
+              user_role === 6 || user_role === 7 ?
+            team_members.filter((project) => {
+              // Apply User filter
+              if (selectedUser !== '') {
+                return project.id === selectedUser
+              }
+              return true
+            })
+              .map((user, index) => (
+                <div className="row" key={user.id}>
+                  <div className="col md-2 text-center">
+                    <h6 style={perStyle}>{index + 1}</h6>
+                  </div>
+                  <div className="col md-3"></div>
+                  <div className="col md-2 text-center">
+                    <h6 style={perStyle}>{user.name}</h6>
+                  </div>
+                  <div className="col md-3"></div>
+                  <div className="col md-2 text-center">
+                    <Checkbox
+                      checked={selectedUsers.includes(user.id)}
+                      onChange={(e) => handleSelectUser(e, user.id)}
+                    />
+                  </div>
+                  &nbsp;
+                  <Divider></Divider>
+                </div>
+              )) : 
+              users.filter((project) => {
+                // Apply User filter
+                if (selectedUser !== '') {
+                  return project.id === selectedUser
+                }
+                return true
+              })
+                .map((user, index) => (
+                  <div className="row" key={user.id}>
+                    <div className="col md-2 text-center">
+                      <h6 style={perStyle}>{index + 1}</h6>
+                    </div>
+                    <div className="col md-3"></div>
+                    <div className="col md-2 text-center">
+                      <h6 style={perStyle}>{user.name}</h6>
+                    </div>
+                    <div className="col md-3"></div>
+                    <div className="col md-2 text-center">
+                      <Checkbox
+                        checked={selectedUsers.includes(user.id)}
+                        onChange={(e) => handleSelectUser(e, user.id)}
+                      />
+                    </div>
+                    &nbsp;
+                    <Divider></Divider>
+                  </div>
+                ))
+            }
+          </Modal>
+
+
           {/* Modal for Deletion Confirmation */}
           <Modal
             title="Are you sure you want to delete?"
             open={isModalOpen2}
             onOk={handleOk2}
             onCancel={handleCancel2}
+            okButtonProps={{ style: { background: 'blue' } }}
+            style={modalStyle}
+          ></Modal>
+
+             {/* Modal for Delete Group Confirmation */}
+             <Modal
+            title="Are you sure you want to delete?"
+            open={isModalOpen8}
+            onOk={handleOk8}
+            onCancel={handleCancel8}
             okButtonProps={{ style: { background: 'blue' } }}
             style={modalStyle}
           ></Modal>
