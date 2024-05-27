@@ -757,33 +757,6 @@ const Users = () => {
                 </Select>
               </Form.Item>
             </div>
-
-            <div className="form-outline mt-3">
-              <label>Team</label>
-              <Form.Item
-                name="teamSelect"
-                hasFeedback style={{ width: '100%' }}
-              // validateStatus={formErrors.department_id ? 'error' : ''}
-              // help={formErrors.department_id}
-              >
-                <Select
-                  placeholder="Select Team"
-                  onChange={handleTeamChange}
-                  value={team_id}
-                  showSearch
-                  // onFocus={handleFocus}
-                  filterOption={(input, option) =>
-                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                  }
-                >
-                  {team.map((team) => (
-                    <Select.Option value={team.id} key={team.id}>
-                      {team.team_name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
           </Form>
         </Modal>
 
@@ -832,25 +805,6 @@ const Users = () => {
                       {roles.map((user) => (
                         <Select.Option value={user.id} key={user.id}>
                           {user.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
-
-                <div className="form-outline mt-3">
-                  <label>Team</label>
-                  <Form.Item>
-                    <Select
-                      placeholder="Select Team"
-                      onChange={handleTeamChange}
-                      onFocus={handleFocus}
-                      defaultValue={user.team_id}
-                      name="team"
-                    >
-                      {team.map((tem) => (
-                        <Select.Option value={tem.id} key={tem.id}>
-                          {tem.team_name}
                         </Select.Option>
                       ))}
                     </Select>
