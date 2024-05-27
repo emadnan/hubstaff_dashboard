@@ -498,7 +498,7 @@ const Team = () => {
       .then((response) => response.json())
       .then((data) => {
         setGroupById(data.group)
-        setGroupName(data.group[0].team_name)
+        setGroupName(data.group[0].group_name)
         setGroupDescription(data.group[0].description)
         setGroupLeadId(data.Team[0].group_lead_id)
       })
@@ -996,7 +996,7 @@ const Team = () => {
             </CTableHeaderCell>
               </CTableRow>
                 {
-          team_members.map((tem , index) => (
+          team_members?.map((tem , index) => (
             <CTableRow key={tem.id}>
             <CTableHeaderCell className="text-center" style={mystyle2}>
               {index + 1}
@@ -1153,7 +1153,7 @@ const Team = () => {
                       onChange={handleGroupLeadChange}
                       value={group_lead_id}
                     >
-                      {team_members.map((user) => (
+                      {team_members?.map((user) => (
                         <Select.Option value={user.id} key={user.id}>
                           {user.name}
                         </Select.Option>
@@ -1212,7 +1212,7 @@ const Team = () => {
                       onChange={handleGroupLeadChange}
                       value={group_lead_id}
                     >
-                      {team_members.map((user) => (
+                      {team_members?.map((user) => (
                         <Select.Option value={user.id} key={user.id}>
                           {user.name}
                         </Select.Option>
@@ -1336,7 +1336,7 @@ const Team = () => {
                       >
                       {
                           user_role === 6 || user_role === 7 ? 
-                          team_members.map((user) => (
+                          team_members?.map((user) => (
                             <Select.Option value={user.id} key={user.id}>
                               {user.name}
                             </Select.Option>
@@ -1463,7 +1463,7 @@ const Team = () => {
                       >
                       {
                           user_role === 6 || user_role === 7 ? 
-                          team_members.map((user) => (
+                          team_members?.map((user) => (
                             <Select.Option value={user.id} key={user.id}>
                               {user.name}
                             </Select.Option>
