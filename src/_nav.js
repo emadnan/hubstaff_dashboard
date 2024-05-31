@@ -224,6 +224,12 @@ const _navAdmin = [
       },
       {
         component: CNavItem,
+        name: 'Custom Reports',
+        to: '/reports-customReports',
+        permission: 'Nav_CustomReports',
+      },
+      {
+        component: CNavItem,
         name: 'Monthly Reports',
         to: '/reports-monthly',
         permission: 'Nav_MonthlyReports',

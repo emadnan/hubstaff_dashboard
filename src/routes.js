@@ -26,6 +26,7 @@ const Schedules = React.lazy(() => import('./views/calendar/schedules/Schedules'
 const Timeoffrequests = React.lazy(() => import('./views/calendar/timeoffrequests/Timeoffrequests'))
 const Accountsowed = React.lazy(() => import('./views/reports/accountsowed/Accountsowed'))
 const Allreports = React.lazy(() => import('./views/reports/allreports/Allreports'))
+const CustomReports = React.lazy(() => import('./views/reports/customReports/CustomReports'))
 const Payments = React.lazy(() => import('./views/reports/payments/Payments'))
 const Timenactivity = React.lazy(() => import('./views/reports/timenactivity/Timenactivity'))
 const Monthly = React.lazy(() => import('./views/reports/monthly/Monthly'))
@@ -150,6 +151,12 @@ const routes = [
     name: 'All Reports',
     element: Allreports,
     requiredNavPermision: 'Nav_AllReports',
+  },
+  {
+    path: '/reports-customReports',
+    name: 'Custom Reports',
+    element: CustomReports,
+    requiredNavPermision: 'Nav_CustomReports',
   },
   {
     path: '/reports-payments',
