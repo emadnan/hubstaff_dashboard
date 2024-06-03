@@ -1,7 +1,8 @@
 import { React, useEffect, useState } from 'react'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
-import { Card, Divider, Button } from 'antd'
+import { Card, Divider, Button, Modal } from 'antd'
 import moment from 'moment'
+import { useNavigate } from 'react-router-dom'
 const BASE_URL = process.env.REACT_APP_BASE_URL
 const Dashboard = () => {
   //Local Storage data
@@ -50,6 +51,7 @@ const Dashboard = () => {
   const head = {
     color: '#6E6E6E',
     fontSize: 14,
+    cursor: 'pointer'
   }
 
   const subhead = {
@@ -68,12 +70,21 @@ const Dashboard = () => {
     flexDirection: 'row',
   }
 
+  const modalStyle = {
+    position: 'fixed',
+    top: '25%',
+    left: '40%',
+  }
+
+
   //Declarations for API calls
   const [users, setUsers] = useState([])
   const [projects, setProjects] = useState([])
   const [all_employees, setAllEmployees] = useState('')
-  const [online_employees, setOnlineEmployees] = useState('')
-  const [offline_employees, setOfflineEmployees] = useState('')
+  const [online_employees, setOnlineEmployees] = useState([])
+  const [offline_employees, setOfflineEmployees] = useState([])
+  const [online_employee_count, setOnlineEmployeeCount] = useState('')
+  const [offline_employee_count, setOfflineEmployeeCount] = useState('')
   const [departments, setDepartments] = useState([])
   const [clients, setClients] = useState([])
   const [screenshot, setScreenshot] = useState([])
@@ -89,7 +100,9 @@ const Dashboard = () => {
   const [totalweeklyhours, setTotalWeeklyHours] = useState('')
   const [totalweeklyminutes, setTotalWeeklyMinutes] = useState('')
   const [totalweeklyseconds, setTotalWeeklySeconds] = useState('')
-  const [team_leads, setTeamLeads] = useState('')
+  const [team_leads, setTeamLeads] = useState([])
+  const [teams, setTeams] = useState([])
+  const [team_leads_count, setTeamLeadsCount] = useState('')
   const [team_count, setTeamsCount] = useState('')
   const [company_id, setCompanyId] = useState('')
   const [role_id, setRoleId] = useState('')
@@ -99,6 +112,8 @@ const Dashboard = () => {
   const [offline_members , setOfflineMembers] = useState('')
   var screenfilter = []
   var filteredUsers = []
+
+  const navigate = useNavigate()
 
   //Initial rendering through useEffect
   useEffect(() => {
@@ -111,10 +126,12 @@ const Dashboard = () => {
     getAssigns()
     getWeeklyWorked()
     getEmployees()
-    getTeamLeads()
+    getTeamLeadsCount()
     getTodayDate()
     getTeamMembers()
     getTeamsCount()
+    getTeamLeads()
+    getTeams()
   }, [company_id])
 
   function getTodayDate () {
@@ -125,6 +142,54 @@ const Dashboard = () => {
     const todayDate = `${year}-${month}-${day}`
     setTodayDate(todayDate)
   }
+
+    // Functions for Team Lead Modal
+    const [teamLeadsModal, setIsTeamLeadModalOpen] = useState(false)
+    const showTeamLeadsModal = () => {
+      setIsTeamLeadModalOpen(true)
+    }
+    const handleTeamLeadsOk = () => {
+      setIsTeamLeadModalOpen(false)
+    }
+    const handleTeamLeadsCancel = () => {
+      setIsTeamLeadModalOpen(false)
+    }
+
+     // Functions for Team Modal
+     const [teamsModal, setIsTeamsModalOpen] = useState(false)
+     const showTeamsModal = () => {
+       setIsTeamsModalOpen(true)
+     }
+     const handleTeamsOk = () => {
+      setIsTeamsModalOpen(false)
+     }
+     const handleTeamsCancel = () => {
+      setIsTeamsModalOpen(false)
+     }
+
+     // Functions for Online Employees Modal
+     const [OnlineEmployeeModal, setIsOnlineEmployeeModalOpen] = useState(false)
+     const showOnlineEmployeeModal = () => {
+       setIsOnlineEmployeeModalOpen(true)
+     }
+     const handleOnlineEmployeeOk = () => {
+      setIsOnlineEmployeeModalOpen(false)
+     }
+     const handleOnlineEmployeeCancel = () => {
+      setIsOnlineEmployeeModalOpen(false)
+     }
+
+     // Functions for Offline Employees Modal
+     const [OfflineEmployeeModal, setIsOfflineEmployeeModalOpen] = useState(false)
+     const showOfflineEmployeeModal = () => {
+       setIsOfflineEmployeeModalOpen(true)
+     }
+     const handleOfflineEmployeeOk = () => {
+      setIsOfflineEmployeeModalOpen(false)
+     }
+     const handleOfflineEmployeeCancel = () => {
+      setIsOfflineEmployeeModalOpen(false)
+     }
 
   //GET API calls
   async function getCompanies() {
@@ -153,19 +218,29 @@ const Dashboard = () => {
         //   filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
         // }
         setAllEmployees(data.total_users)
-        setOnlineEmployees(data.online_users)
-        setOfflineEmployees(data.offline_users)
+        setOnlineEmployeeCount(data.online_users)
+        setOfflineEmployeeCount(data.offline_users)
        
       })
       .catch((error) => console.log(error))
   }
 
-  async function getTeamLeads() {
+  async function getTeamLeadsCount() {
     await fetch(`${BASE_URL}/api/get-team-leads-by-company/${company_id}`)
       .then((response) => response.json())
       .then((data) => {
-        setTeamLeads(data.teamLeads)
+        setTeamLeadsCount(data.teamLeads)
         console.log(data.teamLeads);
+      })
+      .catch((error) => console.log(error))
+  }
+
+  async function getTeamLeads() {
+    await fetch(`${BASE_URL}/api/get-team-leads-by-company-id/${company_id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setTeamLeads(data.team_leads)
+        console.log(data.team_leads);
       })
       .catch((error) => console.log(error))
   }
@@ -177,7 +252,21 @@ const Dashboard = () => {
       })
       .catch((error) => console.log(error))
   }
-  
+  async function getTeams() {
+    let filtered_teams = []
+    await fetch(`${BASE_URL}/api/get-teams`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (perm.some((item) => item.name === 'All_Data')) {
+          filtered_teams = data.Teams
+        } else if (perm.some((item) => item.name === 'Company_Data')) {
+          filtered_teams = data.Teams.filter((team) => team.company_id === local.Users.company_id)
+        }
+        setTeams(filtered_teams)
+      })
+      .catch((error) => console.log(error))
+  }
+ 
   async function getTeamMembers() {
     try {
         const response = await fetch(`${BASE_URL}/api/get-daily-report-of-both-offline-or-online/${user_id}/${today_date}`);
@@ -341,31 +430,31 @@ const Dashboard = () => {
             role_id === 3 ? (
              <>
             <div className="col-md-2">
-              <h6 style={head}>TOTAL PROJECTS</h6>
+              <h6 style={head} onClick={()=> {navigate(`/projectmanagement-projects`)}}>TOTAL PROJECTS</h6>
               <h3 style={subhead}>{perm.some((item) => item.name === 'Company_Data' || perm.some((item) => item.name === 'All_Data')) ? totalProjects : totalUserProjects}</h3>
             </div>
             <div className="col-md-2">
-              <h6 style={head}>EMPLOYEES</h6>
+              <h6 style={head} onClick={()=> {navigate(`/users-Users`)}}>EMPLOYEES</h6>
               <h3 style={subhead}>{all_employees}</h3>
             </div>
             <div className="col-md-2">
-                <h6 style={head}>TEAM LEADS</h6>
+                <h6 style={head} onClick={showTeamLeadsModal}>TEAM LEADS</h6>
                 <h3 style={subhead}>
-                  {team_leads}
+                  {team_leads_count}
                 </h3>
             </div>
             <div className="col-md-2">
               <h6 style={head}>ONLINE EMPLOYEES</h6>
-              <h3 style={subhead}>{online_employees}</h3>
+              <h3 style={subhead}>{online_employee_count}</h3>
             </div>
             <div className="col-md-2">
               <h6 style={head}>OFFLINE EMPLOYEES</h6>
               <h3 style={subhead}>
-                 {offline_employees}
+                 {offline_employee_count}
               </h3>
             </div>
             <div className="col-md-2">
-              <h6 style={head}>TEAMS</h6>
+              <h6 style={head} onClick={showTeamsModal}>TEAMS</h6>
               <h3 style={subhead}>{team_count}</h3>
             </div>
              </> 
@@ -635,9 +724,78 @@ const Dashboard = () => {
               </Button>
             </div>
           </Card>
-
           {/* Card for Assigned Project Modal Ends */}
+          {/* Modal for Team Leads*/}
+          <Modal
+            title="Team Leads"
+            open={teamLeadsModal}
+            onOk={handleTeamLeadsOk}
+            onCancel={handleTeamLeadsCancel}
+            okButtonProps={{ style: { background: 'blue' } }}
+            style={modalStyle}
+            maskClosable={false}
+          >
+            <br></br>
+            <div className='container my-2'>
+              <div className='row border'>
+                <div className='col-4 text-center border'>Name</div>
+                <div className='col-8 text-center border'>Email</div>
+              </div>
+            </div>
+            {
+              team_leads.map((teamLead , index) => (
+                <div key={index}>
+                  <div className='container'>
+                    <div className='row mb-1'>
+                      <div className='col-4 text-start border'>{teamLead.name}</div>
+                      <div className='col-8 text-start border'>{teamLead.email}</div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            }
 
+          </Modal>
+
+           {/* Modal for Teams*/}
+           <Modal
+            title="Teams"
+            open={teamsModal}
+            onOk={handleTeamsOk}
+            onCancel={handleTeamsCancel}
+            okButtonProps={{ style: { background: 'blue' } }}
+            style={modalStyle}
+            maskClosable={false}
+          >
+            <br></br>
+            <div className='container '>
+              <div className='row border my-2'>
+                <div className='col-6 text-center border'>Name</div>
+                <div className='col-6 text-center border'>Team Lead</div>
+              </div>
+            {
+              teams.map((team , index) => (
+                <div key={index}>
+                    <div className='row mb-1 border'>
+                      <div className='col-6 '>{team.team_name}</div>
+                      {
+                        team_leads.map((lead , lead_index) => (
+                          <div key={lead_index} className='col-6'>
+                            {
+                              lead.id === team.team_lead_id ? 
+                              <>
+                                <div>{lead.name}</div>
+                              </> : null
+                            }
+                          </div>
+                        ))
+                      }
+                    </div>
+                  </div>
+              ))
+            }
+          </div>
+          </Modal>
           <br></br>
         </div>
       </div>
