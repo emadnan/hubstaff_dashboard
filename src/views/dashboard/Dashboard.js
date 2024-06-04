@@ -71,9 +71,7 @@ const Dashboard = () => {
   }
 
   const modalStyle = {
-    position: 'fixed',
-    top: '25%',
-    left: '40%',
+   
   }
 
 
@@ -169,7 +167,8 @@ const Dashboard = () => {
 
      // Functions for Online Employees Modal
      const [OnlineEmployeeModal, setIsOnlineEmployeeModalOpen] = useState(false)
-     const showOnlineEmployeeModal = () => {
+     const showOnlineEmployeeModal = () => { 
+       getAllUsersReport()
        setIsOnlineEmployeeModalOpen(true)
      }
      const handleOnlineEmployeeOk = () => {
@@ -182,6 +181,7 @@ const Dashboard = () => {
      // Functions for Offline Employees Modal
      const [OfflineEmployeeModal, setIsOfflineEmployeeModalOpen] = useState(false)
      const showOfflineEmployeeModal = () => {
+       getAllUsersReport()
        setIsOfflineEmployeeModalOpen(true)
      }
      const handleOfflineEmployeeOk = () => {
@@ -275,19 +275,24 @@ const Dashboard = () => {
 
         setOnlineMembers(data.data.length)
         setOfflineMembers(data.offlineUsers.length)
-
-        // if (data.data.length === 0) {
-
-        // } else {
-        //     setExportDisable(false)
-        //     setNotFoundMessage(false);
-        //     console.log('Data', data)
-        //     setReport(data);
-        //     console.log('Report', report);
-        // }
     } catch (error) {
         console.log(error);
     }
+}
+
+async function getAllUsersReport() {
+  let filtered_online_users = []
+  let filtered_offline_users = []
+  await fetch(`${BASE_URL}/api/get-all-users-report-by-company-id/${company_id}/${today_date}`)
+    .then((response) => response.json())
+    .then((data) => {
+        filtered_online_users = data.data.filter((user) => user.status === 'online')
+        filtered_offline_users = data.data.filter((user) => user.status === 'offline')
+
+        setOfflineEmployees(filtered_offline_users)
+        setOnlineEmployees(filtered_online_users)
+    })
+    .catch((error) => console.log(error))
 }
 
   async function getProjects() {
@@ -444,11 +449,11 @@ const Dashboard = () => {
                 </h3>
             </div>
             <div className="col-md-2">
-              <h6 style={head}>ONLINE EMPLOYEES</h6>
+              <h6 style={head} onClick={showOnlineEmployeeModal}>ONLINE EMPLOYEES</h6>
               <h3 style={subhead}>{online_employee_count}</h3>
             </div>
             <div className="col-md-2">
-              <h6 style={head}>OFFLINE EMPLOYEES</h6>
+              <h6 style={head} onClick={showOfflineEmployeeModal}>OFFLINE EMPLOYEES</h6>
               <h3 style={subhead}>
                  {offline_employee_count}
               </h3>
@@ -795,6 +800,68 @@ const Dashboard = () => {
               ))
             }
           </div>
+          </Modal>
+
+          {/* Modal for online Employees*/}
+          <Modal
+            title="Online Employees"
+            open={OnlineEmployeeModal}
+            onOk={handleOnlineEmployeeOk}
+            onCancel={handleOnlineEmployeeCancel}
+            okButtonProps={{ style: { background: 'blue' } }}
+            style={modalStyle}
+            maskClosable={false}
+          >
+            <br></br>
+            <div className='container my-2'>
+              <div className='row border'>
+                <div className='col-4 text-center border'>Name</div>
+                <div className='col-8 text-center border'>Email</div>
+              </div>
+            </div>
+            {
+              online_employees.map((user , index) => (
+                <div key={index}>
+                  <div className='container'>
+                    <div className='row mb-1'>
+                      <div className='col-4 text-start border'>{user.name}</div>
+                      <div className='col-8 text-start border'>{user.email}</div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            }
+          </Modal>
+
+          {/* Modal for offline Employees*/}
+          <Modal
+            title="Offline Employees"
+            open={OfflineEmployeeModal}
+            onOk={handleOfflineEmployeeOk}
+            onCancel={handleOfflineEmployeeCancel}
+            okButtonProps={{ style: { background: 'blue' } }}
+            style={modalStyle}
+            maskClosable={false}
+          >
+            <br></br>
+            <div className='container my-2'>
+              <div className='row border'>
+                <div className='col-4 text-center border'>Name</div>
+                <div className='col-8 text-center border'>Email</div>
+              </div>
+            </div>
+            {
+              offline_employees.map((user , index) => (
+                <div key={index}>
+                  <div className='container'>
+                    <div className='row mb-1'>
+                      <div className='col-4 text-start border'>{user.name}</div>
+                      <div className='col-8 text-start border'>{user.email}</div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            }
           </Modal>
           <br></br>
         </div>

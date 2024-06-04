@@ -94,6 +94,9 @@ const Allreports = () => {
 
     const [selectedDate, setSelectedDate] = useState('')
     const [isAdminLogin, setIsAdminLogin] = useState(true)
+    const [isAllFilter , setIsAllFilter] = useState(true)
+    const [isOnlineFilter , setIsOnlineFilter] = useState(false)
+    const [isOfflineFilter , setIsOfflineFilter] = useState(false)
 
     useEffect(() => {
         if (perm.some((item) => item.name === 'Company_Data')) {
@@ -112,13 +115,35 @@ const Allreports = () => {
     setIsAdminLogin(true)
     setSelectedDate(dateString)
     setReport([])
-    console.log(dateString);
+    setOnlineUsers([])
+    setOfflineUsers([])
       setExportDisable(true)
 }
+  
+  const handleFilterChange = (value) => {
+    if(value === 'all') {
+      setIsAllFilter(true)
+      setIsOnlineFilter(false)
+      setIsOfflineFilter(false)
+    }
+    else if( value === 'online') {
+      setIsAllFilter(false)
+      setIsOnlineFilter(true)
+      setIsOfflineFilter(false)
+    }
+    else {
+      setIsAllFilter(false)
+      setIsOnlineFilter(false)
+      setIsOfflineFilter(true)
+    }
+
+  }
 
     // Array Declaration for API Calls
     const [users, setUsers] = useState([])
     const [report, setReport] = useState([])
+    const [online_users, setOnlineUsers] = useState([])
+    const [offline_users, setOfflineUsers] = useState([])
     const [user_id, setUserId] = useState('')
     const [notfoundmessage, setNotFoundMessage] = useState(true)
     const [export_disable, setExportDisable] = useState(true)
@@ -129,8 +154,12 @@ const Allreports = () => {
       getUsers(local.Users.company_id)
   }, [])
 
+  useEffect(() => {
+    console.log(report);
+  } ,[report])
+
   const handleExport = () => {
-        const modifiedReport = report.data.map((item) => (
+        const modifiedReport = (isAllFilter ? report.data : isOnlineFilter ? online_users : offline_users).map((item) => (
           item.totalHours ?
           {
           Name : item.name,
@@ -151,17 +180,7 @@ const Allreports = () => {
     
         const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
         const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
-        // if(selectedDate === null) {
-        //     const today = new Date()
-        //     const day = today.getDate()
-        //     const month = today.getMonth() + 1
-        //     const year = today.getFullYear()
-        //     const todayDate = `${year}-${month}-${day}`
-        //     saveAs(blob, `Report${[todayDate]}.xlsx`);
-        // }
-        // else {
-            saveAs(blob, `Report${[selectedDate]}.xlsx`);
-        // }
+        saveAs(blob, `Report${[selectedDate]}.xlsx`);
   }
 
 function fetchPromise(url) {
@@ -185,6 +204,10 @@ async function getReport() {
           setExportDisable(false)
           setNotFoundMessage(true);
           setReport(data)
+          let onlineUsers = data.data.filter((user) => user.status === 'online')
+          let offlineUsers = data.data.filter((user) => user.status === 'offline')
+          setOnlineUsers(onlineUsers)
+          setOfflineUsers(offlineUsers)
       }
   } catch (error) {
       console.log(error);
@@ -228,7 +251,7 @@ function getUsers(company_id) {
     <br></br>
     <div className="row mt-2 mb-2 justify-content-between">
         <div className="col-md-4">
-            <div className="d-flex align-items-center">
+             <div className="d-flex align-items-center">
                 <DatePicker
                     value={selectedDate ? dayjs(selectedDate, 'YYYY-MM-DD') : null}
                     onChange={onDateChange}
@@ -241,10 +264,34 @@ function getUsers(company_id) {
                 <Button type="default" onClick={getReport} className="ml-2">Get Report</Button>
             </div>
           </div>
+          <div className="col-md-4">
+              <Form.Item name="select" hasFeedback>
+                <Select
+                placeholder="SELECT FILTER"
+                onChange={handleFilterChange}
+                defaultValue='all'
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+                >
+                  <Select.Option value='all'>
+                    All Employees
+                  </Select.Option>
+                  <Select.Option value='online'>
+                    Online Employees
+                  </Select.Option>
+                  <Select.Option value='offline'>
+                    Offline Employees
+                  </Select.Option>
+                </Select>
+              </Form.Item>
+            </div>
     </div>
 
     <Divider/>
-    <div>
+    {
+      isAllFilter ? (
+                  <div>
                     {
                         selectedDate ? (
                           report.length != 0 ? (
@@ -319,6 +366,163 @@ function getUsers(company_id) {
                         )
                     }
                 </div>
+      ) : (
+        isOnlineFilter ? (
+                  <div>
+                    {
+                        selectedDate ? (
+                          online_users.length != 0 ? (
+                                  <Card>
+                                    <div className="report-card ">
+                                        <h4 className='mt-3 ml-5'>Online Employees</h4>
+                                        <br></br>
+                                        <Table>
+                                                <TableHead>
+                                                    <TableCell>
+                                                        Name
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        Email
+                                                    </TableCell>
+                                                    <TableCell>
+                                                      Status
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        Online Time
+                                                    </TableCell>
+                                                </TableHead>
+                                                <TableBody>
+                                    {online_users.map((data, index) => (
+                                                    <TableRow key={index}>
+                                                        <TableCell>
+                                                            {data.name}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {data.email}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {data.status}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {data.totalHours}:{data.totalMinutes}:{data.totalSeconds}
+                                                        </TableCell>
+                                                    </TableRow>
+                                    ))}
+
+                                                </TableBody>
+                                            </Table>
+                                        <br></br>
+                                    </div>
+                                </Card>
+                        ) :
+                        (
+                          <>
+                          <Box mt={2}>
+                            <Card style={cardStyle}>
+                              <Box className="row">
+                                <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }}>
+                                  CLICK ABOVE BUTTON TO GENERATE REPORT
+                                </Typography>
+                              </Box>
+                            </Card>
+                          </Box>
+                          </>
+                        )
+                          ) : (
+                          <>
+                          <Box mt={2}>
+                            <Card style={cardStyle}>
+                              <Box className="row">
+                                <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }}>
+                                  PLEASE SELECT A DATE
+                                </Typography>
+                              </Box>
+                            </Card>
+                          </Box>
+                          </>
+                        )
+                    }
+                </div>
+        ) : (
+                  <div>
+                    {
+                        selectedDate ? (
+                          offline_users.length != 0 ? (
+                                  <Card>
+                                    <div className="report-card ">
+                                        <h4 className='mt-3 ml-5'>Offline Employees</h4>
+                                        <br></br>
+                                        <Table>
+                                                <TableHead>
+                                                    <TableCell>
+                                                        Name
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        Email
+                                                    </TableCell>
+                                                    <TableCell>
+                                                      Status
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        Online Time
+                                                    </TableCell>
+                                                </TableHead>
+                                                <TableBody>
+                                    {offline_users?.map((data, index) => (
+                                                    <TableRow key={index}>
+                                                        <TableCell>
+                                                            {data.name}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {data.email}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {data.status}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {data.totalHours}:{data.totalMinutes}:{data.totalSeconds}
+                                                        </TableCell>
+                                                    </TableRow>
+                                    ))}
+
+                                                </TableBody>
+                                            </Table>
+                                        <br></br>
+                                    </div>
+                                </Card>
+                        ) :
+                        (
+                          <>
+                          <Box mt={2}>
+                            <Card style={cardStyle}>
+                              <Box className="row">
+                                <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }}>
+                                  CLICK ABOVE BUTTON TO GENERATE REPORT
+                                </Typography>
+                              </Box>
+                            </Card>
+                          </Box>
+                          </>
+                        )
+                          ) : (
+                          <>
+                          <Box mt={2}>
+                            <Card style={cardStyle}>
+                              <Box className="row">
+                                <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }}>
+                                  PLEASE SELECT A DATE
+                                </Typography>
+                              </Box>
+                            </Card>
+                          </Box>
+                          </>
+                        )
+                    }
+                </div>
+        )
+      )
+    }
+                 
     </Box>
 </>
   )
