@@ -93,6 +93,8 @@ const Allreports = () => {
     }))
 
     const [selectedDate, setSelectedDate] = useState('')
+    const [fromSelectedDate, setFromSelectedDate] = useState('')
+    const [toSelectedDate, setToSelectedDate] = useState('')
     const [isAdminLogin, setIsAdminLogin] = useState(true)
     const [isAllFilter , setIsAllFilter] = useState(true)
     const [isOnlineFilter , setIsOnlineFilter] = useState(false)
@@ -111,13 +113,30 @@ const Allreports = () => {
       return current && current > dayjs().endOf('day')
   }
 
-  function onDateChange(date, dateString) {
+  function getTodayDate() {
     setIsAdminLogin(true)
-    setSelectedDate(dateString)
-    setReport([])
-    setOnlineUsers([])
-    setOfflineUsers([])
-      setExportDisable(true)
+    setSelectedDate(null)
+    const today = new Date()
+    const day = today.getDate()
+    const month = today.getMonth() + 1
+    const year = today.getFullYear()
+    const todayDate = `${year}-${month}-${day}`
+    setSelectedDate(todayDate)
+}
+
+function onFromDateChange(date, dateString) {
+  setIsAdminLogin(true)
+  setFromSelectedDate(dateString)
+}
+
+function onToDateChange(date, dateString) {
+  setIsAdminLogin(true)
+  setToSelectedDate(dateString)
+}
+
+const disabledReverseDate = (current) => {
+  // Disable dates that are before the fromSelectedDate
+  return current && current < dayjs(fromSelectedDate).endOf('day')
 }
   
   const handleFilterChange = (value) => {
@@ -142,6 +161,7 @@ const Allreports = () => {
     // Array Declaration for API Calls
     const [users, setUsers] = useState([])
     const [report, setReport] = useState([])
+    const [todayReport, setTodayReport] = useState([])
     const [online_users, setOnlineUsers] = useState([])
     const [offline_users, setOfflineUsers] = useState([])
     const [user_id, setUserId] = useState('')
@@ -152,6 +172,7 @@ const Allreports = () => {
      useEffect(() => {
       setCompanyId(local.Users.company_id)
       getUsers(local.Users.company_id)
+      getTodayDate()
   }, [])
 
   useEffect(() => {
@@ -159,7 +180,7 @@ const Allreports = () => {
   } ,[report])
 
   const handleExport = () => {
-        const modifiedReport = (isAllFilter ? report.data : isOnlineFilter ? online_users : offline_users).map((item) => (
+        const modifiedReport = (isAllFilter ? todayReport.data : isOnlineFilter ? online_users : offline_users).map((item) => (
           item.totalHours ?
           {
           Name : item.name,
@@ -191,7 +212,9 @@ function fetchPromise(url) {
   })
 }
 
-async function getReport() {
+async function getTodayReport() {
+  setReport([])
+  setExportDisable(true)
   try {
       const response = await fetch(`${BASE_URL}/api/get-all-users-report-by-company-id/${company_id}/${selectedDate}`);
 
@@ -203,7 +226,7 @@ async function getReport() {
       } else {
           setExportDisable(false)
           setNotFoundMessage(true);
-          setReport(data)
+          setTodayReport(data)
           let onlineUsers = data.data.filter((user) => user.status === 'online')
           let offlineUsers = data.data.filter((user) => user.status === 'offline')
           setOnlineUsers(onlineUsers)
@@ -212,6 +235,65 @@ async function getReport() {
   } catch (error) {
       console.log(error);
   }
+}
+
+function getReport() {
+  setTodayReport([])
+  setExportDisable(true)
+  fetchPromise(`${BASE_URL}/api/get-all-users-report-by-company-id-and-dates/${company_id}/${fromSelectedDate}/${toSelectedDate}`)
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.data.length === 0) {
+                setNotFoundMessage(true);
+                setExportDisable(true)
+            } else {
+                setExportDisable(false)
+                setNotFoundMessage(true);
+
+                const restructuredData = data.data.reduce((acc, curr) => {
+                  const found = acc.find(item => item.date === curr.date);
+                  if (found) {
+                      found.users.push({
+                        name: curr.name,
+                        hours : curr.totalHours,
+                        minutes : curr.totalMinutes,
+                        seconds : curr.totalSeconds,
+                        status : curr.status
+                       });
+                  } else {
+                      acc.push({ date: curr.date, users: [
+                        {
+                          name: curr.name,
+                          hours : curr.totalHours,
+                          minutes : curr.totalMinutes,
+                          seconds : curr.totalSeconds,
+                          status : curr.status
+                         }
+                      ] 
+                      });
+                  }
+                  return acc;
+              }, []);
+              
+              console.log({ data: restructuredData });
+                setReport(restructuredData)
+                // let onlineUsers = data.data.filter((user) => user.status === 'online')
+                // let offlineUsers = data.data.filter((user) => user.status === 'offline')
+                // setOnlineUsers(onlineUsers)
+                // setOfflineUsers(offlineUsers)
+            }
+             
+
+                // if (perm.some((item) => item.name === 'All_Data')) {
+                //     filteredUsers = data.Users
+                // } else if (perm.some((item) => item.name === 'Company_Data')) {
+                //     filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && user.email !== local.Users.email)
+                // } else if (perm.some((item) => item.name === 'User_Data')) {
+                //     filteredUsers = data.Users.filter((user) => user.id === user_id)
+                // }
+                // setUsers(filteredUsers)
+            })
+            .catch((error) => console.log(error))
 }
 
 function getUsers(company_id) {
@@ -252,16 +334,30 @@ function getUsers(company_id) {
     <div className="row mt-2 mb-2 justify-content-between">
         <div className="col-md-4">
              <div className="d-flex align-items-center">
+             <FormLabel>From: </FormLabel>
                 <DatePicker
-                    value={selectedDate ? dayjs(selectedDate, 'YYYY-MM-DD') : null}
-                    onChange={onDateChange}
+                    value={fromSelectedDate ? dayjs(fromSelectedDate, 'YYYY-MM-DD') : null}
+                    onChange={onFromDateChange}
                     disabledDate={disabledDate}
                     clearIcon={null}
                     style={{
                         width: '100%',
                     }}
                 />
+
+                <FormLabel>To: </FormLabel>
+                <DatePicker
+                    value={toSelectedDate ? dayjs(toSelectedDate, 'YYYY-MM-DD') : null}
+                    onChange={onToDateChange}
+                    disabled={!fromSelectedDate}
+                    disabledDate={disabledReverseDate}
+                    clearIcon={null}
+                    style={{
+                        width: '100%',
+                    }}
+                />
                 <Button type="default" onClick={getReport} className="ml-2">Get Report</Button>
+                <Button type="default" onClick={getTodayReport} className="ml-2">{"Today's Report"}</Button>
             </div>
           </div>
           <div className="col-md-4">
@@ -289,7 +385,209 @@ function getUsers(company_id) {
     </div>
 
     <Divider/>
+
     {
+      report.length !== 0 ? (
+        <Card>
+          {
+            report.map((rep , index) => (
+              <div key={index}>
+                  <h4 className='mt-3 ml-5'>Date: {rep.date}</h4>
+                  <div className="report-card ">
+                  <br></br>
+                  <Table>
+                          <TableHead>
+                              <TableCell>
+                                  Name
+                              </TableCell>
+                              {/* <TableCell>
+                                  Email
+                              </TableCell> */}
+                              <TableCell>
+                                Status
+                              </TableCell>
+                              <TableCell>
+                                Online Time
+                              </TableCell>
+                          </TableHead>
+                          <TableBody>
+              {rep.users.map((data, user_index) => (
+                              <TableRow key={user_index}>
+                                  <TableCell>
+                                    {data.name}
+                                  </TableCell>
+                                  {/* <TableCell>
+                                      {data.email}
+                                  </TableCell> */}
+                                  <TableCell>
+                                      {data.status}
+                                  </TableCell>
+                                  <TableCell>
+                                      {data.hours}:{data.minutes}:{data.seconds}
+                                  </TableCell>
+                              </TableRow>
+              ))}
+                          </TableBody>
+                      </Table>
+                  <br></br>
+              </div>
+              </div>
+            ))
+          }
+          </Card>
+      ) : (
+        todayReport.length !== 0 ? ( 
+          isAllFilter ? (
+            <Card>
+              <div className="report-card ">
+                  <h4 className='mt-3 ml-5'>Report Summary</h4>
+                  <br></br>
+                  <Table>
+                          <TableHead>
+                              <TableCell>
+                                  Name
+                              </TableCell>
+                              <TableCell>
+                                  Email
+                              </TableCell>
+                              <TableCell>
+                                Status
+                              </TableCell>
+                              <TableCell>
+                                Online Time
+                              </TableCell>
+                          </TableHead>
+                          <TableBody>
+              {todayReport.data?.map((data, index) => (
+                              <TableRow key={index}>
+                                  <TableCell>
+                                      {data.name}
+                                  </TableCell>
+                                  <TableCell>
+                                      {data.email}
+                                  </TableCell>
+                                  <TableCell>
+                                      {data.status}
+                                  </TableCell>
+                                  <TableCell>
+                                      {data.totalHours}:{data.totalMinutes}:{data.totalSeconds}
+                                  </TableCell>
+                              </TableRow>
+              ))}
+                          </TableBody>
+                      </Table>
+                  <br></br>
+              </div>
+          </Card>
+          ) : (
+            isOnlineFilter ? (
+              <Card>
+              <div className="report-card ">
+                  <h4 className='mt-3 ml-5'>Report Summary</h4>
+                  <br></br>
+                  <Table>
+                          <TableHead>
+                              <TableCell>
+                                  Name
+                              </TableCell>
+                              <TableCell>
+                                  Email
+                              </TableCell>
+                              <TableCell>
+                                Status
+                              </TableCell>
+                              <TableCell>
+                                Online Time
+                              </TableCell>
+                          </TableHead>
+                          <TableBody>
+              {online_users?.map((data, index) => (
+                              <TableRow key={index}>
+                                  <TableCell>
+                                      {data.name}
+                                  </TableCell>
+                                  <TableCell>
+                                      {data.email}
+                                  </TableCell>
+                                  <TableCell>
+                                      {data.status}
+                                  </TableCell>
+                                  <TableCell>
+                                      {data.totalHours}:{data.totalMinutes}:{data.totalSeconds}
+                                  </TableCell>
+                              </TableRow>
+              ))}
+                          </TableBody>
+                      </Table>
+                  <br></br>
+              </div>
+          </Card>
+            ) : (
+              isOfflineFilter ? (
+            <Card>
+              <div className="report-card ">
+                  <h4 className='mt-3 ml-5'>Report Summary</h4>
+                  <br></br>
+                  <Table>
+                          <TableHead>
+                              <TableCell>
+                                  Name
+                              </TableCell>
+                              <TableCell>
+                                  Email
+                              </TableCell>
+                              <TableCell>
+                                Status
+                              </TableCell>
+                              <TableCell>
+                                Online Time
+                              </TableCell>
+                          </TableHead>
+                          <TableBody>
+              {offline_users?.map((data, index) => (
+                              <TableRow key={index}>
+                                  <TableCell>
+                                      {data.name}
+                                  </TableCell>
+                                  <TableCell>
+                                      {data.email}
+                                  </TableCell>
+                                  <TableCell>
+                                      {data.status}
+                                  </TableCell>
+                                  <TableCell>
+                                      {data.totalHours}:{data.totalMinutes}:{data.totalSeconds}
+                                  </TableCell>
+                              </TableRow>
+              ))}
+                          </TableBody>
+                      </Table>
+                  <br></br>
+              </div>
+          </Card>
+              ) : (
+                null
+              )
+            )
+          )
+        ) : (
+          <>
+          <Box mt={2}>
+            <Card style={cardStyle}>
+              <Box className="row">
+                <Typography variant="h6" sx={{ color: '#9E9E9E', textAlign: 'center' }}>
+                  CLICK ABOVE BUTTON TO GENERATE REPORT
+                </Typography>
+              </Box>
+            </Card>
+          </Box>
+          </>
+        )
+      )
+      
+    }
+
+    {/* {
       isAllFilter ? (
                   <div>
                     {
@@ -521,7 +819,9 @@ function getUsers(company_id) {
                 </div>
         )
       )
-    }
+    } */}
+
+
                  
     </Box>
 </>
