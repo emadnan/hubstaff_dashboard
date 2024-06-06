@@ -164,6 +164,8 @@ const disabledReverseDate = (current) => {
     const [todayReport, setTodayReport] = useState([])
     const [online_users, setOnlineUsers] = useState([])
     const [offline_users, setOfflineUsers] = useState([])
+    const [onlineUsersWithDates, setOnlineUsersWithDates] = useState([])
+    const [offlineUsersWithDates, setOfflineUsersWithDates] = useState([])
     const [user_id, setUserId] = useState('')
     const [notfoundmessage, setNotFoundMessage] = useState(true)
     const [export_disable, setExportDisable] = useState(true)
@@ -175,33 +177,60 @@ const disabledReverseDate = (current) => {
       getTodayDate()
   }, [])
 
-  useEffect(() => {
-    console.log(report);
-  } ,[report])
-
   const handleExport = () => {
-        const modifiedReport = (isAllFilter ? todayReport.data : isOnlineFilter ? online_users : offline_users).map((item) => (
-          item.totalHours ?
-          {
-          Name : item.name,
-          Email : item.email,
-          Status : item.status,
-          'Online Time' : item.totalHours+':'+item.totalMinutes+':'+item.totalSeconds,
-        } : {
-          Name : item.name,
-          Email : item.email,
-          Status : item.status,
-          'Online Time' : '---',
-        }
+    if(report.length !== 0) {
+      const modifiedReport = (isAllFilter ? report : isOnlineFilter ? onlineUsersWithDates : offlineUsersWithDates).map((data) => {
+        let filteredReport = data.users.map((item) => (
+          item.hours ?
+            {
+            Date : data.date,
+            Name : item.name,
+            Status : item.status,
+            'Online Time' : item.hours+':'+item.minutes+':'+item.seconds,
+          } : {
+            Date : data.date,
+            Name : item.name,
+            Status : item.status,
+            'Online Time' : '---',
+          }
       ))
+      return filteredReport
+    })
 
-        const worksheet = XLSX.utils.json_to_sheet(modifiedReport);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-    
-        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
-        saveAs(blob, `Report${[selectedDate]}.xlsx`);
+      const worksheet = XLSX.utils.json_to_sheet([].concat(...modifiedReport));
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+  
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+      saveAs(blob, `Report${[fromSelectedDate]}to${[toSelectedDate]}.xlsx`);
+    }
+    else if(todayReport.length !== 0) {
+      const modifiedReport = (isAllFilter ? todayReport.data : isOnlineFilter ? online_users : offline_users).map((item) => (
+        item.totalHours ?
+        {
+        Name : item.name,
+        Email : item.email,
+        Status : item.status,
+        'Online Time' : item.totalHours+':'+item.totalMinutes+':'+item.totalSeconds,
+      } : {
+        Name : item.name,
+        Email : item.email,
+        Status : item.status,
+        'Online Time' : '---',
+      }
+    ))
+
+      const worksheet = XLSX.utils.json_to_sheet(modifiedReport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+  
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+      saveAs(blob, `Report${[selectedDate]}.xlsx`);
+    }
+
+        
   }
 
 function fetchPromise(url) {
@@ -275,23 +304,29 @@ function getReport() {
                   return acc;
               }, []);
               
-              console.log({ data: restructuredData });
                 setReport(restructuredData)
-                // let onlineUsers = data.data.filter((user) => user.status === 'online')
-                // let offlineUsers = data.data.filter((user) => user.status === 'offline')
-                // setOnlineUsers(onlineUsers)
-                // setOfflineUsers(offlineUsers)
-            }
-             
 
-                // if (perm.some((item) => item.name === 'All_Data')) {
-                //     filteredUsers = data.Users
-                // } else if (perm.some((item) => item.name === 'Company_Data')) {
-                //     filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && user.email !== local.Users.email)
-                // } else if (perm.some((item) => item.name === 'User_Data')) {
-                //     filteredUsers = data.Users.filter((user) => user.id === user_id)
-                // }
-                // setUsers(filteredUsers)
+                let onlineUsers = restructuredData.map((data) => {
+                  let filteredUsers = {
+                    date : data.date,
+                    users : data.users.filter((user) => user.status === 'online')
+                  }
+                  return filteredUsers
+                })
+
+                let offlineUsers = restructuredData.map((data) => {
+                  let filteredUsers = {
+                    date : data.date,
+                    users : data.users.filter((user) => user.status === 'offline')
+                  }
+
+                  return filteredUsers
+                })
+
+                setOnlineUsersWithDates(onlineUsers)
+                setOfflineUsersWithDates(offlineUsers)
+               
+            }
             })
             .catch((error) => console.log(error))
 }
@@ -388,7 +423,8 @@ function getUsers(company_id) {
 
     {
       report.length !== 0 ? (
-        <Card>
+        isAllFilter ? (
+          <Card>
           {
             report.map((rep , index) => (
               <div key={index}>
@@ -435,6 +471,107 @@ function getUsers(company_id) {
             ))
           }
           </Card>
+        ) : (
+          isOnlineFilter ? (
+            <Card>
+          {
+            onlineUsersWithDates?.map((rep , index) => (
+              <div key={index}>
+                  <h4 className='mt-3 ml-5'>Date: {rep.date}</h4>
+                  <div className="report-card ">
+                  <br></br>
+                  <Table>
+                          <TableHead>
+                              <TableCell>
+                                  Name
+                              </TableCell>
+                              {/* <TableCell>
+                                  Email
+                              </TableCell> */}
+                              <TableCell>
+                                Status
+                              </TableCell>
+                              <TableCell>
+                                Online Time
+                              </TableCell>
+                          </TableHead>
+                          <TableBody>
+              {rep.users?.map((data, user_index) => (
+                              <TableRow key={user_index}>
+                                  <TableCell>
+                                    {data.name}
+                                  </TableCell>
+                                  {/* <TableCell>
+                                      {data.email}
+                                  </TableCell> */}
+                                  <TableCell>
+                                      {data.status}
+                                  </TableCell>
+                                  <TableCell>
+                                      {data.hours}:{data.minutes}:{data.seconds}
+                                  </TableCell>
+                              </TableRow>
+              ))}
+                          </TableBody>
+                      </Table>
+                  <br></br>
+              </div>
+              </div>
+            ))
+          }
+          </Card>
+          ) : (
+            isOfflineFilter ? (
+              <Card>
+          {
+            offlineUsersWithDates?.map((rep , index) => (
+              <div key={index}>
+                  <h4 className='mt-3 ml-5'>Date: {rep.date}</h4>
+                  <div className="report-card ">
+                  <br></br>
+                  <Table>
+                          <TableHead>
+                              <TableCell>
+                                  Name
+                              </TableCell>
+                              {/* <TableCell>
+                                  Email
+                              </TableCell> */}
+                              <TableCell>
+                                Status
+                              </TableCell>
+                              <TableCell>
+                                Online Time
+                              </TableCell>
+                          </TableHead>
+                          <TableBody>
+              {rep.users?.map((data, user_index) => (
+                              <TableRow key={user_index}>
+                                  <TableCell>
+                                    {data.name}
+                                  </TableCell>
+                                  {/* <TableCell>
+                                      {data.email}
+                                  </TableCell> */}
+                                  <TableCell>
+                                      {data.status}
+                                  </TableCell>
+                                  <TableCell>
+                                      {data.hours}:{data.minutes}:{data.seconds}
+                                  </TableCell>
+                              </TableRow>
+              ))}
+                          </TableBody>
+                      </Table>
+                  <br></br>
+              </div>
+              </div>
+            ))
+          }
+          </Card>
+            ) : null
+          )
+        )
       ) : (
         todayReport.length !== 0 ? ( 
           isAllFilter ? (
