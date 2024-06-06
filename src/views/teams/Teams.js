@@ -242,8 +242,8 @@ const Team = () => {
 
    // Functions for Assign Users to Group
   const [isModalOpen6, setIsModalOpen6] = useState(false)
-  const showModal6 = (teamId , groupId) => {
-    getHasUsers(teamId)
+  const showModal6 = (groupId) => {
+    getGroupHasUsers(groupId)
     setIsModalOpen6(groupId)
   }
 
@@ -568,7 +568,19 @@ const Team = () => {
     fetch(`${BASE_URL}/api/get-user-by-team-id/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        const temp_array = data.users.map((element) => element.user_id)
+        console.log(data);
+        const temp_array = data.users.map((user) => user.id)
+        setHasUsers(temp_array)
+      })
+      .catch((error) => console.log(error))
+  }
+
+  function getGroupHasUsers(id) {
+    fetch(`${BASE_URL}/api/get-user-by-group-id/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        const temp_array = data.users.map((user) => user.id)
         setHasUsers(temp_array)
       })
       .catch((error) => console.log(error))
@@ -922,7 +934,7 @@ const Team = () => {
             <CTableHeaderCell className="text-end" style={mystyle2}>
               {
                 isAssignGroupEnabled ? (
-                  <IconButton aria-label="Assign Team" onClick={() => showModal6(group.group.team_id , group.group.id)}>
+                  <IconButton aria-label="Assign Team" onClick={() => showModal6(group.group.id)}>
                     <AssignmentIndIcon htmlColor="#0070ff" />
                   </IconButton>
                 ) : null
