@@ -106,8 +106,10 @@ const Dashboard = () => {
   const [role_id, setRoleId] = useState('')
   const [user_id, setUserId] = useState('')
   const [today_date , setTodayDate] = useState('')
-  const [online_members , setOnlineMembers] = useState('')
-  const [offline_members , setOfflineMembers] = useState('')
+  const [online_members , setOnlineMembers] = useState([])
+  const [offline_members , setOfflineMembers] = useState([])
+  const [onlineMembersCount , setOnlineMembersCount] = useState('')
+  const [offlineMembersCount , setOfflineMembersCount] = useState('')
   var screenfilter = []
   var filteredUsers = []
 
@@ -189,6 +191,30 @@ const Dashboard = () => {
      }
      const handleOfflineEmployeeCancel = () => {
       setIsOfflineEmployeeModalOpen(false)
+     }
+
+     // Functions for Online Members Modal
+     const [OnlineMembersModal, setIsOnlineMembersModalOpen] = useState(false)
+     const showOnlineMembersModal = () => { 
+       setIsOnlineMembersModalOpen(true)
+     }
+     const handleOnlineMembersOk = () => {
+      setIsOnlineMembersModalOpen(false)
+     }
+     const handleOnlineMembersCancel = () => {
+      setIsOnlineMembersModalOpen(false)
+     }
+
+     // Functions for Offline Members Modal
+     const [OfflineMembersModal, setIsOfflineMembersModalOpen] = useState(false)
+     const showOfflineMembersModal = () => { 
+      setIsOfflineMembersModalOpen(true)
+     }
+     const handleOfflineMembersOk = () => {
+      setIsOfflineMembersModalOpen(false)
+     }
+     const handleOfflineMembersCancel = () => {
+      setIsOfflineMembersModalOpen(false)
      }
 
   //GET API calls
@@ -273,9 +299,11 @@ const Dashboard = () => {
 
         const data = await response.json();
 
-        setOnlineMembers(data.data.length)
-        setOfflineMembers(data.offlineUsers.length)
-    } catch (error) {
+        setOnlineMembersCount(data.data.length)
+        setOfflineMembersCount(data.offlineUsers.length)
+        setOnlineMembers(data.data)
+        setOfflineMembers(data.offlineUsers)
+      } catch (error) {
         console.log(error);
     }
 }
@@ -466,7 +494,7 @@ async function getAllUsersReport() {
             ) : role_id === 6 || role_id === 7 ? (
               <>
                 <div className="col-md-2">
-                  <h6 style={head}>ASSIGNED PROJECTS</h6>
+                  <h6 style={head} onClick={()=> {navigate(`/projectmanagement-projects`)}}>ASSIGNED PROJECTS</h6>
                   <h3 style={subhead}>{perm.some((item) => item.name === 'Company_Data' || perm.some((item) => item.name === 'All_Data')) ? totalProjects : totalUserProjects}</h3>
                 </div>
                 <div className="col-md-2">
@@ -482,12 +510,12 @@ async function getAllUsersReport() {
                   </h3>
                 </div>
                 <div className="col-md-2">
-                  <h6 style={head}>ONLINE TEAM MEMBERS</h6>
-                  <h3 style={subhead}>{online_members}</h3>
+                  <h6 style={head} onClick={showOnlineMembersModal}>ONLINE TEAM MEMBERS</h6>
+                  <h3 style={subhead}>{onlineMembersCount}</h3>
                 </div>
                 <div className="col-md-2">
-                  <h6 style={head}>OFFLINE TEAM MEMBERS</h6>
-                  <h3 style={subhead}>{offline_members}</h3>
+                  <h6 style={head} onClick={showOfflineMembersModal}>OFFLINE TEAM MEMBERS</h6>
+                  <h3 style={subhead}>{offlineMembersCount}</h3>
                 </div>
                 <div className="col-md-2">
                   <h6 style={head}>EARNED AMOUNT</h6>
@@ -497,7 +525,7 @@ async function getAllUsersReport() {
             ) : (
               <>
                 <div className="col-md-2">
-                  <h6 style={head}>ASSIGNED PROJECTS</h6>
+                  <h6 style={head} onClick={()=> {navigate(`/projectmanagement-assigned`)}}>ASSIGNED PROJECTS</h6>
                   <h3 style={subhead}>{perm.some((item) => item.name === 'Company_Data' || perm.some((item) => item.name === 'All_Data')) ? totalProjects : totalUserProjects}</h3>
                 </div>
                 <div className="col-md-2">
@@ -852,6 +880,68 @@ async function getAllUsersReport() {
             </div>
             {
               offline_employees.map((user , index) => (
+                <div key={index}>
+                  <div className='container'>
+                    <div className='row mb-1'>
+                      <div className='col-4 text-start border'>{user.name}</div>
+                      <div className='col-8 text-start border'>{user.email}</div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            }
+          </Modal>
+
+          {/* Modal for online Members*/}
+          <Modal
+            title="Online Team Members"
+            open={OnlineMembersModal}
+            onOk={handleOnlineMembersOk}
+            onCancel={handleOnlineMembersCancel}
+            okButtonProps={{ style: { background: 'blue' } }}
+            style={modalStyle}
+            maskClosable={false}
+          >
+            <br></br>
+            <div className='container my-2'>
+              <div className='row border'>
+                <div className='col-4 text-center border'>Name</div>
+                <div className='col-8 text-center border'>Email</div>
+              </div>
+            </div>
+            {
+              online_members.map((user , index) => (
+                <div key={index}>
+                  <div className='container'>
+                    <div className='row mb-1'>
+                      <div className='col-4 text-start border'>{user.name}</div>
+                      <div className='col-8 text-start border'>{user.email}</div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            }
+          </Modal>
+
+          {/* Modal for offline Members*/}
+          <Modal
+            title="Offline Team Members"
+            open={OfflineMembersModal}
+            onOk={handleOfflineMembersOk}
+            onCancel={handleOfflineMembersCancel}
+            okButtonProps={{ style: { background: 'blue' } }}
+            style={modalStyle}
+            maskClosable={false}
+          >
+            <br></br>
+            <div className='container my-2'>
+              <div className='row border'>
+                <div className='col-4 text-center border'>Name</div>
+                <div className='col-8 text-center border'>Email</div>
+              </div>
+            </div>
+            {
+              offline_members.map((user , index) => (
                 <div key={index}>
                   <div className='container'>
                     <div className='row mb-1'>

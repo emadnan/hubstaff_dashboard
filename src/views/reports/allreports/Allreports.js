@@ -434,6 +434,9 @@ function getUsers(company_id) {
                   <Table>
                           <TableHead>
                               <TableCell>
+                                  S/R
+                              </TableCell>
+                              <TableCell>
                                   Name
                               </TableCell>
                               {/* <TableCell>
@@ -449,6 +452,9 @@ function getUsers(company_id) {
                           <TableBody>
               {rep.users.map((data, user_index) => (
                               <TableRow key={user_index}>
+                                  <TableCell>
+                                    {user_index+1}
+                                  </TableCell>
                                   <TableCell>
                                     {data.name}
                                   </TableCell>
@@ -483,6 +489,9 @@ function getUsers(company_id) {
                   <Table>
                           <TableHead>
                               <TableCell>
+                                  S/R
+                              </TableCell>
+                              <TableCell>
                                   Name
                               </TableCell>
                               {/* <TableCell>
@@ -498,6 +507,9 @@ function getUsers(company_id) {
                           <TableBody>
               {rep.users?.map((data, user_index) => (
                               <TableRow key={user_index}>
+                                  <TableCell>
+                                      {user_index+1}
+                                  </TableCell>
                                   <TableCell>
                                     {data.name}
                                   </TableCell>
@@ -532,6 +544,9 @@ function getUsers(company_id) {
                   <Table>
                           <TableHead>
                               <TableCell>
+                                  S/R
+                              </TableCell>
+                              <TableCell>
                                   Name
                               </TableCell>
                               {/* <TableCell>
@@ -547,6 +562,9 @@ function getUsers(company_id) {
                           <TableBody>
               {rep.users?.map((data, user_index) => (
                               <TableRow key={user_index}>
+                                <TableCell>
+                                  {user_index+1}
+                              </TableCell>
                                   <TableCell>
                                     {data.name}
                                   </TableCell>
@@ -582,6 +600,9 @@ function getUsers(company_id) {
                   <Table>
                           <TableHead>
                               <TableCell>
+                                  S/R
+                              </TableCell>
+                              <TableCell>
                                   Name
                               </TableCell>
                               <TableCell>
@@ -597,6 +618,9 @@ function getUsers(company_id) {
                           <TableBody>
               {todayReport.data?.map((data, index) => (
                               <TableRow key={index}>
+                                  <TableCell>
+                                  {index+1}
+                                </TableCell>
                                   <TableCell>
                                       {data.name}
                                   </TableCell>
@@ -625,6 +649,9 @@ function getUsers(company_id) {
                   <Table>
                           <TableHead>
                               <TableCell>
+                                  S/R
+                              </TableCell>
+                              <TableCell>
                                   Name
                               </TableCell>
                               <TableCell>
@@ -640,6 +667,9 @@ function getUsers(company_id) {
                           <TableBody>
               {online_users?.map((data, index) => (
                               <TableRow key={index}>
+                                <TableCell>
+                                  {index+1}
+                              </TableCell>
                                   <TableCell>
                                       {data.name}
                                   </TableCell>
@@ -667,6 +697,9 @@ function getUsers(company_id) {
                   <br></br>
                   <Table>
                           <TableHead>
+                          <TableCell>
+                                  S/R
+                              </TableCell>
                               <TableCell>
                                   Name
                               </TableCell>
@@ -683,6 +716,9 @@ function getUsers(company_id) {
                           <TableBody>
               {offline_users?.map((data, index) => (
                               <TableRow key={index}>
+                                <TableCell>
+                                  {index+1}
+                              </TableCell>
                                   <TableCell>
                                       {data.name}
                                   </TableCell>
