@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from 'react'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
-import { Card, Divider, Button, Modal } from 'antd'
+import { Card, Divider, Button, Modal, Form, Select } from 'antd'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 const BASE_URL = process.env.REACT_APP_BASE_URL
@@ -110,8 +110,11 @@ const Dashboard = () => {
   const [offline_members , setOfflineMembers] = useState([])
   const [onlineMembersCount , setOnlineMembersCount] = useState('')
   const [offlineMembersCount , setOfflineMembersCount] = useState('')
+  const [selectedOnlineUser , setSelectedOnlineUser] = useState('')
+  const [selectedOfflineUser , setSelectedOfflineUser] = useState('')
   var screenfilter = []
   var filteredUsers = []
+  let [form] = Form.useForm()
 
   const navigate = useNavigate()
 
@@ -175,10 +178,21 @@ const Dashboard = () => {
      }
      const handleOnlineEmployeeOk = () => {
       setIsOnlineEmployeeModalOpen(false)
+      clearOnlineFilter()
      }
      const handleOnlineEmployeeCancel = () => {
       setIsOnlineEmployeeModalOpen(false)
+      clearOnlineFilter()
      }
+
+     const handleOnlineUserSearch = (value) => {
+      setSelectedOnlineUser(value)
+    }
+  
+    const clearOnlineFilter = () => {
+      form.resetFields()
+      setSelectedOnlineUser('')
+    }
 
      // Functions for Offline Employees Modal
      const [OfflineEmployeeModal, setIsOfflineEmployeeModalOpen] = useState(false)
@@ -188,11 +202,22 @@ const Dashboard = () => {
      }
      const handleOfflineEmployeeOk = () => {
       setIsOfflineEmployeeModalOpen(false)
+      clearOfflineFilter()
      }
      const handleOfflineEmployeeCancel = () => {
       setIsOfflineEmployeeModalOpen(false)
+      clearOfflineFilter()
      }
 
+     const handleOfflineUserSearch = (value) => {
+      setSelectedOfflineUser(value)
+    }
+
+    const clearOfflineFilter = () => {
+      form.resetFields()
+      setSelectedOfflineUser('')
+    }
+  
      // Functions for Online Members Modal
      const [OnlineMembersModal, setIsOnlineMembersModalOpen] = useState(false)
      const showOnlineMembersModal = () => { 
@@ -842,13 +867,45 @@ async function getAllUsersReport() {
           >
             <br></br>
             <div className='container my-2'>
+              <div className='d-flex'>
+                <Form form={form} style={{ width: '100%' }}>
+                    <Form.Item name="selectUser" hasFeedback>
+                      <Select
+                        placeholder="Enter Employee Name"
+                        onChange={handleOnlineUserSearch}
+                        showSearch
+                        filterOption={(input, option) =>
+                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                        style={{ width: '100%' }}
+                      >
+                        {online_employees.map((user) => (
+                          <Select.Option value={user.id} key={user.id}>
+                            {user.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Form>
+                  <Button type="default" onClick={clearOnlineFilter} className="ml-2">
+                  Clear Filter
+                </Button>
+              </div>
               <div className='row border'>
                 <div className='col-4 text-center border'>Name</div>
                 <div className='col-8 text-center border'>Email</div>
               </div>
             </div>
             {
-              online_employees.map((user , index) => (
+              
+              online_employees.filter((user) => {
+                // Apply Stream filter
+                if (selectedOnlineUser !== '') {
+                  return user.id === selectedOnlineUser
+                }
+                return true
+              })
+              .map((user , index) => (
                 <div key={index}>
                   <div className='container'>
                     <div className='row mb-1'>
@@ -873,13 +930,44 @@ async function getAllUsersReport() {
           >
             <br></br>
             <div className='container my-2'>
+            <div className='d-flex'>
+                <Form form={form} style={{ width: '100%' }}>
+                    <Form.Item name="selectOfflineUser" hasFeedback>
+                      <Select
+                        placeholder="Enter Employee Name"
+                        onChange={handleOfflineUserSearch}
+                        showSearch
+                        filterOption={(input, option) =>
+                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                        style={{ width: '100%' }}
+                      >
+                        {offline_employees.map((user) => (
+                          <Select.Option value={user.id} key={user.id}>
+                            {user.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Form>
+                  <Button type="default" onClick={clearOfflineFilter} className="ml-2">
+                  Clear Filter
+                </Button>
+              </div>
               <div className='row border'>
                 <div className='col-4 text-center border'>Name</div>
                 <div className='col-8 text-center border'>Email</div>
               </div>
             </div>
             {
-              offline_employees.map((user , index) => (
+               offline_employees.filter((user) => {
+                // Apply Stream filter
+                if (selectedOfflineUser !== '') {
+                  return user.id === selectedOfflineUser
+                }
+                return true
+              })
+              .map((user , index) => (
                 <div key={index}>
                   <div className='container'>
                     <div className='row mb-1'>
