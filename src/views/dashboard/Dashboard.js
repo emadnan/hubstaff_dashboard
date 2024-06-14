@@ -112,6 +112,8 @@ const Dashboard = () => {
   const [offlineMembersCount , setOfflineMembersCount] = useState('')
   const [selectedOnlineUser , setSelectedOnlineUser] = useState('')
   const [selectedOfflineUser , setSelectedOfflineUser] = useState('')
+  const [selectedTeamLead , setSelectedTeamLead] = useState('')
+  const [selectedTeam , setSelectedTeam] = useState('')
   var screenfilter = []
   var filteredUsers = []
   let [form] = Form.useForm()
@@ -158,6 +160,15 @@ const Dashboard = () => {
       setIsTeamLeadModalOpen(false)
     }
 
+    const handleTeamLeadSearch = (value) => {
+      setSelectedTeamLead(value)
+    }
+  
+    const clearTeamLeadFilter = () => {
+      form.resetFields()
+      setSelectedTeamLead('')
+    }
+
      // Functions for Team Modal
      const [teamsModal, setIsTeamsModalOpen] = useState(false)
      const showTeamsModal = () => {
@@ -169,6 +180,15 @@ const Dashboard = () => {
      const handleTeamsCancel = () => {
       setIsTeamsModalOpen(false)
      }
+
+     const handleTeamSearch = (value) => {
+      setSelectedTeam(value)
+    }
+  
+    const clearTeamFilter = () => {
+      form.resetFields()
+      setSelectedTeam('')
+    }
 
      // Functions for Online Employees Modal
      const [OnlineEmployeeModal, setIsOnlineEmployeeModalOpen] = useState(false)
@@ -795,13 +815,44 @@ async function getAllUsersReport() {
           >
             <br></br>
             <div className='container my-2'>
+            <div className='d-flex'>
+                <Form form={form} style={{ width: '100%' }}>
+                    <Form.Item name="selectTeamLead" hasFeedback>
+                      <Select
+                        placeholder="Enter Team Lead"
+                        onChange={handleTeamLeadSearch}
+                        showSearch
+                        filterOption={(input, option) =>
+                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                        style={{ width: '100%' }}
+                      >
+                        {team_leads.map((user) => (
+                          <Select.Option value={user.id} key={user.id}>
+                            {user.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Form>
+                  <Button type="default" onClick={clearTeamLeadFilter} className="ml-2">
+                  Clear Filter
+                </Button>
+              </div>
               <div className='row border'>
                 <div className='col-4 text-center border'>Name</div>
                 <div className='col-8 text-center border'>Email</div>
               </div>
             </div>
             {
-              team_leads.map((teamLead , index) => (
+              team_leads.filter((team) => {
+                // Apply Stream filter
+                if (selectedTeamLead !== '') {
+                  return team.id === selectedTeamLead
+                }
+                return true
+              })
+              .map((teamLead , index) => (
                 <div key={index}>
                   <div className='container'>
                     <div className='row mb-1'>
@@ -827,12 +878,43 @@ async function getAllUsersReport() {
           >
             <br></br>
             <div className='container '>
+            <div className='d-flex'>
+                <Form form={form} style={{ width: '100%' }}>
+                    <Form.Item name="selectTeam" hasFeedback>
+                      <Select
+                        placeholder="Enter Team"
+                        onChange={handleTeamSearch}
+                        showSearch
+                        filterOption={(input, option) =>
+                          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                        style={{ width: '100%' }}
+                      >
+                        {teams.map((user) => (
+                          <Select.Option value={user.id} key={user.id}>
+                            {user.team_name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Form>
+                  <Button type="default" onClick={clearTeamFilter} className="ml-2">
+                  Clear Filter
+                </Button>
+              </div>
               <div className='row border my-2'>
                 <div className='col-6 text-center border'>Name</div>
                 <div className='col-6 text-center border'>Team Lead</div>
               </div>
             {
-              teams.map((team , index) => (
+              teams.filter((team) => {
+                // Apply Stream filter
+                if (selectedTeam !== '') {
+                  return team.id === selectedTeam
+                }
+                return true
+              })
+              .map((team , index) => (
                 <div key={index}>
                     <div className='row mb-1 border'>
                       <div className='col-6 '>{team.team_name}</div>
