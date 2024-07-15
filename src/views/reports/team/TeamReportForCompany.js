@@ -12,6 +12,7 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/joy/Typography'
 import dayjs from 'dayjs'
+import json2csv from 'json2csv'
 import { Card } from '@mui/material'
 import { saveAs } from 'file-saver'
 import NoRecordsMessegeComponent from 'src/components/noRecordsMessegeComponent/NoRecordsMessegeComponent'
@@ -45,6 +46,7 @@ const TeamReportForCompany = () => {
         } else if (perm.some((item) => item.name === 'User_Data')) {
             setUserId(local.Users.user_id)
         }
+
     }, [])
 
     function onDateChange(date, dateString) {
@@ -76,7 +78,6 @@ const TeamReportForCompany = () => {
     useEffect(() => {
         setCompanyId(local.Users.company_id)
         getUsers(local.Users.company_id)
-        // console.log(company_id);
     }, [])
 
     // Get API Calls
@@ -109,9 +110,7 @@ const TeamReportForCompany = () => {
             } else {
                 setExportDisable(false)
                 setNotFoundMessage(false);
-                console.log('Data', data)
                 setReport(data);
-                console.log('Report', report);
             }
         } catch (error) {
             console.log(error);
@@ -159,6 +158,11 @@ const TeamReportForCompany = () => {
     const handleExport = () => {
       
         if(api === 'get-daily-report-of-users-for-teamlead') {
+
+           
+
+
+
             const worksheet = XLSX.utils.json_to_sheet(report.data);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Online Users");
@@ -197,24 +201,63 @@ const TeamReportForCompany = () => {
             }
         }
         else if(api === 'get-daily-report-of-both-offline-or-online') {
-            const AllUsers = [...report.data, ...report.offlineUsers];
-            const worksheet = XLSX.utils.json_to_sheet(AllUsers);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+            console.log('Report', report);
+            
+
+            const completeReport = report.data.concat(report.offlineUsers)
+
+            if (!Array.isArray(completeReport)) {
+                console.error('Report data is not an array');
+                return;
+              }
+
+            const flattenedData = completeReport.map((item) => {
+                return {
+                  NAME: item.name,
+                  EMAIL: item.email,
+                  'TOTAL HOURS': `${item.totalHours ? item.totalHours : '-'}:${item.totalMinutes ? item.totalMinutes : '-'}:${item.totalSeconds ? item.totalSeconds : '-'}`,
+                };
+              });
+
+            const csvData = json2csv.parse(flattenedData,{
+                fields: ['NAME', 'EMAIL', 'TOTAL HOURS'],
+                header: false, // We will manually add the header later
+              })
+          
+              // Create the header row
+              const headerRow = 'NAME,EMAIL,TOTAL HOURS'
+          
+              // Combine the merged cell row, header row, and CSV data
+              const modifiedCsvData = `${headerRow}\n${csvData}`
+          
+              const csvBlob = new Blob([modifiedCsvData], { type: 'text/csv;charset=utf-8' })
+              saveAs(csvBlob, `Team-Report.csv`)
+
+
+
+
+
+
+
+
+            // const AllUsers = [...report.data, ...report.offlineUsers];
+            // const worksheet = XLSX.utils.json_to_sheet(AllUsers);
+            // const workbook = XLSX.utils.book_new();
+            // XLSX.utils.book_append_sheet(workbook, worksheet, "All Members");
         
-            const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
-            if(selectedDate === null) {
-                const today = new Date()
-                const day = today.getDate()
-                const month = today.getMonth() + 1
-                const year = today.getFullYear()
-                const todayDate = `${year}-${month}-${day}`
-                saveAs(blob, `All_users_report[${todayDate}].xlsx`);
-            }
-            else {
-                saveAs(blob, `All_users_report[${selectedDate}].xlsx`);
-            }
+            // const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+            // const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+            // if(selectedDate === null) {
+            //     const today = new Date()
+            //     const day = today.getDate()
+            //     const month = today.getMonth() + 1
+            //     const year = today.getFullYear()
+            //     const todayDate = `${year}-${month}-${day}`
+            //     saveAs(blob, `All_users_report[${todayDate}].xlsx`);
+            // }
+            // else {
+            //     saveAs(blob, `All_users_report[${selectedDate}].xlsx`);
+            // }
         }
       }
 

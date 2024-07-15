@@ -19,7 +19,9 @@ import json2csv from 'json2csv'
 import moment from 'moment'
 import dayjs from 'dayjs'
 import PictureAsPdfSharpIcon from '@mui/icons-material/PictureAsPdfSharp'
+import * as XLSX from 'xlsx';
 import html2pdf from 'html2pdf.js'
+const Papa = require('papaparse');
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -191,14 +193,14 @@ export default function Monthly() {
         }
 
         setAverageWorkingHoursOfDay(
-          `${averageHours.toString().padStart(2, '0')}: ${averageMinutes
+          `${averageHours.toString().padStart(2,'0')}: ${averageMinutes
             .toString()
             .padStart(2, '0')}`,
         )
         setTotalWorkingHoursOfMonth(
-          `${data.hours.toString().padStart(2, '0')}:${data.minutes
+          `${data.hours.toString().padStart(2,'0')}:${data.minutes
             .toString()
-            .padStart(2, '0')}:${data.seconds.toString().padStart(2, '0')}`,
+            .padStart(2,'0')}:${data.seconds.toString().padStart(2,'0')}`,
         )
 
         const projectDates = data.project.map((project) => new Date(project.date))
@@ -475,16 +477,54 @@ export default function Monthly() {
     })
 
     // Create the header row
-    const headerRow = 'DATE,TOTAL DAY HOURS,PROJECT,HOURS,ACTIVITY'
+    const headerRow = 'DATE,TOTAL DAY HOURS,PROJECT,PRO HOURS,ACTIVITY'
 
-    // Create the merged cell row with the Monthly Report, Employee name, and Month Date Range
-    const mergedCellRow = `Monthly Report\nEmployee: ${employeeName}\nMonth: ${monthName}-${year}\nTotal Hours of ${monthName}-${year}: ${totalWorkingHoursOfMonth}\nAVG. Working Hours of Day in ${monthName}-${year}: ${averageWorkingHoursOfDay}\n`
+    // Use PapaParse to parse the CSV data
+    const parsedCsv = Papa.parse(csvData, { delimiter: ',' });
+    const csvRows = parsedCsv.data;
 
     // Combine the merged cell row, header row, and CSV data
-    const modifiedCsvData = `${mergedCellRow}\n${headerRow}\n${csvData}`
+    const data = [
+      ['Monthly Report'], // Merged cell row as the first row
+      [`Employee: ${employeeName}`], 
+      [`Month: ${monthName}-${year}`], 
+      [`Total Hours of ${monthName}-${year}: ${totalWorkingHoursOfMonth}`], 
+      [`Average Working Hours per Day in ${monthName}-${year}: ${averageWorkingHoursOfDay}`], 
+      headerRow.split(','), // Header row
+      ...csvRows // CSV data rows
+        ];
 
-    const csvBlob = new Blob([modifiedCsvData], { type: 'text/csv;charset=utf-8' })
-    saveAs(csvBlob, `${currentUser[0].name} Monthly-Report.csv`)
+    // Create a new workbook and worksheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(data);
+
+    // Apply bold formatting to specific cells
+    const boldCells = ['A2', 'B3', 'B4', 'B5', 'B6'];
+    boldCells.forEach(cell => {
+      if (ws[cell]) {
+        ws[cell].s = { font: { bold: true } };
+      }
+    });
+
+    // Adjust column widths
+    const wscols = [
+      { wch: 20 }, // Width for the first column
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 30 }
+    ];
+    ws['!cols'] = wscols;
+
+    // Add the worksheet to the workbook
+    XLSX.utils.book_append_sheet(wb, ws, "Report");
+
+    // Generate the XLSX file
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+    // Create a Blob and save the file
+    const blob = new Blob([wbout], { type: 'application/octet-stream' });
+    saveAs(blob, `${currentUser[0].name}-Monthly-Report.xlsx`);
   }
 
   const handleDownloadPDF = () => {

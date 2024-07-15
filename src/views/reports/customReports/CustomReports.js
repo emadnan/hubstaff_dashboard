@@ -26,6 +26,8 @@ import NoRecordsMessegeComponent from 'src/components/noRecordsMessegeComponent/
 import InitialMessegeForCompany from 'src/components/intialMessegeForCompany/InitialMessegeForCompany'
 import json2csv from 'json2csv'
 import html2pdf from 'html2pdf.js'
+const Papa = require('papaparse');
+
 const BASE_URL = process.env.REACT_APP_BASE_URL
 dayjs.extend(customParseFormat)
 const CustomReports = () => {
@@ -209,12 +211,11 @@ async function getReport() {
           setExportDisable(false)
           setNotFoundMessage(false);
 
-          setTotalWorkingHours(`
-          ${data.hours.toString().padStart(2,'0')}:
-          ${data.minutes.toString().padStart(2,'0')}:
-          ${data.seconds.toString().padStart(2,'0')}
-          `)
-
+          setTotalWorkingHours(
+            `${data.hours.toString().padStart(2, '0')}:${data.minutes
+              .toString()
+              .padStart(2, '0')}:${data.seconds.toString().padStart(2, '0')}`,
+          )
           // const totalSeconds = data.project.reduce((total, project) => {
           //   return total + project.hours * 3600 + project.minutes * 60 + project.seconds
           // }, 0)
@@ -231,9 +232,10 @@ async function getReport() {
           }
 
           setAverageWorkingHours(
-            `${averageHours.toString().padStart(2, '0')}: 
-             ${averageMinutes.toString().padStart(2, '0')}`
-          )
+          `${averageHours.toString().padStart(2, '0')}: ${averageMinutes
+            .toString()
+            .padStart(2, '0')}`,
+        )
 
           const projectDates = data.everyDays.map((project) => new Date(project.date))
           processData(data);
@@ -412,23 +414,61 @@ const timeInSeconds = (timeString) => {
       })
       .flat()
 
-    // Generate the CSV data
-    const csvData = json2csv.parse(flattenedData, {
-      fields: ['DATE', 'TOTAL DAY HOURS', 'PROJECT', 'HOURS', 'ACTIVITY'],
-      header: false, // We will manually add the header later
-    })
+    // Convert JSON to CSV format
+const csvData = json2csv.parse(flattenedData, {
+  fields: ['DATE', 'TOTAL DAY HOURS', 'PROJECT', 'HOURS', 'ACTIVITY'],
+  header: false, // We will manually add the header later
+});
 
-    // Create the header row
-    const headerRow = 'DATE,TOTAL DAY HOURS,PROJECT,HOURS,ACTIVITY'
+// Create the header row
+const headerRow = 'DATE,TOTAL DAY HOURS,PROJECT,PRO HOURS,ACTIVITY';
 
-    // Create the merged cell row with the Monthly Report, Employee name, and Month Date Range
-    const mergedCellRow = `Monthly Report\nEmployee: ${employeeName}\Margins: ${startDate}-${endDate}\nTotal Hours of ${startDate}-${endDate}: ${totalWorkingHours}\nAVG. Working Hours of Day in ${startDate}-${endDate}: ${averageWorkingHours}\n`
+// Use PapaParse to parse the CSV data
+const parsedCsv = Papa.parse(csvData, { delimiter: ',' });
+const csvRows = parsedCsv.data;
 
-    // Combine the merged cell row, header row, and CSV data
-    const modifiedCsvData = `${mergedCellRow}\n${headerRow}\n${csvData}`
+// Combine the merged cell row, header row, and CSV data
+const data = [
+  ['Custom Report'], // Merged cell row as the first row
+  [`Employee: ${employeeName}`], 
+  [`Margins: ${startDate}-${endDate}`], 
+  [`Total Hours from ${startDate}-${endDate}: ${totalWorkingHours}`], 
+  [`Average Working Hours Per Day in ${startDate} - ${endDate}: ${averageWorkingHours}`], 
+  headerRow.split(','), // Header row
+  ...csvRows // CSV data rows
+];
 
-    const csvBlob = new Blob([modifiedCsvData], { type: 'text/csv;charset=utf-8' })
-    saveAs(csvBlob, `${currentUser[0].name} Monthly-Report.csv`)
+// Create a new workbook and worksheet
+const wb = XLSX.utils.book_new();
+const ws = XLSX.utils.aoa_to_sheet(data);
+
+// Apply bold formatting to specific cells
+const boldCells = ['A2', 'B3', 'B4', 'B5', 'B6'];
+boldCells.forEach(cell => {
+  if (ws[cell]) {
+    ws[cell].s = { font: { bold: true } };
+  }
+});
+
+// Adjust column widths
+const wscols = [
+  { wch: 20 }, // Width for the first column
+  { wch: 15 },
+  { wch: 15 },
+  { wch: 15 },
+  { wch: 30 }
+];
+ws['!cols'] = wscols;
+
+// Add the worksheet to the workbook
+XLSX.utils.book_append_sheet(wb, ws, "Report");
+
+// Generate the XLSX file
+const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+// Create a Blob and save the file
+const blob = new Blob([wbout], { type: 'application/octet-stream' });
+saveAs(blob, `${currentUser[0].name}-Custom-Report.xlsx`);
   }
 
   const handleDownloadPDF = () => {
