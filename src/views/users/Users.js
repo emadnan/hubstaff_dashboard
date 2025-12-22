@@ -94,20 +94,7 @@ const Users = () => {
 
   const handleOk = () => {
     if (name && email && password && role) {
-      addUser()
-      setIsModalOpen(false)
-      form.resetFields()
-      setName('')
-      setEmail('')
-      setPassword('')
-      setRole('')
-      setTeamId('')
-      setFormErrors({
-        name: '',
-        email: '',
-        password: '',
-        role: '',
-      })
+      addUser() // backend will decide success/failure
     } else {
       callErrors(name, email, password, role)
     }
@@ -153,6 +140,7 @@ const Users = () => {
 
     setFormErrors(errors)
   }
+
 
   // Functions for Delete User Modal
   const [isModalOpen2, setIsModalOpen2] = useState(false)
@@ -425,35 +413,64 @@ const Users = () => {
   // Add API call
   async function addUser() {
     let adduser = {
-      name: name,
-      email: email,
-      password: password,
-      role: role,
+      name,
+      email,
+      password,
+      role,
       company_id: local.Users.company_id,
-      team_id: team_id,
+      team_id,
     }
+
     setIsLoading(true)
+
     try {
       const response = await fetch(`${BASE_URL}/api/add_user`, {
         method: 'POST',
         body: JSON.stringify(adduser),
         headers: {
           'Content-Type': 'application/json',
+          Accept: 'application/json',
         },
       })
 
+      const data = await response.json()
+
+      
+      if (response.status === 422) {
+        if (data.errors?.email) {
+          setFormErrors((prev) => ({
+            ...prev,
+            email: data.errors.email[0], 
+          }))
+        }
+        return
+      }
+
+      
       if (response.ok) {
         await getList()
         handleButtonClick1()
+
+        
+        setIsModalOpen(false)
+        form.resetFields()
+        setName('')
+        setEmail('')
+        setPassword('')
+        setRole('')
+        setTeamId('')
+        setFormErrors({})
       } else {
         handleButtonClick2()
       }
     } catch (error) {
       console.error(error)
+      handleButtonClick2()
     } finally {
-      setIsLoading(false) // Hide loader
+      setIsLoading(false)
     }
   }
+
 
   // Delete API call
   async function deleteUser(newid) {
@@ -478,7 +495,7 @@ const Users = () => {
     } catch (error) {
       console.error(error)
     } finally {
-      setIsLoading(false) // Hide loader
+      setIsLoading(false) 
     }
   }
 
@@ -670,7 +687,7 @@ const Users = () => {
         <Modal
           title="Add a User"
           open={isModalOpen}
-          okButtonProps={{ style: { background: 'blue' } }}
+          okButtonProps={{ style: { background: 'blue' }, htmlType: 'button' }}
           onOk={handleOk}
           onCancel={handleCancel}
           maskClosable={false}
