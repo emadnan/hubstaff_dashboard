@@ -77,8 +77,88 @@ const TaskAssignmentUserSide = () => {
   const [currentItemsCompleted, setCurrentItemsCompleted] = useState([])
 
   const [projects, setProjects] = useState([])
+  
+
+  // start
+  
+  const [showModal, setShowModal] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+
+  
+  const [messages, setMessages] = useState([
+    { text: "Hello, how can I help you today?", sender: "admin" },
+    { text: "Hi, I have an issue with my assigned task.", sender: "user" },
+    { text: "Sure, please explain the issue.", sender: "admin" },
+    { text: "The task deadline is not clear.", sender: "user" },
+    { text: "The deadline is next Friday.", sender: "admin" },
+    { text: "Okay, thank you for confirming.", sender: "user" },
+    { text: "Do you need any additional resources?", sender: "admin" },
+    { text: "Yes, I need access to the design files.", sender: "user" },
+    { text: "I will grant you access shortly.", sender: "admin" },
+    { text: "Thanks, I appreciate it.", sender: "user" },
+
+    { text: "Have you started working on the task?", sender: "admin" },
+    { text: "Yes, I have completed 60% of it.", sender: "user" },
+    { text: "Good progress. Any blockers?", sender: "admin" },
+    { text: "No major blockers at the moment.", sender: "user" },
+    { text: "Please update me by tomorrow.", sender: "admin" },
+    { text: "Sure, I will send an update.", sender: "user" },
+    { text: "Let me know if you need help.", sender: "admin" },
+    { text: "Will do, thanks.", sender: "user" },
+    { text: "Keep up the good work.", sender: "admin" },
+    { text: "Thank you!", sender: "user" }
+  ]);
+
+
+  const handleAddComment = () => {
+    // Prevent empty comments
+    if (!taskComment.trim()) {
+      alert("Please write a comment before adding.");
+      return;
+    }
+
+    // Add comment to list
+    setMessages((prev) => [
+      ...prev,
+      {
+        text: taskComment,
+        sender: "user"
+      }
+    ]);
+
+    // Clear textarea after adding
+    setTaskComment("");
+  };
+
+
+
+
+  // Open modal only for user comments
+  const handleCommentClick = (index) => {
+    if (messages[index].sender === "user") {
+      setSelectedIndex(index);
+      setShowModal(true);
+    }
+  };
+
+  // Confirm delete
+  const handleDelete = () => {
+    setMessages((prev) => prev.filter((_, i) => i !== selectedIndex));
+    setShowModal(false);
+  };
+
+  // Cancel delete
+  const handleCancel = () => {
+    setShowModal(false);
+  };
+
+
+
+  // end
 
   let [form] = Form.useForm()
+
+
 
   // Component is initially mounted
   useEffect(() => {
@@ -289,42 +369,42 @@ const TaskAssignmentUserSide = () => {
   const [showAlert1, setShowAlert1] = useState(false);
 
   function handleButtonClick1() {
-      setShowAlert1(true);
+    setShowAlert1(true);
   }
 
   function handleCloseAlert1() {
-      setShowAlert1(false);
+    setShowAlert1(false);
   }
 
   useEffect(() => {
-      if (showAlert1) {
-          const timer = setTimeout(() => {
-              setShowAlert1(false);
-          }, 3000);
+    if (showAlert1) {
+      const timer = setTimeout(() => {
+        setShowAlert1(false);
+      }, 3000);
 
-          return () => clearTimeout(timer);
-      }
+      return () => clearTimeout(timer);
+    }
   }, [showAlert1]);
 
   // Functions for Status Change Failure
   const [showAlert2, setShowAlert2] = useState(false);
 
   function handleButtonClick2() {
-      setShowAlert2(true);
+    setShowAlert2(true);
   }
 
   function handleCloseAlert2() {
-      setShowAlert2(false);
+    setShowAlert2(false);
   }
 
   useEffect(() => {
-      if (showAlert2) {
-          const timer = setTimeout(() => {
-              setShowAlert2(false);
-          }, 3000);
+    if (showAlert2) {
+      const timer = setTimeout(() => {
+        setShowAlert2(false);
+      }, 3000);
 
-          return () => clearTimeout(timer);
-      }
+      return () => clearTimeout(timer);
+    }
   }, [showAlert2]);
 
   return (
@@ -773,6 +853,10 @@ const TaskAssignmentUserSide = () => {
         )}
       </div>
       <div>
+
+
+
+
         <Modal
           title={<div style={{ textAlign: 'center' }}>Task Details</div>}
           open={isModalOpenToTakeAction}
@@ -840,26 +924,120 @@ const TaskAssignmentUserSide = () => {
                     </Select>
                   </Form.Item>
                 </div>
+
+
+
+
+
+              {/* Add Comment  */}
                 <div>
-                  <label>Add Comments Related to Task:</label>
+                  <label>Add Comments Related to the Task:</label>
+
+                  {/* Display Messages */}
+                  <div
+                    className="mt-3 border p-2"
+                    style={{ borderRadius: "2%", height: "200px", overflowY: "auto" }}
+                  >
+                    {messages.length > 0 ? (
+                      messages.map((message, index) => (
+                        <div
+                          key={index}
+                          className={`d-flex mb-2 ${message.sender === "user"
+                            ? "justify-content-end"
+                            : "justify-content-start"
+                            }`}
+                          onClick={() => handleCommentClick(index)}
+                          style={{ cursor: message.sender === "user" ? "pointer" : "default" }}
+                        >
+                          <div
+                            className={`p-2 rounded ${message.sender === "user"
+                              ? "bg-success text-white"
+                              : "bg-light border"
+                              }`}
+                            style={{ maxWidth: "75%" }}
+                          >
+                            <small className="fw-bold d-block">
+                              {message.sender === "user" ? "You" : "Admin"}
+                            </small>
+                            <span>{message.text}</span>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-muted text-center mb-0">No comments yet</p>
+                    )}
+                  </div>
+
+
+
+
+
+                  {/* Comment Input */}
                   <textarea
                     rows="2"
-                    style={{ width: '100%' }}
-                    type="text"
-                    className="form-control"
-                    placeholder="Add Comments Related to Task"
-                    onChange={(event) => setTaskComment(event.target.value)}
-                    value={
-                      taskComment === (undefined || null || 'null' || 'undefined')
-                        ? ''
-                        : taskComment
-                    }
+                    className="form-control mt-2"
+                    placeholder="Write your comment here..."
+                    value={taskComment}
+                    onChange={(e) => setTaskComment(e.target.value)}
                   />
+
+                  <button
+                    type="button"
+                    className="btn btn-primary mt-2 bg-success"
+                    onClick={handleAddComment}
+                  >
+                    Add Comment
+                  </button>
                 </div>
+
+
+
+                {showModal && (
+                  <>
+                    <div className="modal fade show d-block" tabIndex={-1}>
+                      <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                          <div className="modal-header">
+                            <h5 className="modal-title">Delete Comment</h5>
+                            <button
+                              type="button"
+                              className="btn-close"
+                              onClick={handleCancel}
+                            ></button>
+                          </div>
+                          <div className="modal-body">
+                            Are you sure you want to delete this comment?
+                          </div>
+                          <div className="modal-footer">
+                            <button
+                              className="btn btn-secondary"
+                              onClick={handleCancel}
+                            >
+                              Cancel
+                            </button>
+                            <button className="btn btn-danger" onClick={handleDelete}>
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      className="modal-backdrop fade show"
+                      onClick={handleCancel}
+                    ></div>
+                  </>
+                )}
+
+
+
               </div>
             </div>
           </div>
-        </Modal>
+        </Modal >
+
+
+
 
         {/* Alert for Status Change Success*/}
         {showAlert1 && (
