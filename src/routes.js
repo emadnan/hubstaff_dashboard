@@ -45,6 +45,8 @@ const FSFform = React.lazy(() => import('./views/fsf/FSFform'))
 const AllCRF = React.lazy(() => import('./views/crf/AllCRF'))
 const CRFform = React.lazy(() => import('./views/crf/CRFform'))
 const TaskAssignment = React.lazy(() => import('./views/taskmanagement/TaskAssignment'))
+const LinkagePlanForm = React.lazy(() => import('./external-linkages/LinkagePlanForm'))
+const LinkageCalendar = React.lazy(() => import('./external-linkages/LinkageCalendar'))
 const TaskAssignmentUserSide = React.lazy(() =>
   import('./views/taskmanagement/TaskAssignmentUserSide'),
 )
@@ -171,8 +173,8 @@ const routes = [
     requiredNavPermision: 'Nav_TimeNactivity',
   },
   { path: '/reports-monthly', name: 'Monthly', element: Monthly, requiredNavPermision: 'Nav_MonthlyReports', },
-  { path: '/team-report', name: 'TeamReports', element: Team_Reports,  requiredNavPermision: 'Nav_TeamReports', },
-  { path: '/team-report-for-company', name: 'TeamReportForCompany', element: Team_Report_For_Company,  requiredNavPermision: 'Nav_MonthlyReports', },
+  { path: '/team-report', name: 'TeamReports', element: Team_Reports, requiredNavPermision: 'Nav_TeamReports', },
+  { path: '/team-report-for-company', name: 'TeamReportForCompany', element: Team_Report_For_Company, requiredNavPermision: 'Nav_MonthlyReports', },
   { path: '/report-dayend', name: 'Dayend', element: Dayend, requiredNavPermision: 'Nav_DayendReports', },
   { path: '/teams', name: 'Teams', element: Teams, requiredNavPermision: 'Nav_Teams', },
   {
@@ -209,6 +211,18 @@ const routes = [
     name: 'Task Assignment',
     element: TaskAssignmentUserSide,
     requiredNavPermision: 'Nav_AssignedTask',
+  },
+  {
+    path: '/external-linkages/plan-form',
+    name: 'Semester Plan Form',
+    element: LinkagePlanForm,
+    requiredNavPermision: 'Nav_Dashboard' // Using Nav_Dashboard temporarily
+  },
+  {
+    path: '/external-linkages/calendar',
+    name: 'Linkage Calendar',
+    element: LinkageCalendar,
+    requiredNavPermision: 'Nav_Dashboard' // Using Nav_Dashboard temporarily
   },
   { path: '/404', name: '404 Page', element: NotFound, requiredNavPermision: 'Nav_NotFound', },
 ]

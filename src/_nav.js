@@ -1,5 +1,6 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
+
 import {
   cilBell,
   cilSpeedometer,
@@ -14,12 +15,13 @@ import {
   cilStream,
   cilLineWeight,
   cilDollar,
+  cilLink,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem } from '@coreui/react'
 
 //Local Storage data
 const local = JSON.parse(localStorage.getItem('user-info'))
-const permissions = local.permissions
+const permissions = local?.permissions || []
 const permissionNames = permissions.map((permission) => permission.name)
 
 const _navAdmin = [
@@ -106,17 +108,10 @@ const _navAdmin = [
         component: CNavItem,
         name: 'Streams',
         to: '/streams',
-        // icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
         permission: 'Nav_Streams',
       },
     ],
   },
-  // {
-  //   component: CNavItem,
-  //   name: 'Clients',
-  //   to: '/projectmanagement-client',
-  //   permission: 'Nav_Clients',
-  // },
   {
     component: CNavGroup,
     name: 'Task Management',
@@ -171,6 +166,27 @@ const _navAdmin = [
     to: '/permissions-Permission',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
     permission: 'Nav_Permissions',
+  },
+  {
+    component: CNavGroup,
+    name: 'External Linkages',
+    to: '/external-linkages',
+    icon: <CIcon icon={cilLink} customClassName="nav-icon" />,
+    permission: 'Nav_Dashboard', // Use existing permission temporarily
+    items: [
+      {
+        component: CNavItem,
+        name: 'Semester Plan Form',
+        to: '/external-linkages/plan-form',
+        permission: 'Nav_Dashboard', // Use existing permission temporarily
+      },
+      {
+        component: CNavItem,
+        name: 'Linkage Calendar',
+        to: '/external-linkages/calendar',
+        permission: 'Nav_Dashboard', // Use existing permission temporarily
+      },
+    ],
   },
   {
     component: CNavGroup,
@@ -282,24 +298,22 @@ const _navAdmin = [
     icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
     permission: 'Nav_FSF',
   },
-  {
-    component: CNavItem,
-    name: 'CRF',
-    to: '/allcrf',
-    icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
-    permission: 'Nav_CRF',
-  },
 ]
 
 const filterNavItems = (items) => {
   return items
     .map((item) => {
       if (item.component === CNavGroup) {
-        const filteredSubItems = filterNavItems(item.items)
-        if (filteredSubItems.length > 0) {
-          return { ...item, items: filteredSubItems }
+        // Check if parent group has permission
+        if (permissionNames.includes(item.permission)) {
+          const filteredSubItems = filterNavItems(item.items)
+          // Show group if it has permission AND has at least one visible child
+          if (filteredSubItems.length > 0) {
+            return { ...item, items: filteredSubItems }
+          }
         }
       } else if (permissionNames.includes(item.permission)) {
+        // Show individual nav item if user has permission
         return item
       }
       return null
