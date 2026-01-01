@@ -61,7 +61,7 @@ const Login = () => {
     const sessionToken = JSON.parse(sessionStorage.getItem('user-info'))?.token
 
     if (sessionToken) {
-      navigate('/Dashboard')
+      navigate('/dashboard')
     }
   })
 
@@ -122,7 +122,7 @@ const Login = () => {
         sessionStorage.setItem('user-info', JSON.stringify(result))
         handleButtonClick2()
         setTimeout(async () => {
-          await navigate('/Dashboard')
+          await navigate('/dashboard')
         }, 100)
       }
     } catch (error) {

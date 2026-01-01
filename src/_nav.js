@@ -293,6 +293,13 @@ const _navAdmin = [
   },
   {
     component: CNavItem,
+    name: 'Form Builder',
+    to: '/form-builder',
+    icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
+    permission: 'Nav_FSF', // Reusing existing permission for now
+  },
+  {
+    component: CNavItem,
     name: 'FSF',
     to: '/fsf',
     icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,

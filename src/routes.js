@@ -47,6 +47,8 @@ const CRFform = React.lazy(() => import('./views/crf/CRFform'))
 const TaskAssignment = React.lazy(() => import('./views/taskmanagement/TaskAssignment'))
 const LinkagePlanForm = React.lazy(() => import('./external-linkages/LinkagePlanForm'))
 const LinkageCalendar = React.lazy(() => import('./external-linkages/LinkageCalendar'))
+const FormList = React.lazy(() => import('./views/form-builder/FormList'))
+const FormEditor = React.lazy(() => import('./views/form-builder/FormEditor'))
 const TaskAssignmentUserSide = React.lazy(() =>
   import('./views/taskmanagement/TaskAssignmentUserSide'),
 )
@@ -223,6 +225,24 @@ const routes = [
     name: 'Linkage Calendar',
     element: LinkageCalendar,
     requiredNavPermision: 'Nav_Dashboard' // Using Nav_Dashboard temporarily
+  },
+  {
+    path: '/form-builder',
+    name: 'Form Builder',
+    element: FormList,
+    requiredNavPermision: 'Nav_FSF',
+  },
+  {
+    path: '/form-builder/edit/:id',
+    name: 'Edit Form',
+    element: FormEditor,
+    requiredNavPermision: 'Nav_FSF',
+  },
+  {
+    path: '/form-builder/create',
+    name: 'Create Form',
+    element: FormEditor,
+    requiredNavPermision: 'Nav_FSF',
   },
   { path: '/404', name: '404 Page', element: NotFound, requiredNavPermision: 'Nav_NotFound', },
 ]

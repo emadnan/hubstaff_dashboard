@@ -9,50 +9,82 @@ import {
   Table,
   Form,
   Space,
-  message
+  message,
+  Typography,
+  Divider,
+  Tag,
+  Tooltip,
+  Steps,
+  Result
 } from 'antd'
-import { DeleteOutlined, PlusOutlined, SaveOutlined, SendOutlined } from '@ant-design/icons'
+import {
+  DeleteOutlined,
+  PlusOutlined,
+  SaveOutlined,
+  SendOutlined,
+  InfoCircleOutlined,
+  CalendarOutlined,
+  UserOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  EnvironmentOutlined,
+  RocketOutlined,
+  TeamOutlined
+} from '@ant-design/icons'
 
 const { Option } = Select
 const { TextArea } = Input
-
-// Master Data from Template
-// Master Data will be fetched from API
-
+const { Title, Text } = Typography
+const { Step } = Steps
 
 const LinkagePlanForm = () => {
-  // Styles reused/adapted from Dashboard.js
-  const titleStyle = {
-    fontFamily: 'Arial',
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#0070FF',
-    marginBottom: '20px'
-  }
-
-  const sectionHeaderStyle = {
-    fontFamily: 'Arial',
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#6E6E6E',
-    marginBottom: '15px',
-    borderBottom: '2px solid #28B463',
-    paddingBottom: '5px',
-    display: 'inline-block'
-  }
+  // --- Modern Styling Tokens ---
+  const primaryColor = '#0070FF'
+  const secondaryColor = '#28B463'
 
   const cardStyle = {
-    width: '100%',
-    backgroundColor: '#FFFFFF',
-    marginBottom: '20px',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+    borderRadius: '12px',
+    boxShadow: '0 8px 24px rgba(0,0,0,0.05)',
+    border: 'none',
+    marginBottom: '32px'
   }
 
-  // Master Data State
+  const sectionTitleStyle = {
+    color: primaryColor,
+    marginBottom: '24px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px'
+  }
+
+  // --- State Management ---
+  const [currentStep, setCurrentStep] = useState(0)
   const [facultyData, setFacultyData] = useState({})
   const [activityTypes, setActivityTypes] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [success, setSuccess] = useState(false)
+
   const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:8000'
 
+  const [basicInfo, setBasicInfo] = useState({
+    campus: '',
+    faculty: '',
+    department: '',
+    deanHead: '',
+    focalPerson: '',
+    email: '',
+    phone: ''
+  })
+
+  const [goals, setGoals] = useState([{ type: '', deliverable: '' }])
+  const [activities, setActivities] = useState([{ type: '', description: '', partner: '', date: '', outcome: '' }])
+  const [industrySectors, setIndustrySectors] = useState([''])
+  const [employers, setEmployers] = useState([''])
+  const [alumni, setAlumni] = useState([{ name: '', email: '', phone: '' }])
+  const [supportRequired, setSupportRequired] = useState('')
+
+  // --- Data Fetching ---
   useEffect(() => {
     const fetchMasterData = async () => {
       try {
@@ -61,800 +93,413 @@ const LinkagePlanForm = () => {
           fetch(`${BASE_URL}/api/getActivityTypes`)
         ])
 
-        if (facResponse.ok) {
-          const facData = await facResponse.json()
-          setFacultyData(facData)
-        }
-
-        if (actResponse.ok) {
-          const actData = await actResponse.json()
-          setActivityTypes(actData)
-        }
+        if (facResponse.ok) setFacultyData(await facResponse.json())
+        if (actResponse.ok) setActivityTypes(await actResponse.json())
       } catch (error) {
-        console.error("Error fetching master data:", error)
-        message.error("Failed to load form data")
+        message.error("Failed to load master data from server")
       }
     }
-
     fetchMasterData()
   }, [])
 
-  // 1. Basic Info State
-  const [basicInfo, setBasicInfo] = useState({
-    campus: '',
-    faculty: '',
-    department: '',
-    focalPerson: '',
-    email: '',
-    phone: ''
-  })
-
-  // Validation errors state
-  const [errors, setErrors] = useState({
-    campus: '',
-    faculty: '',
-    department: '',
-    focalPerson: '',
-    email: '',
-    phone: ''
-  })
-
-  // 2. Goals State
-  const [goals, setGoals] = useState([{ type: '', deliverable: '' }])
-  const [goalErrors, setGoalErrors] = useState([{ type: '', deliverable: '' }])
-
-  // 3. Planned Activities State
-  const [activities, setActivities] = useState([
-    {
-      type: '',
-      description: '',
-      partner: '',
-      date: '',
-      outcome: ''
-    }
-  ])
-  const [activityErrors, setActivityErrors] = useState([{ type: '', description: '' }])
-
-  // 4. Industry Targets State
-  const [industrySectors, setIndustrySectors] = useState([''])
-  const [employers, setEmployers] = useState([''])
-
-  // 5. Alumni State
-  const [alumni, setAlumni] = useState([{ name: '', email: '', phone: '' }])
-  const [alumniErrors, setAlumniErrors] = useState([{ email: '', phone: '' }])
-
-  // 6. Support Required State
-  const [supportRequired, setSupportRequired] = useState('')
-
-  // Loading state
-  const [loading, setLoading] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
-
-  // --- Validation Functions ---
-
-  const validateEmail = (email) => {
-    if (!email) return ''
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email) ? '' : 'Invalid email format'
-  }
-
-  const validatePakistaniPhone = (phone) => {
-    if (!phone) return ''
-    let cleaned = phone.replace(/[\s\-]/g, '')
-    cleaned = cleaned.replace(/^\+92/, '0')
-    const phoneRegex = /^03[0-9]{9}$/
-    return phoneRegex.test(cleaned) ? '' : 'Invalid phone number (use 03XX-XXXXXXX)'
-  }
-
-  const formatPhoneNumber = (phone) => {
-    let cleaned = phone.replace(/[\s\-]/g, '')
-    cleaned = cleaned.replace(/^\+92/, '0')
-    if (cleaned.length === 11 && cleaned.startsWith('0')) {
-      return `${cleaned.substring(0, 4)}-${cleaned.substring(4)}`
-    }
-    return cleaned
-  }
-
-  // Handle basic info change with validation
-  const handleBasicInfoChange = (field, value) => {
-    setBasicInfo({ ...basicInfo, [field]: value })
-
-    // Clear error when user starts typing
-    if (submitted) {
-      let error = ''
-      if (field === 'email') {
-        error = validateEmail(value)
-      } else if (field === 'phone') {
-        error = validatePakistaniPhone(value)
-      } else if (!value) {
-        error = 'This field is required'
+  // --- Validation ---
+  const validateStep = (step) => {
+    if (step === 0) {
+      const { campus, faculty, department, focalPerson, email, phone } = basicInfo
+      if (!campus || !faculty || !department || !focalPerson || !email || !phone) {
+        message.warning("Please fill all required basic information")
+        return false
       }
-      setErrors({ ...errors, [field]: error })
+      return true
     }
-  }
-
-  // Validate all basic info
-  const validateBasicInfo = () => {
-    const newErrors = {
-      campus: !basicInfo.campus ? 'Campus is required' : '',
-      faculty: !basicInfo.faculty ? 'Faculty is required' : '',
-      department: !basicInfo.department ? 'Department is required' : '',
-      focalPerson: !basicInfo.focalPerson ? 'Focal person name is required' : '',
-      email: !basicInfo.email ? 'Email is required' : validateEmail(basicInfo.email),
-      phone: !basicInfo.phone ? 'Phone is required' : validatePakistaniPhone(basicInfo.phone)
-    }
-    setErrors(newErrors)
-    return Object.values(newErrors).every(error => !error)
-  }
-
-  // Validate goals
-  const validateGoals = () => {
-    const newErrors = goals.map((goal, idx) => {
-      const hasType = !!goal.type
-      const hasDeliverable = !!goal.deliverable
-
-      if (!hasType && !hasDeliverable) return { type: '', deliverable: '' }
-
-      return {
-        type: hasDeliverable && !hasType ? 'Select activity type' : '',
-        deliverable: hasType && !hasDeliverable ? 'Enter deliverable' : ''
+    if (step === 1) {
+      if (!goals.some(g => g.type && g.deliverable)) {
+        message.warning("Please add at least one complete linkage goal")
+        return false
       }
-    })
-
-    setGoalErrors(newErrors)
-
-    const hasValidGoal = goals.some(g => g.type && g.deliverable)
-    return hasValidGoal && newErrors.every(e => !e.type && !e.deliverable)
+      return true
+    }
+    return true
   }
 
-  // Validate activities
-  const validateActivities = () => {
-    const newErrors = activities.map((activity, idx) => {
-      const hasType = !!activity.type
-      const hasDescription = !!activity.description
-
-      if (!hasType && !hasDescription) return { type: '', description: '' }
-
-      return {
-        type: hasDescription && !hasType ? 'Select type' : '',
-        description: hasType && !hasDescription ? 'Enter description' : ''
-      }
-    })
-
-    setActivityErrors(newErrors)
-
-    const hasValidActivity = activities.some(a => a.type && a.description)
-    return hasValidActivity && newErrors.every(e => !e.type && !e.description)
-  }
-
-  // Validate alumni
-  const validateAlumni = () => {
-    const newErrors = alumni.map(alum => ({
-      email: alum.email ? validateEmail(alum.email) : '',
-      phone: alum.phone ? validatePakistaniPhone(alum.phone) : ''
-    }))
-
-    setAlumniErrors(newErrors)
-    return newErrors.every(e => !e.email && !e.phone)
-  }
-
-  // --- Handlers for Dynamic Rows ---
-  const handleAddRow = (state, setState, template, errorState, setErrorState, errorTemplate) => {
-    setState([...state, template])
-    if (setErrorState) {
-      setErrorState([...errorState, errorTemplate])
+  // --- Handlers ---
+  const handleNext = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep(currentStep + 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
-  const handleRemoveRow = (index, state, setState, errorState, setErrorState) => {
-    if (state.length > 1) {
-      setState(state.filter((_, i) => i !== index))
-      if (setErrorState) {
-        setErrorState(errorState.filter((_, i) => i !== index))
-      }
-    }
+  const handlePrev = () => {
+    setCurrentStep(currentStep - 1)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
-
-  const handleInputChange = (index, field, value, state, setState, errorState, setErrorState) => {
-    const updated = [...state]
-    updated[index][field] = value
-    setState(updated)
-
-    // Clear error when typing
-    if (submitted && errorState && setErrorState) {
-      const updatedErrors = [...errorState]
-      updatedErrors[index] = { ...updatedErrors[index], [field]: '' }
-      setErrorState(updatedErrors)
-    }
-  }
-
-  const handleArrayInputChange = (index, value, state, setState) => {
-    const updated = [...state]
-    updated[index] = value
-    setState(updated)
-  }
-
-
 
   const handleSubmit = async () => {
-    setSubmitted(true)
-
-    // Validate all sections
-    const basicValid = validateBasicInfo()
-    const goalsValid = validateGoals()
-    const activitiesValid = validateActivities()
-    const alumniValid = validateAlumni()
-
-    if (!basicValid || !goalsValid || !activitiesValid || !alumniValid) {
-      message.error('Please fix all errors before submitting')
-      // Scroll to first error
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-      return
-    }
-
     setLoading(true)
-
     const localUser = JSON.parse(localStorage.getItem('user-info'))
-    const userId = localUser?.Users?.user_id || localUser?.Users?.id || 1
+    const userId = localUser?.Users?.id || 1
 
     const payload = {
       campus: basicInfo.campus,
       faculty: basicInfo.faculty,
       department: basicInfo.department,
+      dean_head: basicInfo.deanHead,
       focal_person: basicInfo.focalPerson,
       email: basicInfo.email,
-      phone: formatPhoneNumber(basicInfo.phone),
+      phone: basicInfo.phone,
       semester: "Spring 2025",
       academic_year: "2024-2025",
-      support_required: supportRequired || null,
+      support_required: supportRequired,
       submitted_by: userId,
-
       goals: goals.filter(g => g.type && g.deliverable),
-      activities: activities
-        .filter(a => a.type && a.description)
-        .map(a => ({
-          activity_type: a.type,
-          description: a.description,
-          partner_organization: a.partner || null,
-          date: a.date || null,
-          expected_outcome: a.outcome || null,
-          status: 'Planned'
-        })),
-      industry_sectors: industrySectors.filter(s => s && s.trim()),
-      employers: employers.filter(e => e && e.trim()),
-      alumni: alumni
-        .filter(a => a.name && (a.email || a.phone))
-        .map(a => ({
-          name: a.name,
-          email: a.email || null,
-          phone: a.phone ? formatPhoneNumber(a.phone) : null
-        }))
+      activities: activities.filter(a => a.type && a.description).map(a => ({
+        activity_type: a.type,
+        description: a.description,
+        partner_organization: a.partner,
+        date: a.date,
+        expected_outcome: a.outcome,
+        status: 'Planned'
+      })),
+      industry_sectors: industrySectors.filter(s => s.trim()),
+      employers: employers.filter(e => e.trim()),
+      alumni: alumni.filter(a => a.name)
     }
 
     try {
-      const token = localUser?.token
-      const headers = { 'Content-Type': 'application/json' }
-      if (token) headers['Authorization'] = `Bearer ${token}`
-
       const response = await fetch(`${BASE_URL}/api/addLinkagePlan`, {
         method: 'POST',
-        headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localUser?.token}`
+        },
         body: JSON.stringify(payload)
       })
 
-      const data = await response.json()
-
       if (response.ok) {
-        message.success('Linkage Plan submitted successfully!')
-
-        // Reset form
-        setBasicInfo({ campus: '', faculty: '', department: '', focalPerson: '', email: '', phone: '' })
-        setErrors({ campus: '', faculty: '', department: '', focalPerson: '', email: '', phone: '' })
-        setGoals([{ type: '', deliverable: '' }])
-        setGoalErrors([{ type: '', deliverable: '' }])
-        setActivities([{ type: '', description: '', partner: '', date: '', outcome: '' }])
-        setActivityErrors([{ type: '', description: '' }])
-        setIndustrySectors([''])
-        setEmployers([''])
-        setAlumni([{ name: '', email: '', phone: '' }])
-        setAlumniErrors([{ email: '', phone: '' }])
-        setSupportRequired('')
-        setSubmitted(false)
-
+        setSuccess(true)
+        message.success("External Linkage Plan submitted successfully!")
       } else {
-        message.error(data.message || 'Failed to submit plan')
+        const errorData = await response.json()
+        message.error(errorData.message || "Failed to submit the plan")
       }
-    } catch (error) {
-      message.error('Network error. Please try again.')
+    } catch (e) {
+      message.error("A network error occurred")
     } finally {
       setLoading(false)
     }
   }
 
-  // Columns for Tables
-  const goalColumns = [
-    {
-      title: <span>Strategic Domain <span style={{ color: 'red' }}>*</span></span>,
-      dataIndex: 'type',
-      key: 'type',
-      width: '35%',
-      render: (text, record, index) => (
-        <div>
-          <Select
-            style={{
-              width: '100%',
-              borderColor: submitted && goalErrors[index]?.type ? '#ff4d4f' : undefined
-            }}
-            status={submitted && goalErrors[index]?.type ? 'error' : ''}
-            value={text || undefined}
-            placeholder="Select Type"
-            onChange={(value) => handleInputChange(index, 'type', value, goals, setGoals, goalErrors, setGoalErrors)}
-          >
-            {activityTypes.map(type => (
-              <Option key={type.code} value={type.code}>{type.label}</Option>
-            ))}
-          </Select>
-          {submitted && goalErrors[index]?.type && (
-            <div style={{ color: '#ff4d4f', fontSize: '12px', marginTop: '4px' }}>
-              {goalErrors[index].type}
-            </div>
-          )}
-        </div>
-      )
-    },
-    {
-      title: <span>Deliverable (Narrative) <span style={{ color: 'red' }}>*</span></span>,
-      dataIndex: 'deliverable',
-      key: 'deliverable',
-      render: (text, record, index) => (
-        <div>
-          <Input
-            status={submitted && goalErrors[index]?.deliverable ? 'error' : ''}
-            placeholder="e.g., Sign 3 new MoUs with industry partners"
-            value={text}
-            onChange={(e) => handleInputChange(index, 'deliverable', e.target.value, goals, setGoals, goalErrors, setGoalErrors)}
-          />
-          {submitted && goalErrors[index]?.deliverable && (
-            <div style={{ color: '#ff4d4f', fontSize: '12px', marginTop: '4px' }}>
-              {goalErrors[index].deliverable}
-            </div>
-          )}
-        </div>
-      )
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      width: '100px',
-      render: (_, record, index) => (
-        <Button
-          danger
-          icon={<DeleteOutlined />}
-          onClick={() => handleRemoveRow(index, goals, setGoals, goalErrors, setGoalErrors)}
-          disabled={goals.length === 1}
-        />
-      )
-    }
-  ]
+  // --- Step Content Renderers ---
+  const renderStep0 = () => (
+    <Card style={cardStyle} title={<Title level={4} style={sectionTitleStyle}><UserOutlined /> Basic Information</Title>}>
+      <Form layout="vertical">
+        <Row gutter={[24, 24]}>
+          <Col xs={24} md={8}>
+            <Form.Item label="Campus" required tooltip="Select the campus location">
+              <Select
+                placeholder="Select Campus"
+                value={basicInfo.campus || undefined}
+                onChange={v => setBasicInfo({ ...basicInfo, campus: v })}
+                size="large"
+              >
+                <Option value="Lahore Campus">Lahore Campus</Option>
+                <Option value="Sargodha Campus">Sargodha Campus</Option>
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={8}>
+            <Form.Item label="Faculty" required>
+              <Select
+                placeholder="Select Faculty"
+                value={basicInfo.faculty || undefined}
+                onChange={v => setBasicInfo({ ...basicInfo, faculty: v, department: '' })}
+                size="large"
+                showSearch
+              >
+                {Object.keys(facultyData).map(f => <Option key={f} value={f}>{f}</Option>)}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={8}>
+            <Form.Item label="Department" required>
+              <Select
+                placeholder="Select Department"
+                value={basicInfo.department || undefined}
+                onChange={v => setBasicInfo({ ...basicInfo, department: v })}
+                disabled={!basicInfo.faculty}
+                size="large"
+                showSearch
+              >
+                {basicInfo.faculty && facultyData[basicInfo.faculty]?.map(d => (
+                  <Option key={d} value={d}>{d}</Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item label="Dean / Head of Department" required>
+              <Input
+                prefix={<UserOutlined style={{ color: '#ccc' }} />}
+                placeholder="Name of Dean or HOD"
+                value={basicInfo.deanHead}
+                onChange={e => setBasicInfo({ ...basicInfo, deanHead: e.target.value })}
+                size="large"
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item label="Faculty Focal Person (FFP)" required>
+              <Input
+                prefix={<TeamOutlined style={{ color: '#ccc' }} />}
+                placeholder="Name of Focal Person"
+                value={basicInfo.focalPerson}
+                onChange={e => setBasicInfo({ ...basicInfo, focalPerson: e.target.value })}
+                size="large"
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item label="Contact Email" required>
+              <Input
+                prefix={<MailOutlined style={{ color: '#ccc' }} />}
+                placeholder="email@example.com"
+                value={basicInfo.email}
+                onChange={e => setBasicInfo({ ...basicInfo, email: e.target.value })}
+                size="large"
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item label="Contact Phone" required>
+              <Input
+                prefix={<PhoneOutlined style={{ color: '#ccc' }} />}
+                placeholder="03XX-XXXXXXX"
+                value={basicInfo.phone}
+                onChange={e => setBasicInfo({ ...basicInfo, phone: e.target.value })}
+                size="large"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+      </Form>
+    </Card>
+  )
 
-  const activityColumns = [
-    {
-      title: <span>Type <span style={{ color: 'red' }}>*</span></span>,
-      dataIndex: 'type',
-      width: '15%',
-      render: (text, record, index) => (
-        <div>
-          <Select
-            style={{ width: '100%' }}
-            status={submitted && activityErrors[index]?.type ? 'error' : ''}
-            value={text || undefined}
-            placeholder="Select"
-            onChange={(value) => handleInputChange(index, 'type', value, activities, setActivities, activityErrors, setActivityErrors)}
-          >
-            {activityTypes.map(type => (
-              <Option key={type.code} value={type.code}>{type.label}</Option>
-            ))}
-          </Select>
-          {submitted && activityErrors[index]?.type && (
-            <div style={{ color: '#ff4d4f', fontSize: '12px', marginTop: '4px' }}>
-              {activityErrors[index].type}
-            </div>
-          )}
-        </div>
-      )
-    },
-    {
-      title: <span>Brief Description <span style={{ color: 'red' }}>*</span></span>,
-      dataIndex: 'description',
-      render: (text, record, index) => (
-        <div>
-          <Input
-            status={submitted && activityErrors[index]?.description ? 'error' : ''}
-            placeholder="Activity description"
-            value={text}
-            onChange={(e) => handleInputChange(index, 'description', e.target.value, activities, setActivities, activityErrors, setActivityErrors)}
-          />
-          {submitted && activityErrors[index]?.description && (
-            <div style={{ color: '#ff4d4f', fontSize: '12px', marginTop: '4px' }}>
-              {activityErrors[index].description}
-            </div>
-          )}
-        </div>
-      )
-    },
-    {
-      title: 'Target Partner/Institution',
-      dataIndex: 'partner',
-      render: (text, record, index) => (
-        <Input
-          placeholder="Institution name"
-          value={text}
-          onChange={(e) => handleInputChange(index, 'partner', e.target.value, activities, setActivities)}
-        />
-      )
-    },
-    {
-      title: 'Tentative Date',
-      dataIndex: 'date',
-      width: '150px',
-      render: (text, record, index) => (
-        <Input
-          type="date"
-          value={text}
-          onChange={(e) => handleInputChange(index, 'date', e.target.value, activities, setActivities)}
-        />
-      )
-    },
-    {
-      title: 'Expected Outcome',
-      dataIndex: 'outcome',
-      render: (text, record, index) => (
-        <Input
-          placeholder="Expected outcome"
-          value={text}
-          onChange={(e) => handleInputChange(index, 'outcome', e.target.value, activities, setActivities)}
-        />
-      )
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      width: '80px',
-      render: (_, record, index) => (
-        <Button
-          danger
-          icon={<DeleteOutlined />}
-          onClick={() => handleRemoveRow(index, activities, setActivities, activityErrors, setActivityErrors)}
-          disabled={activities.length === 1}
-        />
-      )
-    }
-  ]
+  const renderStep1 = () => (
+    <Card style={cardStyle} title={<Title level={4} style={sectionTitleStyle}><RocketOutlined /> Linkage Goals & Activities</Title>}>
+      <Divider orientation="left"><Text strong>Linkage Goals for the Semester</Text></Divider>
+      <Table
+        dataSource={goals}
+        pagination={false}
+        rowKey={(_, i) => i}
+        columns={[
+          {
+            title: 'Strategic Domain',
+            dataIndex: 'type',
+            width: '40%',
+            render: (v, _, i) => (
+              <Select placeholder="Select Domain" value={v || undefined} onChange={val => {
+                const newGoals = [...goals]; newGoals[i].type = val; setGoals(newGoals);
+              }} style={{ width: '100%' }}>
+                {activityTypes.map(t => <Option key={t.code} value={t.code}>{t.label}</Option>)}
+              </Select>
+            )
+          },
+          {
+            title: 'Deliverable (Narrative)',
+            dataIndex: 'deliverable',
+            render: (v, _, i) => <Input placeholder="Brief deliverable description" value={v} onChange={e => {
+              const newGoals = [...goals]; newGoals[i].deliverable = e.target.value; setGoals(newGoals);
+            }} />
+          },
+          {
+            title: '',
+            width: 50,
+            render: (_, __, i) => <Button danger icon={<DeleteOutlined />} onClick={() => setGoals(goals.filter((_, idx) => idx !== i))} disabled={goals.length === 1} />
+          }
+        ]}
+      />
+      <Button type="dashed" block icon={<PlusOutlined />} onClick={() => setGoals([...goals, { type: '', deliverable: '' }])} style={{ marginTop: 16 }}>
+        Add Goal
+      </Button>
 
-  const alumniColumns = [
-    {
-      title: 'Name with Designation',
-      dataIndex: 'name',
-      render: (text, record, index) => (
-        <Input
-          placeholder="Name and designation"
-          value={text}
-          onChange={(e) => handleInputChange(index, 'name', e.target.value, alumni, setAlumni, alumniErrors, setAlumniErrors)}
-        />
-      )
-    },
-    {
-      title: 'Email Address',
-      dataIndex: 'email',
-      render: (text, record, index) => (
-        <div>
-          <Input
-            status={submitted && alumniErrors[index]?.email ? 'error' : ''}
-            placeholder="email@example.com"
-            value={text}
-            onChange={(e) => handleInputChange(index, 'email', e.target.value, alumni, setAlumni, alumniErrors, setAlumniErrors)}
-          />
-          {submitted && alumniErrors[index]?.email && (
-            <div style={{ color: '#ff4d4f', fontSize: '12px', marginTop: '4px' }}>
-              {alumniErrors[index].email}
+      <Divider orientation="left" style={{ marginTop: 48 }}><Text strong>Planned Activities</Text></Divider>
+      <Table
+        dataSource={activities}
+        pagination={false}
+        scroll={{ x: 800 }}
+        rowKey={(_, i) => i}
+        columns={[
+          {
+            title: 'Type',
+            dataIndex: 'type',
+            width: 150,
+            render: (v, _, i) => (
+              <Select placeholder="Type" value={v || undefined} onChange={val => {
+                const newAct = [...activities]; newAct[i].type = val; setActivities(newAct);
+              }} style={{ width: '100%' }}>
+                {activityTypes.map(t => <Option key={t.code} value={t.code}>{t.label}</Option>)}
+              </Select>
+            )
+          },
+          {
+            title: 'Description',
+            dataIndex: 'description',
+            render: (v, _, i) => <Input placeholder="Activity description" value={v} onChange={e => {
+              const newAct = [...activities]; newAct[i].description = e.target.value; setActivities(newAct);
+            }} />
+          },
+          {
+            title: 'Partner',
+            dataIndex: 'partner',
+            render: (v, _, i) => <Input placeholder="Partner name" value={v} onChange={e => {
+              const newAct = [...activities]; newAct[i].partner = e.target.value; setActivities(newAct);
+            }} />
+          },
+          {
+            title: 'Date',
+            dataIndex: 'date',
+            width: 150,
+            render: (v, _, i) => <Input type="date" value={v} onChange={e => {
+              const newAct = [...activities]; newAct[i].date = e.target.value; setActivities(newAct);
+            }} />
+          },
+          {
+            title: '',
+            width: 50,
+            render: (_, __, i) => <Button danger icon={<DeleteOutlined />} onClick={() => setActivities(activities.filter((_, idx) => idx !== i))} disabled={activities.length === 1} />
+          }
+        ]}
+      />
+      <Button type="dashed" block icon={<PlusOutlined />} onClick={() => setActivities([...activities, { type: '', description: '', partner: '', date: '', outcome: '' }])} style={{ marginTop: 16 }}>
+        Add Activity
+      </Button>
+    </Card>
+  )
+
+  const renderStep2 = () => (
+    <Card style={cardStyle} title={<Title level={4} style={sectionTitleStyle}><TeamOutlined /> Targets & Support</Title>}>
+      <Row gutter={[24, 24]}>
+        <Col span={24}>
+          <Divider orientation="left"><Text strong>Key Industry Sectors to Engage</Text></Divider>
+          {industrySectors.map((s, i) => (
+            <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+              <Input placeholder="Industry sector name" value={s} onChange={e => {
+                const updated = [...industrySectors]; updated[i] = e.target.value; setIndustrySectors(updated)
+              }} />
+              <Button danger icon={<DeleteOutlined />} onClick={() => setIndustrySectors(industrySectors.filter((_, idx) => idx !== i))} disabled={industrySectors.length === 1} />
             </div>
-          )}
-        </div>
-      )
-    },
-    {
-      title: 'Contact Number',
-      dataIndex: 'phone',
-      render: (text, record, index) => (
-        <div>
-          <Input
-            status={submitted && alumniErrors[index]?.phone ? 'error' : ''}
-            placeholder="03XX-XXXXXXX"
-            value={text}
-            onChange={(e) => handleInputChange(index, 'phone', e.target.value, alumni, setAlumni, alumniErrors, setAlumniErrors)}
+          ))}
+          <Button type="dashed" icon={<PlusOutlined />} onClick={() => setIndustrySectors([...industrySectors, ''])}>Add Sector</Button>
+        </Col>
+
+        <Col span={24}>
+          <Divider orientation="left" style={{ marginTop: 24 }}><Text strong>Proposed Alumni Targets</Text></Divider>
+          <Table
+            dataSource={alumni}
+            pagination={false}
+            rowKey={(_, i) => i}
+            columns={[
+              {
+                title: 'Name', dataIndex: 'name', render: (v, _, i) => <Input value={v} onChange={e => {
+                  const updated = [...alumni]; updated[i].name = e.target.value; setAlumni(updated)
+                }} />
+              },
+              {
+                title: 'Email', dataIndex: 'email', render: (v, _, i) => <Input value={v} onChange={e => {
+                  const updated = [...alumni]; updated[i].email = e.target.value; setAlumni(updated)
+                }} />
+              },
+              { title: '', width: 50, render: (_, __, i) => <Button danger icon={<DeleteOutlined />} onClick={() => setAlumni(alumni.filter((_, idx) => idx !== i))} disabled={alumni.length === 1} /> }
+            ]}
           />
-          {submitted && alumniErrors[index]?.phone && (
-            <div style={{ color: '#ff4d4f', fontSize: '12px', marginTop: '4px' }}>
-              {alumniErrors[index].phone}
-            </div>
-          )}
-        </div>
-      )
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      width: '80px',
-      render: (_, record, index) => (
-        <Button
-          danger
-          icon={<DeleteOutlined />}
-          onClick={() => handleRemoveRow(index, alumni, setAlumni, alumniErrors, setAlumniErrors)}
-          disabled={alumni.length === 1}
+          <Button type="dashed" icon={<PlusOutlined />} onClick={() => setAlumni([...alumni, { name: '', email: '', phone: '' }])} style={{ marginTop: 16 }}>Add Alumni</Button>
+        </Col>
+
+        <Col span={24}>
+          <Divider orientation="left" style={{ marginTop: 24 }}><Text strong>Support Required from Directorate</Text></Divider>
+          <TextArea
+            rows={4}
+            placeholder="Describe any assistance needed from the Directorate of External Linkages"
+            value={supportRequired}
+            onChange={e => setSupportRequired(e.target.value)}
+          />
+        </Col>
+      </Row>
+    </Card>
+  )
+
+  if (success) {
+    return (
+      <Card style={{ ...cardStyle, maxWidth: 600, margin: '100px auto', textAlign: 'center' }}>
+        <Result
+          status="success"
+          title="Successfully Submitted!"
+          subTitle="Your Departmental External Linkage Plan has been saved and is now visible in the activities calendar."
+          extra={[
+            <Button
+              type="primary"
+              key="calendar"
+              size="large"
+              onClick={() => window.location.href = '/external-linkages/calendar'}
+              style={{ borderRadius: '8px' }}
+            >
+              Go to Calendar
+            </Button>,
+            <Button
+              key="new"
+              size="large"
+              onClick={() => window.location.reload()}
+              style={{ borderRadius: '8px' }}
+            >
+              Submit Another Plan
+            </Button>,
+          ]}
         />
-      )
-    }
-  ]
+      </Card>
+    )
+  }
 
   return (
-    <div className="p-4">
-      <h3 style={titleStyle}>Departmental External Linkage Plan</h3>
+    <div style={{ padding: '40px 20px', maxWidth: '1200px', margin: '0 auto', background: '#f9f9f9', minHeight: '100vh' }}>
+      <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+        <Title level={2} style={{ color: primaryColor, fontWeight: 800 }}>External Linkage Management</Title>
+        <Text type="secondary" style={{ fontSize: '16px' }}>Formulate your departmental outreach strategy and track industry engagements</Text>
+      </div>
 
-      {/* Section 1: Basic Information */}
-      <Card style={cardStyle}>
-        <div style={sectionHeaderStyle}>Section 1: Basic Information</div>
-        <Form layout="vertical">
-          <Row gutter={16}>
-            <Col xs={24} md={8}>
-              <Form.Item
-                label={<span>Campus <span style={{ color: 'red' }}>*</span></span>}
-                validateStatus={submitted && errors.campus ? 'error' : ''}
-                help={submitted && errors.campus}
-              >
-                <Select
-                  value={basicInfo.campus || undefined}
-                  placeholder="Select Campus"
-                  onChange={(value) => handleBasicInfoChange('campus', value)}
-                  status={submitted && errors.campus ? 'error' : ''}
-                >
-                  <Option value="Lahore Campus">Lahore Campus</Option>
-                  <Option value="Sargodha Campus">Sargodha Campus</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={8}>
-              <Form.Item
-                label={<span>Faculty Name <span style={{ color: 'red' }}>*</span></span>}
-                validateStatus={submitted && errors.faculty ? 'error' : ''}
-                help={submitted && errors.faculty}
-              >
-                <Select
-                  value={basicInfo.faculty || undefined}
-                  placeholder="Select Faculty"
-                  onChange={(value) => handleBasicInfoChange('faculty', value)}
-                  status={submitted && errors.faculty ? 'error' : ''}
-                >
-                  {Object.keys(facultyData).map(f => <Option key={f} value={f}>{f}</Option>)}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={8}>
-              <Form.Item
-                label={<span>Department Name <span style={{ color: 'red' }}>*</span></span>}
-                validateStatus={submitted && errors.department ? 'error' : ''}
-                help={submitted && errors.department}
-              >
-                <Select
-                  value={basicInfo.department || undefined}
-                  placeholder="Select Department"
-                  onChange={(value) => handleBasicInfoChange('department', value)}
-                  disabled={!basicInfo.faculty}
-                  status={submitted && errors.department ? 'error' : ''}
-                >
-                  {basicInfo.faculty && facultyData[basicInfo.faculty]?.map(d => (
-                    <Option key={d} value={d}>{d}</Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={8}>
-              <Form.Item
-                label={<span>Faculty Focal Person (FFP) <span style={{ color: 'red' }}>*</span></span>}
-                validateStatus={submitted && errors.focalPerson ? 'error' : ''}
-                help={submitted && errors.focalPerson}
-              >
-                <Input
-                  placeholder="Enter name"
-                  value={basicInfo.focalPerson}
-                  onChange={(e) => handleBasicInfoChange('focalPerson', e.target.value)}
-                  status={submitted && errors.focalPerson ? 'error' : ''}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={8}>
-              <Form.Item
-                label={<span>Contact Email <span style={{ color: 'red' }}>*</span></span>}
-                validateStatus={submitted && errors.email ? 'error' : ''}
-                help={submitted && errors.email}
-              >
-                <Input
-                  type="email"
-                  placeholder="email@example.com"
-                  value={basicInfo.email}
-                  onChange={(e) => handleBasicInfoChange('email', e.target.value)}
-                  status={submitted && errors.email ? 'error' : ''}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={8}>
-              <Form.Item
-                label={<span>Contact Phone <span style={{ color: 'red' }}>*</span></span>}
-                validateStatus={submitted && errors.phone ? 'error' : ''}
-                help={submitted && errors.phone ? errors.phone : 'Format: 03XX-XXXXXXX'}
-              >
-                <Input
-                  placeholder="03XX-XXXXXXX"
-                  value={basicInfo.phone}
-                  onChange={(e) => handleBasicInfoChange('phone', e.target.value)}
-                  status={submitted && errors.phone ? 'error' : ''}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
-      </Card>
+      <Steps current={currentStep} style={{ marginBottom: '48px', padding: '0 20px' }}>
+        <Step title="Identity" icon={<InfoCircleOutlined />} />
+        <Step title="Strategy" icon={<CalendarOutlined />} />
+        <Step title="Targets" icon={<SendOutlined />} />
+      </Steps>
 
-      {/* Section 2: Linkage Goals */}
-      <Card style={cardStyle}>
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <div style={sectionHeaderStyle}>Section 2: Linkage Goals for the Semester</div>
-          <Button
-            type="primary"
-            ghost
-            icon={<PlusOutlined />}
-            onClick={() => handleAddRow(goals, setGoals, { type: '', deliverable: '' }, goalErrors, setGoalErrors, { type: '', deliverable: '' })}
-          >
-            Add Goal
-          </Button>
-        </div>
-        <Table
-          dataSource={goals}
-          columns={goalColumns}
-          pagination={false}
-          rowKey={(record, index) => index}
-          bordered
-        />
-      </Card>
+      <div className="step-content">
+        {currentStep === 0 && renderStep0()}
+        {currentStep === 1 && renderStep1()}
+        {currentStep === 2 && renderStep2()}
+      </div>
 
-      {/* Section 3: Planned Activities */}
-      <Card style={cardStyle}>
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <div style={sectionHeaderStyle}>Section 3: Planned Activities for the Semester</div>
-          <Button
-            type="primary"
-            ghost
-            icon={<PlusOutlined />}
-            onClick={() => handleAddRow(
-              activities,
-              setActivities,
-              { type: '', description: '', partner: '', date: '', outcome: '' },
-              activityErrors,
-              setActivityErrors,
-              { type: '', description: '' }
-            )}
-          >
-            Add Activity
-          </Button>
-        </div>
-        <Table
-          dataSource={activities}
-          columns={activityColumns}
-          pagination={false}
-          rowKey={(record, index) => index}
-          bordered
-        />
-      </Card>
-
-      {/* Section 5: Industry and Alumni Linkage Targets */}
-      <Card style={cardStyle}>
-        <div style={sectionHeaderStyle}>Section 5: Industry and Alumni Linkage Targets</div>
-
-        <h5 style={{ ...sectionHeaderStyle, fontSize: 14, borderBottom: 'none', color: '#0070FF' }}>
-          Key Industry Sectors to Engage
-        </h5>
-        <div className="mb-4">
-          {industrySectors.map((sector, idx) => (
-            <Row key={idx} gutter={8} className="mb-2">
-              <Col flex="auto">
-                <Input
-                  placeholder={`Industry sector ${idx + 1}`}
-                  value={sector}
-                  onChange={(e) => handleArrayInputChange(idx, e.target.value, industrySectors, setIndustrySectors)}
-                />
-              </Col>
-              {industrySectors.length > 1 && (
-                <Col flex="none">
-                  <Button danger icon={<DeleteOutlined />} onClick={() => handleRemoveRow(idx, industrySectors, setIndustrySectors)} />
-                </Col>
-              )}
-            </Row>
-          ))}
-          <Button type="dashed" block onClick={() => handleAddRow(industrySectors, setIndustrySectors, '')}>
-            + Add Sector
-          </Button>
-        </div>
-
-        <h5 style={{ ...sectionHeaderStyle, fontSize: 14, borderBottom: 'none', color: '#0070FF' }}>
-          Proposed Employers for Internship/Recruitment
-        </h5>
-        <div className="mb-4">
-          {employers.map((employer, idx) => (
-            <Row key={idx} gutter={8} className="mb-2">
-              <Col flex="auto">
-                <Input
-                  placeholder={`Employer ${idx + 1}`}
-                  value={employer}
-                  onChange={(e) => handleArrayInputChange(idx, e.target.value, employers, setEmployers)}
-                />
-              </Col>
-              {employers.length > 1 && (
-                <Col flex="none">
-                  <Button danger icon={<DeleteOutlined />} onClick={() => handleRemoveRow(idx, employers, setEmployers)} />
-                </Col>
-              )}
-            </Row>
-          ))}
-          <Button type="dashed" block onClick={() => handleAddRow(employers, setEmployers, '')}>
-            + Add Employer
-          </Button>
-        </div>
-
-        <h5 style={{ ...sectionHeaderStyle, fontSize: 14, borderBottom: 'none', color: '#0070FF' }}>
-          Alumni to be Engaged
-        </h5>
-        <div className="mb-3 d-flex justify-content-end">
-          <Button
-            type="primary"
-            ghost
-            size="small"
-            icon={<PlusOutlined />}
-            onClick={() => handleAddRow(alumni, setAlumni, { name: '', email: '', phone: '' }, alumniErrors, setAlumniErrors, { email: '', phone: '' })}
-          >
-            Add Alumni
-          </Button>
-        </div>
-        <Table
-          dataSource={alumni}
-          columns={alumniColumns}
-          pagination={false}
-          rowKey={(record, index) => index}
-          bordered
-        />
-      </Card>
-
-      {/* Section 6: Support Required */}
-      <Card style={cardStyle}>
-        <div style={sectionHeaderStyle}>Section 6: Support Required from OEL</div>
-        <TextArea
-          rows={4}
-          placeholder="Please list specific facilitation, coordination, documentation, or outreach support expected from OEL..."
-          value={supportRequired}
-          onChange={(e) => setSupportRequired(e.target.value)}
-        />
-      </Card>
-
-      {/* Submit Buttons */}
-      <div className="d-flex justify-content-end gap-2 mb-5">
-        <Button size="large" icon={<SaveOutlined />}>Save Draft</Button>
-        <Button
-          type="primary"
-          size="large"
-          icon={<SendOutlined />}
-          onClick={handleSubmit}
-          loading={loading}
-        >
-          Submit Plan to OEL
+      <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '100px' }}>
+        <Button size="large" onClick={handlePrev} disabled={currentStep === 0}>
+          Back
         </Button>
+        {currentStep < 2 ? (
+          <Button type="primary" size="large" onClick={handleNext}>
+            Next Step
+          </Button>
+        ) : (
+          <Button
+            type="primary"
+            size="large"
+            icon={<SaveOutlined />}
+            onClick={handleSubmit}
+            loading={loading}
+            style={{ background: secondaryColor, borderColor: secondaryColor }}
+          >
+            Submit Linkage Plan
+          </Button>
+        )}
       </div>
     </div>
   )
