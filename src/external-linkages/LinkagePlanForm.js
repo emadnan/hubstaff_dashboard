@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   Card,
   Row,
@@ -38,6 +39,13 @@ const { Title, Text } = Typography
 const { Step } = Steps
 
 const LinkagePlanForm = () => {
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  // Check if we're in edit mode
+  const editMode = location.state?.editMode || false
+  const planData = location.state?.planData || null
+
   // --- Modern Styling Tokens ---
   const primaryColor = '#0070FF'
   const secondaryColor = '#28B463'
@@ -59,6 +67,7 @@ const LinkagePlanForm = () => {
 
   // --- State Management ---
   const [currentStep, setCurrentStep] = useState(0)
+  const [campusData, setCampusData] = useState([])
   const [facultyData, setFacultyData] = useState({})
   const [activityTypes, setActivityTypes] = useState([])
   const [loading, setLoading] = useState(false)
@@ -84,16 +93,64 @@ const LinkagePlanForm = () => {
   const [alumni, setAlumni] = useState([{ name: '', email: '', phone: '' }])
   const [supportRequired, setSupportRequired] = useState('')
 
+  // --- Pre-populate form if in edit mode ---
+  useEffect(() => {
+    if (editMode && planData) {
+      setBasicInfo({
+        campus: planData.campus || '',
+        faculty: planData.faculty || '',
+        department: planData.department || '',
+        deanHead: planData.dean_head || '',
+        focalPerson: planData.focal_person || '',
+        email: planData.email || '',
+        phone: planData.phone || ''
+      })
+
+      if (planData.goals && planData.goals.length > 0) {
+        setGoals(planData.goals)
+      }
+
+      if (planData.activities && planData.activities.length > 0) {
+        setActivities(planData.activities.map(a => ({
+          type: a.activity_type,
+          description: a.description,
+          partner: a.partner_organization || '',
+          date: a.date || '',
+          outcome: a.expected_outcome || ''
+        })))
+      }
+
+      if (planData.industry_sectors && planData.industry_sectors.length > 0) {
+        setIndustrySectors(planData.industry_sectors)
+      }
+
+      if (planData.employers && planData.employers.length > 0) {
+        setEmployers(planData.employers)
+      }
+
+      if (planData.alumni && planData.alumni.length > 0) {
+        setAlumni(planData.alumni)
+      }
+
+      setSupportRequired(planData.support_required || '')
+
+      // Fetch faculties for the selected campus
+      if (planData.campus) {
+        fetchFacultiesForCampus(planData.campus)
+      }
+    }
+  }, [editMode, planData])
+
   // --- Data Fetching ---
   useEffect(() => {
     const fetchMasterData = async () => {
       try {
-        const [facResponse, actResponse] = await Promise.all([
-          fetch(`${BASE_URL}/api/getFaculties`),
+        const [campusResponse, actResponse] = await Promise.all([
+          fetch(`${BASE_URL}/api/getCampuses`),
           fetch(`${BASE_URL}/api/getActivityTypes`)
         ])
 
-        if (facResponse.ok) setFacultyData(await facResponse.json())
+        if (campusResponse.ok) setCampusData(await campusResponse.json())
         if (actResponse.ok) setActivityTypes(await actResponse.json())
       } catch (error) {
         message.error("Failed to load master data from server")
@@ -101,6 +158,21 @@ const LinkagePlanForm = () => {
     }
     fetchMasterData()
   }, [])
+
+  // Fetch faculties when campus is selected
+  const fetchFacultiesForCampus = async (campusName) => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/getFaculties?campus=${encodeURIComponent(campusName)}`)
+      if (response.ok) {
+        const data = await response.json()
+        setFacultyData(data)
+      } else {
+        message.error("Failed to load faculties for selected campus")
+      }
+    } catch (error) {
+      message.error("Failed to load faculties from server")
+    }
+  }
 
   // --- Validation ---
   const validateStep = (step) => {
@@ -159,7 +231,7 @@ const LinkagePlanForm = () => {
         partner_organization: a.partner,
         date: a.date,
         expected_outcome: a.outcome,
-        status: 'Planned'
+        status: a.status || 'Planned'
       })),
       industry_sectors: industrySectors.filter(s => s.trim()),
       employers: employers.filter(e => e.trim()),
@@ -167,8 +239,14 @@ const LinkagePlanForm = () => {
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/api/addLinkagePlan`, {
-        method: 'POST',
+      const url = editMode
+        ? `${BASE_URL}/api/updateLinkagePlan/${planData.id}`
+        : `${BASE_URL}/api/addLinkagePlan`
+
+      const method = editMode ? 'PUT' : 'POST'
+
+      const response = await fetch(url, {
+        method: method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localUser?.token}`
@@ -178,10 +256,12 @@ const LinkagePlanForm = () => {
 
       if (response.ok) {
         setSuccess(true)
-        message.success("External Linkage Plan submitted successfully!")
+        message.success(editMode
+          ? "External Linkage Plan updated successfully!"
+          : "External Linkage Plan submitted successfully!")
       } else {
         const errorData = await response.json()
-        message.error(errorData.message || "Failed to submit the plan")
+        message.error(errorData.message || `Failed to ${editMode ? 'update' : 'submit'} the plan`)
       }
     } catch (e) {
       message.error("A network error occurred")
@@ -200,11 +280,14 @@ const LinkagePlanForm = () => {
               <Select
                 placeholder="Select Campus"
                 value={basicInfo.campus || undefined}
-                onChange={v => setBasicInfo({ ...basicInfo, campus: v })}
+                onChange={v => {
+                  setBasicInfo({ ...basicInfo, campus: v, faculty: '', department: '' })
+                  setFacultyData({})
+                  fetchFacultiesForCampus(v)
+                }}
                 size="large"
               >
-                <Option value="Lahore Campus">Lahore Campus</Option>
-                <Option value="Sargodha Campus">Sargodha Campus</Option>
+                {campusData.map(campus => <Option key={campus.id} value={campus.name}>{campus.name}</Option>)}
               </Select>
             </Form.Item>
           </Col>
@@ -435,19 +518,29 @@ const LinkagePlanForm = () => {
       <Card style={{ ...cardStyle, maxWidth: 600, margin: '100px auto', textAlign: 'center' }}>
         <Result
           status="success"
-          title="Successfully Submitted!"
-          subTitle="Your Departmental External Linkage Plan has been saved and is now visible in the activities calendar."
+          title={editMode ? "Successfully Updated!" : "Successfully Submitted!"}
+          subTitle={editMode
+            ? "Your Departmental External Linkage Plan has been updated successfully."
+            : "Your Departmental External Linkage Plan has been saved and is now visible in the activities calendar."}
           extra={[
             <Button
               type="primary"
+              key="manage"
+              size="large"
+              onClick={() => navigate('/external-linkages/manage-forms')}
+              style={{ borderRadius: '8px' }}
+            >
+              View All Forms
+            </Button>,
+            <Button
               key="calendar"
               size="large"
-              onClick={() => window.location.href = '/external-linkages/calendar'}
+              onClick={() => navigate('/external-linkages/calendar')}
               style={{ borderRadius: '8px' }}
             >
               Go to Calendar
             </Button>,
-            <Button
+            !editMode && <Button
               key="new"
               size="large"
               onClick={() => window.location.reload()}
@@ -455,7 +548,7 @@ const LinkagePlanForm = () => {
             >
               Submit Another Plan
             </Button>,
-          ]}
+          ].filter(Boolean)}
         />
       </Card>
     )
@@ -501,7 +594,7 @@ const LinkagePlanForm = () => {
           </Button>
         )}
       </div>
-    </div>
+    </div >
   )
 }
 

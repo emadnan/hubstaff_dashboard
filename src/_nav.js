@@ -182,6 +182,12 @@ const _navAdmin = [
       },
       {
         component: CNavItem,
+        name: 'Manage Forms',
+        to: '/external-linkages/manage-forms',
+        permission: 'Nav_Dashboard', // Use existing permission temporarily
+      },
+      {
+        component: CNavItem,
         name: 'Linkage Calendar',
         to: '/external-linkages/calendar',
         permission: 'Nav_Dashboard', // Use existing permission temporarily

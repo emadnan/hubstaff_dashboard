@@ -47,6 +47,7 @@ const CRFform = React.lazy(() => import('./views/crf/CRFform'))
 const TaskAssignment = React.lazy(() => import('./views/taskmanagement/TaskAssignment'))
 const LinkagePlanForm = React.lazy(() => import('./external-linkages/LinkagePlanForm'))
 const LinkageCalendar = React.lazy(() => import('./external-linkages/LinkageCalendar'))
+const LinkageFormsManagement = React.lazy(() => import('./external-linkages/LinkageFormsManagement'))
 const FormList = React.lazy(() => import('./views/form-builder/FormList'))
 const FormEditor = React.lazy(() => import('./views/form-builder/FormEditor'))
 const TaskAssignmentUserSide = React.lazy(() =>
@@ -218,6 +219,12 @@ const routes = [
     path: '/external-linkages/plan-form',
     name: 'Semester Plan Form',
     element: LinkagePlanForm,
+    requiredNavPermision: 'Nav_Dashboard' // Using Nav_Dashboard temporarily
+  },
+  {
+    path: '/external-linkages/manage-forms',
+    name: 'Manage Linkage Forms',
+    element: LinkageFormsManagement,
     requiredNavPermision: 'Nav_Dashboard' // Using Nav_Dashboard temporarily
   },
   {

@@ -45,12 +45,16 @@ function LinkageCalendar() {
       const response = await fetch(`${BASE_URL}/api/getUpcomingActivities`);
       const data = await response.json();
       if (response.ok && data.activities) {
-        // Transform backend activity to calendar format if needed
-        // Backend: { id, activity_type, description, date, status, ... }
+        // Backend now returns: { id, activity_type, description, date, status, campus, faculty, department, ... }
         const mappedActivities = data.activities.map(act => ({
           date: act.date,
           title: act.description,
-          type: act.activity_type
+          type: act.activity_type,
+          campus: act.campus,
+          faculty: act.faculty,
+          department: act.department,
+          partner: act.partner_organization,
+          status: act.status
         }));
         setActivities(mappedActivities);
       } else {
@@ -73,7 +77,7 @@ function LinkageCalendar() {
     return (
       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
         {listData.map((item, index) => (
-          <li key={index} className="mb-1">
+          <li key={index} className="mb-1" title={`${item.campus} - ${item.faculty} - ${item.department}\nPartner: ${item.partner || 'N/A'}`}>
             <Badge
               status={
                 item.type === 'MOU' ? 'processing' :
@@ -84,6 +88,8 @@ function LinkageCalendar() {
               text={
                 <span style={{ fontSize: '10px', whiteSpace: 'normal', lineHeight: '1.2' }}>
                   <b>{item.type}:</b> {item.title}
+                  <br />
+                  <small style={{ color: '#888' }}>{item.department}</small>
                 </span>
               }
             />
