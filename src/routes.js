@@ -48,6 +48,8 @@ const TaskAssignment = React.lazy(() => import('./views/taskmanagement/TaskAssig
 const LinkagePlanForm = React.lazy(() => import('./external-linkages/LinkagePlanForm'))
 const LinkageCalendar = React.lazy(() => import('./external-linkages/LinkageCalendar'))
 const LinkageFormsManagement = React.lazy(() => import('./external-linkages/LinkageFormsManagement'))
+const WorkflowManagement = React.lazy(() => import('./external-linkages/WorkflowManagement'))
+const LinkageApprovals = React.lazy(() => import('./external-linkages/LinkageApprovals'))
 const FormList = React.lazy(() => import('./views/form-builder/FormList'))
 const FormEditor = React.lazy(() => import('./views/form-builder/FormEditor'))
 const TaskAssignmentUserSide = React.lazy(() =>
@@ -219,19 +221,31 @@ const routes = [
     path: '/external-linkages/plan-form',
     name: 'Semester Plan Form',
     element: LinkagePlanForm,
-    requiredNavPermision: 'Nav_Dashboard' // Using Nav_Dashboard temporarily
+    requiredNavPermision: 'Nav_LinkagePlanForm'
   },
   {
     path: '/external-linkages/manage-forms',
     name: 'Manage Linkage Forms',
     element: LinkageFormsManagement,
-    requiredNavPermision: 'Nav_Dashboard' // Using Nav_Dashboard temporarily
+    requiredNavPermision: 'Nav_ManageForms'
   },
   {
     path: '/external-linkages/calendar',
     name: 'Linkage Calendar',
     element: LinkageCalendar,
-    requiredNavPermision: 'Nav_Dashboard' // Using Nav_Dashboard temporarily
+    requiredNavPermision: 'Nav_ExternalLinkages'
+  },
+  {
+    path: '/external-linkages/workflow',
+    name: 'Linkage Workflow Management',
+    element: WorkflowManagement,
+    requiredNavPermision: 'Nav_Roles'
+  },
+  {
+    path: '/external-linkages/approvals',
+    name: 'Pending Approvals',
+    element: LinkageApprovals,
+    requiredNavPermision: 'Nav_LinkageApprovals'
   },
   {
     path: '/form-builder',

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
 import {
   Card,
   Row,
@@ -10,591 +9,1150 @@ import {
   Table,
   Form,
   Space,
-  message,
-  Typography,
-  Divider,
-  Tag,
-  Tooltip,
-  Steps,
-  Result
+  message
 } from 'antd'
-import {
-  DeleteOutlined,
-  PlusOutlined,
-  SaveOutlined,
-  SendOutlined,
-  InfoCircleOutlined,
-  CalendarOutlined,
-  UserOutlined,
-  MailOutlined,
-  PhoneOutlined,
-  EnvironmentOutlined,
-  RocketOutlined,
-  TeamOutlined
-} from '@ant-design/icons'
+import { DeleteOutlined, PlusOutlined, SaveOutlined, SendOutlined } from '@ant-design/icons'
+import { useNavigate, useLocation } from 'react-router-dom'
+import moment from 'moment'
 
 const { Option } = Select
 const { TextArea } = Input
-const { Title, Text } = Typography
-const { Step } = Steps
+
+// Master Data from Template
+// Master Data will be fetched from API
+
 
 const LinkagePlanForm = () => {
-  const location = useLocation()
-  const navigate = useNavigate()
+  // Styles reused/adapted from Dashboard.js
+  const titleStyle = {
+    fontFamily: 'Arial',
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#0070FF',
+    marginBottom: '20px'
+  }
 
-  // Check if we're in edit mode
-  const editMode = location.state?.editMode || false
-  const planData = location.state?.planData || null
-
-  // --- Modern Styling Tokens ---
-  const primaryColor = '#0070FF'
-  const secondaryColor = '#28B463'
+  const sectionHeaderStyle = {
+    fontFamily: 'Arial',
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#6E6E6E',
+    marginBottom: '15px',
+    borderBottom: '2px solid #28B463',
+    paddingBottom: '5px',
+    display: 'inline-block'
+  }
 
   const cardStyle = {
-    borderRadius: '12px',
-    boxShadow: '0 8px 24px rgba(0,0,0,0.05)',
-    border: 'none',
-    marginBottom: '32px'
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    marginBottom: '20px',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
   }
 
-  const sectionTitleStyle = {
-    color: primaryColor,
-    marginBottom: '24px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px'
-  }
-
-  // --- State Management ---
-  const [currentStep, setCurrentStep] = useState(0)
-  const [campusData, setCampusData] = useState([])
+  // Master Data State
   const [facultyData, setFacultyData] = useState({})
   const [activityTypes, setActivityTypes] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
-  const [success, setSuccess] = useState(false)
+  const [hodData, setHodData] = useState([])
+  const [editMode, setEditMode] = useState(false)
+  const [editPlanId, setEditPlanId] = useState(null)
+
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:8000'
 
+  useEffect(() => {
+    const fetchMasterData = async () => {
+      try {
+        const localUser = JSON.parse(localStorage.getItem('user-info'))
+        const token = localUser?.token
+        const headers = token ? { Authorization: `Bearer ${token}` } : {}
+
+        const [facResponse, actResponse, hodResponse] = await Promise.all([
+          fetch(`${BASE_URL}/api/getFaculties`, { headers }),
+          fetch(`${BASE_URL}/api/getActivityTypes`, { headers }),
+          fetch(`${BASE_URL}/api/getHODs`, { headers })
+        ])
+
+        const unwrap = (data, type) => {
+          if (!data) return data
+
+          if (type === 'faculty') {
+            // Robust check for object structure
+            const isFacultyMap = (v) => v && typeof v === 'object' && !Array.isArray(v)
+
+            // 1. Check current level
+            if (data['Lahore Campus'] || data['Sargodha Campus']) {
+              const clean = {}
+              Object.keys(data).forEach(k => {
+                if (isFacultyMap(data[k])) clean[k] = data[k]
+              })
+              return clean
+            }
+
+            // 2. Check nested property
+            for (const key in data) {
+              const val = data[key]
+              if (isFacultyMap(val)) {
+                if (val['Lahore Campus'] || val['Sargodha Campus']) {
+                  const clean = {}
+                  Object.keys(val).forEach(k => {
+                    if (isFacultyMap(val[k])) clean[k] = val[k]
+                  })
+                  return clean
+                }
+              }
+            }
+          }
+
+          if (type === 'list') {
+            if (Array.isArray(data)) return data
+            if (data.data && Array.isArray(data.data)) return data.data
+            for (const key in data) {
+              if (Array.isArray(data[key])) return data[key]
+            }
+          }
+
+          return data
+        }
+
+        if (facResponse.ok) {
+          const rawFac = await facResponse.json()
+          setFacultyData(unwrap(rawFac, 'faculty') || {})
+        }
+
+        if (actResponse.ok) {
+          const rawAct = await actResponse.json()
+          setActivityTypes(unwrap(rawAct, 'list') || [])
+        }
+
+        if (hodResponse.ok) {
+          const rawHod = await hodResponse.json()
+          setHodData(unwrap(rawHod, 'list') || [])
+        }
+      } catch (error) {
+        console.error("Error fetching master data:", error)
+        message.error("Failed to load form data")
+      }
+    }
+
+    fetchMasterData()
+  }, [])
+
+  // Effect to handle Edit Mode
+  useEffect(() => {
+    if (location.state?.editMode && location.state?.planData) {
+      const plan = location.state.planData
+      console.log("Editing Plan:", plan)
+      setEditMode(true)
+      setEditPlanId(plan.id)
+
+      // Populate Basic Info
+      setBasicInfo({
+        campus: plan.campus || '',
+        faculty: (typeof plan.faculty === 'object' ? plan.faculty?.name : plan.faculty) || '',
+        department: (typeof plan.department === 'object' ? plan.department?.department_name : plan.department) || '',
+        focalPerson: plan.focal_person || '',
+        dean_head: plan.dean_head || '',
+        email: plan.email || '',
+        phone: plan.phone || ''
+      })
+
+      // Populate Support Required
+      if (plan.support_required) setSupportRequired(plan.support_required)
+
+      // Populate Industry Sectors
+      if (plan.industry_sectors && Array.isArray(plan.industry_sectors)) {
+        // If only one empty item, keep default. If has data, overwrite.
+        if (plan.industry_sectors.length > 0) setIndustrySectors(plan.industry_sectors)
+      }
+
+      // Populate Employers
+      if (plan.employers && Array.isArray(plan.employers)) {
+        if (plan.employers.length > 0) setEmployers(plan.employers)
+      }
+
+      // Populate Alumni
+      if (plan.alumni && Array.isArray(plan.alumni)) {
+        if (plan.alumni.length > 0) setAlumni(plan.alumni)
+      }
+
+      // Populate Activities
+      if (plan.activities && Array.isArray(plan.activities)) {
+        const mappedActivities = plan.activities.map(a => ({
+          shortName: a.short_name || '',
+          type: a.activity_type || '',
+          description: a.description || '',
+          partner: a.partner_organization || '',
+          date: a.date ? moment(a.date) : '',
+          outcome: a.expected_outcome || '',
+          status: a.status || 'Planned'
+        }))
+        if (mappedActivities.length > 0) setActivities(mappedActivities)
+      }
+    }
+  }, [location.state])
+
+  // 1. Basic Info State
   const [basicInfo, setBasicInfo] = useState({
     campus: '',
     faculty: '',
     department: '',
-    deanHead: '',
+    dean_head: '',
     focalPerson: '',
     email: '',
     phone: ''
   })
 
-  const [goals, setGoals] = useState([{ type: '', deliverable: '' }])
-  const [activities, setActivities] = useState([{ type: '', description: '', partner: '', date: '', outcome: '' }])
+  // Validation errors state
+  const [errors, setErrors] = useState({
+    campus: '',
+    faculty: '',
+    department: '',
+    focalPerson: '',
+    email: '',
+    phone: ''
+  })
+
+
+
+  // 3. Planned Activities State
+  const [activities, setActivities] = useState([
+    {
+      shortName: 'MOU',
+      type: 'MoU Signing/Proposal',
+      description: '',
+      partner: '',
+      date: '',
+      outcome: ''
+    }
+  ])
+  const [activityErrors, setActivityErrors] = useState([{ description: '' }])
+
+  // 4. Calendar State
+  const [calendar, setCalendar] = useState([{ month: '', activity: '', partner: '', comments: '' }])
+
+  // 5. Industry Targets State
   const [industrySectors, setIndustrySectors] = useState([''])
   const [employers, setEmployers] = useState([''])
-  const [alumni, setAlumni] = useState([{ name: '', email: '', phone: '' }])
+
+  // 6. Alumni State
+  const [alumni, setAlumni] = useState([
+    { name: '', email: '', phone: '' },
+    { name: '', email: '', phone: '' },
+    { name: '', email: '', phone: '' },
+    { name: '', email: '', phone: '' },
+    { name: '', email: '', phone: '' }
+  ])
+  const [alumniErrors, setAlumniErrors] = useState([
+    { email: '', phone: '' },
+    { email: '', phone: '' },
+    { email: '', phone: '' },
+    { email: '', phone: '' },
+    { email: '', phone: '' }
+  ])
+
+  // 7. Support Required State
   const [supportRequired, setSupportRequired] = useState('')
 
-  // --- Pre-populate form if in edit mode ---
+  // 8. Endorsement State
+  const [endorsement, setEndorsement] = useState({
+    preparedBy: '',
+    reviewedBy: '',
+    submittedTo: 'Office of External Linkages (OEL)',
+    date: new Date().toISOString().split('T')[0]
+  })
+
+  // Loading state
+  const [loading, setLoading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+
+  // --- Validation Functions ---
+
+  const validateEmail = (email) => {
+    if (!email) return ''
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email) ? '' : 'Invalid email format'
+  }
+
+  const validatePakistaniPhone = (phone) => {
+    if (!phone) return ''
+    let cleaned = phone.replace(/[\s\-]/g, '')
+    cleaned = cleaned.replace(/^\+92/, '0')
+    const phoneRegex = /^03[0-9]{9}$/
+    return phoneRegex.test(cleaned) ? '' : 'Invalid phone number (use 03XX-XXXXXXX)'
+  }
+
+  const formatPhoneNumber = (phone) => {
+    let cleaned = phone.replace(/[\s\-]/g, '')
+    cleaned = cleaned.replace(/^\+92/, '0')
+    if (cleaned.length === 11 && cleaned.startsWith('0')) {
+      return `${cleaned.substring(0, 4)}-${cleaned.substring(4)}`
+    }
+    return cleaned
+  }
+
+  // Handle basic info change with validation
+  // Handle basic info change with validation
+  const handleBasicInfoChange = (field, value) => {
+    // Cascading logic
+    if (field === 'campus') {
+      setBasicInfo(prev => ({
+        ...prev,
+        campus: value,
+        faculty: '',
+        department: '',
+        dean_head: ''
+      }))
+    } else if (field === 'faculty') {
+      setBasicInfo(prev => ({
+        ...prev,
+        faculty: value,
+        department: '',
+        dean_head: ''
+      }))
+    } else if (field === 'department') {
+      // Find HOD based on Campus + Faculty (implicit) + Dept
+      // Backend HOD data might need checking, but assuming names are unique enough or allow fuzzy match if needed.
+      // Better: Filter hodData by campus_id (mapped from name) and dept name.
+      // For now, simpler matching by Department Name is likely sufficient if names are unique per campus,
+      // but since we have "Department of Law" etc, safer to match loosely or trust the user selection if auto-fetch fails.
+
+      // We need to match precise department name
+      const selectedHod = hodData.find(h =>
+        h.department_name === value &&
+        (h.campus_id === (basicInfo.campus === 'Lahore Campus' ? 1 : 2))
+      )
+
+      setBasicInfo(prev => ({
+        ...prev,
+        department: value,
+        dean_head: selectedHod ? selectedHod.hod_name : ''
+      }))
+    } else {
+      setBasicInfo(prev => ({ ...prev, [field]: value }))
+    }
+
+    // Clear error when user starts typing
+    if (submitted) {
+      let error = ''
+      if (field === 'email') {
+        error = validateEmail(value)
+      } else if (field === 'phone') {
+        error = validatePakistaniPhone(value)
+      } else if (!value) {
+        error = 'This field is required'
+      }
+      setErrors({ ...errors, [field]: error })
+    }
+  }
+
+  // Validate all basic info
+  const validateBasicInfo = () => {
+    const newErrors = {
+      campus: !basicInfo.campus ? 'Campus is required' : '',
+      faculty: !basicInfo.faculty ? 'Faculty is required' : '',
+      department: !basicInfo.department ? 'Department is required' : '',
+      focalPerson: !basicInfo.focalPerson ? 'Focal person name is required' : '',
+      email: !basicInfo.email ? 'Email is required' : validateEmail(basicInfo.email),
+      phone: !basicInfo.phone ? 'Phone is required' : validatePakistaniPhone(basicInfo.phone)
+    }
+    setErrors(newErrors)
+    return Object.values(newErrors).every(error => !error)
+  }
+
+
+
+  // Validate activities
+  const validateActivities = () => {
+    const newErrors = activities.map((activity, idx) => {
+      const hasType = !!activity.type
+      const hasDescription = !!activity.description
+
+      if (!hasType && !hasDescription) return { type: '', description: '' }
+
+      return {
+        type: hasDescription && !hasType ? 'Select type' : '',
+        description: hasType && !hasDescription ? 'Enter description' : ''
+      }
+    })
+
+    setActivityErrors(newErrors)
+
+    const hasValidActivity = activities.some(a => a.type && a.description)
+    return hasValidActivity && newErrors.every(e => !e.type && !e.description)
+  }
+
+  // Validate alumni
+  const validateAlumni = () => {
+    const newErrors = alumni.map(alum => ({
+      email: alum.email ? validateEmail(alum.email) : '',
+      phone: alum.phone ? validatePakistaniPhone(alum.phone) : ''
+    }))
+
+    setAlumniErrors(newErrors)
+    return newErrors.every(e => !e.email && !e.phone)
+  }
+
+  // --- Handlers for Dynamic Rows ---
+  const handleAddRow = (state, setState, template, errorState, setErrorState, errorTemplate) => {
+    setState([...state, template])
+    if (setErrorState) {
+      setErrorState([...errorState, errorTemplate])
+    }
+  }
+
+  const handleRemoveRow = (index, state, setState, errorState, setErrorState) => {
+    if (state.length > 1) {
+      setState(state.filter((_, i) => i !== index))
+      if (setErrorState) {
+        setErrorState(errorState.filter((_, i) => i !== index))
+      }
+    }
+  }
+
+  const handleInputChange = (index, field, value, state, setState, errorState, setErrorState) => {
+    const updated = [...state]
+    updated[index][field] = value
+    setState(updated)
+
+    // Clear error when typing
+    if (submitted && errorState && setErrorState) {
+      const updatedErrors = [...errorState]
+      updatedErrors[index] = { ...updatedErrors[index], [field]: '' }
+      setErrorState(updatedErrors)
+    }
+  }
+
+  const handleArrayInputChange = (index, value, state, setState) => {
+    const updated = [...state]
+    updated[index] = value
+    setState(updated)
+  }
+
   useEffect(() => {
-    if (editMode && planData) {
+    if (location.state?.editMode && location.state?.planData) {
+      const plan = location.state.planData
+      console.log("Editing Plan:", plan)
+      setEditMode(true)
+      setEditPlanId(plan.id)
+
+      // Populate Basic Info
       setBasicInfo({
-        campus: planData.campus || '',
-        faculty: planData.faculty || '',
-        department: planData.department || '',
-        deanHead: planData.dean_head || '',
-        focalPerson: planData.focal_person || '',
-        email: planData.email || '',
-        phone: planData.phone || ''
+        campus: plan.campus,
+        faculty: (typeof plan.faculty === 'object' ? plan.faculty?.name : plan.faculty),
+        department: (typeof plan.department === 'object' ? plan.department?.department_name : plan.department),
+        dean_head: plan.dean_head || '',
+        focalPerson: plan.focal_person,
+        email: plan.email,
+        phone: plan.phone
       })
 
-      if (planData.goals && planData.goals.length > 0) {
-        setGoals(planData.goals)
+      // Populate Support Required
+      setSupportRequired(plan.support_required || '')
+
+      // Populate Industry Sectors (Handling Checkbox Group Logic if needed, or simple array)
+      // Assuming industrySectors is an array of strings
+      if (plan.industry_sectors) {
+        setIndustrySectors(plan.industry_sectors)
       }
 
-      if (planData.activities && planData.activities.length > 0) {
-        setActivities(planData.activities.map(a => ({
+      // Populate Employers
+      if (plan.employers) {
+        setEmployers(plan.employers)
+      }
+
+      // Populate Alumni
+      if (plan.alumni) {
+        setAlumni(plan.alumni)
+      }
+
+      // Populate Activities
+      if (plan.activities) {
+        const mappedActivities = plan.activities.map(a => ({
+          shortName: a.short_name || '',
           type: a.activity_type,
           description: a.description,
-          partner: a.partner_organization || '',
-          date: a.date || '',
-          outcome: a.expected_outcome || ''
-        })))
-      }
-
-      if (planData.industry_sectors && planData.industry_sectors.length > 0) {
-        setIndustrySectors(planData.industry_sectors)
-      }
-
-      if (planData.employers && planData.employers.length > 0) {
-        setEmployers(planData.employers)
-      }
-
-      if (planData.alumni && planData.alumni.length > 0) {
-        setAlumni(planData.alumni)
-      }
-
-      setSupportRequired(planData.support_required || '')
-
-      // Fetch faculties for the selected campus
-      if (planData.campus) {
-        fetchFacultiesForCampus(planData.campus)
+          partner: a.partner_organization,
+          date: a.date ? moment(a.date) : null,
+          outcome: a.expected_outcome,
+          status: a.status
+        }))
+        setActivities(mappedActivities)
       }
     }
-  }, [editMode, planData])
+  }, [location.state])
 
-  // --- Data Fetching ---
-  useEffect(() => {
-    const fetchMasterData = async () => {
-      try {
-        const [campusResponse, actResponse] = await Promise.all([
-          fetch(`${BASE_URL}/api/getCampuses`),
-          fetch(`${BASE_URL}/api/getActivityTypes`)
-        ])
-
-        if (campusResponse.ok) setCampusData(await campusResponse.json())
-        if (actResponse.ok) setActivityTypes(await actResponse.json())
-      } catch (error) {
-        message.error("Failed to load master data from server")
-      }
-    }
-    fetchMasterData()
-  }, [])
-
-  // Fetch faculties when campus is selected
-  const fetchFacultiesForCampus = async (campusName) => {
-    try {
-      const response = await fetch(`${BASE_URL}/api/getFaculties?campus=${encodeURIComponent(campusName)}`)
-      if (response.ok) {
-        const data = await response.json()
-        setFacultyData(data)
-      } else {
-        message.error("Failed to load faculties for selected campus")
-      }
-    } catch (error) {
-      message.error("Failed to load faculties from server")
-    }
-  }
-
-  // --- Validation ---
-  const validateStep = (step) => {
-    if (step === 0) {
-      const { campus, faculty, department, focalPerson, email, phone } = basicInfo
-      if (!campus || !faculty || !department || !focalPerson || !email || !phone) {
-        message.warning("Please fill all required basic information")
-        return false
-      }
-      return true
-    }
-    if (step === 1) {
-      if (!goals.some(g => g.type && g.deliverable)) {
-        message.warning("Please add at least one complete linkage goal")
-        return false
-      }
-      return true
-    }
-    return true
-  }
-
-  // --- Handlers ---
-  const handleNext = () => {
-    if (validateStep(currentStep)) {
-      setCurrentStep(currentStep + 1)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-  }
-
-  const handlePrev = () => {
-    setCurrentStep(currentStep - 1)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
 
   const handleSubmit = async () => {
+    setSubmitted(true)
+
+    // Validate all sections
+    const basicValid = validateBasicInfo()
+    const activitiesValid = validateActivities()
+    const alumniValid = validateAlumni()
+
+    if (!basicValid || !activitiesValid || !alumniValid) {
+      message.error('Please fix all errors before submitting')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+
     setLoading(true)
+
     const localUser = JSON.parse(localStorage.getItem('user-info'))
-    const userId = localUser?.Users?.id || 1
+    const userId = localUser?.Users?.user_id || localUser?.Users?.id || 1
 
     const payload = {
       campus: basicInfo.campus,
       faculty: basicInfo.faculty,
       department: basicInfo.department,
-      dean_head: basicInfo.deanHead,
       focal_person: basicInfo.focalPerson,
       email: basicInfo.email,
-      phone: basicInfo.phone,
+      phone: formatPhoneNumber(basicInfo.phone),
       semester: "Spring 2025",
       academic_year: "2024-2025",
-      support_required: supportRequired,
+      support_required: supportRequired || null,
       submitted_by: userId,
-      goals: goals.filter(g => g.type && g.deliverable),
-      activities: activities.filter(a => a.type && a.description).map(a => ({
-        activity_type: a.type,
-        description: a.description,
-        partner_organization: a.partner,
-        date: a.date,
-        expected_outcome: a.outcome,
-        status: a.status || 'Planned'
+
+      // If editing, force status back to Pending
+      status: editMode ? 'Pending from HOD' : undefined,
+
+      // Endorsement Info (Snapshot)
+      endorsement_prepared_by: basicInfo.focalPerson,
+      endorsement_reviewed_by: basicInfo.dean_head,
+      endorsement_submitted_to: endorsement.submittedTo,
+      endorsement_date: endorsement.date,
+
+      activities: activities
+        .filter(a => a.type && a.description)
+        .map(a => ({
+          short_name: a.shortName,
+          activity_type: a.type,
+          description: a.description,
+          partner_organization: a.partner || null,
+          date: a.date ? (moment.isMoment(a.date) ? a.date.format('YYYY-MM-DD') : a.date) : null,
+          expected_outcome: a.outcome || null,
+          status: 'Planned'
+        })),
+
+      calendar: calendar.filter(c => c.month && c.activity).map(c => ({
+        month: c.month,
+        activity: c.activity,
+        partner: c.partner,
+        comments: c.comments
       })),
-      industry_sectors: industrySectors.filter(s => s.trim()),
-      employers: employers.filter(e => e.trim()),
-      alumni: alumni.filter(a => a.name)
+
+      industry_sectors: industrySectors.filter(s => s && s.trim()),
+      employers: employers.filter(e => e && e.trim()),
+      alumni: alumni
+        .filter(a => a.name && (a.email || a.phone))
+        .map(a => ({
+          name: a.name,
+          email: a.email || null,
+          phone: a.phone ? formatPhoneNumber(a.phone) : null
+        }))
+    }
+
+    // Add ID if editing
+    if (editMode) {
+      payload.id = editPlanId
     }
 
     try {
+      const token = localUser?.token
+      const headers = { 'Content-Type': 'application/json' }
+      if (token) headers['Authorization'] = `Bearer ${token}`
+
+      // Determine Endpoint and Method
       const url = editMode
-        ? `${BASE_URL}/api/updateLinkagePlan/${planData.id}`
+        ? `${BASE_URL}/api/updateLinkagePlan/${editPlanId}`
         : `${BASE_URL}/api/addLinkagePlan`
 
       const method = editMode ? 'PUT' : 'POST'
 
       const response = await fetch(url, {
         method: method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localUser?.token}`
-        },
+        headers: headers,
         body: JSON.stringify(payload)
       })
 
       if (response.ok) {
-        setSuccess(true)
-        message.success(editMode
-          ? "External Linkage Plan updated successfully!"
-          : "External Linkage Plan submitted successfully!")
+        message.success(editMode ? 'Linkage Plan updated and resubmitted successfully!' : 'Linkage Plan submitted successfully!')
+        // Navigate back to manage forms
+        navigate('/external-linkages/manage-forms')
       } else {
         const errorData = await response.json()
-        message.error(errorData.message || `Failed to ${editMode ? 'update' : 'submit'} the plan`)
+        message.error(`Failed to ${editMode ? 'update' : 'submit'} plan: ` + (errorData.message || 'Unknown error'))
       }
-    } catch (e) {
-      message.error("A network error occurred")
+    } catch (error) {
+      console.error('Error submitting plan:', error)
+      message.error('Network error. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
-  // --- Step Content Renderers ---
-  const renderStep0 = () => (
-    <Card style={cardStyle} title={<Title level={4} style={sectionTitleStyle}><UserOutlined /> Basic Information</Title>}>
-      <Form layout="vertical">
-        <Row gutter={[24, 24]}>
-          <Col xs={24} md={8}>
-            <Form.Item label="Campus" required tooltip="Select the campus location">
-              <Select
-                placeholder="Select Campus"
-                value={basicInfo.campus || undefined}
-                onChange={v => {
-                  setBasicInfo({ ...basicInfo, campus: v, faculty: '', department: '' })
-                  setFacultyData({})
-                  fetchFacultiesForCampus(v)
-                }}
-                size="large"
+  // Columns for Tables
+  // Calendar Columns
+  const calendarColumns = [
+    {
+      title: 'Month',
+      dataIndex: 'month',
+      width: '15%',
+      render: (text, record, index) => (
+        <Select
+          style={{ width: '100%' }}
+          value={text || undefined}
+          onChange={(value) => handleInputChange(index, 'month', value, calendar, setCalendar)}
+        >
+          {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map(m => (
+            <Option key={m} value={m}>{m}</Option>
+          ))}
+        </Select>
+      )
+    },
+    {
+      title: 'Planned Activity / Initiative',
+      dataIndex: 'activity',
+      render: (text, record, index) => (
+        <Input
+          value={text}
+          onChange={(e) => handleInputChange(index, 'activity', e.target.value, calendar, setCalendar)}
+        />
+      )
+    },
+    {
+      title: 'Target Partner / Institution',
+      dataIndex: 'partner',
+      render: (text, record, index) => (
+        <Input
+          value={text}
+          onChange={(e) => handleInputChange(index, 'partner', e.target.value, calendar, setCalendar)}
+        />
+      )
+    },
+    {
+      title: 'Comments (if any)',
+      dataIndex: 'comments',
+      render: (text, record, index) => (
+        <Input
+          value={text}
+          onChange={(e) => handleInputChange(index, 'comments', e.target.value, calendar, setCalendar)}
+        />
+      )
+    },
+    {
+      title: 'Action',
+      width: '80px',
+      render: (_, record, index) => (
+        <Button
+          danger
+          icon={<DeleteOutlined />}
+          onClick={() => handleRemoveRow(index, calendar, setCalendar)}
+          disabled={calendar.length === 1}
+        />
+      )
+    }
+  ]
+
+
+
+  const activityColumns = [
+    {
+      title: 'Short Name',
+      dataIndex: 'shortName',
+      width: '100px',
+      render: (text) => <span>{text}</span>
+    },
+    {
+      title: <span>Type <span style={{ color: 'red' }}>*</span></span>,
+      dataIndex: 'type',
+      width: '25%',
+      render: (text, record, index) => (
+        <div>
+          <Select
+            style={{ width: '100%' }}
+            status={submitted && activityErrors[index]?.type ? 'error' : ''}
+            value={text || undefined}
+            placeholder="Select"
+            onChange={(value) => {
+              // Auto-set Short Name
+              const selected = activityTypes.find(t => t.code === value)
+              const updatedActs = [...activities]
+              updatedActs[index].type = value
+              updatedActs[index].shortName = selected ? selected.code : ''
+              setActivities(updatedActs)
+
+              if (submitted) {
+                const newErrs = [...activityErrors]
+                newErrs[index].type = ''
+                setActivityErrors(newErrs)
+              }
+            }}
+          >
+            {Array.isArray(activityTypes) && activityTypes.map(type => (
+              <Option key={type.code} value={type.code}>{type.label}</Option>
+            ))}
+          </Select>
+          {submitted && activityErrors[index]?.type && (
+            <div style={{ color: '#ff4d4f', fontSize: '12px', marginTop: '4px' }}>
+              {activityErrors[index].type}
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      title: <span>Brief Description <span style={{ color: 'red' }}>*</span></span>,
+      dataIndex: 'description',
+      render: (text, record, index) => (
+        <div>
+          <Input
+            status={submitted && activityErrors[index]?.description ? 'error' : ''}
+            placeholder="Activity description"
+            value={text}
+            onChange={(e) => handleInputChange(index, 'description', e.target.value, activities, setActivities, activityErrors, setActivityErrors)}
+          />
+          {submitted && activityErrors[index]?.description && (
+            <div style={{ color: '#ff4d4f', fontSize: '12px', marginTop: '4px' }}>
+              {activityErrors[index].description}
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      title: 'Target Partner/Institution',
+      dataIndex: 'partner',
+      render: (text, record, index) => (
+        <Input
+          placeholder="Institution name"
+          value={text}
+          onChange={(e) => handleInputChange(index, 'partner', e.target.value, activities, setActivities)}
+        />
+      )
+    },
+    {
+      title: 'Tentative Date',
+      dataIndex: 'date',
+      width: '150px',
+      render: (text, record, index) => (
+        <Input
+          type="date"
+          value={text}
+          onChange={(e) => handleInputChange(index, 'date', e.target.value, activities, setActivities)}
+        />
+      )
+    },
+    {
+      title: 'Expected Outcome',
+      dataIndex: 'outcome',
+      render: (text, record, index) => (
+        <Input
+          placeholder="Expected outcome"
+          value={text}
+          onChange={(e) => handleInputChange(index, 'outcome', e.target.value, activities, setActivities)}
+        />
+      )
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      width: '80px',
+      render: (_, record, index) => (
+        <Button
+          danger
+          icon={<DeleteOutlined />}
+          onClick={() => handleRemoveRow(index, activities, setActivities, activityErrors, setActivityErrors)}
+          disabled={activities.length === 1}
+        />
+      )
+    }
+  ]
+
+  const alumniColumns = [
+    {
+      title: 'Name with Designation',
+      dataIndex: 'name',
+      render: (text, record, index) => (
+        <Input
+          placeholder="Name and designation"
+          value={text}
+          onChange={(e) => handleInputChange(index, 'name', e.target.value, alumni, setAlumni, alumniErrors, setAlumniErrors)}
+        />
+      )
+    },
+    {
+      title: 'Email Address',
+      dataIndex: 'email',
+      render: (text, record, index) => (
+        <div>
+          <Input
+            status={submitted && alumniErrors[index]?.email ? 'error' : ''}
+            placeholder="email@example.com"
+            value={text}
+            onChange={(e) => handleInputChange(index, 'email', e.target.value, alumni, setAlumni, alumniErrors, setAlumniErrors)}
+          />
+          {submitted && alumniErrors[index]?.email && (
+            <div style={{ color: '#ff4d4f', fontSize: '12px', marginTop: '4px' }}>
+              {alumniErrors[index].email}
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      title: 'Contact Number',
+      dataIndex: 'phone',
+      render: (text, record, index) => (
+        <div>
+          <Input
+            status={submitted && alumniErrors[index]?.phone ? 'error' : ''}
+            placeholder="03XX-XXXXXXX"
+            value={text}
+            onChange={(e) => handleInputChange(index, 'phone', e.target.value, alumni, setAlumni, alumniErrors, setAlumniErrors)}
+          />
+          {submitted && alumniErrors[index]?.phone && (
+            <div style={{ color: '#ff4d4f', fontSize: '12px', marginTop: '4px' }}>
+              {alumniErrors[index].phone}
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      width: '80px',
+      render: (_, record, index) => (
+        <Button
+          danger
+          icon={<DeleteOutlined />}
+          onClick={() => handleRemoveRow(index, alumni, setAlumni, alumniErrors, setAlumniErrors)}
+          disabled={alumni.length === 1}
+        />
+      )
+    }
+  ]
+
+  return (
+    <div className="p-4">
+      <h3 style={titleStyle}>Departmental External Linkage Plan</h3>
+
+      {/* Section 1: Basic Information */}
+      <Card style={cardStyle}>
+        <div style={sectionHeaderStyle}>Section 1: Basic Information</div>
+        <Form layout="vertical">
+          <Row gutter={16}>
+            <Col xs={24} md={8}>
+              <Form.Item
+                label={<span>Campus <span style={{ color: 'red' }}>*</span></span>}
+                validateStatus={submitted && errors.campus ? 'error' : ''}
+                help={submitted && errors.campus}
               >
-                {campusData.map(campus => <Option key={campus.id} value={campus.name}>{campus.name}</Option>)}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={8}>
-            <Form.Item label="Faculty" required>
-              <Select
-                placeholder="Select Faculty"
-                value={basicInfo.faculty || undefined}
-                onChange={v => setBasicInfo({ ...basicInfo, faculty: v, department: '' })}
-                size="large"
-                showSearch
+                <Select
+                  value={basicInfo.campus || undefined}
+                  placeholder="Select Campus"
+                  onChange={(value) => handleBasicInfoChange('campus', value)}
+                  status={submitted && errors.campus ? 'error' : ''}
+                >
+                  {facultyData && Object.keys(facultyData).map(c => <Option key={c} value={c}>{c}</Option>)}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item
+                label={<span>Faculty Name <span style={{ color: 'red' }}>*</span></span>}
+                validateStatus={submitted && errors.faculty ? 'error' : ''}
+                help={submitted && errors.faculty}
               >
-                {Object.keys(facultyData).map(f => <Option key={f} value={f}>{f}</Option>)}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={8}>
-            <Form.Item label="Department" required>
-              <Select
-                placeholder="Select Department"
-                value={basicInfo.department || undefined}
-                onChange={v => setBasicInfo({ ...basicInfo, department: v })}
-                disabled={!basicInfo.faculty}
-                size="large"
-                showSearch
+                <Select
+                  value={basicInfo.faculty || undefined}
+                  placeholder="Select Faculty"
+                  onChange={(value) => handleBasicInfoChange('faculty', value)}
+                  disabled={!basicInfo.campus}
+                  status={submitted && errors.faculty ? 'error' : ''}
+                >
+                  {basicInfo.campus && facultyData[basicInfo.campus] &&
+                    Object.keys(facultyData[basicInfo.campus]).map(f => <Option key={f} value={f}>{f}</Option>)}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item
+                label={<span>Department Name <span style={{ color: 'red' }}>*</span></span>}
+                validateStatus={submitted && errors.department ? 'error' : ''}
+                help={submitted && errors.department}
               >
-                {basicInfo.faculty && facultyData[basicInfo.faculty]?.map(d => (
-                  <Option key={d} value={d}>{d}</Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
+                <Select
+                  value={basicInfo.department || undefined}
+                  placeholder="Select Department"
+                  onChange={(value) => handleBasicInfoChange('department', value)}
+                  disabled={!basicInfo.faculty}
+                  status={submitted && errors.department ? 'error' : ''}
+                >
+                  {basicInfo.campus && basicInfo.faculty && facultyData[basicInfo.campus] && facultyData[basicInfo.campus][basicInfo.faculty] &&
+                    facultyData[basicInfo.campus][basicInfo.faculty].map(d => (
+                      <Option key={d} value={d}>{d}</Option>
+                    ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item
+                label={<span>Dean/Head of Department <span style={{ color: 'red' }}>*</span></span>}
+                validateStatus={submitted && errors.dean_head ? 'error' : ''}
+                help={submitted && errors.dean_head}
+              >
+                <Input
+                  value={basicInfo.dean_head}
+                  placeholder="Auto-fetched or Enter Name"
+                  onChange={(e) => handleBasicInfoChange('dean_head', e.target.value)}
+                  status={submitted && errors.dean_head ? 'error' : ''}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item
+                label={<span>Faculty Focal Person (FFP) for External Linkages <span style={{ color: 'red' }}>*</span></span>}
+                validateStatus={submitted && errors.focalPerson ? 'error' : ''}
+                help={submitted && errors.focalPerson}
+              >
+                <Input
+                  placeholder="Enter name"
+                  value={basicInfo.focalPerson}
+                  onChange={(e) => handleBasicInfoChange('focalPerson', e.target.value)}
+                  status={submitted && errors.focalPerson ? 'error' : ''}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item
+                label={<span>Contact Email <span style={{ color: 'red' }}>*</span></span>}
+                validateStatus={submitted && errors.email ? 'error' : ''}
+                help={submitted && errors.email}
+              >
+                <Input
+                  type="email"
+                  placeholder="email@example.com"
+                  value={basicInfo.email}
+                  onChange={(e) => handleBasicInfoChange('email', e.target.value)}
+                  status={submitted && errors.email ? 'error' : ''}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item
+                label={<span>Contact Phone <span style={{ color: 'red' }}>*</span></span>}
+                validateStatus={submitted && errors.phone ? 'error' : ''}
+                help={submitted && errors.phone ? errors.phone : 'Format: 03XX-XXXXXXX'}
+              >
+                <Input
+                  placeholder="03XX-XXXXXXX"
+                  value={basicInfo.phone}
+                  onChange={(e) => handleBasicInfoChange('phone', e.target.value)}
+                  status={submitted && errors.phone ? 'error' : ''}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
+
+      {/* Section 2: Planned Activities */}
+      <Card style={cardStyle}>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <div style={sectionHeaderStyle}>Section 2: Planned Activities for the Semester</div>
+          <Button
+            type="primary"
+            ghost
+            icon={<PlusOutlined />}
+            onClick={() => handleAddRow(
+              activities,
+              setActivities,
+              { type: '', description: '', partner: '', date: '', outcome: '' },
+              activityErrors,
+              setActivityErrors,
+              { type: '', description: '' }
+            )}
+          >
+            Add Activity
+          </Button>
+        </div>
+        <Table
+          dataSource={activities}
+          columns={activityColumns}
+          pagination={false}
+          rowKey={(record, index) => index}
+          bordered
+        />
+      </Card>
+
+
+
+      {/* Section 3: Proposed Activities Calendar
+      <Card style={cardStyle}>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <div style={sectionHeaderStyle}>Section 3: Proposed Activities Calendar (Semester)</div>
+          <Button
+            type="primary"
+            ghost
+            icon={<PlusOutlined />}
+            onClick={() => handleAddRow(calendar, setCalendar, { month: '', activity: '', partner: '', comments: '' })}
+          >
+            Add Item
+          </Button>
+        </div>
+        <Table
+          dataSource={calendar}
+          columns={calendarColumns}
+          pagination={false}
+          rowKey={(record, index) => index}
+          bordered
+        />
+      </Card> */}
+
+      {/* Section 4: Industry and Alumni Linkage Targets */}
+      <Card style={cardStyle}>
+        <div style={sectionHeaderStyle}>Section 3: Industry and Alumni Linkage Targets</div>
+
+        <h5 style={{ ...sectionHeaderStyle, fontSize: 14, borderBottom: 'none', color: '#0070FF' }}>
+          Key Industry Sectors to Engage
+        </h5>
+        <div className="mb-4">
+          {industrySectors.map((sector, idx) => (
+            <Row key={idx} gutter={8} className="mb-2">
+              <Col flex="auto">
+                <Input
+                  placeholder={`Industry sector ${idx + 1}`}
+                  value={sector}
+                  onChange={(e) => handleArrayInputChange(idx, e.target.value, industrySectors, setIndustrySectors)}
+                />
+              </Col>
+              {industrySectors.length > 1 && (
+                <Col flex="none">
+                  <Button danger icon={<DeleteOutlined />} onClick={() => handleRemoveRow(idx, industrySectors, setIndustrySectors)} />
+                </Col>
+              )}
+            </Row>
+          ))}
+          <Button type="dashed" block onClick={() => handleAddRow(industrySectors, setIndustrySectors, '')}>
+            + Add Sector
+          </Button>
+        </div>
+
+        <h5 style={{ ...sectionHeaderStyle, fontSize: 14, borderBottom: 'none', color: '#0070FF' }}>
+          Proposed Employers for Internship/Recruitment
+        </h5>
+        <div className="mb-4">
+          {employers.map((employer, idx) => (
+            <Row key={idx} gutter={8} className="mb-2">
+              <Col flex="auto">
+                <Input
+                  placeholder={`Employer ${idx + 1}`}
+                  value={employer}
+                  onChange={(e) => handleArrayInputChange(idx, e.target.value, employers, setEmployers)}
+                />
+              </Col>
+              {employers.length > 1 && (
+                <Col flex="none">
+                  <Button danger icon={<DeleteOutlined />} onClick={() => handleRemoveRow(idx, employers, setEmployers)} />
+                </Col>
+              )}
+            </Row>
+          ))}
+          <Button type="dashed" block onClick={() => handleAddRow(employers, setEmployers, '')}>
+            + Add Employer
+          </Button>
+        </div>
+
+        <h5 style={{ ...sectionHeaderStyle, fontSize: 14, borderBottom: 'none', color: '#0070FF' }}>
+          Alumni to be Engaged
+        </h5>
+        <div className="mb-3 d-flex justify-content-end">
+          <Button
+            type="primary"
+            ghost
+            size="small"
+            icon={<PlusOutlined />}
+            onClick={() => handleAddRow(alumni, setAlumni, { name: '', email: '', phone: '' }, alumniErrors, setAlumniErrors, { email: '', phone: '' })}
+          >
+            Add Alumni
+          </Button>
+        </div>
+        <Table
+          dataSource={alumni}
+          columns={alumniColumns}
+          pagination={false}
+          rowKey={(record, index) => index}
+          bordered
+        />
+      </Card>
+
+      {/* Section 5: Support Required */}
+      <Card style={cardStyle}>
+        <div style={sectionHeaderStyle}>Section 4: Support Required from OEL</div>
+        <TextArea
+          rows={4}
+          placeholder="Please list specific facilitation, coordination, documentation, or outreach support expected from OEL..."
+          value={supportRequired}
+          onChange={(e) => setSupportRequired(e.target.value)}
+        />
+      </Card>
+
+
+
+      {/* Section 6: Endorsement & Submission */}
+      <Card style={cardStyle}>
+        <div style={sectionHeaderStyle}>Section 5: Endorsement & Submission</div>
+        <Row gutter={16}>
           <Col xs={24} md={12}>
-            <Form.Item label="Dean / Head of Department" required>
+            <Form.Item label="Prepared by (Focal Person)">
               <Input
-                prefix={<UserOutlined style={{ color: '#ccc' }} />}
-                placeholder="Name of Dean or HOD"
-                value={basicInfo.deanHead}
-                onChange={e => setBasicInfo({ ...basicInfo, deanHead: e.target.value })}
-                size="large"
-              />
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={12}>
-            <Form.Item label="Faculty Focal Person (FFP)" required>
-              <Input
-                prefix={<TeamOutlined style={{ color: '#ccc' }} />}
-                placeholder="Name of Focal Person"
                 value={basicInfo.focalPerson}
-                onChange={e => setBasicInfo({ ...basicInfo, focalPerson: e.target.value })}
-                size="large"
+                disabled
+                placeholder="Auto-filled from Section 1"
               />
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>
-            <Form.Item label="Contact Email" required>
+            <Form.Item label="Reviewed by (HOD)">
               <Input
-                prefix={<MailOutlined style={{ color: '#ccc' }} />}
-                placeholder="email@example.com"
-                value={basicInfo.email}
-                onChange={e => setBasicInfo({ ...basicInfo, email: e.target.value })}
-                size="large"
+                value={basicInfo.dean_head}
+                disabled
+                placeholder="Auto-filled from Section 1"
               />
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>
-            <Form.Item label="Contact Phone" required>
-              <Input
-                prefix={<PhoneOutlined style={{ color: '#ccc' }} />}
-                placeholder="03XX-XXXXXXX"
-                value={basicInfo.phone}
-                onChange={e => setBasicInfo({ ...basicInfo, phone: e.target.value })}
-                size="large"
-              />
+            <Form.Item label="Submitted to">
+              <Input value={endorsement.submittedTo} disabled />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item label="Date">
+              <Input type="date" value={endorsement.date} disabled />
             </Form.Item>
           </Col>
         </Row>
-      </Form>
-    </Card>
-  )
-
-  const renderStep1 = () => (
-    <Card style={cardStyle} title={<Title level={4} style={sectionTitleStyle}><RocketOutlined /> Linkage Goals & Activities</Title>}>
-      <Divider orientation="left"><Text strong>Linkage Goals for the Semester</Text></Divider>
-      <Table
-        dataSource={goals}
-        pagination={false}
-        rowKey={(_, i) => i}
-        columns={[
-          {
-            title: 'Strategic Domain',
-            dataIndex: 'type',
-            width: '40%',
-            render: (v, _, i) => (
-              <Select placeholder="Select Domain" value={v || undefined} onChange={val => {
-                const newGoals = [...goals]; newGoals[i].type = val; setGoals(newGoals);
-              }} style={{ width: '100%' }}>
-                {activityTypes.map(t => <Option key={t.code} value={t.code}>{t.label}</Option>)}
-              </Select>
-            )
-          },
-          {
-            title: 'Deliverable (Narrative)',
-            dataIndex: 'deliverable',
-            render: (v, _, i) => <Input placeholder="Brief deliverable description" value={v} onChange={e => {
-              const newGoals = [...goals]; newGoals[i].deliverable = e.target.value; setGoals(newGoals);
-            }} />
-          },
-          {
-            title: '',
-            width: 50,
-            render: (_, __, i) => <Button danger icon={<DeleteOutlined />} onClick={() => setGoals(goals.filter((_, idx) => idx !== i))} disabled={goals.length === 1} />
-          }
-        ]}
-      />
-      <Button type="dashed" block icon={<PlusOutlined />} onClick={() => setGoals([...goals, { type: '', deliverable: '' }])} style={{ marginTop: 16 }}>
-        Add Goal
-      </Button>
-
-      <Divider orientation="left" style={{ marginTop: 48 }}><Text strong>Planned Activities</Text></Divider>
-      <Table
-        dataSource={activities}
-        pagination={false}
-        scroll={{ x: 800 }}
-        rowKey={(_, i) => i}
-        columns={[
-          {
-            title: 'Type',
-            dataIndex: 'type',
-            width: 150,
-            render: (v, _, i) => (
-              <Select placeholder="Type" value={v || undefined} onChange={val => {
-                const newAct = [...activities]; newAct[i].type = val; setActivities(newAct);
-              }} style={{ width: '100%' }}>
-                {activityTypes.map(t => <Option key={t.code} value={t.code}>{t.label}</Option>)}
-              </Select>
-            )
-          },
-          {
-            title: 'Description',
-            dataIndex: 'description',
-            render: (v, _, i) => <Input placeholder="Activity description" value={v} onChange={e => {
-              const newAct = [...activities]; newAct[i].description = e.target.value; setActivities(newAct);
-            }} />
-          },
-          {
-            title: 'Partner',
-            dataIndex: 'partner',
-            render: (v, _, i) => <Input placeholder="Partner name" value={v} onChange={e => {
-              const newAct = [...activities]; newAct[i].partner = e.target.value; setActivities(newAct);
-            }} />
-          },
-          {
-            title: 'Date',
-            dataIndex: 'date',
-            width: 150,
-            render: (v, _, i) => <Input type="date" value={v} onChange={e => {
-              const newAct = [...activities]; newAct[i].date = e.target.value; setActivities(newAct);
-            }} />
-          },
-          {
-            title: '',
-            width: 50,
-            render: (_, __, i) => <Button danger icon={<DeleteOutlined />} onClick={() => setActivities(activities.filter((_, idx) => idx !== i))} disabled={activities.length === 1} />
-          }
-        ]}
-      />
-      <Button type="dashed" block icon={<PlusOutlined />} onClick={() => setActivities([...activities, { type: '', description: '', partner: '', date: '', outcome: '' }])} style={{ marginTop: 16 }}>
-        Add Activity
-      </Button>
-    </Card>
-  )
-
-  const renderStep2 = () => (
-    <Card style={cardStyle} title={<Title level={4} style={sectionTitleStyle}><TeamOutlined /> Targets & Support</Title>}>
-      <Row gutter={[24, 24]}>
-        <Col span={24}>
-          <Divider orientation="left"><Text strong>Key Industry Sectors to Engage</Text></Divider>
-          {industrySectors.map((s, i) => (
-            <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-              <Input placeholder="Industry sector name" value={s} onChange={e => {
-                const updated = [...industrySectors]; updated[i] = e.target.value; setIndustrySectors(updated)
-              }} />
-              <Button danger icon={<DeleteOutlined />} onClick={() => setIndustrySectors(industrySectors.filter((_, idx) => idx !== i))} disabled={industrySectors.length === 1} />
-            </div>
-          ))}
-          <Button type="dashed" icon={<PlusOutlined />} onClick={() => setIndustrySectors([...industrySectors, ''])}>Add Sector</Button>
-        </Col>
-
-        <Col span={24}>
-          <Divider orientation="left" style={{ marginTop: 24 }}><Text strong>Proposed Alumni Targets</Text></Divider>
-          <Table
-            dataSource={alumni}
-            pagination={false}
-            rowKey={(_, i) => i}
-            columns={[
-              {
-                title: 'Name', dataIndex: 'name', render: (v, _, i) => <Input value={v} onChange={e => {
-                  const updated = [...alumni]; updated[i].name = e.target.value; setAlumni(updated)
-                }} />
-              },
-              {
-                title: 'Email', dataIndex: 'email', render: (v, _, i) => <Input value={v} onChange={e => {
-                  const updated = [...alumni]; updated[i].email = e.target.value; setAlumni(updated)
-                }} />
-              },
-              { title: '', width: 50, render: (_, __, i) => <Button danger icon={<DeleteOutlined />} onClick={() => setAlumni(alumni.filter((_, idx) => idx !== i))} disabled={alumni.length === 1} /> }
-            ]}
-          />
-          <Button type="dashed" icon={<PlusOutlined />} onClick={() => setAlumni([...alumni, { name: '', email: '', phone: '' }])} style={{ marginTop: 16 }}>Add Alumni</Button>
-        </Col>
-
-        <Col span={24}>
-          <Divider orientation="left" style={{ marginTop: 24 }}><Text strong>Support Required from Directorate</Text></Divider>
-          <TextArea
-            rows={4}
-            placeholder="Describe any assistance needed from the Directorate of External Linkages"
-            value={supportRequired}
-            onChange={e => setSupportRequired(e.target.value)}
-          />
-        </Col>
-      </Row>
-    </Card>
-  )
-
-  if (success) {
-    return (
-      <Card style={{ ...cardStyle, maxWidth: 600, margin: '100px auto', textAlign: 'center' }}>
-        <Result
-          status="success"
-          title={editMode ? "Successfully Updated!" : "Successfully Submitted!"}
-          subTitle={editMode
-            ? "Your Departmental External Linkage Plan has been updated successfully."
-            : "Your Departmental External Linkage Plan has been saved and is now visible in the activities calendar."}
-          extra={[
-            <Button
-              type="primary"
-              key="manage"
-              size="large"
-              onClick={() => navigate('/external-linkages/manage-forms')}
-              style={{ borderRadius: '8px' }}
-            >
-              View All Forms
-            </Button>,
-            <Button
-              key="calendar"
-              size="large"
-              onClick={() => navigate('/external-linkages/calendar')}
-              style={{ borderRadius: '8px' }}
-            >
-              Go to Calendar
-            </Button>,
-            !editMode && <Button
-              key="new"
-              size="large"
-              onClick={() => window.location.reload()}
-              style={{ borderRadius: '8px' }}
-            >
-              Submit Another Plan
-            </Button>,
-          ].filter(Boolean)}
-        />
       </Card>
-    )
-  }
 
-  return (
-    <div style={{ padding: '40px 20px', maxWidth: '1200px', margin: '0 auto', background: '#f9f9f9', minHeight: '100vh' }}>
-      <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-        <Title level={2} style={{ color: primaryColor, fontWeight: 800 }}>External Linkage Management</Title>
-        <Text type="secondary" style={{ fontSize: '16px' }}>Formulate your departmental outreach strategy and track industry engagements</Text>
-      </div>
-
-      <Steps current={currentStep} style={{ marginBottom: '48px', padding: '0 20px' }}>
-        <Step title="Identity" icon={<InfoCircleOutlined />} />
-        <Step title="Strategy" icon={<CalendarOutlined />} />
-        <Step title="Targets" icon={<SendOutlined />} />
-      </Steps>
-
-      <div className="step-content">
-        {currentStep === 0 && renderStep0()}
-        {currentStep === 1 && renderStep1()}
-        {currentStep === 2 && renderStep2()}
-      </div>
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '100px' }}>
-        <Button size="large" onClick={handlePrev} disabled={currentStep === 0}>
-          Back
+      {/* Submit Buttons */}
+      <div className="d-flex justify-content-end gap-2 mb-5">
+        <Button size="large" icon={<SaveOutlined />}>Save Draft</Button>
+        <Button
+          type="primary"
+          size="large"
+          icon={<SendOutlined />}
+          onClick={handleSubmit}
+          loading={loading}
+        >
+          Submit Plan to OEL
         </Button>
-        {currentStep < 2 ? (
-          <Button type="primary" size="large" onClick={handleNext}>
-            Next Step
-          </Button>
-        ) : (
-          <Button
-            type="primary"
-            size="large"
-            icon={<SaveOutlined />}
-            onClick={handleSubmit}
-            loading={loading}
-            style={{ background: secondaryColor, borderColor: secondaryColor }}
-          >
-            Submit Linkage Plan
-          </Button>
-        )}
       </div>
-    </div >
+    </div>
   )
 }
 

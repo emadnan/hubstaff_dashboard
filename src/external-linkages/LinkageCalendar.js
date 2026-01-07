@@ -10,7 +10,7 @@ import {
   Space
 } from 'antd'
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 const { Title } = Typography
 
@@ -42,19 +42,22 @@ function LinkageCalendar() {
   const fetchActivities = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/api/getUpcomingActivities`);
+      const localUser = JSON.parse(localStorage.getItem('user-info'))
+      const token = localUser?.token
+      const headers = token ? { Authorization: `Bearer ${token}` } : {}
+
+      const response = await fetch(`${BASE_URL}/api/getUpcomingActivities`, { headers });
       const data = await response.json();
       if (response.ok && data.activities) {
-        // Backend now returns: { id, activity_type, description, date, status, campus, faculty, department, ... }
+        // Transform backend activity to calendar format if needed
+        // Backend: { id, activity_type, description, date, status, ... }
         const mappedActivities = data.activities.map(act => ({
           date: act.date,
           title: act.description,
           type: act.activity_type,
-          campus: act.campus,
-          faculty: act.faculty,
-          department: act.department,
-          partner: act.partner_organization,
-          status: act.status
+          status: act.status, // Activity Status
+          planStatus: act.linkage_plan ? act.linkage_plan.status : 'N/A', // Plan Status
+          planId: act.linkage_plan_id
         }));
         setActivities(mappedActivities);
       } else {
@@ -77,7 +80,7 @@ function LinkageCalendar() {
     return (
       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
         {listData.map((item, index) => (
-          <li key={index} className="mb-1" title={`${item.campus} - ${item.faculty} - ${item.department}\nPartner: ${item.partner || 'N/A'}`}>
+          <li key={index} className="mb-1">
             <Badge
               status={
                 item.type === 'MOU' ? 'processing' :
@@ -89,7 +92,9 @@ function LinkageCalendar() {
                 <span style={{ fontSize: '10px', whiteSpace: 'normal', lineHeight: '1.2' }}>
                   <b>{item.type}:</b> {item.title}
                   <br />
-                  <small style={{ color: '#888' }}>{item.department}</small>
+                  <span style={{ color: item.planStatus === 'Planned' ? 'green' : 'orange' }}>
+                    [{item.planStatus}]
+                  </span>
                 </span>
               }
             />
@@ -106,7 +111,10 @@ function LinkageCalendar() {
           <h3 style={titleStyle}>Linkage Activities Calendar</h3>
           <Card style={cardStyle} bodyStyle={{ padding: '20px' }} loading={loading}>
             <Calendar
-              dateCellRender={dateCellRender}
+              cellRender={(value, info) => {
+                if (info.type === 'date') return dateCellRender(value);
+                return info.originNode;
+              }}
               headerRender={({ value, type, onChange, onTypeChange }) => {
                 const current = value.clone();
                 const localeData = value.localeData();

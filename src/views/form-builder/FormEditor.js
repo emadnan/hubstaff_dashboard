@@ -110,6 +110,7 @@ const FormEditor = () => {
     const [activeId, setActiveId] = useState(null)
     const [focusedFieldId, setFocusedFieldId] = useState(null)
     const [previewMode, setPreviewMode] = useState(false)
+    const [dynamicData, setDynamicData] = useState({}) // Store fetched dynamic data
     const local = JSON.parse(localStorage.getItem('user-info'))
     const token = local?.token
 
@@ -129,6 +130,150 @@ const FormEditor = () => {
             fetchForm()
         }
     }, [id])
+
+    // Fetch dynamic data sources when sections change
+    useEffect(() => {
+        if (sections && sections.length > 0) {
+            fetchDynamicDataSources()
+        }
+    }, [sections])
+
+    const fetchDynamicDataSources = async () => {
+        const dataSourcesToFetch = new Set()
+
+        // Find all fields that use dynamic data sources
+        sections.forEach(section => {
+            section.fields.forEach(field => {
+                if (field.data_source) {
+                    dataSourcesToFetch.add(field.data_source)
+                }
+            })
+        })
+
+        if (dataSourcesToFetch.size === 0) return;
+
+        // Fetch each unique data source
+        const dataPromises = Array.from(dataSourcesToFetch).map(async (source) => {
+            try {
+                let endpoint = ''
+                switch (source) {
+                    case 'campuses':
+                        endpoint = `${BASE_URL}/api/getCampuses`
+                        break
+                    case 'faculties':
+                        endpoint = `${BASE_URL}/api/getFaculties`
+                        break
+                    case 'departments':
+                        endpoint = `${BASE_URL}/api/getDepartments`
+                        break
+                    case 'activity_types':
+                        endpoint = `${BASE_URL}/api/getActivityTypes`
+                        break
+                    case 'users':
+                        endpoint = `${BASE_URL}/api/get_users`
+                        break
+                    case 'industry_sectors':
+                        endpoint = `${BASE_URL}/api/getIndustrySectors`
+                        break
+                    case 'employers':
+                        endpoint = `${BASE_URL}/api/getProposedEmployers`
+                        break
+                    case 'department_hods':
+                        endpoint = `${BASE_URL}/api/getHODs`
+                        break
+                    default:
+                        return null
+                }
+
+                const response = await fetch(endpoint, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+
+                if (response.ok) {
+                    const data = await response.json()
+                    return { source, data }
+                } else {
+                    const errorText = `Failed to fetch ${source}: ${response.status} ${response.statusText}`;
+                    console.error(errorText);
+                }
+            } catch (error) {
+                const errorMsg = `Error fetching ${source}: ${error.message}`;
+                console.error(errorMsg);
+            }
+            return null
+        })
+
+        const results = await Promise.all(dataPromises)
+        const newDynamicData = { ...dynamicData }
+
+        results.forEach(result => {
+            if (result) {
+                newDynamicData[result.source] = result.data;
+            }
+        })
+        setDynamicData(newDynamicData)
+    }
+
+    const getOptionsForField = (field) => {
+        if (field.data_source && dynamicData[field.data_source]) {
+            const data = dynamicData[field.data_source]
+
+            // Transform data based on source type
+            switch (field.data_source) {
+                case 'campuses':
+                    return Array.isArray(data) ? data.map(item => ({
+                        label: item.name,
+                        value: item.name
+                    })) : []
+
+                case 'departments':
+                    return Array.isArray(data) ? data.map(item => ({
+                        label: item.department_name,
+                        value: item.department_name
+                    })) : []
+
+                case 'faculties':
+                    // Faculties returns an object with faculty names as keys
+                    return Object.keys(data).map(name => ({
+                        label: name,
+                        value: name
+                    }))
+
+                case 'activity_types':
+                    return Array.isArray(data) ? data.map(item => ({
+                        label: item.label,
+                        value: item.code
+                    })) : []
+
+                case 'users':
+                    return Array.isArray(data) ? data.map(user => ({
+                        label: user.name || user.email,
+                        value: user.id
+                    })) : []
+
+                case 'industry_sectors':
+                case 'employers':
+                    return Array.isArray(data) ? data.map(item => ({
+                        label: item.name,
+                        value: item.name
+                    })) : []
+
+                case 'department_hods':
+                    return Array.isArray(data) ? data.map(item => ({
+                        label: item.hod_name,
+                        value: item.hod_name
+                    })) : []
+
+                default:
+                    return []
+            }
+        }
+
+        // Return manual options if no data source
+        return field.options || []
+    }
 
     const fetchForm = async () => {
         setLoading(true)
@@ -318,10 +463,11 @@ const FormEditor = () => {
 
     const updateField = (sectionIndex, fieldIndex, fieldData) => {
         const newSections = [...sections]
-        newSections[sectionIndex].fields[fieldIndex] = {
+        const updatedField = {
             ...newSections[sectionIndex].fields[fieldIndex],
             ...fieldData,
-        }
+        };
+        newSections[sectionIndex].fields[fieldIndex] = updatedField;
         setSections(newSections)
     }
 
@@ -428,28 +574,35 @@ const FormEditor = () => {
                     </Button>
                 )
             case 'select':
+                const selectOptions = getOptionsForField(field)
                 return (
-                    <AntSelect placeholder={`Select ${field.label}`} style={commonStyle}>
-                        {(field.options || []).map((opt, idx) => (
+                    <AntSelect
+                        placeholder={`Select ${field.label}`}
+                        style={commonStyle}
+                        loading={field.data_source && !dynamicData[field.data_source]}
+                    >
+                        {selectOptions.map((opt, idx) => (
                             <Option key={idx} value={opt.value}>{opt.label}</Option>
                         ))}
                     </AntSelect>
                 )
             case 'radio':
+                const radioOptions = getOptionsForField(field)
                 return (
                     <Radio.Group style={{ width: '100%' }}>
                         <Space direction="vertical">
-                            {(field.options || []).map((opt, idx) => (
+                            {radioOptions.map((opt, idx) => (
                                 <Radio key={idx} value={opt.value}>{opt.label}</Radio>
                             ))}
                         </Space>
                     </Radio.Group>
                 )
             case 'checkbox':
+                const checkboxOptions = getOptionsForField(field)
                 return (
                     <Checkbox.Group style={{ width: '100%' }}>
                         <Space direction="vertical">
-                            {(field.options || []).map((opt, idx) => (
+                            {checkboxOptions.map((opt, idx) => (
                                 <Checkbox key={idx} value={opt.value}>{opt.label}</Checkbox>
                             ))}
                         </Space>
@@ -590,6 +743,8 @@ const FormEditor = () => {
                                                                 isActive={focusedFieldId === field.id}
                                                                 onFocus={setFocusedFieldId}
                                                                 duplicateField={duplicateField}
+                                                                dynamicData={dynamicData}
+                                                                getOptionsForField={getOptionsForField}
                                                             />
                                                         ))}
                                                     </SortableContext>
@@ -658,7 +813,7 @@ const FormEditor = () => {
                                         />
                                     </Tooltip>
                                     <Divider style={{ margin: '8px 0', width: '32px' }} />
-                                    {FIELD_TYPES.slice(0, 9).map(f => (
+                                    {FIELD_TYPES.map(f => (
                                         <DraggableFieldTemplate
                                             key={f.type}
                                             {...f}

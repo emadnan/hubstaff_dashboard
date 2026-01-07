@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useDraggable } from '@dnd-kit/core';
-import { Card, Button, Space, Input, Select, Switch, Divider, Tooltip, Typography, Radio, Tag, InputNumber } from 'antd';
+import { Card, Button, Space, Input, Select, Switch, Divider, Tooltip, Typography, Radio, Tag, InputNumber, Spin } from 'antd';
 import {
     MenuOutlined,
     DeleteOutlined,
@@ -32,11 +32,16 @@ const CARD_STYLE = {
 
 // Available Dynamic Data Sources
 const DATA_SOURCES = [
+    { label: 'Campuses', value: 'campuses' },
     { label: 'Departments', value: 'departments' },
     { label: 'Faculties', value: 'faculties' },
     { label: 'Users/Employees', value: 'users' },
-    { label: 'Activity Types', value: 'activity_types' }
+    { label: 'Activity Types', value: 'activity_types' },
+    { label: 'HOD Names', value: 'department_hods' },
+    { label: 'Industry Sectors', value: 'industry_sectors' },
+    { label: 'Proposed Employers', value: 'employers' }
 ];
+
 
 // Draggable Field Template for Floating Toolbar
 export const DraggableFieldTemplate = ({ type, label, icon, onClick }) => {
@@ -76,7 +81,9 @@ export const SortableFieldItem = ({
     removeField,
     isActive,
     onFocus,
-    duplicateField
+    duplicateField,
+    dynamicData,
+    getOptionsForField
 }) => {
     const {
         attributes,
@@ -233,11 +240,12 @@ export const SortableFieldItem = ({
                     {/* Field Preview/Edit Area */}
                     {isActive && isOptionType && (
                         <div style={{ marginTop: '16px', marginBottom: '16px' }}>
-                            <div className="mb-3">
+                            <div className="mb-3" onClick={(e) => e.stopPropagation()}>
                                 <Radio.Group
                                     size="small"
                                     value={field.data_source ? 'dynamic' : 'static'}
                                     onChange={(e) => {
+                                        e.stopPropagation();
                                         if (e.target.value === 'static') {
                                             updateField(sectionIndex, fieldIndex, { data_source: null });
                                         } else {
@@ -252,12 +260,15 @@ export const SortableFieldItem = ({
                             </div>
 
                             {field.data_source ? (
-                                <div style={{
-                                    padding: '16px',
-                                    background: '#f0f5ff',
-                                    borderRadius: '8px',
-                                    border: '1px solid #d6e4ff'
-                                }}>
+                                <div
+                                    style={{
+                                        padding: '16px',
+                                        background: '#f0f5ff',
+                                        borderRadius: '8px',
+                                        border: '1px solid #d6e4ff'
+                                    }}
+                                    onClick={(e) => e.stopPropagation()}
+                                >
                                     <Space direction="vertical" style={{ width: '100%' }}>
                                         <Text type="secondary" style={{ fontSize: '12px', fontWeight: '500' }}>
                                             <DatabaseOutlined /> Data Source
@@ -265,7 +276,11 @@ export const SortableFieldItem = ({
                                         <Select
                                             style={{ width: '100%' }}
                                             value={field.data_source}
-                                            onChange={(val) => updateField(sectionIndex, fieldIndex, { data_source: val })}
+                                            onChange={(val) => {
+                                                updateField(sectionIndex, fieldIndex, { data_source: val });
+                                            }}
+                                            onClick={(e) => e.stopPropagation()}
+                                            dropdownStyle={{ zIndex: 9999 }}
                                         >
                                             {DATA_SOURCES.map(source => (
                                                 <Option key={source.value} value={source.value}>{source.label}</Option>
@@ -274,6 +289,59 @@ export const SortableFieldItem = ({
                                         <Text type="secondary" style={{ fontSize: '11px' }}>
                                             Options will be loaded from the selected data source
                                         </Text>
+
+                                        {/* Preview of loaded options */}
+                                        {getOptionsForField && (() => {
+                                            const loadedOptions = getOptionsForField(field);
+                                            if (loadedOptions && loadedOptions.length > 0) {
+                                                return (
+                                                    <div style={{ marginTop: '12px' }}>
+                                                        <Divider style={{ margin: '8px 0' }} />
+                                                        <Text strong style={{ fontSize: '12px', display: 'block', marginBottom: '8px' }}>
+                                                            Loaded Options ({loadedOptions.length}):
+                                                        </Text>
+                                                        <div style={{
+                                                            maxHeight: '150px',
+                                                            overflowY: 'auto',
+                                                            padding: '8px',
+                                                            background: 'white',
+                                                            borderRadius: '6px',
+                                                            border: '1px solid #d6e4ff'
+                                                        }}>
+                                                            {loadedOptions.slice(0, 10).map((opt, idx) => (
+                                                                <div key={idx} style={{
+                                                                    padding: '4px 8px',
+                                                                    marginBottom: '4px',
+                                                                    background: '#f8fafc',
+                                                                    borderRadius: '4px',
+                                                                    fontSize: '12px'
+                                                                }}>
+                                                                    {field.field_type === 'checkbox' ?
+                                                                        <span>☑️</span> :
+                                                                        <span>🔘</span>
+                                                                    } {opt.label}
+                                                                </div>
+                                                            ))}
+                                                            {loadedOptions.length > 10 && (
+                                                                <Text type="secondary" style={{ fontSize: '11px', fontStyle: 'italic' }}>
+                                                                    ... and {loadedOptions.length - 10} more
+                                                                </Text>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            } else if (dynamicData && !dynamicData[field.data_source]) {
+                                                return (
+                                                    <div style={{ marginTop: '12px', textAlign: 'center' }}>
+                                                        <Spin size="small" />
+                                                        <Text type="secondary" style={{ fontSize: '11px', display: 'block', marginTop: '4px' }}>
+                                                            Loading options...
+                                                        </Text>
+                                                    </div>
+                                                );
+                                            }
+                                            return null;
+                                        })()}
                                     </Space>
                                 </div>
                             ) : (
@@ -618,6 +686,207 @@ export const SortableFieldItem = ({
                             </Space>
                         </div>
                     )}
+
+                    {/* Dropdown (Select) Settings */}
+                    {field.field_type === 'select' && (
+                        <div style={{
+                            marginTop: '16px',
+                            padding: '16px',
+                            background: '#f0f5ff',
+                            borderRadius: '8px',
+                            border: '1px solid #d6e4ff'
+                        }}>
+                            <Text strong style={{ fontSize: '13px', color: '#262626', display: 'block', marginBottom: '12px' }}>
+                                Dropdown Settings
+                            </Text>
+                            <Space direction="vertical" style={{ width: '100%' }} size="small">
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: '13px' }}>Allow Multiple Selection</Text>
+                                    <Switch
+                                        size="small"
+                                        checked={field.validation?.allow_multiple || false}
+                                        onChange={(val) => updateField(sectionIndex, fieldIndex, {
+                                            validation: { ...(field.validation || {}), allow_multiple: val }
+                                        })}
+                                    />
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: '13px' }}>Enable Search</Text>
+                                    <Switch
+                                        size="small"
+                                        checked={field.validation?.searchable || false}
+                                        onChange={(val) => updateField(sectionIndex, fieldIndex, {
+                                            validation: { ...(field.validation || {}), searchable: val }
+                                        })}
+                                    />
+                                </div>
+                                {field.validation?.allow_multiple && (
+                                    <>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
+                                            <div style={{ flex: 1 }}>
+                                                <Text style={{ fontSize: '13px', display: 'block', marginBottom: '6px' }}>Min Selections</Text>
+                                                <InputNumber
+                                                    min={0}
+                                                    max={field.options?.length || 10}
+                                                    value={field.validation?.min_selections || 0}
+                                                    onChange={(val) => updateField(sectionIndex, fieldIndex, {
+                                                        validation: { ...(field.validation || {}), min_selections: val }
+                                                    })}
+                                                    style={{ width: '100%' }}
+                                                    size="small"
+                                                    placeholder="No min"
+                                                />
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <Text style={{ fontSize: '13px', display: 'block', marginBottom: '6px' }}>Max Selections</Text>
+                                                <InputNumber
+                                                    min={1}
+                                                    max={field.options?.length || 10}
+                                                    value={field.validation?.max_selections}
+                                                    onChange={(val) => updateField(sectionIndex, fieldIndex, {
+                                                        validation: { ...(field.validation || {}), max_selections: val }
+                                                    })}
+                                                    style={{ width: '100%' }}
+                                                    size="small"
+                                                    placeholder="No max"
+                                                />
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                                <div>
+                                    <Text style={{ fontSize: '13px', display: 'block', marginBottom: '6px' }}>Placeholder Text</Text>
+                                    <Input
+                                        placeholder="e.g., Select an option..."
+                                        value={field.validation?.placeholder || ''}
+                                        onChange={(e) => updateField(sectionIndex, fieldIndex, {
+                                            validation: { ...(field.validation || {}), placeholder: e.target.value }
+                                        })}
+                                        size="small"
+                                    />
+                                </div>
+                            </Space>
+                        </div>
+                    )}
+
+                    {/* Radio Button Settings */}
+                    {field.field_type === 'radio' && (
+                        <div style={{
+                            marginTop: '16px',
+                            padding: '16px',
+                            background: '#f0f5ff',
+                            borderRadius: '8px',
+                            border: '1px solid #d6e4ff'
+                        }}>
+                            <Text strong style={{ fontSize: '13px', color: '#262626', display: 'block', marginBottom: '12px' }}>
+                                Radio Button Settings
+                            </Text>
+                            <Space direction="vertical" style={{ width: '100%' }} size="small">
+                                <div>
+                                    <Text style={{ fontSize: '13px', display: 'block', marginBottom: '6px' }}>Layout</Text>
+                                    <Select
+                                        value={field.validation?.layout || 'vertical'}
+                                        onChange={(val) => updateField(sectionIndex, fieldIndex, {
+                                            validation: { ...(field.validation || {}), layout: val }
+                                        })}
+                                        style={{ width: '100%' }}
+                                        size="small"
+                                    >
+                                        <Option value="vertical">Vertical (Stacked)</Option>
+                                        <Option value="horizontal">Horizontal (Inline)</Option>
+                                    </Select>
+                                </div>
+                                <div>
+                                    <Text style={{ fontSize: '13px', display: 'block', marginBottom: '6px' }}>Default Selection</Text>
+                                    <Select
+                                        value={field.validation?.default_value || ''}
+                                        onChange={(val) => updateField(sectionIndex, fieldIndex, {
+                                            validation: { ...(field.validation || {}), default_value: val }
+                                        })}
+                                        style={{ width: '100%' }}
+                                        size="small"
+                                        allowClear
+                                        placeholder="None"
+                                    >
+                                        {(field.options || []).map((opt, idx) => (
+                                            <Option key={idx} value={opt.value}>{opt.label}</Option>
+                                        ))}
+                                    </Select>
+                                </div>
+                            </Space>
+                        </div>
+                    )}
+
+                    {/* Checkbox Settings */}
+                    {field.field_type === 'checkbox' && (
+                        <div style={{
+                            marginTop: '16px',
+                            padding: '16px',
+                            background: '#f0f5ff',
+                            borderRadius: '8px',
+                            border: '1px solid #d6e4ff'
+                        }}>
+                            <Text strong style={{ fontSize: '13px', color: '#262626', display: 'block', marginBottom: '12px' }}>
+                                Checkbox Settings
+                            </Text>
+                            <Space direction="vertical" style={{ width: '100%' }} size="small">
+                                <div>
+                                    <Text style={{ fontSize: '13px', display: 'block', marginBottom: '6px' }}>Layout</Text>
+                                    <Select
+                                        value={field.validation?.layout || 'vertical'}
+                                        onChange={(val) => updateField(sectionIndex, fieldIndex, {
+                                            validation: { ...(field.validation || {}), layout: val }
+                                        })}
+                                        style={{ width: '100%' }}
+                                        size="small"
+                                    >
+                                        <Option value="vertical">Vertical (Stacked)</Option>
+                                        <Option value="horizontal">Horizontal (Inline)</Option>
+                                    </Select>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
+                                    <div style={{ flex: 1 }}>
+                                        <Text style={{ fontSize: '13px', display: 'block', marginBottom: '6px' }}>Min Selections</Text>
+                                        <InputNumber
+                                            min={0}
+                                            max={field.options?.length || 10}
+                                            value={field.validation?.min_selections || 0}
+                                            onChange={(val) => updateField(sectionIndex, fieldIndex, {
+                                                validation: { ...(field.validation || {}), min_selections: val }
+                                            })}
+                                            style={{ width: '100%' }}
+                                            size="small"
+                                            placeholder="No min"
+                                        />
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <Text style={{ fontSize: '13px', display: 'block', marginBottom: '6px' }}>Max Selections</Text>
+                                        <InputNumber
+                                            min={1}
+                                            max={field.options?.length || 10}
+                                            value={field.validation?.max_selections}
+                                            onChange={(val) => updateField(sectionIndex, fieldIndex, {
+                                                validation: { ...(field.validation || {}), max_selections: val }
+                                            })}
+                                            style={{ width: '100%' }}
+                                            size="small"
+                                            placeholder="No max"
+                                        />
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: '13px' }}>Select All Option</Text>
+                                    <Switch
+                                        size="small"
+                                        checked={field.validation?.show_select_all || false}
+                                        onChange={(val) => updateField(sectionIndex, fieldIndex, {
+                                            validation: { ...(field.validation || {}), show_select_all: val }
+                                        })}
+                                    />
+                                </div>
+                            </Space>
+                        </div>
+                    )}
                 </div>
 
                 {/* Field Actions */}
@@ -681,7 +950,9 @@ SortableFieldItem.propTypes = {
     removeField: PropTypes.func.isRequired,
     isActive: PropTypes.bool,
     onFocus: PropTypes.func.isRequired,
-    duplicateField: PropTypes.func.isRequired
+    duplicateField: PropTypes.func.isRequired,
+    dynamicData: PropTypes.object,
+    getOptionsForField: PropTypes.func
 };
 
 // Sortable Section Container

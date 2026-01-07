@@ -125,13 +125,24 @@ function LinkageFormsManagement() {
 
     const fetchCampuses = async () => {
         try {
-            const response = await fetch(`${BASE_URL}/api/getCampuses`)
+            const localUser = JSON.parse(localStorage.getItem('user-info'))
+            const response = await fetch(`${BASE_URL}/api/getCampuses`, {
+                headers: {
+                    'Authorization': `Bearer ${localUser?.token}`
+                }
+            })
             if (response.ok) {
                 const data = await response.json()
-                setCampuses(data)
+                if (Array.isArray(data)) {
+                    setCampuses(data)
+                } else {
+                    console.error('Campuses data is not an array:', data)
+                    setCampuses([])
+                }
             }
         } catch (error) {
             console.error('Failed to fetch campuses:', error)
+            setCampuses([])
         }
     }
 
@@ -191,6 +202,15 @@ function LinkageFormsManagement() {
     }
 
     const getStatusConfig = (status) => {
+        if (status?.startsWith('Pending from')) {
+            return { color: '#8b5cf6', icon: <ClockCircleOutlined />, bg: '#ede9fe' }
+        }
+        if (status?.startsWith('Rejected by')) {
+            return { color: '#ef4444', icon: <CloseCircleOutlined />, bg: '#fee2e2' }
+        }
+        if (status === 'Approved') {
+            return { color: '#10b981', icon: <CheckCircleOutlined />, bg: '#d1fae5' }
+        }
         const configs = {
             'Planned': { color: '#3b82f6', icon: <ClockCircleOutlined />, bg: '#dbeafe' },
             'In Progress': { color: '#f59e0b', icon: <ClockCircleOutlined />, bg: '#fef3c7' },
@@ -226,7 +246,7 @@ function LinkageFormsManagement() {
             key: 'faculty',
             width: 220,
             ellipsis: true,
-            render: (text) => <Text strong style={{ color: '#334155' }}>{text}</Text>
+            render: (text) => <Text strong style={{ color: '#334155' }}>{(typeof text === 'object' ? text?.name : text) || 'N/A'}</Text>
         },
         {
             title: <Text strong style={{ color: '#1e293b' }}>Department</Text>,
@@ -234,7 +254,7 @@ function LinkageFormsManagement() {
             key: 'department',
             width: 220,
             ellipsis: true,
-            render: (text) => <Text style={{ color: '#64748b' }}>{text}</Text>
+            render: (text) => <Text style={{ color: '#64748b' }}>{(typeof text === 'object' ? text?.department_name : text) || 'N/A'}</Text>
         },
         {
             title: <Text strong style={{ color: '#1e293b' }}>Focal Person</Text>,
@@ -272,17 +292,6 @@ function LinkageFormsManagement() {
                     <div style={{ fontSize: '13px', color: '#334155' }}>{text}</div>
                     <div style={{ fontSize: '12px', color: '#94a3b8' }}>{record.phone}</div>
                 </div>
-            )
-        },
-        {
-            title: <Text strong style={{ color: '#1e293b' }}>Semester</Text>,
-            dataIndex: 'semester',
-            key: 'semester',
-            width: 140,
-            render: (text) => (
-                <Tag color="cyan" style={{ borderRadius: '6px', padding: '4px 12px' }}>
-                    {text}
-                </Tag>
             )
         },
         {
@@ -324,52 +333,62 @@ function LinkageFormsManagement() {
             key: 'actions',
             fixed: 'right',
             width: 160,
-            render: (_, record) => (
-                <Space size="small">
-                    <Tooltip title="View Details">
-                        <Button
-                            type="primary"
-                            icon={<EyeOutlined />}
-                            size="small"
-                            onClick={() => handleViewDetails(record)}
-                            style={{
-                                borderRadius: '8px',
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                border: 'none'
-                            }}
-                        />
-                    </Tooltip>
-                    <Tooltip title="Edit">
-                        <Button
-                            icon={<EditOutlined />}
-                            size="small"
-                            onClick={() => handleEdit(record)}
-                            style={{
-                                borderRadius: '8px',
-                                borderColor: '#3b82f6',
-                                color: '#3b82f6'
-                            }}
-                        />
-                    </Tooltip>
-                    <Popconfirm
-                        title="Delete this plan?"
-                        description="This action cannot be undone."
-                        onConfirm={() => handleDelete(record.id)}
-                        okText="Delete"
-                        cancelText="Cancel"
-                        okButtonProps={{ danger: true }}
-                    >
-                        <Tooltip title="Delete">
+            render: (_, record) => {
+                const localUser = JSON.parse(localStorage.getItem('user-info'))
+                const permissions = localUser?.permissions || []
+                const canEditDelete = permissions.some(p => p.name === 'Nav_LinkagePlanForm')
+
+                return (
+                    <Space size="small">
+                        <Tooltip title="View Details">
                             <Button
-                                danger
-                                icon={<DeleteOutlined />}
+                                type="primary"
+                                icon={<EyeOutlined />}
                                 size="small"
-                                style={{ borderRadius: '8px' }}
+                                onClick={() => handleViewDetails(record)}
+                                style={{
+                                    borderRadius: '8px',
+                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                    border: 'none'
+                                }}
                             />
                         </Tooltip>
-                    </Popconfirm>
-                </Space>
-            )
+                        {canEditDelete && (
+                            <>
+                                <Tooltip title="Edit">
+                                    <Button
+                                        icon={<EditOutlined />}
+                                        size="small"
+                                        onClick={() => handleEdit(record)}
+                                        style={{
+                                            borderRadius: '8px',
+                                            borderColor: '#3b82f6',
+                                            color: '#3b82f6'
+                                        }}
+                                    />
+                                </Tooltip>
+                                <Popconfirm
+                                    title="Delete this plan?"
+                                    description="This action cannot be undone."
+                                    onConfirm={() => handleDelete(record.id)}
+                                    okText="Delete"
+                                    cancelText="Cancel"
+                                    okButtonProps={{ danger: true }}
+                                >
+                                    <Tooltip title="Delete">
+                                        <Button
+                                            danger
+                                            icon={<DeleteOutlined />}
+                                            size="small"
+                                            style={{ borderRadius: '8px' }}
+                                        />
+                                    </Tooltip>
+                                </Popconfirm>
+                            </>
+                        )}
+                    </Space>
+                )
+            }
         }
     ]
 
@@ -573,10 +592,12 @@ function LinkageFormsManagement() {
                                     </Tag>
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Faculty" span={2}>
-                                    <Text strong>{selectedPlan.faculty || 'N/A'}</Text>
+                                    <Text strong>
+                                        {(typeof selectedPlan.faculty === 'object' ? selectedPlan.faculty?.name : selectedPlan.faculty) || 'N/A'}
+                                    </Text>
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Department" span={2}>
-                                    {selectedPlan.department || 'N/A'}
+                                    {(typeof selectedPlan.department === 'object' ? selectedPlan.department?.department_name : selectedPlan.department) || 'N/A'}
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Dean/Head">
                                     {selectedPlan.dean_head || 'N/A'}
@@ -589,12 +610,6 @@ function LinkageFormsManagement() {
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Phone">
                                     {selectedPlan.phone || 'N/A'}
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Semester">
-                                    <Tag color="cyan">{selectedPlan.semester || 'N/A'}</Tag>
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Academic Year">
-                                    {selectedPlan.academic_year || 'N/A'}
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Status" span={2}>
                                     {(() => {
@@ -613,8 +628,47 @@ function LinkageFormsManagement() {
                                 <Descriptions.Item label="Submitted" span={2}>
                                     {moment(selectedPlan.created_at).format('MMMM DD, YYYY [at] h:mm A')}
                                 </Descriptions.Item>
+                                {selectedPlan.current_step_role && (
+                                    <Descriptions.Item label="Current Pending At" span={2}>
+                                        <Badge status="processing" text={selectedPlan.current_step_role} />
+                                    </Descriptions.Item>
+                                )}
                             </Descriptions>
                         </Card>
+
+                        {/* Approval History */}
+                        {selectedPlan.workflow_logs && selectedPlan.workflow_logs.length > 0 && (
+                            <Card
+                                title={<Text strong style={{ fontSize: '16px' }}>Approval History</Text>}
+                                style={{ marginBottom: '16px', borderRadius: '12px' }}
+                            >
+                                <Table
+                                    size="small"
+                                    dataSource={selectedPlan.workflow_logs}
+                                    pagination={false}
+                                    rowKey="id"
+                                    columns={[
+                                        { title: 'Step', dataIndex: ['step', 'role_name'], key: 'step' },
+                                        { title: 'User', dataIndex: ['user', 'name'], key: 'user' },
+                                        {
+                                            title: 'Action',
+                                            dataIndex: 'action',
+                                            key: 'action',
+                                            render: (action) => (
+                                                <Tag color={action === 'Approve' ? 'green' : 'red'}>{action}</Tag>
+                                            )
+                                        },
+                                        { title: 'Comments', dataIndex: 'comments', key: 'comments' },
+                                        {
+                                            title: 'Date',
+                                            dataIndex: 'created_at',
+                                            key: 'date',
+                                            render: (date) => moment(date).format('MMM DD, HH:mm')
+                                        },
+                                    ]}
+                                />
+                            </Card>
+                        )}
 
                         {/* Goals */}
                         <Card
@@ -753,7 +807,7 @@ function LinkageFormsManagement() {
                 )}
             </Drawer>
 
-            <style jsx global>{`
+            <style>{`
         .table-row-light {
           background-color: #ffffff;
         }
