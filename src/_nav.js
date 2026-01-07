@@ -168,6 +168,13 @@ const _navAdmin = [
     permission: 'Nav_Permissions',
   },
   {
+    component: CNavItem,
+    name: 'Linkage Workflow',
+    to: '/external-linkages/workflow',
+    icon: <CIcon icon={cilLink} customClassName="nav-icon" />,
+    permission: 'Nav_Roles', // Admin only
+  },
+  {
     component: CNavGroup,
     name: 'External Linkages',
     to: '/external-linkages',

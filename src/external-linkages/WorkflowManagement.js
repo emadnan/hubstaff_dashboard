@@ -73,7 +73,10 @@ const WorkflowManagement = () => {
                 body: JSON.stringify({
                     workflow_id: workflow.id,
                     role_name: values.role_name,
-                    step_order: values.step_order
+                    workflow_id: workflow.id,
+                    role_name: values.role_name,
+                    step_order: values.step_order,
+                    status_label: values.status_label
                 })
             })
 
@@ -131,6 +134,14 @@ const WorkflowManagement = () => {
             )
         },
         {
+            title: 'Status Label',
+            dataIndex: 'status_label',
+            key: 'status_label',
+            render: (text) => (
+                <Tag color="cyan">{text}</Tag>
+            )
+        },
+        {
             title: 'Actions',
             key: 'actions',
             render: (_, record) => (
@@ -158,7 +169,9 @@ const WorkflowManagement = () => {
         setEditingStep(step)
         form.setFieldsValue({
             role_name: step.role_name,
-            step_order: step.step_order
+            role_name: step.role_name,
+            step_order: step.step_order,
+            status_label: step.status_label
         })
         setIsModalVisible(true)
     }
@@ -175,7 +188,9 @@ const WorkflowManagement = () => {
                     },
                     body: JSON.stringify({
                         role_name: values.role_name,
-                        step_order: values.step_order
+                        role_name: values.role_name,
+                        step_order: values.step_order,
+                        status_label: values.status_label
                     })
                 })
 
@@ -265,6 +280,13 @@ const WorkflowManagement = () => {
                         initialValue={(workflow?.steps?.length || 0) + 1}
                     >
                         <InputNumber min={1} style={{ width: '100%' }} />
+                    </Form.Item>
+                    <Form.Item
+                        name="status_label"
+                        label="Status Label (e.g. Pending from HOD)"
+                        rules={[{ required: true, message: 'Please enter the status status seen by this role' }]}
+                    >
+                        <Input placeholder="Enter status label" />
                     </Form.Item>
                 </Form>
             </Modal>
