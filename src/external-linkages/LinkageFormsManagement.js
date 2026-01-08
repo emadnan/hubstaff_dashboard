@@ -190,6 +190,56 @@ function LinkageFormsManagement() {
         }
     }
 
+    const handleApprove = async (id) => {
+        try {
+            const localUser = JSON.parse(localStorage.getItem('user-info'))
+            const response = await fetch(`${BASE_URL}/api/approveLinkagePlan`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localUser?.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id })
+            })
+
+            if (response.ok) {
+                message.success('Plan approved successfully')
+                fetchLinkagePlans()
+            } else {
+                const errorData = await response.json()
+                message.error(errorData.message || 'Failed to approve plan')
+            }
+        } catch (error) {
+            console.error(error)
+            message.error('Network error')
+        }
+    }
+
+    const handleReject = async (id) => {
+        try {
+            const localUser = JSON.parse(localStorage.getItem('user-info'))
+            const response = await fetch(`${BASE_URL}/api/rejectLinkagePlan`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localUser?.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id })
+            })
+
+            if (response.ok) {
+                message.success('Plan rejected')
+                fetchLinkagePlans()
+            } else {
+                const errorData = await response.json()
+                message.error(errorData.message || 'Failed to reject plan')
+            }
+        } catch (error) {
+            console.error(error)
+            message.error('Network error')
+        }
+    }
+
     const handleViewDetails = (plan) => {
         console.log('Selected plan:', plan) // Debug log
         setSelectedPlan(plan)
@@ -202,17 +252,21 @@ function LinkageFormsManagement() {
     }
 
     const getStatusConfig = (status) => {
-        if (status?.startsWith('Pending from')) {
+        if (!status) return { color: '#3b82f6', icon: <ClockCircleOutlined />, bg: '#dbeafe' } // Default Safe Fallback
+
+        if (status.startsWith('Pending from')) {
             return { color: '#8b5cf6', icon: <ClockCircleOutlined />, bg: '#ede9fe' }
         }
-        if (status?.startsWith('Rejected by')) {
+        if (status.startsWith('Rejected') || status === 'Rejected') {
             return { color: '#ef4444', icon: <CloseCircleOutlined />, bg: '#fee2e2' }
         }
         if (status === 'Approved') {
             return { color: '#10b981', icon: <CheckCircleOutlined />, bg: '#d1fae5' }
         }
+
         const configs = {
             'Planned': { color: '#3b82f6', icon: <ClockCircleOutlined />, bg: '#dbeafe' },
+            'Draft': { color: '#94a3b8', icon: <EditOutlined />, bg: '#f1f5f9' },
             'In Progress': { color: '#f59e0b', icon: <ClockCircleOutlined />, bg: '#fef3c7' },
             'Completed': { color: '#10b981', icon: <CheckCircleOutlined />, bg: '#d1fae5' },
             'Cancelled': { color: '#ef4444', icon: <CloseCircleOutlined />, bg: '#fee2e2' },
@@ -244,23 +298,34 @@ function LinkageFormsManagement() {
             title: <Text strong style={{ color: '#1e293b' }}>Faculty</Text>,
             dataIndex: 'faculty',
             key: 'faculty',
-            width: 220,
             ellipsis: true,
-            render: (text) => <Text strong style={{ color: '#334155' }}>{(typeof text === 'object' ? text?.name : text) || 'N/A'}</Text>
+            render: (text) => {
+                const name = typeof text === 'object' && text !== null ? text.name : text
+                return (
+                    <Tooltip title={name}>
+                        <span style={{ color: '#64748b' }}>{name || 'N/A'}</span>
+                    </Tooltip>
+                )
+            }
         },
         {
             title: <Text strong style={{ color: '#1e293b' }}>Department</Text>,
             dataIndex: 'department',
             key: 'department',
-            width: 220,
             ellipsis: true,
-            render: (text) => <Text style={{ color: '#64748b' }}>{(typeof text === 'object' ? text?.department_name : text) || 'N/A'}</Text>
+            render: (text) => {
+                const name = typeof text === 'object' && text !== null ? (text.department_name || text.name) : text
+                return (
+                    <Tooltip title={name}>
+                        <span style={{ color: '#64748b' }}>{name || 'N/A'}</span>
+                    </Tooltip>
+                )
+            }
         },
         {
             title: <Text strong style={{ color: '#1e293b' }}>Focal Person</Text>,
             dataIndex: 'focal_person',
             key: 'focal_person',
-            width: 160,
             render: (text) => (
                 <Space>
                     <div style={{
@@ -282,23 +347,19 @@ function LinkageFormsManagement() {
             )
         },
         {
-            title: <Text strong style={{ color: '#1e293b' }}>Contact</Text>,
+            title: <Text strong style={{ color: '#1e293b' }}>Email</Text>,
             dataIndex: 'email',
             key: 'email',
-            width: 200,
             ellipsis: true,
-            render: (text, record) => (
-                <div>
-                    <div style={{ fontSize: '13px', color: '#334155' }}>{text}</div>
-                    <div style={{ fontSize: '12px', color: '#94a3b8' }}>{record.phone}</div>
-                </div>
+            render: (text) => (
+                <div style={{ fontSize: '13px', color: '#334155' }}>{text || 'N/A'}</div>
             )
         },
         {
             title: <Text strong style={{ color: '#1e293b' }}>Status</Text>,
             dataIndex: 'status',
             key: 'status',
-            width: 140,
+            width: 200,
             render: (status) => {
                 const config = getStatusConfig(status || 'Planned')
                 return (
@@ -307,7 +368,7 @@ function LinkageFormsManagement() {
                         color={config.color}
                         style={{
                             borderRadius: '20px',
-                            padding: '4px 14px',
+                            padding: '0 10px',
                             border: 'none',
                             fontWeight: 500
                         }}
@@ -331,39 +392,40 @@ function LinkageFormsManagement() {
         {
             title: <Text strong style={{ color: '#1e293b' }}>Actions</Text>,
             key: 'actions',
-            fixed: 'right',
-            width: 160,
+            width: 100,
             render: (_, record) => {
                 const localUser = JSON.parse(localStorage.getItem('user-info'))
-                const permissions = localUser?.permissions || []
-                const canEditDelete = permissions.some(p => p.name === 'Nav_LinkagePlanForm')
+                // Access ID from 'Users' object inside localUser (based on UserController response)
+                const userId = localUser?.Users?.id || localUser?.id
+                const isInitiator = userId == record.submitted_by
 
                 return (
                     <Space size="small">
                         <Tooltip title="View Details">
                             <Button
-                                type="primary"
-                                icon={<EyeOutlined />}
+                                shape="circle"
+                                icon={<EyeOutlined style={{ color: '#0070FF' }} />}
                                 size="small"
                                 onClick={() => handleViewDetails(record)}
                                 style={{
-                                    borderRadius: '8px',
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                    border: 'none'
+                                    border: '1px solid #e2e8f0',
+                                    background: 'white',
+                                    boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
                                 }}
                             />
                         </Tooltip>
-                        {canEditDelete && (
+                        {isInitiator && (
                             <>
                                 <Tooltip title="Edit">
                                     <Button
-                                        icon={<EditOutlined />}
+                                        shape="circle"
+                                        icon={<EditOutlined style={{ color: '#f59e0b' }} />}
                                         size="small"
                                         onClick={() => handleEdit(record)}
                                         style={{
-                                            borderRadius: '8px',
-                                            borderColor: '#3b82f6',
-                                            color: '#3b82f6'
+                                            border: '1px solid #e2e8f0',
+                                            background: 'white',
+                                            boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
                                         }}
                                     />
                                 </Tooltip>
@@ -373,14 +435,20 @@ function LinkageFormsManagement() {
                                     onConfirm={() => handleDelete(record.id)}
                                     okText="Delete"
                                     cancelText="Cancel"
-                                    okButtonProps={{ danger: true }}
+                                    okButtonProps={{ danger: true, size: 'small' }}
+                                    cancelButtonProps={{ size: 'small' }}
                                 >
                                     <Tooltip title="Delete">
                                         <Button
                                             danger
+                                            shape="circle"
                                             icon={<DeleteOutlined />}
                                             size="small"
-                                            style={{ borderRadius: '8px' }}
+                                            style={{
+                                                background: '#fff1f2',
+                                                border: '1px solid #fecdd3',
+                                                color: '#ef4444'
+                                            }}
                                         />
                                     </Tooltip>
                                 </Popconfirm>
@@ -413,31 +481,37 @@ function LinkageFormsManagement() {
                                 onClick={fetchLinkagePlans}
                                 size="large"
                                 style={{
-                                    borderRadius: '10px',
-                                    background: 'rgba(255,255,255,0.2)',
-                                    border: '1px solid rgba(255,255,255,0.3)',
+                                    borderRadius: '12px',
+                                    background: 'rgba(255,255,255,0.15)',
+                                    border: '1px solid rgba(255,255,255,0.2)',
                                     color: 'white',
-                                    fontWeight: 500
+                                    fontWeight: 500,
+                                    backdropFilter: 'blur(4px)'
                                 }}
                             >
                                 Refresh
                             </Button>
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => navigate('/external-linkages/plan-form')}
-                                size="large"
-                                style={{
-                                    borderRadius: '10px',
-                                    background: 'white',
-                                    color: '#667eea',
-                                    border: 'none',
-                                    fontWeight: 600,
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-                                }}
-                            >
-                                New Linkage Plan
-                            </Button>
+
+                            {(JSON.parse(localStorage.getItem('user-info'))?.permissions?.includes('Nav_LinkagePlanForm')) && (
+                                <Button
+                                    type="primary"
+                                    icon={<PlusOutlined />}
+                                    onClick={() => navigate('/external-linkages/plan-form')}
+                                    size="large"
+                                    style={{
+                                        borderRadius: '12px',
+                                        background: 'white',
+                                        color: '#667eea',
+                                        border: 'none',
+                                        fontWeight: 600,
+                                        boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                                        paddingLeft: '24px',
+                                        paddingRight: '24px'
+                                    }}
+                                >
+                                    New Linkage Plan
+                                </Button>
+                            )}
                         </Space>
                     </Col>
                 </Row>
@@ -481,10 +555,10 @@ function LinkageFormsManagement() {
                             size="large"
                         >
                             <Option value="Planned">Planned</Option>
-                            <Option value="In Progress">In Progress</Option>
-                            <Option value="Completed">Completed</Option>
-                            <Option value="Cancelled">Cancelled</Option>
-                            <Option value="Pending">Pending</Option>
+                            <Option value="Pending from HOD">Pending from HOD</Option>
+                            <Option value="Pending from Linkage Office">Pending from Linkage Office</Option>
+                            <Option value="Rejected">Rejected</Option>
+                            <Option value="Draft">Draft</Option>
                         </Select>
                     </Col>
                     <Col xs={24} sm={24} md={4}>
@@ -526,7 +600,6 @@ function LinkageFormsManagement() {
                     dataSource={filteredData}
                     loading={loading}
                     rowKey="id"
-                    scroll={{ x: 1500 }}
                     pagination={{
                         pageSize: 10,
                         showSizeChanger: true,
@@ -577,6 +650,42 @@ function LinkageFormsManagement() {
                 styles={{
                     body: { padding: '24px', background: '#f8fafc' }
                 }}
+                footer={
+                    selectedPlan?.can_approve ? (
+                        <div style={{ textAlign: 'right', padding: '16px 24px' }}>
+                            <Space>
+                                <Popconfirm
+                                    title="Reject Plan"
+                                    description="Are you sure you want to reject this plan?"
+                                    onConfirm={() => {
+                                        handleReject(selectedPlan.id)
+                                        setDrawerVisible(false) // Close drawer after action
+                                    }}
+                                    okText="Yes"
+                                    cancelText="No"
+                                >
+                                    <Button danger size="large" icon={<CloseCircleOutlined />}>
+                                        Reject
+                                    </Button>
+                                </Popconfirm>
+                                <Popconfirm
+                                    title="Approve Plan"
+                                    description="Are you sure you want to approve this plan?"
+                                    onConfirm={() => {
+                                        handleApprove(selectedPlan.id)
+                                        setDrawerVisible(false) // Close drawer after action
+                                    }}
+                                    okText="Yes"
+                                    cancelText="No"
+                                >
+                                    <Button type="primary" size="large" icon={<CheckCircleOutlined />} style={{ background: '#28B463', borderColor: '#28B463' }}>
+                                        Approve
+                                    </Button>
+                                </Popconfirm>
+                            </Space>
+                        </div>
+                    ) : null
+                }
             >
                 {selectedPlan && (
                     <div>
@@ -823,7 +932,7 @@ function LinkageFormsManagement() {
           background-color: #f0f9ff !important;
         }
       `}</style>
-        </div>
+        </div >
     )
 }
 

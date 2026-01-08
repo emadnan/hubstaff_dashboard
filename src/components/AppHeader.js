@@ -23,7 +23,7 @@ const AppHeader = () => {
   };
 
   const local = JSON.parse(localStorage.getItem('user-info'));
-  const userdata = local.Users;
+  const userdata = local?.Users || {};
 
   return (
     <CHeader position="sticky" className="mb-4">
@@ -36,7 +36,7 @@ const AppHeader = () => {
         </CHeaderToggler>
         <CHeaderNav className="d-none d-md-flex me-auto">
           <CNavItem>
-            <h5 style={nameStyle}>{userdata.company_name}</h5>
+            <h5 style={nameStyle}>{userdata?.company_name || 'WorkLog'}</h5>
           </CNavItem>
         </CHeaderNav>
         <CHeaderNav className="ms-3">

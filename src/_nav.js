@@ -205,12 +205,6 @@ const _navAdmin = [
         to: '/external-linkages/workflow',
         permission: 'Nav_Roles', // Admin only
       },
-      {
-        component: CNavItem,
-        name: 'Pending Approvals',
-        to: '/external-linkages/approvals',
-        permission: 'Nav_LinkageApprovals', // HOD, Officer
-      },
     ],
   },
   {

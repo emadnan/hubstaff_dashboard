@@ -69,43 +69,13 @@ const LinkagePlanForm = () => {
         const token = localUser?.token
         const headers = token ? { Authorization: `Bearer ${token}` } : {}
 
-        const [facResponse, actResponse, hodResponse] = await Promise.all([
-          fetch(`${BASE_URL}/api/getFaculties`, { headers }),
+        const [actResponse, userContextResponse] = await Promise.all([
           fetch(`${BASE_URL}/api/getActivityTypes`, { headers }),
-          fetch(`${BASE_URL}/api/getHODs`, { headers })
+          fetch(`${BASE_URL}/api/user-context`, { headers }) // New endpoint
         ])
 
         const unwrap = (data, type) => {
           if (!data) return data
-
-          if (type === 'faculty') {
-            // Robust check for object structure
-            const isFacultyMap = (v) => v && typeof v === 'object' && !Array.isArray(v)
-
-            // 1. Check current level
-            if (data['Lahore Campus'] || data['Sargodha Campus']) {
-              const clean = {}
-              Object.keys(data).forEach(k => {
-                if (isFacultyMap(data[k])) clean[k] = data[k]
-              })
-              return clean
-            }
-
-            // 2. Check nested property
-            for (const key in data) {
-              const val = data[key]
-              if (isFacultyMap(val)) {
-                if (val['Lahore Campus'] || val['Sargodha Campus']) {
-                  const clean = {}
-                  Object.keys(val).forEach(k => {
-                    if (isFacultyMap(val[k])) clean[k] = val[k]
-                  })
-                  return clean
-                }
-              }
-            }
-          }
-
           if (type === 'list') {
             if (Array.isArray(data)) return data
             if (data.data && Array.isArray(data.data)) return data.data
@@ -113,13 +83,7 @@ const LinkagePlanForm = () => {
               if (Array.isArray(data[key])) return data[key]
             }
           }
-
           return data
-        }
-
-        if (facResponse.ok) {
-          const rawFac = await facResponse.json()
-          setFacultyData(unwrap(rawFac, 'faculty') || {})
         }
 
         if (actResponse.ok) {
@@ -127,18 +91,35 @@ const LinkagePlanForm = () => {
           setActivityTypes(unwrap(rawAct, 'list') || [])
         }
 
-        if (hodResponse.ok) {
-          const rawHod = await hodResponse.json()
-          setHodData(unwrap(rawHod, 'list') || [])
+        if (userContextResponse.ok) {
+          const context = await userContextResponse.json()
+          console.log("Fetched User Context:", context)
+
+          // Auto-fill Basic Info
+          setBasicInfo(prev => ({
+            ...prev,
+            campus: context.campus?.name || '',
+            faculty: context.faculty?.name || '',
+            department: context.department?.name || '',
+            dean_head: context.department?.hod_name || '',
+            // Focal person can still be manual or auto-filled from user name. 
+            // Request says "filled automatically". Let's assume focal person is the user themselves.
+            focalPerson: context.user?.name || '',
+            email: context.user?.email || '',
+            // Phone might not be in user context yet, keep manual or empty
+          }))
         }
+
       } catch (error) {
         console.error("Error fetching master data:", error)
         message.error("Failed to load form data")
       }
     }
 
-    fetchMasterData()
-  }, [])
+    if (!editMode) {
+      fetchMasterData()
+    }
+  }, [editMode])
 
   // Effect to handle Edit Mode
   useEffect(() => {
@@ -852,14 +833,12 @@ const LinkagePlanForm = () => {
                 validateStatus={submitted && errors.campus ? 'error' : ''}
                 help={submitted && errors.campus}
               >
-                <Select
-                  value={basicInfo.campus || undefined}
-                  placeholder="Select Campus"
-                  onChange={(value) => handleBasicInfoChange('campus', value)}
-                  status={submitted && errors.campus ? 'error' : ''}
-                >
-                  {facultyData && Object.keys(facultyData).map(c => <Option key={c} value={c}>{c}</Option>)}
-                </Select>
+                <Input
+                  value={basicInfo.campus}
+                  readOnly
+                  placeholder="Auto-fetched"
+                  style={{ backgroundColor: '#f5f5f5', color: '#595959' }}
+                />
               </Form.Item>
             </Col>
             <Col xs={24} md={8}>
@@ -868,16 +847,12 @@ const LinkagePlanForm = () => {
                 validateStatus={submitted && errors.faculty ? 'error' : ''}
                 help={submitted && errors.faculty}
               >
-                <Select
-                  value={basicInfo.faculty || undefined}
-                  placeholder="Select Faculty"
-                  onChange={(value) => handleBasicInfoChange('faculty', value)}
-                  disabled={!basicInfo.campus}
-                  status={submitted && errors.faculty ? 'error' : ''}
-                >
-                  {basicInfo.campus && facultyData[basicInfo.campus] &&
-                    Object.keys(facultyData[basicInfo.campus]).map(f => <Option key={f} value={f}>{f}</Option>)}
-                </Select>
+                <Input
+                  value={basicInfo.faculty}
+                  readOnly
+                  placeholder="Auto-fetched"
+                  style={{ backgroundColor: '#f5f5f5', color: '#595959' }}
+                />
               </Form.Item>
             </Col>
             <Col xs={24} md={8}>
@@ -886,18 +861,12 @@ const LinkagePlanForm = () => {
                 validateStatus={submitted && errors.department ? 'error' : ''}
                 help={submitted && errors.department}
               >
-                <Select
-                  value={basicInfo.department || undefined}
-                  placeholder="Select Department"
-                  onChange={(value) => handleBasicInfoChange('department', value)}
-                  disabled={!basicInfo.faculty}
-                  status={submitted && errors.department ? 'error' : ''}
-                >
-                  {basicInfo.campus && basicInfo.faculty && facultyData[basicInfo.campus] && facultyData[basicInfo.campus][basicInfo.faculty] &&
-                    facultyData[basicInfo.campus][basicInfo.faculty].map(d => (
-                      <Option key={d} value={d}>{d}</Option>
-                    ))}
-                </Select>
+                <Input
+                  value={basicInfo.department}
+                  readOnly
+                  placeholder="Auto-fetched"
+                  style={{ backgroundColor: '#f5f5f5', color: '#595959' }}
+                />
               </Form.Item>
             </Col>
             <Col xs={24} md={8}>
@@ -908,9 +877,9 @@ const LinkagePlanForm = () => {
               >
                 <Input
                   value={basicInfo.dean_head}
-                  placeholder="Auto-fetched or Enter Name"
-                  onChange={(e) => handleBasicInfoChange('dean_head', e.target.value)}
-                  status={submitted && errors.dean_head ? 'error' : ''}
+                  readOnly
+                  placeholder="Auto-fetched"
+                  style={{ backgroundColor: '#f5f5f5', color: '#595959' }}
                 />
               </Form.Item>
             </Col>

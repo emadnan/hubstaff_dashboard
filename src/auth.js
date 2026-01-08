@@ -11,7 +11,7 @@ export const getUserNavPermision = () => {
   const user = JSON.parse(localStorage.getItem('user-info'))
   if (user) {
     // Extract the permission names from the permissions array
-    const permissions = user.permissions.map((permission) => permission.name)
+    const permissions = (user.permissions || []).map((permission) => permission.name)
     return permissions
   }
   return null

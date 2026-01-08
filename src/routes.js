@@ -242,12 +242,6 @@ const routes = [
     requiredNavPermision: 'Nav_Roles'
   },
   {
-    path: '/external-linkages/approvals',
-    name: 'Pending Approvals',
-    element: LinkageApprovals,
-    requiredNavPermision: 'Nav_LinkageApprovals'
-  },
-  {
     path: '/form-builder',
     name: 'Form Builder',
     element: FormList,
