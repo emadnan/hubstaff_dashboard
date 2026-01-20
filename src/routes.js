@@ -218,25 +218,25 @@ const routes = [
     requiredNavPermision: 'Nav_AssignedTask',
   },
   {
-    path: '/external-linkages/plan-form',
+    path: '/external-linkages-plan-form',
     name: 'Semester Plan Form',
     element: LinkagePlanForm,
     requiredNavPermision: 'Nav_LinkagePlanForm'
   },
   {
-    path: '/external-linkages/manage-forms',
+    path: '/external-linkages-manage-forms',
     name: 'Manage Linkage Forms',
     element: LinkageFormsManagement,
     requiredNavPermision: 'Nav_ManageForms'
   },
   {
-    path: '/external-linkages/calendar',
+    path: '/external-linkages-calendar',
     name: 'Linkage Calendar',
     element: LinkageCalendar,
     requiredNavPermision: 'Nav_ExternalLinkages'
   },
   {
-    path: '/external-linkages/workflow',
+    path: '/external-linkages-workflow',
     name: 'Linkage Workflow Management',
     element: WorkflowManagement,
     requiredNavPermision: 'Nav_Roles'
@@ -248,13 +248,13 @@ const routes = [
     requiredNavPermision: 'Nav_FSF',
   },
   {
-    path: '/form-builder/edit/:id',
+    path: '/form-builder-edit/:id',
     name: 'Edit Form',
     element: FormEditor,
     requiredNavPermision: 'Nav_FSF',
   },
   {
-    path: '/form-builder/create',
+    path: '/form-builder-create',
     name: 'Create Form',
     element: FormEditor,
     requiredNavPermision: 'Nav_FSF',
