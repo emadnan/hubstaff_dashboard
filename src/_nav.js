@@ -1,5 +1,6 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
+
 import {
   cilBell,
   cilSpeedometer,
@@ -14,12 +15,13 @@ import {
   cilStream,
   cilLineWeight,
   cilDollar,
+  cilLink,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem } from '@coreui/react'
 
 //Local Storage data
 const local = JSON.parse(localStorage.getItem('user-info'))
-const permissions = local.permissions
+const permissions = local?.permissions || []
 const permissionNames = permissions.map((permission) => permission.name)
 
 const _navAdmin = [
@@ -106,17 +108,10 @@ const _navAdmin = [
         component: CNavItem,
         name: 'Streams',
         to: '/streams',
-        // icon: <CIcon icon={cilStream} customClassName="nav-icon" />,
         permission: 'Nav_Streams',
       },
     ],
   },
-  // {
-  //   component: CNavItem,
-  //   name: 'Clients',
-  //   to: '/projectmanagement-client',
-  //   permission: 'Nav_Clients',
-  // },
   {
     component: CNavGroup,
     name: 'Task Management',
@@ -171,6 +166,46 @@ const _navAdmin = [
     to: '/permissions-Permission',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
     permission: 'Nav_Permissions',
+  },
+  {
+    component: CNavItem,
+    name: 'Linkage Workflow',
+    to: '/external-linkages/workflow',
+    icon: <CIcon icon={cilLink} customClassName="nav-icon" />,
+    permission: 'Nav_Roles', // Admin only
+  },
+  {
+    component: CNavGroup,
+    name: 'External Linkages',
+    to: '/external-linkages',
+    icon: <CIcon icon={cilLink} customClassName="nav-icon" />,
+    permission: 'Nav_ExternalLinkages',
+    items: [
+      {
+        component: CNavItem,
+        name: 'Semester Plan Form',
+        to: '/external-linkages/plan-form',
+        permission: 'Nav_LinkagePlanForm', // Initiator Only
+      },
+      {
+        component: CNavItem,
+        name: 'Linkage Calendar',
+        to: '/external-linkages/calendar',
+        permission: 'Nav_ExternalLinkages', // Visible to all Linkage users
+      },
+      {
+        component: CNavItem,
+        name: 'Manage Forms',
+        to: '/external-linkages/manage-forms',
+        permission: 'Nav_ManageForms', // Initiator, HOD, Officer
+      },
+      {
+        component: CNavItem,
+        name: 'Linkage Workflow Management',
+        to: '/external-linkages/workflow',
+        permission: 'Nav_Roles', // Admin only
+      },
+    ],
   },
   {
     component: CNavGroup,
@@ -277,17 +312,17 @@ const _navAdmin = [
   },
   {
     component: CNavItem,
+    name: 'Form Builder',
+    to: '/form-builder',
+    icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
+    permission: 'Nav_FSF', // Reusing existing permission for now
+  },
+  {
+    component: CNavItem,
     name: 'FSF',
     to: '/fsf',
     icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
     permission: 'Nav_FSF',
-  },
-  {
-    component: CNavItem,
-    name: 'CRF',
-    to: '/allcrf',
-    icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
-    permission: 'Nav_CRF',
   },
 ]
 
@@ -295,11 +330,16 @@ const filterNavItems = (items) => {
   return items
     .map((item) => {
       if (item.component === CNavGroup) {
-        const filteredSubItems = filterNavItems(item.items)
-        if (filteredSubItems.length > 0) {
-          return { ...item, items: filteredSubItems }
+        // Check if parent group has permission
+        if (permissionNames.includes(item.permission)) {
+          const filteredSubItems = filterNavItems(item.items)
+          // Show group if it has permission AND has at least one visible child
+          if (filteredSubItems.length > 0) {
+            return { ...item, items: filteredSubItems }
+          }
         }
       } else if (permissionNames.includes(item.permission)) {
+        // Show individual nav item if user has permission
         return item
       }
       return null

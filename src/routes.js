@@ -45,6 +45,13 @@ const FSFform = React.lazy(() => import('./views/fsf/FSFform'))
 const AllCRF = React.lazy(() => import('./views/crf/AllCRF'))
 const CRFform = React.lazy(() => import('./views/crf/CRFform'))
 const TaskAssignment = React.lazy(() => import('./views/taskmanagement/TaskAssignment'))
+const LinkagePlanForm = React.lazy(() => import('./external-linkages/LinkagePlanForm'))
+const LinkageCalendar = React.lazy(() => import('./external-linkages/LinkageCalendar'))
+const LinkageFormsManagement = React.lazy(() => import('./external-linkages/LinkageFormsManagement'))
+const WorkflowManagement = React.lazy(() => import('./external-linkages/WorkflowManagement'))
+const LinkageApprovals = React.lazy(() => import('./external-linkages/LinkageApprovals'))
+const FormList = React.lazy(() => import('./views/form-builder/FormList'))
+const FormEditor = React.lazy(() => import('./views/form-builder/FormEditor'))
 const TaskAssignmentUserSide = React.lazy(() =>
   import('./views/taskmanagement/TaskAssignmentUserSide'),
 )
@@ -171,8 +178,8 @@ const routes = [
     requiredNavPermision: 'Nav_TimeNactivity',
   },
   { path: '/reports-monthly', name: 'Monthly', element: Monthly, requiredNavPermision: 'Nav_MonthlyReports', },
-  { path: '/team-report', name: 'TeamReports', element: Team_Reports,  requiredNavPermision: 'Nav_TeamReports', },
-  { path: '/team-report-for-company', name: 'TeamReportForCompany', element: Team_Report_For_Company,  requiredNavPermision: 'Nav_MonthlyReports', },
+  { path: '/team-report', name: 'TeamReports', element: Team_Reports, requiredNavPermision: 'Nav_TeamReports', },
+  { path: '/team-report-for-company', name: 'TeamReportForCompany', element: Team_Report_For_Company, requiredNavPermision: 'Nav_MonthlyReports', },
   { path: '/report-dayend', name: 'Dayend', element: Dayend, requiredNavPermision: 'Nav_DayendReports', },
   { path: '/teams', name: 'Teams', element: Teams, requiredNavPermision: 'Nav_Teams', },
   {
@@ -209,6 +216,48 @@ const routes = [
     name: 'Task Assignment',
     element: TaskAssignmentUserSide,
     requiredNavPermision: 'Nav_AssignedTask',
+  },
+  {
+    path: '/external-linkages/plan-form',
+    name: 'Semester Plan Form',
+    element: LinkagePlanForm,
+    requiredNavPermision: 'Nav_LinkagePlanForm'
+  },
+  {
+    path: '/external-linkages/manage-forms',
+    name: 'Manage Linkage Forms',
+    element: LinkageFormsManagement,
+    requiredNavPermision: 'Nav_ManageForms'
+  },
+  {
+    path: '/external-linkages/calendar',
+    name: 'Linkage Calendar',
+    element: LinkageCalendar,
+    requiredNavPermision: 'Nav_ExternalLinkages'
+  },
+  {
+    path: '/external-linkages/workflow',
+    name: 'Linkage Workflow Management',
+    element: WorkflowManagement,
+    requiredNavPermision: 'Nav_Roles'
+  },
+  {
+    path: '/form-builder',
+    name: 'Form Builder',
+    element: FormList,
+    requiredNavPermision: 'Nav_FSF',
+  },
+  {
+    path: '/form-builder/edit/:id',
+    name: 'Edit Form',
+    element: FormEditor,
+    requiredNavPermision: 'Nav_FSF',
+  },
+  {
+    path: '/form-builder/create',
+    name: 'Create Form',
+    element: FormEditor,
+    requiredNavPermision: 'Nav_FSF',
   },
   { path: '/404', name: '404 Page', element: NotFound, requiredNavPermision: 'Nav_NotFound', },
 ]

@@ -58,10 +58,19 @@ const Login = () => {
   }
 
   useEffect(() => {
-    const sessionToken = JSON.parse(sessionStorage.getItem('user-info'))?.token
+    const userInfo = JSON.parse(sessionStorage.getItem('user-info'))
+    const sessionToken = userInfo?.token
+    const permissions = userInfo?.permissions || []
 
     if (sessionToken) {
-      navigate('/Dashboard')
+      const hasDashboard = permissions.some((p) => p.name === 'Nav_Dashboard')
+      const hasLinkage = permissions.some((p) => p.name === 'Nav_ExternalLinkages')
+
+      if (!hasDashboard && hasLinkage) {
+        navigate('/external-linkages/calendar')
+      } else {
+        navigate('/dashboard')
+      }
     }
   })
 
@@ -122,7 +131,15 @@ const Login = () => {
         sessionStorage.setItem('user-info', JSON.stringify(result))
         handleButtonClick2()
         setTimeout(async () => {
-          await navigate('/Dashboard')
+          const permissions = result.permissions || []
+          const hasDashboard = permissions.some((p) => p.name === 'Nav_Dashboard')
+          const hasLinkage = permissions.some((p) => p.name === 'Nav_ExternalLinkages')
+
+          if (!hasDashboard && hasLinkage) {
+            await navigate('/external-linkages/calendar')
+          } else {
+            await navigate('/dashboard')
+          }
         }, 100)
       }
     } catch (error) {
