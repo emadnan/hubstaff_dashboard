@@ -170,7 +170,7 @@ const _navAdmin = [
   {
     component: CNavItem,
     name: 'Linkage Workflow',
-    to: '/external-linkages/workflow',
+    to: '/external-linkages-workflow',
     icon: <CIcon icon={cilLink} customClassName="nav-icon" />,
     permission: 'Nav_Roles', // Admin only
   },
@@ -184,25 +184,25 @@ const _navAdmin = [
       {
         component: CNavItem,
         name: 'Semester Plan Form',
-        to: '/external-linkages/plan-form',
+        to: '/external-linkages-plan-form',
         permission: 'Nav_LinkagePlanForm', // Initiator Only
       },
       {
         component: CNavItem,
         name: 'Linkage Calendar',
-        to: '/external-linkages/calendar',
+        to: '/external-linkages-calendar',
         permission: 'Nav_ExternalLinkages', // Visible to all Linkage users
       },
       {
         component: CNavItem,
         name: 'Manage Forms',
-        to: '/external-linkages/manage-forms',
+        to: '/external-linkages-manage-forms',
         permission: 'Nav_ManageForms', // Initiator, HOD, Officer
       },
       {
         component: CNavItem,
         name: 'Linkage Workflow Management',
-        to: '/external-linkages/workflow',
+        to: '/external-linkages-workflow',
         permission: 'Nav_Roles', // Admin only
       },
     ],
