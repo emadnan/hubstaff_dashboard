@@ -130,14 +130,27 @@ const Dashboard = () => {
     getProjectScreenshots()
     getAssigns()
     getWeeklyWorked()
-    getEmployees()
-    getTeamLeadsCount()
     getTodayDate()
-    getTeamMembers()
-    getTeamsCount()
-    getTeamLeads()
     getTeams()
-  }, [company_id])
+    
+    // Only call these when company_id is available
+    if (company_id) {
+      getEmployees()
+      getTeamLeadsCount()
+      getTeamLeads()
+      getTeamsCount()
+    }
+    
+    // Only call when company_id and today_date are available
+    if (company_id && today_date) {
+      getAllUsersReport()
+    }
+    
+    // Only call when user_id and today_date are available
+    if (user_id && today_date) {
+      getTeamMembers()
+    }
+  }, [company_id, user_id, today_date])
 
   function getTodayDate () {
     const today = new Date()
@@ -280,20 +293,22 @@ const Dashboard = () => {
   }
 
   async function getEmployees() {
-    await fetch(`${BASE_URL}/api/get-users-by-company/${company_id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        // if (perm.some((item) => item.name === 'All_Data')) {
-        //   filteredUsers = data.projects
-        // } else if (perm.some((item) => item.name === 'Company_Data')) {
-        //   filteredUsers = data.projects.filter((user) => user.company_id === local.Users.company_id)
-        // }
-        setAllEmployees(data.total_users)
-        setOnlineEmployeeCount(data.online_users)
-        setOfflineEmployeeCount(data.offline_users)
-       
-      })
-      .catch((error) => console.log(error))
+    if (!company_id) return;
+    
+    try {
+      const response = await fetch(`${BASE_URL}/api/get-users-by-company/${company_id}`)
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      setAllEmployees(data.total_users)
+      setOnlineEmployeeCount(data.online_users)
+      setOfflineEmployeeCount(data.offline_users)
+    } catch (error) {
+      console.error('Error fetching employees:', error)
+    }
   }
 
   async function getTeamLeadsCount() {
@@ -307,21 +322,37 @@ const Dashboard = () => {
   }
 
   async function getTeamLeads() {
-    await fetch(`${BASE_URL}/api/get-team-leads-by-company-id/${company_id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setTeamLeads(data.team_leads)
-        console.log(data.team_leads);
-      })
-      .catch((error) => console.log(error))
+    if (!company_id) return;
+    
+    try {
+      const response = await fetch(`${BASE_URL}/api/get-team-leads-by-company-id/${company_id}`)
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      setTeamLeads(data.team_leads)
+      console.log(data.team_leads);
+    } catch (error) {
+      console.error('Error fetching team leads:', error)
+    }
   }
   async function getTeamsCount() {
-    await fetch(`${BASE_URL}/api/get-team-by-company-id/${company_id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setTeamsCount(data.teams)
-      })
-      .catch((error) => console.log(error))
+    if (!company_id) return;
+    
+    try {
+      const response = await fetch(`${BASE_URL}/api/get-team-by-company-id/${company_id}`)
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      setTeamsCount(data.teams)
+    } catch (error) {
+      console.error('Error fetching teams count:', error)
+    }
   }
   async function getTeams() {
     let filtered_teams = []
@@ -339,33 +370,48 @@ const Dashboard = () => {
   }
  
   async function getTeamMembers() {
+    if (!user_id || !today_date) return;
+    
     try {
-        const response = await fetch(`${BASE_URL}/api/get-daily-report-of-both-offline-or-online/${user_id}/${today_date}`);
+      const response = await fetch(`${BASE_URL}/api/get-daily-report-of-both-offline-or-online/${user_id}/${today_date}`)
 
-        const data = await response.json();
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
 
-        setOnlineMembersCount(data.data.length)
-        setOfflineMembersCount(data.offlineUsers.length)
-        setOnlineMembers(data.data)
-        setOfflineMembers(data.offlineUsers)
-      } catch (error) {
-        console.log(error);
+      const data = await response.json()
+
+      setOnlineMembersCount(data.data.length)
+      setOfflineMembersCount(data.offlineUsers.length)
+      setOnlineMembers(data.data)
+      setOfflineMembers(data.offlineUsers)
+    } catch (error) {
+      console.error('Error fetching team members:', error)
     }
-}
+  }
 
 async function getAllUsersReport() {
+  if (!company_id || !today_date) return;
+  
   let filtered_online_users = []
   let filtered_offline_users = []
-  await fetch(`${BASE_URL}/api/get-all-users-report-by-company-id/${company_id}/${today_date}`)
-    .then((response) => response.json())
-    .then((data) => {
-        filtered_online_users = data.data.filter((user) => user.status === 'online')
-        filtered_offline_users = data.data.filter((user) => user.status === 'offline')
+  
+  try {
+    const response = await fetch(`${BASE_URL}/api/get-all-users-report-by-company-id/${company_id}/${today_date}`)
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    const data = await response.json()
+    filtered_online_users = data.data.filter((user) => user.status === 'online')
+    filtered_offline_users = data.data.filter((user) => user.status === 'offline')
 
-        setOfflineEmployees(filtered_offline_users)
-        setOnlineEmployees(filtered_online_users)
-    })
-    .catch((error) => console.log(error))
+    setOfflineEmployees(filtered_offline_users)
+    setOnlineEmployees(filtered_online_users)
+  } catch (error) {
+    console.error('Error fetching all users report:', error)
+  }
 }
 
   async function getProjects() {

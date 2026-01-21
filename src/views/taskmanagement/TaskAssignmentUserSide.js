@@ -41,6 +41,9 @@ const TaskAssignmentUserSide = () => {
   }
 
   const local = JSON.parse(localStorage.getItem('user-info'))
+  const session = JSON.parse(sessionStorage.getItem('user-info'))
+  const team_lead_id = local.Users.id;
+  const session_token = session.token
 
   //States
   const [user_id, setUserId] = useState('')
@@ -54,7 +57,8 @@ const TaskAssignmentUserSide = () => {
   const [dead_line, setDeadLine] = useState('')
   const [taskPriority, setTaskPriority] = useState()
   const [taskStatus, setTaskStatus] = useState()
-  const [taskComment, setTaskComment] = useState()
+  const [taskComment, setTaskComment] = useState('')
+
 
   const [isPendingTasksTab, setIsPendingTasksTab] = useState(true)
   const [isInProgressTasksTab, setIsInProgressTasksTab] = useState(false)
@@ -75,6 +79,14 @@ const TaskAssignmentUserSide = () => {
   const [currentPageCompleted, setCurrentPageCompleted] = useState(1)
   const [totalItemsCompleted, setTotalItemsCompleted] = useState(0)
   const [currentItemsCompleted, setCurrentItemsCompleted] = useState([])
+
+
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [messages, setMessages] = useState([]);
+
+
+
 
   const [projects, setProjects] = useState([])
 
@@ -118,7 +130,7 @@ const TaskAssignmentUserSide = () => {
   const openModalToTakeActionAgainstTask = (id) => {
     setIsModalOpenToTakeAction(true)
     setTaskId(id)
-    getTasksById(id)
+    getTaskById(id)
   }
 
   const updateTaskStatus = async (taskId, task_status, task_comment) => {
@@ -126,9 +138,13 @@ const TaskAssignmentUserSide = () => {
     formData.append('id', taskId)
     formData.append('status', task_status)
     formData.append('comment', task_comment)
+    console.log("updata status data ",taskId, task_status, task_comment)
 
     await fetch(`${BASE_URL}/api/updateStatusByUserTask`, {
       method: 'POST',
+      headers: {
+        Authorization: `Bearer ${session_token}`,
+      },
       body: formData,
     })
       .then((response) => response.json())
@@ -162,23 +178,157 @@ const TaskAssignmentUserSide = () => {
       .catch((error) => console.log(error))
   }
 
-  const getTasksById = async (taskId) => {
-    await fetch(`${BASE_URL}/api/getTaskById/${taskId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setProjectId(data.task.project_id)
-        setProjectName(data.task.project_name)
-        setUserId(data.task.user_id)
-        setUserName(data.task.user_name)
-        setTaskDescription(data.task.task_description)
-        setTaskPriority(data.task.priorites)
-        setTeamleadName(data.task.team_lead_details?.name)
-        setStartDate(data.task.task_managements_start_date)
-        setDeadLine(data.task.task_managements_dead_line)
-        setTaskStatus(data.task.status)
-        setTaskComment(data.task.comment)
+  const getTaskById = async (id) => {
+    if (!id) {
+      console.error('Task ID is missing')
+      return
+    }
+
+    if (!session_token) {
+      console.error('Authorization token is missing. Please login again.')
+      return
+    }
+
+    // console.log('Fetching task with ID:', id)
+    // console.log('API URL:', `${BASE_URL}/api/getTaskById/${id}`)
+    // console.log('Token available:', session_token ? 'Yes' : 'No')
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/getTaskById/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session_token}`,
+        },
       })
+
+      // console.log('Response status:', response.status, response.statusText)
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('API Error Response:', errorText)
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      // console.log('API Response Data:', data)
+
+      if (!data || !data.task) {
+        console.error('Task data not found in response. Response structure:', data)
+        return
+      }
+
+      console.log('Task data:', data.task)
+
+      // Set all the state values
+      setUserId(data.task.user_id || '')
+      setUserName(data.task.name || '')
+      setProjectId(data.task.project_id || '')
+      setProjectName(data.task.project_name || '')
+      setTaskDescription(data.task.task_description || '')
+      setTaskPriority(data.task.priorites || 'LOW')
+      setTaskId(data.task.task_managements_id || '')
+      setTaskStatus(data.task.status || '')
+      // setTaskComment(data.task.comment || '')
+      setTeamleadName(data.task.team_lead_details.name)
+
+
+      if (data.task.comments) { // if comments are available, set the messages
+
+        const mappedMessages = data.task.comments.map((comment) => ({
+          id: comment.id || comment.comment_id || comment.task_comment_id,
+          text: comment.comment,
+          sender:
+            comment.user_id === data.task.team_lead_id ? 'admin' : 'user',
+          user_name: comment.user.name,
+          timestamp: comment.created_at || '',
+        }));
+
+
+        // console.log('Mapped messages:', mappedMessages); // Debug: see mapped structure
+        setMessages(mappedMessages);
+      } else { // if comments are not available, set the messages as empty
+        setMessages([])
+      }
+
+      // Format dates safely
+      if (data.task.task_managements_start_date) {
+        const formattedStartDate = moment(data.task.task_managements_start_date).format('YYYY-MM-DD')
+        setStartDate(formattedStartDate)
+        // console.log('Start date set:', formattedStartDate)
+      } else {
+        setStartDate('')
+      }
+
+      if (data.task.task_managements_dead_line) {
+        const formattedDeadLine = moment(data.task.task_managements_dead_line).format('YYYY-MM-DD')
+        setDeadLine(formattedDeadLine)
+        // console.log('Deadline set:', formattedDeadLine)
+      } else {
+        setDeadLine('')
+      }
+
+      // console.log('Task data loaded successfully')
+    } catch (error) {
+      console.error('Error fetching task by ID:', error)
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack
+      })
+    }
   }
+
+
+ 
+ 
+ 
+ 
+ 
+  const handleAddComment =  async () => {
+    // Prevent empty comments
+    if (!taskComment.trim()) {
+      alert("Please write a comment before adding.");
+      return;
+    }
+
+    try {
+  
+      const response = await fetch(
+        `${BASE_URL}/api/updateStatusByUserTask`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session_token}`,
+          },
+          body: JSON.stringify({
+            id: task_id,
+            status: taskStatus, // keep same or update
+            comment: taskComment,
+          }),
+        }
+      );
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        // ✅ Update UI after DB success
+        getTaskById(task_id);
+        
+  
+        setTaskComment(""); // clear input
+      } else {
+        console.error("API error:", data);
+      }
+    } catch (error) {
+      console.error("Request failed:", error);
+    }
+  };
+
+
+
+
+
 
   const getTaskByProjectChange = async (projectId) => {
     await fetch(`${BASE_URL}/api/getTaskByProjectId/${projectId}`)
@@ -289,42 +439,42 @@ const TaskAssignmentUserSide = () => {
   const [showAlert1, setShowAlert1] = useState(false);
 
   function handleButtonClick1() {
-      setShowAlert1(true);
+    setShowAlert1(true);
   }
 
   function handleCloseAlert1() {
-      setShowAlert1(false);
+    setShowAlert1(false);
   }
 
   useEffect(() => {
-      if (showAlert1) {
-          const timer = setTimeout(() => {
-              setShowAlert1(false);
-          }, 3000);
+    if (showAlert1) {
+      const timer = setTimeout(() => {
+        setShowAlert1(false);
+      }, 3000);
 
-          return () => clearTimeout(timer);
-      }
+      return () => clearTimeout(timer);
+    }
   }, [showAlert1]);
 
   // Functions for Status Change Failure
   const [showAlert2, setShowAlert2] = useState(false);
 
   function handleButtonClick2() {
-      setShowAlert2(true);
+    setShowAlert2(true);
   }
 
   function handleCloseAlert2() {
-      setShowAlert2(false);
+    setShowAlert2(false);
   }
 
   useEffect(() => {
-      if (showAlert2) {
-          const timer = setTimeout(() => {
-              setShowAlert2(false);
-          }, 3000);
+    if (showAlert2) {
+      const timer = setTimeout(() => {
+        setShowAlert2(false);
+      }, 3000);
 
-          return () => clearTimeout(timer);
-      }
+      return () => clearTimeout(timer);
+    }
   }, [showAlert2]);
 
   return (
@@ -840,22 +990,75 @@ const TaskAssignmentUserSide = () => {
                     </Select>
                   </Form.Item>
                 </div>
+
+
+
+
+                {/* Add Comment  */}
                 <div>
-                  <label>Add Comments Related to Task:</label>
+                  <label>Add Comments Related to the Task:</label>
+
+                  {/* Display Messages */}
+                  <div
+                    className="mt-3 border p-2"
+                    style={{ borderRadius: "2%", height: "200px", overflowY: "auto" }}
+                  >
+                    {messages.length > 0 ? (
+                      messages.map((message, index) => (
+                        <div
+                          key={index}
+                          className={`d-flex mb-2 ${message.sender === "user"
+                            ? "justify-content-end"
+                            : "justify-content-start"
+                            }`}
+                          
+                        >
+                          <div
+                            className={`p-2 rounded ${message.sender === "user"
+                              ? "bg-success text-white"
+                              : "bg-light border"
+                              }`}
+                            style={{ maxWidth: "75%" }}
+                          >
+                            <small className="fw-bold d-block">
+                              {message.sender === "user" ? "You" : message.user_name || "Admin"}
+                            </small>
+                            <span>{message.text}</span>
+                            <div style={{ fontSize: '0.7em', color: message.sender === "user" ? 'white' : 'gray', textAlign: 'right', marginTop: '5px' }}>
+                              {moment(message.timestamp).format('h:mm A')}
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-muted text-center mb-0">No comments yet</p>
+                    )}
+                  </div>
+
+
+
+
+                  {/* Comment Input */}
                   <textarea
                     rows="2"
-                    style={{ width: '100%' }}
-                    type="text"
-                    className="form-control"
-                    placeholder="Add Comments Related to Task"
-                    onChange={(event) => setTaskComment(event.target.value)}
-                    value={
-                      taskComment === (undefined || null || 'null' || 'undefined')
-                        ? ''
-                        : taskComment
-                    }
+                    className="form-control mt-2"
+                    placeholder="Write your comment here..."
+                    value={taskComment}
+                    onChange={(e) => setTaskComment(e.target.value)}
                   />
+
+                  <button
+                    type="button"
+                    className="btn btn-primary mt-2 bg-success"
+                    onClick={handleAddComment}
+                  >
+                    Add Comment
+                  </button>
                 </div>
+
+
+
+
               </div>
             </div>
           </div>
