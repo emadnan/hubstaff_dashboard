@@ -17,6 +17,7 @@ import Box from '@mui/material/Box'
 import Alert from '@mui/material/Alert'
 import moment from 'moment'
 import LoadingSpinner from 'src/components/Loader/Loader'
+import { comment } from 'postcss'
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -37,7 +38,7 @@ function TaskAssignment() {
   const [taskStatus, setTaskStatus] = useState()
   const [priorities, setPriorities] = useState('LOW')
   const [task_id, setTaskId] = useState()
-  const [taskComment, setTaskComment] = useState()
+  const [taskComment, setTaskComment] = useState('')
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -370,9 +371,12 @@ function TaskAssignment() {
     getTaskById(id)
   }
 
+
   const handleOkToTakeActionAgainstTask = async () => {
     updateTaskStatus(task_id, taskStatus, taskComment)
     setIsModalOpenToTakeAction(false)
+    // console.log(task_id, taskStatus, taskComment)
+
     form.resetFields()
     setUserId('')
     setProjectId('')
@@ -402,6 +406,7 @@ function TaskAssignment() {
     try {
       const response = await fetch(`${BASE_URL}/api/getTasks`)
       const data = await response.json()
+      // console.log('get tasks',data)
 
       if (local.Users.role === 7) {
         const filteredUsersTask = data.task.filter((user) => user.team_lead_id === local.Users.id)
@@ -514,7 +519,7 @@ function TaskAssignment() {
       return
     }
 
-    // console.log('Fetching task with ID:', id)
+    console.log('Fetching task with ID:', id)
     // console.log('API URL:', `${BASE_URL}/api/getTaskById/${id}`)
     // console.log('Token available:', session_token ? 'Yes' : 'No')
 
@@ -554,7 +559,7 @@ function TaskAssignment() {
       setPriorities(data.task.priorites || 'LOW')
       setTaskId(data.task.task_managements_id || '')
       setTaskStatus(data.task.status || '')
-      setTaskComment(data.task.comment || '')
+      // setTaskComment(data.task.comment || '')
 
 
       if (data.task.comments) { // if comments are available, set the messages
@@ -565,6 +570,7 @@ function TaskAssignment() {
           sender:
             comment.user_id === data.task.team_lead_id ? 'admin' : 'user',
           user_name: comment.user.name,
+          timestamp: comment.created_at || '',
         }));
         
               
@@ -781,16 +787,22 @@ function TaskAssignment() {
     formData.append('id', taskId)
     formData.append('status', task_status)
     formData.append('comment', task_comment)
+    // console.log("updata status data ",formData)
+
 
     await fetch(`${BASE_URL}/api/updateStatusByUserTask`, {
       method: 'POST',
+      headers: {
+        Authorization: `Bearer ${session_token}`,
+      },
       body: formData,
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log(data)
         getTasks()
         form.resetFields()
-        setTaskComment('')
+        setMessages('')
         handleButtonTaskStatusSuccess()
       })
       .catch((error) => {
@@ -1903,6 +1915,9 @@ function TaskAssignment() {
                             {message.sender === "admin" ? "You" : message.user_name || "User"}
                           </small>
                           <span>{message.text}</span>
+                           <div style={{ fontSize: '0.7em', color: message.sender === "admin" ? 'white' : 'gray', textAlign: 'right', marginTop: '5px' }}>
+                            {moment(message.timestamp).format('h:mm A')}
+                          </div>
                         </div>
                       </div>
                     ))

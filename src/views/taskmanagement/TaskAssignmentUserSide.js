@@ -57,7 +57,7 @@ const TaskAssignmentUserSide = () => {
   const [dead_line, setDeadLine] = useState('')
   const [taskPriority, setTaskPriority] = useState()
   const [taskStatus, setTaskStatus] = useState()
-  const [taskComment, setTaskComment] = useState()
+  const [taskComment, setTaskComment] = useState('')
 
 
   const [isPendingTasksTab, setIsPendingTasksTab] = useState(true)
@@ -138,9 +138,13 @@ const TaskAssignmentUserSide = () => {
     formData.append('id', taskId)
     formData.append('status', task_status)
     formData.append('comment', task_comment)
+    console.log("updata status data ",taskId, task_status, task_comment)
 
     await fetch(`${BASE_URL}/api/updateStatusByUserTask`, {
       method: 'POST',
+      headers: {
+        Authorization: `Bearer ${session_token}`,
+      },
       body: formData,
     })
       .then((response) => response.json())
@@ -225,7 +229,8 @@ const TaskAssignmentUserSide = () => {
       setTaskPriority(data.task.priorites || 'LOW')
       setTaskId(data.task.task_managements_id || '')
       setTaskStatus(data.task.status || '')
-      setTaskComment(data.task.comment || '')
+      // setTaskComment(data.task.comment || '')
+      setTeamleadName(data.task.team_lead_details.name)
 
 
       if (data.task.comments) { // if comments are available, set the messages
@@ -236,6 +241,7 @@ const TaskAssignmentUserSide = () => {
           sender:
             comment.user_id === data.task.team_lead_id ? 'admin' : 'user',
           user_name: comment.user.name,
+          timestamp: comment.created_at || '',
         }));
 
 
@@ -318,66 +324,6 @@ const TaskAssignmentUserSide = () => {
       console.error("Request failed:", error);
     }
   };
-
- // Open modal only for user comments
- const handleCommentClick = (index) => {
-  console.log('Comment clicked:', index)
-  if (messages[index].sender === "admin") {
-    const commentId = messages[index].id;
-    setSelectedIndex(commentId); // Store the comment ID, not the index
-    // console.log('Selected comment ID: ', commentId)
-    setShowAdminModal(true);
-  } 
-};
-
-// Confirm delete
-const handleDeleteComment = async () => {
-  if (!selectedIndex) {
-    console.error('No comment ID selected for deletion');
-    setShowAdminModal(false);
-    return;
-  }
-
-  try {
-    // console.log('Deleting comment with ID:', selectedIndex);
-    
-    const response = await fetch(
-      `${BASE_URL}/api/task-comment/${selectedIndex}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${session_token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    const data = await response.json();
-
-    if (response.ok) {
-      // ✅ Remove from UI after DB delete
-      getTaskById(task_id);
-      setSelectedIndex(null); // Clear the selected index
-      setShowAdminModal(false);
-    } else {
-      console.error("Delete failed:", data.message || data);
-      alert(`Failed to delete comment: ${data.message || 'Unknown error'}`);
-    }
-  } catch (error) {
-    console.error("Delete error:", error);
-    alert('Error deleting comment. Please try again.');
-  }
-};
-
-
-// Cancel delete
-const handleCancelComment = () => {
-  setSelectedIndex(null); // Clear the selected index
-  setShowAdminModal(false);
-};
-
-
-
 
 
 
@@ -1065,8 +1011,7 @@ const handleCancelComment = () => {
                             ? "justify-content-end"
                             : "justify-content-start"
                             }`}
-                          onClick={() => handleCommentClick(index)}
-                          style={{ cursor: message.sender === "user" ? "pointer" : "default" }}
+                          
                         >
                           <div
                             className={`p-2 rounded ${message.sender === "user"
@@ -1079,6 +1024,9 @@ const handleCancelComment = () => {
                               {message.sender === "user" ? "You" : message.user_name || "Admin"}
                             </small>
                             <span>{message.text}</span>
+                            <div style={{ fontSize: '0.7em', color: message.sender === "user" ? 'white' : 'gray', textAlign: 'right', marginTop: '5px' }}>
+                              {moment(message.timestamp).format('h:mm A')}
+                            </div>
                           </div>
                         </div>
                       ))
@@ -1107,46 +1055,6 @@ const handleCancelComment = () => {
                     Add Comment
                   </button>
                 </div>
-
-
-
-                {showAdminModal && (
-                  <>
-                    <div className="modal fade show d-block" tabIndex={-1}>
-                      <div className="modal-dialog modal-dialog-centered">
-                        <div className="modal-content">
-                          <div className="modal-header">
-                            <h5 className="modal-title">Delete Comment</h5>
-                            <button
-                              type="button"
-                              className="btn-close"
-                              onClick={handleCancelComment}
-                            ></button>
-                          </div>
-                          <div className="modal-body">
-                            Are you sure you want to delete this comment?
-                          </div>
-                          <div className="modal-footer">
-                            <button
-                              className="btn btn-secondary"
-                              onClick={handleCancelComment}
-                            >
-                              Cancel
-                            </button>
-                            <button className="btn btn-danger" onClick={handleDeleteComment}>
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      className="modal-backdrop fade show"
-                      onClick={handleCancelComment}
-                    ></div>
-                  </>
-                )}
-
 
 
 
