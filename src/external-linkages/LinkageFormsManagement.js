@@ -414,7 +414,7 @@ function LinkageFormsManagement() {
                                 }}
                             />
                         </Tooltip>
-                        {isInitiator && (
+                        {isInitiator && !['Pending from Linkage Office', 'Planned'].includes(record.status) && (
                             <>
                                 <Tooltip title="Edit">
                                     <Button
