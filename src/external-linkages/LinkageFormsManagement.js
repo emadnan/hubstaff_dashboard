@@ -150,12 +150,18 @@ function LinkageFormsManagement() {
         let filtered = [...linkagePlans]
 
         if (searchText) {
-            filtered = filtered.filter(plan =>
-                plan.faculty?.toLowerCase().includes(searchText.toLowerCase()) ||
-                plan.department?.toLowerCase().includes(searchText.toLowerCase()) ||
-                plan.focal_person?.toLowerCase().includes(searchText.toLowerCase()) ||
-                plan.campus?.toLowerCase().includes(searchText.toLowerCase())
-            )
+            const lowerSearch = searchText.toLowerCase()
+            filtered = filtered.filter(plan => {
+                const facultyName = typeof plan.faculty === 'object' ? plan.faculty?.name : plan.faculty
+                const deptName = typeof plan.department === 'object' ? (plan.department?.department_name || plan.department?.name) : plan.department
+
+                return (
+                    facultyName?.toLowerCase().includes(lowerSearch) ||
+                    deptName?.toLowerCase().includes(lowerSearch) ||
+                    plan.focal_person?.toLowerCase().includes(lowerSearch) ||
+                    plan.campus?.toLowerCase().includes(lowerSearch)
+                )
+            })
         }
 
         if (campusFilter) {
@@ -248,7 +254,7 @@ function LinkageFormsManagement() {
 
     const handleEdit = (plan) => {
         // Navigate to plan form with plan data in state
-        navigate('/external-linkages/plan-form', { state: { editMode: true, planData: plan } })
+        navigate('/external-linkages-plan-form', { state: { editMode: true, planData: plan } })
     }
 
     const getStatusConfig = (status) => {
@@ -496,7 +502,7 @@ function LinkageFormsManagement() {
                                 <Button
                                     type="primary"
                                     icon={<PlusOutlined />}
-                                    onClick={() => navigate('/external-linkages/plan-form')}
+                                    onClick={() => navigate('/external-linkages-plan-form')}
                                     size="large"
                                     style={{
                                         borderRadius: '12px',

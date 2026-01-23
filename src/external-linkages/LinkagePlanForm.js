@@ -562,7 +562,7 @@ const LinkagePlanForm = () => {
       if (response.ok) {
         message.success(editMode ? 'Linkage Plan updated and resubmitted successfully!' : 'Linkage Plan submitted successfully!')
         // Navigate back to manage forms
-        navigate('/external-linkages/manage-forms')
+        navigate('/external-linkages-manage-forms')
       } else {
         const errorData = await response.json()
         message.error(`Failed to ${editMode ? 'update' : 'submit'} plan: ` + (errorData.message || 'Unknown error'))
