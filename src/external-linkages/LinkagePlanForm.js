@@ -808,12 +808,13 @@ const LinkagePlanForm = () => {
       key: 'action',
       width: '80px',
       render: (_, record, index) => (
-        <Button
-          danger
-          icon={<DeleteOutlined />}
-          onClick={() => handleRemoveRow(index, alumni, setAlumni, alumniErrors, setAlumniErrors)}
-          disabled={alumni.length === 1}
-        />
+        index >= 5 && (
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => handleRemoveRow(index, alumni, setAlumni, alumniErrors, setAlumniErrors)}
+          />
+        )
       )
     }
   ]

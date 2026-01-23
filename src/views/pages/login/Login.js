@@ -67,7 +67,7 @@ const Login = () => {
       const hasLinkage = permissions.some((p) => p.name === 'Nav_ExternalLinkages')
 
       if (!hasDashboard && hasLinkage) {
-        navigate('/external-linkages/calendar')
+        navigate('/external-linkages-calendar')
       } else {
         navigate('/dashboard')
       }
@@ -136,7 +136,7 @@ const Login = () => {
           const hasLinkage = permissions.some((p) => p.name === 'Nav_ExternalLinkages')
 
           if (!hasDashboard && hasLinkage) {
-            await navigate('/external-linkages/calendar')
+            await navigate('/external-linkages-calendar')
           } else {
             await navigate('/dashboard')
           }
