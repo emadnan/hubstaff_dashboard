@@ -470,17 +470,17 @@ function LinkageFormsManagement() {
         <div style={pageStyle}>
             {/* Header Card */}
             <Card style={headerCardStyle} bodyStyle={{ padding: '32px' }}>
-                <Row justify="space-between" align="middle">
-                    <Col>
-                        <Title level={2} style={{ color: 'white', margin: 0, marginBottom: '8px' }}>
+                <Row gutter={[16, 16]} justify="space-between" align="middle">
+                    <Col xs={24} lg={16}>
+                        <Title level={window.innerWidth < 768 ? 3 : 2} style={{ color: 'white', margin: 0, marginBottom: '8px' }}>
                             Manage Linkage Forms
                         </Title>
-                        <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: '16px' }}>
+                        <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: window.innerWidth < 768 ? '14px' : '16px' }}>
                             View and manage all submitted external linkage plans
                         </Text>
                     </Col>
-                    <Col>
-                        <Space size="middle">
+                    <Col xs={24} lg={8} style={{ textAlign: window.innerWidth < 992 ? 'left' : 'right' }}>
+                        <Space size="middle" wrap>
                             <Button
                                 type="default"
                                 icon={<ReloadOutlined />}
@@ -606,6 +606,7 @@ function LinkageFormsManagement() {
                     dataSource={filteredData}
                     loading={loading}
                     rowKey="id"
+                    scroll={{ x: 'max-content' }}
                     pagination={{
                         pageSize: 10,
                         showSizeChanger: true,
@@ -650,7 +651,7 @@ function LinkageFormsManagement() {
                     </div>
                 }
                 placement="right"
-                width={800}
+                width={window.innerWidth < 768 ? '100%' : 800}
                 onClose={() => setDrawerVisible(false)}
                 open={drawerVisible}
                 styles={{

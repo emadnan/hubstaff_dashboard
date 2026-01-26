@@ -731,9 +731,10 @@ const LinkagePlanForm = () => {
       title: 'Expected Outcome',
       dataIndex: 'outcome',
       render: (text, record, index) => (
-        <Input
+        <TextArea
           placeholder="Expected outcome"
           value={text}
+          autoSize={{ minRows: 2, maxRows: 6 }}
           onChange={(e) => handleInputChange(index, 'outcome', e.target.value, activities, setActivities)}
         />
       )
