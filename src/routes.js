@@ -50,6 +50,8 @@ const LinkageCalendar = React.lazy(() => import('./external-linkages/LinkageCale
 const LinkageFormsManagement = React.lazy(() => import('./external-linkages/LinkageFormsManagement'))
 const WorkflowManagement = React.lazy(() => import('./external-linkages/WorkflowManagement'))
 const LinkageApprovals = React.lazy(() => import('./external-linkages/LinkageApprovals'))
+const LinkageDrafts = React.lazy(() => import('./external-linkages/LinkageDrafts'))
+
 const FormList = React.lazy(() => import('./views/form-builder/FormList'))
 const FormEditor = React.lazy(() => import('./views/form-builder/FormEditor'))
 const TaskAssignmentUserSide = React.lazy(() =>
@@ -241,6 +243,13 @@ const routes = [
     element: WorkflowManagement,
     requiredNavPermision: 'Nav_Roles'
   },
+  {
+    path: '/external-linkages-drafts',
+    name: 'Linkage Drafts',
+    element: LinkageDrafts,
+    requiredNavPermision: 'Nav_ManageForms'
+  },
+
   {
     path: '/form-builder',
     name: 'Form Builder',

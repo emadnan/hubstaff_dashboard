@@ -119,28 +119,36 @@ const Login = () => {
         },
       })
 
-      if (result.status === 400) {
-        handleButtonClick1()
-      } else if (result.status === 500) {
-        handleButtonClick3()
-      } else if (result.status === 401) {
-        handleButtonClick4()
+      if (!result.ok) {
+        if (result.status === 404) {
+          handleButtonClick3()
+        } else if (result.status === 401) {
+          handleButtonClick4()
+        } else if (result.status === 400) {
+          handleButtonClick1()
+        } else {
+          handleButtonClick5()
+        }
       } else {
         result = await result.json()
-        localStorage.setItem('user-info', JSON.stringify(result))
-        sessionStorage.setItem('user-info', JSON.stringify(result))
-        handleButtonClick2()
-        setTimeout(async () => {
-          const permissions = result.permissions || []
-          const hasDashboard = permissions.some((p) => p.name === 'Nav_Dashboard')
-          const hasLinkage = permissions.some((p) => p.name === 'Nav_ExternalLinkages')
+        if (result.token) {
+          localStorage.setItem('user-info', JSON.stringify(result))
+          sessionStorage.setItem('user-info', JSON.stringify(result))
+          handleButtonClick2()
+          setTimeout(async () => {
+            const permissions = result.permissions || []
+            const hasDashboard = permissions.some((p) => p.name === 'Nav_Dashboard')
+            const hasLinkage = permissions.some((p) => p.name === 'Nav_ExternalLinkages')
 
-          if (!hasDashboard && hasLinkage) {
-            await navigate('/external-linkages-calendar')
-          } else {
-            await navigate('/dashboard')
-          }
-        }, 100)
+            if (!hasDashboard && hasLinkage) {
+              await navigate('/external-linkages-calendar')
+            } else {
+              await navigate('/dashboard')
+            }
+          }, 100)
+        } else {
+          handleButtonClick5()
+        }
       }
     } catch (error) {
       if (Object.keys(errors).length === 0) {

@@ -62,7 +62,7 @@ const LinkageApprovals = () => {
     }
 
     const handleReview = async (values) => {
-        const endpoint = reviewAction === 'approve' ? 'approveLinkagePlan' : 'rejectLinkagePlan'
+        const endpoint = reviewAction === 'approve' ? 'linkage-plans/approve' : 'linkage-plans/reject'
         try {
             const response = await fetch(`${BASE_URL}/api/${endpoint}`, {
                 method: 'POST',

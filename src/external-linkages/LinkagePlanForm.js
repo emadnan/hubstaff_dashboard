@@ -9,9 +9,22 @@ import {
   Table,
   Form,
   Space,
-  message
+  message,
+  Tag,
+  Divider,
+  Tooltip,
+  Steps
 } from 'antd'
-import { DeleteOutlined, PlusOutlined, SaveOutlined, SendOutlined } from '@ant-design/icons'
+import {
+  DeleteOutlined,
+  PlusOutlined,
+  SaveOutlined,
+  SendOutlined,
+  UserOutlined,
+  SolutionOutlined,
+  FileDoneOutlined,
+  CheckCircleOutlined
+} from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import moment from 'moment'
 
@@ -26,7 +39,7 @@ const LinkagePlanForm = () => {
   // Styles reused/adapted from Dashboard.js
   const titleStyle = {
     fontFamily: 'Arial',
-    fontSize: 24,
+    fontSize: window.innerWidth < 768 ? 20 : 24,
     fontWeight: 'bold',
     color: '#0070FF',
     marginBottom: '20px'
@@ -34,7 +47,7 @@ const LinkagePlanForm = () => {
 
   const sectionHeaderStyle = {
     fontFamily: 'Arial',
-    fontSize: 16,
+    fontSize: window.innerWidth < 768 ? 14 : 16,
     fontWeight: 'bold',
     color: '#6E6E6E',
     marginBottom: '15px',
@@ -54,6 +67,7 @@ const LinkagePlanForm = () => {
   const [facultyData, setFacultyData] = useState({})
   const [activityTypes, setActivityTypes] = useState([])
   const [hodData, setHodData] = useState([])
+  const [departmentsData, setDepartmentsData] = useState([])
   const [editMode, setEditMode] = useState(false)
   const [editPlanId, setEditPlanId] = useState(null)
 
@@ -67,12 +81,23 @@ const LinkagePlanForm = () => {
       try {
         const localUser = JSON.parse(localStorage.getItem('user-info'))
         const token = localUser?.token
+        console.log('Token available:', !!token)
         const headers = token ? { Authorization: `Bearer ${token}` } : {}
 
-        const [actResponse, userContextResponse] = await Promise.all([
+        console.log('Fetching master data from:', BASE_URL)
+
+        const [actResponse, userContextResponse, hodsResponse, deptsResponse] = await Promise.all([
           fetch(`${BASE_URL}/api/getActivityTypes`, { headers }),
-          fetch(`${BASE_URL}/api/user-context`, { headers }) // New endpoint
+          fetch(`${BASE_URL}/api/user-context`, { headers }),
+          fetch(`${BASE_URL}/api/hods`, { headers }),
+          fetch(`${BASE_URL}/api/getDepartments`, { headers })
         ])
+
+        console.log('Response statuses:', {
+          activities: actResponse.status,
+          userContext: userContextResponse.status,
+          hods: hodsResponse.status
+        })
 
         const unwrap = (data, type) => {
           if (!data) return data
@@ -86,13 +111,34 @@ const LinkagePlanForm = () => {
           return data
         }
 
-        if (actResponse.ok) {
-          const rawAct = await actResponse.json()
+        const hodsList = hodsResponse.ok ? await hodsResponse.json() : [];
+        const rawAct = actResponse.ok ? await actResponse.json() : [];
+        const context = userContextResponse.ok ? await userContextResponse.json() : null;
+        const deptsList = deptsResponse.ok ? await deptsResponse.json() : [];
+
+        if (!hodsResponse.ok) {
+          console.error('HODs fetch failed with status:', hodsResponse.status)
+        } else {
+          console.log('Raw HODs response:', hodsList)
+          const unwrappedHods = unwrap(hodsList, 'list') || []
+          console.log('Unwrapped HODs:', unwrappedHods)
+          setHodData(unwrappedHods)
+        }
+
+        if (!actResponse.ok) {
+          console.error('Activity types fetch failed with status:', actResponse.status)
+        } else {
+          console.log('Raw Activity Types:', rawAct)
           setActivityTypes(unwrap(rawAct, 'list') || [])
         }
 
-        if (userContextResponse.ok) {
-          const context = await userContextResponse.json()
+        if (deptsResponse.ok) {
+          setDepartmentsData(unwrap(deptsList, 'list') || [])
+        }
+
+        if (!userContextResponse.ok) {
+          console.error('User context fetch failed with status:', userContextResponse.status)
+        } else {
           console.log("Fetched User Context:", context)
 
           // Auto-fill Basic Info
@@ -102,24 +148,20 @@ const LinkagePlanForm = () => {
             faculty: context.faculty?.name || '',
             department: context.department?.name || '',
             dean_head: context.department?.hod_name || '',
-            // Focal person can still be manual or auto-filled from user name. 
-            // Request says "filled automatically". Let's assume focal person is the user themselves.
+            assigned_hod_id: context.department?.hod_id || null,
             focalPerson: context.user?.name || '',
             email: context.user?.email || '',
-            // Phone might not be in user context yet, keep manual or empty
           }))
         }
 
       } catch (error) {
         console.error("Error fetching master data:", error)
-        message.error("Failed to load form data")
+        message.error("Failed to load form data: " + error.message)
       }
     }
 
-    if (!editMode) {
-      fetchMasterData()
-    }
-  }, [editMode])
+    fetchMasterData()
+  }, [editMode, BASE_URL])
 
   // Effect to handle Edit Mode
   useEffect(() => {
@@ -136,6 +178,7 @@ const LinkagePlanForm = () => {
         department: (typeof plan.department === 'object' ? plan.department?.department_name : plan.department) || '',
         focalPerson: plan.focal_person || '',
         dean_head: plan.dean_head || '',
+        assigned_hod_id: plan.assigned_hod_id || null,
         email: plan.email || '',
         phone: plan.phone || ''
       })
@@ -144,14 +187,18 @@ const LinkagePlanForm = () => {
       if (plan.support_required) setSupportRequired(plan.support_required)
 
       // Populate Industry Sectors
-      if (plan.industry_sectors && Array.isArray(plan.industry_sectors)) {
-        // If only one empty item, keep default. If has data, overwrite.
-        if (plan.industry_sectors.length > 0) setIndustrySectors(plan.industry_sectors)
+      if (plan.industrySectors && Array.isArray(plan.industrySectors)) {
+        const mapped = plan.industrySectors.map(s => typeof s === 'object' ? s.sector_name : s)
+        if (mapped.length > 0) setIndustrySectors(mapped)
+      } else if (plan.industry_sectors && Array.isArray(plan.industry_sectors)) {
+        const mapped = plan.industry_sectors.map(s => typeof s === 'object' ? s.sector_name : s)
+        if (mapped.length > 0) setIndustrySectors(mapped)
       }
 
       // Populate Employers
       if (plan.employers && Array.isArray(plan.employers)) {
-        if (plan.employers.length > 0) setEmployers(plan.employers)
+        const mapped = plan.employers.map(e => typeof e === 'object' ? e.employer_name : e)
+        if (mapped.length > 0) setEmployers(mapped)
       }
 
       // Populate Alumni
@@ -181,6 +228,7 @@ const LinkagePlanForm = () => {
     faculty: '',
     department: '',
     dean_head: '',
+    assigned_hod_id: null,
     focalPerson: '',
     email: '',
     phone: ''
@@ -245,9 +293,25 @@ const LinkagePlanForm = () => {
     date: new Date().toISOString().split('T')[0]
   })
 
-  // Loading state
+  // Validation state
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+
+  const isFormValid = () => {
+    // 1. Basic Info
+    const basicValid = basicInfo.campus && basicInfo.faculty && basicInfo.department &&
+      basicInfo.focalPerson && basicInfo.email && basicInfo.phone &&
+      !validateEmail(basicInfo.email) && !validatePakistaniPhone(basicInfo.phone)
+
+    // 2. Activities (at least one valid activity)
+    const hasValidActivity = activities.some(a => a.type && a.description)
+    const activitiesValid = activities.every(a => {
+      if (!a.type && !a.description) return true // Empty row is okay as long as skip
+      return a.type && a.description
+    })
+
+    return basicValid && hasValidActivity && activitiesValid
+  }
 
   // --- Validation Functions ---
 
@@ -294,22 +358,19 @@ const LinkagePlanForm = () => {
         dean_head: ''
       }))
     } else if (field === 'department') {
-      // Find HOD based on Campus + Faculty (implicit) + Dept
-      // Backend HOD data might need checking, but assuming names are unique enough or allow fuzzy match if needed.
-      // Better: Filter hodData by campus_id (mapped from name) and dept name.
-      // For now, simpler matching by Department Name is likely sufficient if names are unique per campus,
-      // but since we have "Department of Law" etc, safer to match loosely or trust the user selection if auto-fetch fails.
+      // Find HOD based on Campus + Faculty + Dept
+      const campusId = basicInfo.campus === 'Lahore Campus' ? 1 : 2;
 
-      // We need to match precise department name
-      const selectedHod = hodData.find(h =>
-        h.department_name === value &&
-        (h.campus_id === (basicInfo.campus === 'Lahore Campus' ? 1 : 2))
-      )
+      // Look through hodData (which are HOD objects) to find one linked to this department
+      const selectedHodObj = hodData.find(h =>
+        h.departments?.some(d => d.department_name === value && d.campus_id === campusId)
+      );
 
       setBasicInfo(prev => ({
         ...prev,
         department: value,
-        dean_head: selectedHod ? selectedHod.hod_name : ''
+        dean_head: selectedHodObj ? selectedHodObj.name : '',
+        assigned_hod_id: selectedHodObj ? selectedHodObj.id : null
       }))
     } else {
       setBasicInfo(prev => ({ ...prev, [field]: value }))
@@ -466,7 +527,7 @@ const LinkagePlanForm = () => {
   }, [location.state])
 
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (overrideStatus) => {
     setSubmitted(true)
 
     // Validate all sections
@@ -475,9 +536,11 @@ const LinkagePlanForm = () => {
     const alumniValid = validateAlumni()
 
     if (!basicValid || !activitiesValid || !alumniValid) {
-      message.error('Please fix all errors before submitting')
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-      return
+      if (overrideStatus !== 'Draft') { // Drafts can bypass some validation if you want, but sticking to basics
+        message.error('Please fix all errors before submitting')
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        return
+      }
     }
 
     setLoading(true)
@@ -496,9 +559,10 @@ const LinkagePlanForm = () => {
       academic_year: "2024-2025",
       support_required: supportRequired || null,
       submitted_by: userId,
+      assigned_hod_id: basicInfo.assigned_hod_id,
 
-      // If editing, force status back to Pending
-      status: editMode ? 'Pending from HOD' : undefined,
+      // Handle Status
+      status: overrideStatus || (editMode ? 'Pending from HOD' : 'Pending from HOD'),
 
       // Endorsement Info (Snapshot)
       endorsement_prepared_by: basicInfo.focalPerson,
@@ -560,9 +624,13 @@ const LinkagePlanForm = () => {
       })
 
       if (response.ok) {
-        message.success(editMode ? 'Linkage Plan updated and resubmitted successfully!' : 'Linkage Plan submitted successfully!')
-        // Navigate back to manage forms
-        navigate('/external-linkages-manage-forms')
+        message.success(overrideStatus === 'Draft' ? 'Draft saved successfully!' : (editMode ? 'Linkage Plan updated and resubmitted successfully!' : 'Linkage Plan submitted successfully!'))
+        // Navigate based on status
+        if (overrideStatus === 'Draft') {
+          navigate('/external-linkages-drafts')
+        } else {
+          navigate('/external-linkages-manage-forms')
+        }
       } else {
         const errorData = await response.json()
         message.error(`Failed to ${editMode ? 'update' : 'submit'} plan: ` + (errorData.message || 'Unknown error'))
@@ -642,15 +710,21 @@ const LinkagePlanForm = () => {
 
   const activityColumns = [
     {
+      title: '#',
+      key: 'index',
+      width: '50px',
+      render: (text, record, index) => <span>{index + 1}</span>
+    },
+    {
       title: 'Short Name',
       dataIndex: 'shortName',
       width: '100px',
-      render: (text) => <span>{text}</span>
+      render: (text) => <Tag color="blue">{text || '---'}</Tag>
     },
     {
-      title: <span>Type <span style={{ color: 'red' }}>*</span></span>,
+      title: <span>Strategic Domain / Deliverable (Narrative) <span style={{ color: 'red' }}>*</span></span>,
       dataIndex: 'type',
-      width: '25%',
+      width: '30%',
       render: (text, record, index) => (
         <div>
           <Select
@@ -821,7 +895,7 @@ const LinkagePlanForm = () => {
   ]
 
   return (
-    <div className="p-4">
+    <div style={{ padding: window.innerWidth < 768 ? '12px' : '24px' }}>
       <h3 style={titleStyle}>Departmental External Linkage Plan</h3>
 
       {/* Section 1: Basic Information */}
@@ -863,28 +937,60 @@ const LinkagePlanForm = () => {
                 validateStatus={submitted && errors.department ? 'error' : ''}
                 help={submitted && errors.department}
               >
-                <Input
+                <Select
+                  showSearch
+                  placeholder="Select Department"
                   value={basicInfo.department}
-                  readOnly
-                  placeholder="Auto-fetched"
-                  style={{ backgroundColor: '#f5f5f5', color: '#595959' }}
+                  onChange={(val) => {
+                    const dept = departmentsData.find(d => d.department_name === val);
+                    if (dept) {
+                      setBasicInfo(prev => ({
+                        ...prev,
+                        department: val,
+                        campus: dept.campus?.name || prev.campus,
+                        dean_head: dept.hod_name || prev.dean_head,
+                        assigned_hod_id: dept.hod_id || prev.assigned_hod_id
+                      }));
+                    } else {
+                      handleBasicInfoChange('department', val);
+                    }
+                  }}
+                  options={departmentsData.map(d => ({ value: d.department_name, label: d.department_name }))}
                 />
               </Form.Item>
             </Col>
             <Col xs={24} md={8}>
               <Form.Item
                 label={<span>Dean/Head of Department <span style={{ color: 'red' }}>*</span></span>}
-                validateStatus={submitted && errors.dean_head ? 'error' : ''}
-                help={submitted && errors.dean_head}
+                tooltip="The HOD linked to this department in HOD Management."
+                help={!basicInfo.assigned_hod_id && <span style={{ color: '#faad14' }}>Warning: No HOD assigned to this department.</span>}
               >
                 <Input
-                  value={basicInfo.dean_head}
+                  value={
+                    (() => {
+                      // Try to find the department in departmentsData to get the latest HOD info
+                      const dept = departmentsData.find(d => d.department_name === basicInfo.department);
+
+                      if (dept && dept.hod_id) {
+                        // Department has HOD assigned - show name and email
+                        return `${dept.hod_name}${dept.hod_email ? ` (${dept.hod_email})` : ''}`;
+                      } else if (basicInfo.dean_head) {
+                        // Fallback to stored dean_head value
+                        return basicInfo.dean_head;
+                      } else {
+                        return 'No HOD Assigned';
+                      }
+                    })()
+                  }
                   readOnly
-                  placeholder="Auto-fetched"
+                  placeholder="Will be auto-filled when department is selected"
                   style={{ backgroundColor: '#f5f5f5', color: '#595959' }}
                 />
               </Form.Item>
             </Col>
+
+
+
             <Col xs={24} md={8}>
               <Form.Item
                 label={<span>Faculty Focal Person (FFP) for External Linkages <span style={{ color: 'red' }}>*</span></span>}
@@ -934,12 +1040,13 @@ const LinkagePlanForm = () => {
 
       {/* Section 2: Planned Activities */}
       <Card style={cardStyle}>
-        <div className="d-flex justify-content-between align-items-center mb-3">
+        <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
           <div style={sectionHeaderStyle}>Section 2: Planned Activities for the Semester</div>
           <Button
             type="primary"
             ghost
             icon={<PlusOutlined />}
+            style={{ color: 'black', borderColor: '#28B463' }}
             onClick={() => handleAddRow(
               activities,
               setActivities,
@@ -958,6 +1065,7 @@ const LinkagePlanForm = () => {
           pagination={false}
           rowKey={(record, index) => index}
           bordered
+          scroll={{ x: 'max-content' }}
         />
       </Card>
 
@@ -985,81 +1093,116 @@ const LinkagePlanForm = () => {
         />
       </Card> */}
 
-      {/* Section 4: Industry and Alumni Linkage Targets */}
       <Card style={cardStyle}>
-        <div style={sectionHeaderStyle}>Section 3: Industry and Alumni Linkage Targets</div>
+        <div style={{ marginBottom: '25px' }}>
+          <div style={{ ...sectionHeaderStyle, display: 'block' }}>Section 3: Industry and Alumni Linkage Targets</div>
+        </div>
 
-        <h5 style={{ ...sectionHeaderStyle, fontSize: 14, borderBottom: 'none', color: '#0070FF' }}>
-          Key Industry Sectors to Engage
-        </h5>
-        <div className="mb-4">
-          {industrySectors.map((sector, idx) => (
-            <Row key={idx} gutter={8} className="mb-2">
-              <Col flex="auto">
-                <Input
-                  placeholder={`Industry sector ${idx + 1}`}
-                  value={sector}
-                  onChange={(e) => handleArrayInputChange(idx, e.target.value, industrySectors, setIndustrySectors)}
-                />
-              </Col>
-              {industrySectors.length > 1 && (
-                <Col flex="none">
-                  <Button danger icon={<DeleteOutlined />} onClick={() => handleRemoveRow(idx, industrySectors, setIndustrySectors)} />
+        <div style={{ marginBottom: '30px' }}>
+          <h5 style={{ ...sectionHeaderStyle, fontSize: 14, borderBottom: 'none', color: '#0070FF', marginBottom: '10px', display: 'block' }}>
+            Key Industry Sectors to Engage
+          </h5>
+          <div style={{ paddingLeft: '10px' }}>
+            {industrySectors.map((sector, idx) => (
+              <Row key={idx} gutter={8} className="mb-2" align="middle">
+                <Col flex="auto">
+                  <Input
+                    prefix={<Tag color="purple" style={{ marginRight: 0 }}>{idx + 1}</Tag>}
+                    placeholder={`Enter industry sector (e.g. Textile, IT, Fintech)`}
+                    value={sector}
+                    onChange={(e) => handleArrayInputChange(idx, e.target.value, industrySectors, setIndustrySectors)}
+                  />
                 </Col>
-              )}
-            </Row>
-          ))}
-          <Button type="dashed" block onClick={() => handleAddRow(industrySectors, setIndustrySectors, '')}>
-            + Add Sector
-          </Button>
-        </div>
-
-        <h5 style={{ ...sectionHeaderStyle, fontSize: 14, borderBottom: 'none', color: '#0070FF' }}>
-          Proposed Employers for Internship/Recruitment
-        </h5>
-        <div className="mb-4">
-          {employers.map((employer, idx) => (
-            <Row key={idx} gutter={8} className="mb-2">
-              <Col flex="auto">
-                <Input
-                  placeholder={`Employer ${idx + 1}`}
-                  value={employer}
-                  onChange={(e) => handleArrayInputChange(idx, e.target.value, employers, setEmployers)}
-                />
-              </Col>
-              {employers.length > 1 && (
-                <Col flex="none">
-                  <Button danger icon={<DeleteOutlined />} onClick={() => handleRemoveRow(idx, employers, setEmployers)} />
+                <Col flex="40px">
+                  <Tooltip title="Remove">
+                    <Button
+                      type="text"
+                      danger
+                      shape="circle"
+                      icon={<DeleteOutlined />}
+                      disabled={industrySectors.length === 1}
+                      onClick={() => setIndustrySectors(prev => prev.filter((_, i) => i !== idx))}
+                    />
+                  </Tooltip>
                 </Col>
-              )}
-            </Row>
-          ))}
-          <Button type="dashed" block onClick={() => handleAddRow(employers, setEmployers, '')}>
-            + Add Employer
-          </Button>
+              </Row>
+            ))}
+            <Button
+              type="dashed"
+              icon={<PlusOutlined />}
+              onClick={() => setIndustrySectors(prev => [...prev, ''])}
+              style={{ marginTop: '10px', borderRadius: '6px' }}
+            >
+              Add Another Sector
+            </Button>
+          </div>
         </div>
 
-        <h5 style={{ ...sectionHeaderStyle, fontSize: 14, borderBottom: 'none', color: '#0070FF' }}>
-          Alumni to be Engaged
-        </h5>
-        <div className="mb-3 d-flex justify-content-end">
-          <Button
-            type="primary"
-            ghost
-            size="small"
-            icon={<PlusOutlined />}
-            onClick={() => handleAddRow(alumni, setAlumni, { name: '', email: '', phone: '' }, alumniErrors, setAlumniErrors, { email: '', phone: '' })}
-          >
-            Add Alumni
-          </Button>
+        <div style={{ marginBottom: '30px' }}>
+          <h5 style={{ ...sectionHeaderStyle, fontSize: 14, borderBottom: 'none', color: '#0070FF', marginBottom: '10px', display: 'block' }}>
+            Proposed Employers for Internship/Recruitment
+          </h5>
+          <div style={{ paddingLeft: '10px' }}>
+            {employers.map((employer, idx) => (
+              <Row key={idx} gutter={8} className="mb-2" align="middle">
+                <Col flex="auto">
+                  <Input
+                    prefix={<Tag color="green" style={{ marginRight: 0 }}>{idx + 1}</Tag>}
+                    placeholder={`Enter company/employer name`}
+                    value={employer}
+                    onChange={(e) => handleArrayInputChange(idx, e.target.value, employers, setEmployers)}
+                  />
+                </Col>
+                <Col flex="40px">
+                  <Tooltip title="Remove">
+                    <Button
+                      type="text"
+                      danger
+                      shape="circle"
+                      icon={<DeleteOutlined />}
+                      disabled={employers.length === 1}
+                      onClick={() => setEmployers(prev => prev.filter((_, i) => i !== idx))}
+                    />
+                  </Tooltip>
+                </Col>
+              </Row>
+            ))}
+            <Button
+              type="dashed"
+              icon={<PlusOutlined />}
+              onClick={() => setEmployers(prev => [...prev, ''])}
+              style={{ marginTop: '10px', borderRadius: '6px' }}
+            >
+              Add Another Employer
+            </Button>
+          </div>
         </div>
-        <Table
-          dataSource={alumni}
-          columns={alumniColumns}
-          pagination={false}
-          rowKey={(record, index) => index}
-          bordered
-        />
+
+        <div>
+          <h5 style={{ ...sectionHeaderStyle, fontSize: 14, borderBottom: 'none', color: '#0070FF', marginBottom: '10px', display: 'block' }}>
+            Alumni to be Engaged
+          </h5>
+          <div className="mb-3 d-flex justify-content-end">
+            <Button
+              type="primary"
+              ghost
+              size="small"
+              icon={<PlusOutlined />}
+              style={{ color: 'black', borderColor: '#28B463' }}
+              onClick={() => handleAddRow(alumni, setAlumni, { name: '', email: '', phone: '' }, alumniErrors, setAlumniErrors, { email: '', phone: '' })}
+            >
+              Add Alumni
+            </Button>
+          </div>
+          <Table
+            dataSource={alumni}
+            columns={alumniColumns}
+            pagination={false}
+            rowKey={(record, index) => index}
+            bordered
+            scroll={{ x: 'max-content' }}
+          />
+        </div>
       </Card>
 
       {/* Section 5: Support Required */}
@@ -1108,22 +1251,71 @@ const LinkagePlanForm = () => {
             </Form.Item>
           </Col>
         </Row>
+
+        <Divider orientation="left" style={{ color: '#0070FF', borderTopColor: '#e8e8e8' }}>Approval Workflow Process</Divider>
+
+        <div style={{ padding: '20px 0' }}>
+          <Steps
+            current={0}
+            size="small"
+            items={[
+              {
+                title: 'Step 1: Preparation',
+                status: 'process',
+                description: `Focal Person (${basicInfo.focalPerson || '---'})`,
+                icon: <UserOutlined />,
+              },
+              {
+                title: 'Step 2: Departmental Review',
+                status: 'wait',
+                description: `HOD (${basicInfo.dean_head || '---'})`,
+                icon: <SolutionOutlined />,
+              },
+              {
+                title: 'Step 3: Final Endorsement',
+                status: 'wait',
+                description: 'Linkage Office (Muhammad Atib)',
+                icon: <FileDoneOutlined />,
+              },
+            ]}
+          />
+        </div>
+        <div style={{ background: '#f6ffed', border: '1px solid #b7eb8f', padding: '10px', borderRadius: '4px', marginTop: '10px' }}>
+          <span style={{ color: '#52c41a' }}><CheckCircleOutlined /> </span>
+          <span style={{ fontSize: '12px', color: '#595959' }}>
+            Once submitted, your plan will be automatically routed to your HOD for review. After HOD approval, it will proceed to the Linkage Office for final endorsement.
+          </span>
+        </div>
       </Card>
 
       {/* Submit Buttons */}
-      <div className="d-flex justify-content-end gap-2 mb-5">
-        <Button size="large" icon={<SaveOutlined />}>Save Draft</Button>
+      <div className="d-flex flex-wrap justify-content-end gap-2 mb-5">
+        <Button
+          size="large"
+          type="default"
+          icon={<SaveOutlined />}
+          onClick={() => handleSubmit('Draft')}
+        >
+          Save Draft
+        </Button>
         <Button
           type="primary"
           size="large"
           icon={<SendOutlined />}
-          onClick={handleSubmit}
+          onClick={() => handleSubmit()}
           loading={loading}
+          disabled={!isFormValid()}
+          style={{
+            color: isFormValid() ? 'black' : 'rgba(0,0,0,0.25)',
+            background: isFormValid() ? '#28B463' : '#f5f5f5',
+            borderColor: isFormValid() ? '#28B463' : '#d9d9d9',
+            fontWeight: 600
+          }}
         >
           Submit Plan to OEL
         </Button>
       </div>
-    </div>
+    </div >
   )
 }
 

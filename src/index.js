@@ -6,6 +6,9 @@ import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { Provider } from 'react-redux'
 import store from './store'
+import setupInterceptors from './interceptors'
+
+setupInterceptors();
 
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>

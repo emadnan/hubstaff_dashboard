@@ -16,6 +16,7 @@ import {
   cilLineWeight,
   cilDollar,
   cilLink,
+  cilPeople,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem } from '@coreui/react'
 
@@ -174,6 +175,8 @@ const _navAdmin = [
     icon: <CIcon icon={cilLink} customClassName="nav-icon" />,
     permission: 'Nav_Roles', // Admin only
   },
+  
+
   {
     component: CNavGroup,
     name: 'External Linkages',
