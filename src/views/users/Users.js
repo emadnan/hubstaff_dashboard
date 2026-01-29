@@ -17,6 +17,9 @@ const Users = () => {
   const [password, setPassword] = useState('')
   const [role, setRole] = useState('')
   const [team_id, setTeamId] = useState('')
+  const [facultyId, setFacultyId] = useState(null)
+  const [departmentId, setDepartmentId] = useState(null)
+  const [managedDepartments, setManagedDepartments] = useState([])
   const [showPassword, setShowPassword] = useState(false)
 
   const [formErrors, setFormErrors] = useState({
@@ -102,6 +105,8 @@ const Users = () => {
       setPassword('')
       setRole('')
       setTeamId('')
+      setFacultyId(null)
+      setDepartmentId(null)
       setFormErrors({
         name: '',
         email: '',
@@ -121,6 +126,8 @@ const Users = () => {
     setPassword('')
     setRole('')
     setTeamId('')
+    setFacultyId(null)
+    setDepartmentId(null)
     setFormErrors({
       name: '',
       email: '',
@@ -174,6 +181,32 @@ const Users = () => {
   const showModal3 = (id) => {
     getUserById(id)
     setIsModalOpen3(id)
+  }
+
+  const handleUnassignDepartment = async (deptId) => {
+    if (!window.confirm("Are you sure you want to remove this department assignment?")) return;
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/unassign-hod-department`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${local.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: byuser[0].id,
+          department_id: deptId,
+        }),
+      })
+      if (response.ok) {
+        getUserById(byuser[0].id)
+        getList() // Refresh main list too
+      } else {
+        alert('Failed to unassign')
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   const handleOk3 = () => {
@@ -339,6 +372,8 @@ const Users = () => {
   const [roles, setRoles] = useState([])
   const [byuser, setUserById] = useState([])
   const [team, setTeam] = useState([])
+  const [faculties, setFaculties] = useState([])
+  const [departments, setDepartments] = useState([])
   let filteredUsers = []
 
   //Initial rendering through useEffect
@@ -346,11 +381,26 @@ const Users = () => {
     getList()
     getRoles()
     getTeams()
+    getFaculties()
+    getDepartments()
   }, [])
 
   //Get calls handling
   const handleRoleChange = (value) => {
     setRole(value)
+    // Reset faculty and department when role changes
+    if (value !== 'Initiator' && value !== 'HOD') {
+      setFacultyId(null)
+      setDepartmentId(null)
+    }
+  }
+
+  const handleFacultyChange = (value) => {
+    setFacultyId(value)
+  }
+
+  const handleDepartmentChange = (value) => {
+    setDepartmentId(value)
   }
 
   const handleTeamChange = (value) => {
@@ -365,10 +415,10 @@ const Users = () => {
 
       let filteredUsers = []
 
-      if (perm.some((item) => item.name === 'All_Data')) {  
+      if (perm.some((item) => item.name === 'All_Data')) {
         filteredUsers = data.Users
       } else if (perm.some((item) => item.name === 'Company_Data')) {
-        filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && user.email !== local.Users.email)
+        filteredUsers = data.Users.filter((user) => user.company_id == local.Users.company_id && user.email !== local.Users.email)
       } else if (perm.some((item) => item.name === 'User_Data')) {
         filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
       }
@@ -380,20 +430,42 @@ const Users = () => {
   }
 
   function getRoles() {
-    fetch(`${BASE_URL}/api/getroles`)
+    fetch(`${BASE_URL}/api/getLinkageRoles`)
       .then((response) => response.json())
       .then((data) => setRoles(data.roles))
       .catch((error) => console.log(error))
   }
 
-  function getRoles() {
-    fetch(`${BASE_URL}/api/getroles`)
+  function getFaculties() {
+    fetch(`${BASE_URL}/api/getFaculties`, {
+      headers: {
+        Authorization: `Bearer ${local.token}`,
+        'Content-Type': 'application/json',
+      },
+    })
       .then((response) => response.json())
       .then((data) => {
-        const filteredRoles = data.roles.filter((role) => role.id !== 1)
-        setRoles(filteredRoles)
+        console.log('Faculties data:', data)
+        // Backend returns array directly, not wrapped
+        setFaculties(Array.isArray(data) ? data : [])
       })
-      .catch((error) => console.log(error))
+      .catch((error) => console.log('Error fetching faculties:', error))
+  }
+
+  function getDepartments() {
+    fetch(`${BASE_URL}/api/getDepartments`, {
+      headers: {
+        Authorization: `Bearer ${local.token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Departments data:', data)
+        // Backend returns array directly
+        setDepartments(Array.isArray(data) ? data : [])
+      })
+      .catch((error) => console.log('Error fetching departments:', error))
   }
 
   function getTeams() {
@@ -418,6 +490,16 @@ const Users = () => {
         setName(data.User[0].name)
         setEmail(data.User[0].email)
         setRole(data.User[0].role)
+        setFacultyId(data.User[0].faculty_id)
+        setDepartmentId(data.User[0].department_id)
+        setManagedDepartments(data.User[0].managed_departments || [])
+
+        // Update Form fields directly to ensure UI reflects the values
+        form.setFieldsValue({
+          role: data.User[0].role,
+          faculty: data.User[0].faculty_id,
+          department: data.User[0].department_id
+        })
       })
       .catch((error) => console.log(error))
   }
@@ -431,6 +513,12 @@ const Users = () => {
       role: role,
       company_id: local.Users.company_id,
       team_id: team_id,
+    }
+
+    // Add faculty and department if role is HOD or Initiator
+    if (role === 'HOD' || role === 'Initiator') {
+      if (facultyId) adduser.faculty_id = facultyId
+      if (departmentId) adduser.department_id = departmentId
     }
     setIsLoading(true)
     try {
@@ -498,6 +586,8 @@ const Users = () => {
           role: role,
           company_id: local.Users.company_id,
           team_id: team_id,
+          faculty_id: facultyId,
+          department_id: departmentId,
         }),
       })
 
@@ -734,6 +824,7 @@ const Users = () => {
           </div>
           {formErrors.password && <div className="text-danger">{formErrors.password}</div>}
 
+
           <Form form={form}>
             <div className="form-outline mt-3">
               <label>Role</label>
@@ -743,20 +834,61 @@ const Users = () => {
                 help={formErrors.role}
               >
                 <Select
-                  placeholder="Select Role Id"
+                  placeholder="Select Role"
                   onChange={handleRoleChange}
                   onFocus={handleFocus}
                   name="role"
                   value={role}
                 >
-                  {roles.map((user) => (
-                    <Select.Option value={user.id} key={user.id}>
-                      {user.name}
+                  {roles.map((userRole) => (
+                    <Select.Option value={userRole.id} key={userRole.id}>
+                      {userRole.name}
                     </Select.Option>
                   ))}
                 </Select>
               </Form.Item>
             </div>
+
+            {/* Show Faculty and Department dropdowns for HOD and Initiator */}
+            {(role === 'HOD' || role === 'Initiator') && (
+              <>
+                <div className="form-outline mt-3">
+                  <label>Faculty</label>
+                  <Form.Item name="faculty">
+                    <Select
+                      placeholder="Select Faculty"
+                      onChange={handleFacultyChange}
+                      value={facultyId}
+                      allowClear
+                    >
+                      {faculties.map((faculty) => (
+                        <Select.Option value={faculty.id} key={faculty.id}>
+                          {faculty.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+
+                <div className="form-outline mt-3">
+                  <label>Department</label>
+                  <Form.Item name="department">
+                    <Select
+                      placeholder="Select Department"
+                      onChange={handleDepartmentChange}
+                      value={departmentId}
+                      allowClear
+                    >
+                      {departments.map((dept) => (
+                        <Select.Option value={dept.id} key={dept.id}>
+                          {dept.department_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+              </>
+            )}
           </Form>
         </Modal>
 
@@ -810,6 +942,63 @@ const Users = () => {
                     </Select>
                   </Form.Item>
                 </div>
+
+                {/* Show Faculty and Department dropdowns for HOD and Initiator */}
+                {(role === 'HOD' || role === 'Initiator') && (
+                  <>
+                    <div className="form-outline mt-3">
+                      <label>Faculty</label>
+                      <Form.Item name="faculty">
+                        <Select
+                          placeholder="Select Faculty"
+                          onChange={handleFacultyChange}
+                          value={facultyId}
+                          allowClear
+                        >
+                          {faculties.map((faculty) => (
+                            <Select.Option value={faculty.id} key={faculty.id}>
+                              {faculty.name}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </div>
+
+                    <div className="form-outline mt-3">
+                      <label>Department</label>
+                      <Form.Item name="department">
+                        <Select
+                          placeholder="Select Department"
+                          onChange={handleDepartmentChange}
+                          value={departmentId}
+                          allowClear
+                        >
+                          {departments.map((dept) => (
+                            <Select.Option value={dept.id} key={dept.id}>
+                              {dept.department_name}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+
+                      {managedDepartments && managedDepartments.length > 0 && (
+                        <div style={{ marginTop: '10px', background: '#f8f9fa', padding: '10px', borderRadius: '5px' }}>
+                          <label style={{ fontWeight: 'bold', fontSize: '12px', color: '#666' }}>CURRENT HOD ASSIGNMENTS:</label>
+                          <ul style={{ listStyle: 'none', padding: 0, marginTop: '5px', marginBottom: 0 }}>
+                            {managedDepartments.map(dept => (
+                              <li key={dept.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px', background: 'white', padding: '5px 10px', border: '1px solid #dee2e6', borderRadius: '4px' }}>
+                                <span style={{ fontSize: '13px' }}>{dept.department_name}</span>
+                                <IconButton size="small" onClick={() => handleUnassignDepartment(dept.id)} color="error" title="Remove Assignment">
+                                  <DeleteIcon fontSize="small" />
+                                </IconButton>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </Form>
             </div>
           ))}

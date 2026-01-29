@@ -31,7 +31,8 @@ import {
     FilterOutlined,
     CloseCircleOutlined,
     CheckCircleOutlined,
-    ClockCircleOutlined
+    ClockCircleOutlined,
+    FileSearchOutlined
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
@@ -87,6 +88,10 @@ function LinkageFormsManagement() {
 
     const navigate = useNavigate()
     const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:8000'
+
+    const localUser = JSON.parse(localStorage.getItem('user-info') || '{}');
+    const permissions = localUser.permissions || [];
+    const isHodOrOfficer = permissions.some(p => p.name === 'Approve_Linkage_HOD' || p.name === 'Approve_Linkage_Officer');
 
     // Fetch Data
     useEffect(() => {
@@ -199,7 +204,7 @@ function LinkageFormsManagement() {
     const handleApprove = async (id) => {
         try {
             const localUser = JSON.parse(localStorage.getItem('user-info'))
-            const response = await fetch(`${BASE_URL}/api/approveLinkagePlan`, {
+            const response = await fetch(`${BASE_URL}/api/linkage-plans/approve`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localUser?.token}`,
@@ -224,7 +229,7 @@ function LinkageFormsManagement() {
     const handleReject = async (id) => {
         try {
             const localUser = JSON.parse(localStorage.getItem('user-info'))
-            const response = await fetch(`${BASE_URL}/api/rejectLinkagePlan`, {
+            const response = await fetch(`${BASE_URL}/api/linkage-plans/reject`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localUser?.token}`,
@@ -368,6 +373,21 @@ function LinkageFormsManagement() {
             width: 200,
             render: (status) => {
                 const config = getStatusConfig(status || 'Planned')
+
+                // Show "Pending" instead of "Pending from HOD" if user is HOD
+                let displayStatus = status || 'Planned';
+                const localUser = JSON.parse(localStorage.getItem('user-info') || '{}');
+                const permissions = localUser.permissions || [];
+                const isHod = permissions.some(p => p.name === 'Approve_Linkage_HOD');
+                const isOfficer = permissions.some(p => p.name === 'Approve_Linkage_Officer');
+
+                if (isHod && displayStatus === 'Pending from HOD') {
+                    displayStatus = 'Pending';
+                }
+                if (isOfficer && displayStatus === 'Pending from Linkage Office') {
+                    displayStatus = 'Pending';
+                }
+
                 return (
                     <Tag
                         icon={config.icon}
@@ -379,7 +399,7 @@ function LinkageFormsManagement() {
                             fontWeight: 500
                         }}
                     >
-                        {status || 'Planned'}
+                        {displayStatus}
                     </Tag>
                 )
             }
@@ -420,27 +440,28 @@ function LinkageFormsManagement() {
                                 }}
                             />
                         </Tooltip>
-                        {isInitiator && !['Pending from Linkage Office', 'Planned'].includes(record.status) && (
+                        {/* Show Edit/Delete only for Rejected plans */}
+                        {isInitiator && record.status?.toLowerCase().includes('rejected') && (
                             <>
-                                <Tooltip title="Edit">
+                                <Tooltip title="Edit and Resubmit">
                                     <Button
                                         shape="circle"
                                         icon={<EditOutlined style={{ color: '#f59e0b' }} />}
                                         size="small"
                                         onClick={() => handleEdit(record)}
                                         style={{
-                                            border: '1px solid #e2e8f0',
-                                            background: 'white',
-                                            boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
+                                            border: '1px solid #fed7aa',
+                                            background: '#fff7ed',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
                                         }}
                                     />
                                 </Tooltip>
                                 <Popconfirm
-                                    title="Delete this plan?"
-                                    description="This action cannot be undone."
+                                    title="Delete Rejected Plan?"
+                                    description="Are you sure you want to remove this rejected plan?"
                                     onConfirm={() => handleDelete(record.id)}
-                                    okText="Delete"
-                                    cancelText="Cancel"
+                                    okText="Yes"
+                                    cancelText="No"
                                     okButtonProps={{ danger: true, size: 'small' }}
                                     cancelButtonProps={{ size: 'small' }}
                                 >
@@ -479,8 +500,28 @@ function LinkageFormsManagement() {
                             View and manage all submitted external linkage plans
                         </Text>
                     </Col>
-                    <Col xs={24} lg={8} style={{ textAlign: window.innerWidth < 992 ? 'left' : 'right' }}>
+                    <Col xs={24} lg={12} style={{ textAlign: window.innerWidth < 992 ? 'left' : 'right' }}>
                         <Space size="middle" wrap>
+                            {!isHodOrOfficer && (
+                                <Button
+                                    type="default"
+                                    icon={<FileSearchOutlined />}
+                                    onClick={() => navigate('/external-linkages-drafts')}
+                                    size="large"
+                                    style={{
+                                        borderRadius: '12px',
+                                        background: 'rgba(255,255,255,0.2)',
+                                        border: '1px solid rgba(255,255,255,0.3)',
+                                        color: 'white',
+                                        fontWeight: 700,
+                                        backdropFilter: 'blur(10px)',
+                                        height: '48px',
+                                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                    }}
+                                >
+                                    My Drafts
+                                </Button>
+                            )}
                             <Button
                                 type="default"
                                 icon={<ReloadOutlined />}
@@ -488,17 +529,18 @@ function LinkageFormsManagement() {
                                 size="large"
                                 style={{
                                     borderRadius: '12px',
-                                    background: 'rgba(255,255,255,0.15)',
-                                    border: '1px solid rgba(255,255,255,0.2)',
+                                    background: 'rgba(255,255,255,0.2)',
+                                    border: '1px solid rgba(255,255,255,0.3)',
                                     color: 'white',
-                                    fontWeight: 500,
-                                    backdropFilter: 'blur(4px)'
+                                    fontWeight: 700,
+                                    backdropFilter: 'blur(10px)',
+                                    height: '48px',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                 }}
                             >
-                                Refresh
+                                Refresh List
                             </Button>
-
-                            {(JSON.parse(localStorage.getItem('user-info'))?.permissions?.includes('Nav_LinkagePlanForm')) && (
+                            {!isHodOrOfficer && (
                                 <Button
                                     type="primary"
                                     icon={<PlusOutlined />}
@@ -506,16 +548,17 @@ function LinkageFormsManagement() {
                                     size="large"
                                     style={{
                                         borderRadius: '12px',
-                                        background: 'white',
-                                        color: '#667eea',
+                                        background: '#ffffff',
                                         border: 'none',
-                                        fontWeight: 600,
-                                        boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                                        color: '#764ba2',
+                                        fontWeight: 800,
+                                        height: '48px',
+                                        boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
                                         paddingLeft: '24px',
                                         paddingRight: '24px'
                                     }}
                                 >
-                                    New Linkage Plan
+                                    Create New Plan
                                 </Button>
                             )}
                         </Space>
@@ -858,17 +901,20 @@ function LinkageFormsManagement() {
                             title={<Text strong style={{ fontSize: '16px' }}>Industry Sectors</Text>}
                             style={{ marginBottom: '16px', borderRadius: '12px' }}
                         >
-                            {selectedPlan.industry_sectors && selectedPlan.industry_sectors.length > 0 ? (
-                                <Space wrap>
-                                    {selectedPlan.industry_sectors.map((sector, index) => (
-                                        <Tag key={index} color="purple" style={{ borderRadius: '6px', padding: '4px 12px' }}>
-                                            {sector}
-                                        </Tag>
-                                    ))}
-                                </Space>
-                            ) : (
-                                <Empty description="No industry sectors specified" image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                            )}
+                            {(() => {
+                                const sectors = selectedPlan.industrySectors || selectedPlan.industry_sectors
+                                return sectors && sectors.length > 0 ? (
+                                    <Space wrap>
+                                        {sectors.map((sector, index) => (
+                                            <Tag key={index} color="purple" style={{ borderRadius: '6px', padding: '4px 12px' }}>
+                                                {typeof sector === 'object' ? sector.sector_name : sector}
+                                            </Tag>
+                                        ))}
+                                    </Space>
+                                ) : (
+                                    <Empty description="No industry sectors specified" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                                )
+                            })()}
                         </Card>
 
                         {/* Employers */}
@@ -880,7 +926,7 @@ function LinkageFormsManagement() {
                                 <Space wrap>
                                     {selectedPlan.employers.map((employer, index) => (
                                         <Tag key={index} color="green" style={{ borderRadius: '6px', padding: '4px 12px' }}>
-                                            {employer}
+                                            {typeof employer === 'object' ? employer.employer_name : employer}
                                         </Tag>
                                     ))}
                                 </Space>

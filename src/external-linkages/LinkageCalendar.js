@@ -16,7 +16,9 @@ import {
   Divider,
   Popconfirm,
   message,
-  Spin
+  Spin,
+  Modal,
+  List
 } from 'antd'
 import {
   LeftOutlined,
@@ -56,6 +58,8 @@ function LinkageCalendar() {
   const [selectedPlan, setSelectedPlan] = useState(null)
   const [drawerVisible, setDrawerVisible] = useState(false)
   const [detailLoading, setDetailLoading] = useState(false)
+  const [selectedDateActivities, setSelectedDateActivities] = useState([])
+  const [activitiesModalVisible, setActivitiesModalVisible] = useState(false)
 
   const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:8000';
 
@@ -70,7 +74,12 @@ function LinkageCalendar() {
       const token = localUser?.token
       const headers = token ? { Authorization: `Bearer ${token}` } : {}
 
-      const response = await fetch(`${BASE_URL}/api/getUpcomingActivities`, { headers });
+      // Fetch all activities for the current year to ensure past and future ones show on calendar
+      const currentYear = moment().year();
+      const start = `${currentYear}-01-01`;
+      const end = `${currentYear}-12-31`;
+
+      const response = await fetch(`${BASE_URL}/api/getActivitiesByDateRange?start=${start}&end=${end}`, { headers });
       const data = await response.json();
       if (response.ok && data.activities) {
         setActivities(data.activities);
@@ -134,33 +143,39 @@ function LinkageCalendar() {
   const dateCellRender = (value) => {
     const listData = activities.filter(activity => activity.date === value.format('YYYY-MM-DD'));
     return (
-      <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-        {listData.map((item, index) => (
-          <li key={index} className="mb-1">
-            <Badge
-              onClick={(e) => {
-                e.stopPropagation();
-                fetchPlanDetails(item.linkage_plan_id);
-              }}
-              style={{ cursor: 'pointer' }}
-              status={
-                item.activity_type === 'MOU' ? 'processing' :
-                  item.activity_type === 'IP' ? 'success' :
-                    item.activity_type === 'IV' ? 'default' :
-                      item.activity_type === 'GLIT' ? 'warning' : 'error'
-              }
-              text={
-                <span style={{ fontSize: '10px', whiteSpace: 'normal', lineHeight: '1.2' }}>
-                  <b>{item.activity_type}:</b> {item.description}
-                  <br />
-                  <span style={{ color: item.linkage_plan?.status === 'Planned' ? 'green' : 'orange' }}>
-                    [{item.linkage_plan?.status || 'N/A'}]
+      <ul style={{ listStyle: 'none', padding: 0, margin: 0, maxHeight: '80px', overflowY: 'auto' }}>
+        {listData.map((item, index) => {
+          // Match activity type to badge status (using includes for flexible matching)
+          let badgeStatus = 'error'; // Default
+          const type = item.activity_type || '';
+          if (type.includes('MoU')) badgeStatus = 'processing';
+          else if (type.includes('Internship')) badgeStatus = 'success';
+          else if (type.includes('Industrial')) badgeStatus = 'default';
+          else if (type.includes('Guest')) badgeStatus = 'warning';
+          else if (type.includes('International')) badgeStatus = 'error';
+
+          return (
+            <li key={index} style={{ marginBottom: '2px' }}>
+              <Badge
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fetchPlanDetails(item.linkage_plan_id);
+                }}
+                style={{ cursor: 'pointer', display: 'block' }}
+                status={badgeStatus}
+                text={
+                  <span style={{ fontSize: '10px', whiteSpace: 'normal', lineHeight: '1.2', display: 'inline-block' }}>
+                    <b>{item.activity_type}:</b> {item.description}
+                    <br />
+                    <span style={{ color: item.linkage_plan?.status === 'Planned' ? '#22c55e' : '#f59e0b', fontWeight: 'bold' }}>
+                      [{item.linkage_plan?.status || 'N/A'}]
+                    </span>
                   </span>
-                </span>
-              }
-            />
-          </li>
-        ))}
+                }
+              />
+            </li>
+          );
+        })}
       </ul>
     );
   };
@@ -179,9 +194,9 @@ function LinkageCalendar() {
               onSelect={(value) => {
                 const dateActivities = activities.filter(a => a.date === value.format('YYYY-MM-DD'));
                 if (dateActivities.length > 0) {
-                  if (dateActivities.length === 1) {
-                    fetchPlanDetails(dateActivities[0].linkage_plan_id);
-                  }
+                  // Always Show List Modal (User Request)
+                  setSelectedDateActivities(dateActivities);
+                  setActivitiesModalVisible(true);
                 }
               }}
               headerRender={({ value, type, onChange, onTypeChange }) => {
@@ -323,6 +338,56 @@ function LinkageCalendar() {
                 </Space>
               </Card>
             ))}
+
+            <Divider />
+
+            <Title level={5}>Industry & Alumni Targets</Title>
+            <Card size="small" title="Industry Sectors" style={{ marginBottom: '10px' }}>
+              {(() => {
+                const sectors = selectedPlan.industrySectors || selectedPlan.industry_sectors
+                return sectors && sectors.length > 0 ? (
+                  <Space wrap>
+                    {sectors.map((sector, index) => (
+                      <Tag key={index} color="purple">
+                        {typeof sector === 'object' ? sector.sector_name : sector}
+                      </Tag>
+                    ))}
+                  </Space>
+                ) : (
+                  <Empty description="No industry sectors" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                )
+              })()}
+            </Card>
+
+            <Card size="small" title="Proposed Employers" style={{ marginBottom: '10px' }}>
+              {selectedPlan.employers && selectedPlan.employers.length > 0 ? (
+                <Space wrap>
+                  {selectedPlan.employers.map((employer, index) => (
+                    <Tag key={index} color="green">
+                      {typeof employer === 'object' ? employer.employer_name : employer}
+                    </Tag>
+                  ))}
+                </Space>
+              ) : (
+                <Empty description="No employers" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              )}
+            </Card>
+
+            <Card size="small" title="Alumni Engagement">
+              {selectedPlan.alumni && selectedPlan.alumni.length > 0 ? (
+                selectedPlan.alumni.map((alum, index) => (
+                  <div key={index} style={{ marginBottom: '8px', padding: '8px', background: '#f8fafc', borderRadius: '4px' }}>
+                    <Text strong>{alum.name}</Text>
+                    <div style={{ fontSize: '12px' }}>
+                      {alum.email && <div>Email: {alum.email}</div>}
+                      {alum.phone && <div>Phone: {alum.phone}</div>}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <Empty description="No alumni targets" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              )}
+            </Card>
           </div>
         ) : (
           <div style={{ textAlign: 'center', padding: '50px' }}>
@@ -332,6 +397,39 @@ function LinkageCalendar() {
           </div>
         )}
       </Drawer>
+
+      <Modal
+        title={`Activities on ${selectedDateActivities[0]?.date ? moment(selectedDateActivities[0].date).format('MMMM DD, YYYY') : ''}`}
+        open={activitiesModalVisible}
+        onCancel={() => setActivitiesModalVisible(false)}
+        footer={null}
+      >
+        {selectedDateActivities.map((activity, index) => (
+          <div
+            key={index}
+            style={{
+              cursor: 'pointer',
+              border: '1px solid #f0f0f0',
+              marginBottom: '8px',
+              padding: '12px',
+              borderRadius: '8px',
+              transition: 'all 0.3s'
+            }}
+            onClick={() => {
+              setActivitiesModalVisible(false);
+              fetchPlanDetails(activity.linkage_plan_id);
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          >
+            <div style={{ fontWeight: 'bold', color: '#0070FF', marginBottom: '4px' }}>
+              {activity.activity_type}
+            </div>
+            <div style={{ marginBottom: '8px', color: '#334155' }}>{activity.description}</div>
+            <Tag color="blue">{activity.linkage_plan?.status || 'Planned'}</Tag>
+          </div>
+        ))}
+      </Modal>
     </div>
   )
 }
