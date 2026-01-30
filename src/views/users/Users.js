@@ -17,9 +17,13 @@ const Users = () => {
   const [password, setPassword] = useState('')
   const [role, setRole] = useState('')
   const [team_id, setTeamId] = useState('')
+  const [campuses, setCampuses] = useState([])
+  const [faculties, setFaculties] = useState([])
+  const [departments, setDepartments] = useState([])
+  const [campusId, setCampusId] = useState(null)
   const [facultyId, setFacultyId] = useState(null)
   const [departmentId, setDepartmentId] = useState(null)
-  const [managedDepartments, setManagedDepartments] = useState([])
+  const [selectedRoleName, setSelectedRoleName] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
   const [formErrors, setFormErrors] = useState({
@@ -105,13 +109,14 @@ const Users = () => {
       setPassword('')
       setRole('')
       setTeamId('')
-      setFacultyId(null)
-      setDepartmentId(null)
       setFormErrors({
         name: '',
         email: '',
         password: '',
         role: '',
+        campus: '',
+        faculty: '',
+        department: '',
       })
     } else {
       callErrors(name, email, password, role)
@@ -126,13 +131,18 @@ const Users = () => {
     setPassword('')
     setRole('')
     setTeamId('')
+    setCampusId(null)
     setFacultyId(null)
     setDepartmentId(null)
+    setSelectedRoleName('')
     setFormErrors({
       name: '',
       email: '',
       password: '',
       role: '',
+      campus: '',
+      faculty: '',
+      department: '',
     })
   }
 
@@ -183,32 +193,6 @@ const Users = () => {
     setIsModalOpen3(id)
   }
 
-  const handleUnassignDepartment = async (deptId) => {
-    if (!window.confirm("Are you sure you want to remove this department assignment?")) return;
-
-    try {
-      const response = await fetch(`${BASE_URL}/api/unassign-hod-department`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${local.token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user_id: byuser[0].id,
-          department_id: deptId,
-        }),
-      })
-      if (response.ok) {
-        getUserById(byuser[0].id)
-        getList() // Refresh main list too
-      } else {
-        alert('Failed to unassign')
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
   const handleOk3 = () => {
     if (name && role) {
       updateUser(isModalOpen3)
@@ -224,6 +208,9 @@ const Users = () => {
         email: '',
         password: '',
         role: '',
+        campus: '',
+        faculty: '',
+        department: '',
       })
     } else {
       callErrors(name, email, password, role)
@@ -238,11 +225,18 @@ const Users = () => {
     setPassword('')
     setRole('')
     setTeamId('')
+    setCampusId(null)
+    setFacultyId(null)
+    setDepartmentId(null)
+    setSelectedRoleName('')
     setFormErrors({
       name: '',
       email: '',
       password: '',
       role: '',
+      campus: '',
+      faculty: '',
+      department: '',
     })
   }
 
@@ -372,8 +366,6 @@ const Users = () => {
   const [roles, setRoles] = useState([])
   const [byuser, setUserById] = useState([])
   const [team, setTeam] = useState([])
-  const [faculties, setFaculties] = useState([])
-  const [departments, setDepartments] = useState([])
   let filteredUsers = []
 
   //Initial rendering through useEffect
@@ -381,18 +373,19 @@ const Users = () => {
     getList()
     getRoles()
     getTeams()
-    getFaculties()
-    getDepartments()
   }, [])
 
   //Get calls handling
   const handleRoleChange = (value) => {
     setRole(value)
-    // Reset faculty and department when role changes
-    if (value !== 'Initiator' && value !== 'HOD') {
-      setFacultyId(null)
-      setDepartmentId(null)
+    const selectedRole = roles.find(r => r.id === value)
+    if (selectedRole) {
+      setSelectedRoleName(selectedRole.name)
     }
+  }
+
+  const handleCampusChange = (value) => {
+    setCampusId(value)
   }
 
   const handleFacultyChange = (value) => {
@@ -418,7 +411,7 @@ const Users = () => {
       if (perm.some((item) => item.name === 'All_Data')) {
         filteredUsers = data.Users
       } else if (perm.some((item) => item.name === 'Company_Data')) {
-        filteredUsers = data.Users.filter((user) => user.company_id == local.Users.company_id && user.email !== local.Users.email)
+        filteredUsers = data.Users.filter((user) => user.company_id === local.Users.company_id && user.email !== local.Users.email)
       } else if (perm.some((item) => item.name === 'User_Data')) {
         filteredUsers = data.Users.filter((user) => user.id === local.Users.user_id)
       }
@@ -430,42 +423,15 @@ const Users = () => {
   }
 
   function getRoles() {
-    fetch(`${BASE_URL}/api/getLinkageRoles`)
+    fetch(`${BASE_URL}/api/getroles`)
       .then((response) => response.json())
-      .then((data) => setRoles(data.roles))
+      .then((data) => {
+        setRoles(data.roles)
+        if (data.campuses) setCampuses(data.campuses)
+        if (data.faculties) setFaculties(data.faculties)
+        if (data.departments) setDepartments(data.departments)
+      })
       .catch((error) => console.log(error))
-  }
-
-  function getFaculties() {
-    fetch(`${BASE_URL}/api/getFaculties`, {
-      headers: {
-        Authorization: `Bearer ${local.token}`,
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Faculties data:', data)
-        // Backend returns array directly, not wrapped
-        setFaculties(Array.isArray(data) ? data : [])
-      })
-      .catch((error) => console.log('Error fetching faculties:', error))
-  }
-
-  function getDepartments() {
-    fetch(`${BASE_URL}/api/getDepartments`, {
-      headers: {
-        Authorization: `Bearer ${local.token}`,
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Departments data:', data)
-        // Backend returns array directly
-        setDepartments(Array.isArray(data) ? data : [])
-      })
-      .catch((error) => console.log('Error fetching departments:', error))
   }
 
   function getTeams() {
@@ -490,16 +456,13 @@ const Users = () => {
         setName(data.User[0].name)
         setEmail(data.User[0].email)
         setRole(data.User[0].role)
+        setCampusId(data.User[0].campus_id)
         setFacultyId(data.User[0].faculty_id)
         setDepartmentId(data.User[0].department_id)
-        setManagedDepartments(data.User[0].managed_departments || [])
 
-        // Update Form fields directly to ensure UI reflects the values
-        form.setFieldsValue({
-          role: data.User[0].role,
-          faculty: data.User[0].faculty_id,
-          department: data.User[0].department_id
-        })
+        // Find role name to trigger conditional rendering
+        const userRole = roles.find(r => r.id === data.User[0].role)
+        if (userRole) setSelectedRoleName(userRole.name)
       })
       .catch((error) => console.log(error))
   }
@@ -513,12 +476,9 @@ const Users = () => {
       role: role,
       company_id: local.Users.company_id,
       team_id: team_id,
-    }
-
-    // Add faculty and department if role is HOD or Initiator
-    if (role === 'HOD' || role === 'Initiator') {
-      if (facultyId) adduser.faculty_id = facultyId
-      if (departmentId) adduser.department_id = departmentId
+      campus_id: campusId,
+      faculty_id: facultyId,
+      department_id: departmentId,
     }
     setIsLoading(true)
     try {
@@ -586,6 +546,7 @@ const Users = () => {
           role: role,
           company_id: local.Users.company_id,
           team_id: team_id,
+          campus_id: campusId,
           faculty_id: facultyId,
           department_id: departmentId,
         }),
@@ -824,7 +785,6 @@ const Users = () => {
           </div>
           {formErrors.password && <div className="text-danger">{formErrors.password}</div>}
 
-
           <Form form={form}>
             <div className="form-outline mt-3">
               <label>Role</label>
@@ -834,62 +794,78 @@ const Users = () => {
                 help={formErrors.role}
               >
                 <Select
-                  placeholder="Select Role"
+                  placeholder="Select Role Id"
                   onChange={handleRoleChange}
                   onFocus={handleFocus}
                   name="role"
                   value={role}
                 >
-                  {roles.map((userRole) => (
-                    <Select.Option value={userRole.id} key={userRole.id}>
-                      {userRole.name}
+                  {roles.map((user) => (
+                    <Select.Option value={user.id} key={user.id}>
+                      {user.name}
                     </Select.Option>
                   ))}
                 </Select>
               </Form.Item>
             </div>
-
-            {/* Show Faculty and Department dropdowns for HOD and Initiator */}
-            {(role === 'HOD' || role === 'Initiator') && (
-              <>
-                <div className="form-outline mt-3">
-                  <label>Faculty</label>
-                  <Form.Item name="faculty">
-                    <Select
-                      placeholder="Select Faculty"
-                      onChange={handleFacultyChange}
-                      value={facultyId}
-                      allowClear
-                    >
-                      {faculties.map((faculty) => (
-                        <Select.Option value={faculty.id} key={faculty.id}>
-                          {faculty.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
-
-                <div className="form-outline mt-3">
-                  <label>Department</label>
-                  <Form.Item name="department">
-                    <Select
-                      placeholder="Select Department"
-                      onChange={handleDepartmentChange}
-                      value={departmentId}
-                      allowClear
-                    >
-                      {departments.map((dept) => (
-                        <Select.Option value={dept.id} key={dept.id}>
-                          {dept.department_name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
-              </>
-            )}
           </Form>
+
+          {/* Conditional Dropdowns for HOD Initiator */}
+          {/* Conditional Dropdowns for HOD or Initiator */}
+          {selectedRoleName && (selectedRoleName.toLowerCase().includes('hod') || selectedRoleName.toLowerCase().includes('initiator')) && (
+            <>
+              <div className="form-outline mt-3">
+                <label>Campus</label>
+                <div className="form-group">
+                  <Select
+                    placeholder="Select Campus"
+                    onChange={handleCampusChange}
+                    value={campusId}
+                    style={{ width: '100%' }}
+                  >
+                    {campuses.map((campus) => (
+                      <Select.Option value={campus.id} key={campus.id}>
+                        {campus.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </div>
+              </div>
+
+              <div className="form-outline mt-3">
+                <label>Faculty</label>
+                <Select
+                  placeholder="Select Faculty"
+                  onChange={handleFacultyChange}
+                  value={facultyId}
+                  style={{ width: '100%' }}
+                >
+                  {faculties.map((faculty) => (
+                    <Select.Option value={faculty.id} key={faculty.id}>
+                      {faculty.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </div>
+
+              <div className="form-outline mt-3">
+                <label>Department</label>
+                <Select
+                  placeholder="Select Department"
+                  onChange={handleDepartmentChange}
+                  value={departmentId}
+                  style={{ width: '100%' }}
+                >
+                  {departments.map((dept) => (
+                    <Select.Option value={dept.id} key={dept.id}>
+                      {dept.department_name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </div>
+            </>
+          )}
+
         </Modal>
 
         {/* Modal for Update User */}
@@ -942,120 +918,128 @@ const Users = () => {
                     </Select>
                   </Form.Item>
                 </div>
-
-                {/* Show Faculty and Department dropdowns for HOD and Initiator */}
-                {(role === 'HOD' || role === 'Initiator') && (
-                  <>
-                    <div className="form-outline mt-3">
-                      <label>Faculty</label>
-                      <Form.Item name="faculty">
-                        <Select
-                          placeholder="Select Faculty"
-                          onChange={handleFacultyChange}
-                          value={facultyId}
-                          allowClear
-                        >
-                          {faculties.map((faculty) => (
-                            <Select.Option value={faculty.id} key={faculty.id}>
-                              {faculty.name}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                    </div>
-
-                    <div className="form-outline mt-3">
-                      <label>Department</label>
-                      <Form.Item name="department">
-                        <Select
-                          placeholder="Select Department"
-                          onChange={handleDepartmentChange}
-                          value={departmentId}
-                          allowClear
-                        >
-                          {departments.map((dept) => (
-                            <Select.Option value={dept.id} key={dept.id}>
-                              {dept.department_name}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-
-                      {managedDepartments && managedDepartments.length > 0 && (
-                        <div style={{ marginTop: '10px', background: '#f8f9fa', padding: '10px', borderRadius: '5px' }}>
-                          <label style={{ fontWeight: 'bold', fontSize: '12px', color: '#666' }}>CURRENT HOD ASSIGNMENTS:</label>
-                          <ul style={{ listStyle: 'none', padding: 0, marginTop: '5px', marginBottom: 0 }}>
-                            {managedDepartments.map(dept => (
-                              <li key={dept.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px', background: 'white', padding: '5px 10px', border: '1px solid #dee2e6', borderRadius: '4px' }}>
-                                <span style={{ fontSize: '13px' }}>{dept.department_name}</span>
-                                <IconButton size="small" onClick={() => handleUnassignDepartment(dept.id)} color="error" title="Remove Assignment">
-                                  <DeleteIcon fontSize="small" />
-                                </IconButton>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
               </Form>
+
+              {/* Conditional Dropdowns for HOD or Initiator (Update) */}
+              {selectedRoleName && (selectedRoleName.toLowerCase().includes('hod') || selectedRoleName.toLowerCase().includes('initiator')) && (
+                <>
+                  <div className="form-outline mt-3">
+                    <label>Campus</label>
+                    <Select
+                      placeholder="Select Campus"
+                      onChange={handleCampusChange}
+                      defaultValue={user.campus_id}
+                      style={{ width: '100%' }}
+                    >
+                      {campuses.map((campus) => (
+                        <Select.Option value={campus.id} key={campus.id}>
+                          {campus.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </div>
+
+                  <div className="form-outline mt-3">
+                    <label>Faculty</label>
+                    <Select
+                      placeholder="Select Faculty"
+                      onChange={handleFacultyChange}
+                      defaultValue={user.faculty_id}
+                      style={{ width: '100%' }}
+                    >
+                      {faculties.map((faculty) => (
+                        <Select.Option value={faculty.id} key={faculty.id}>
+                          {faculty.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </div>
+
+                  <div className="form-outline mt-3">
+                    <label>Department</label>
+                    <Select
+                      placeholder="Select Department"
+                      onChange={handleDepartmentChange}
+                      defaultValue={user.department_id}
+                      style={{ width: '100%' }}
+                    >
+                      {departments.map((dept) => (
+                        <Select.Option value={dept.id} key={dept.id}>
+                          {dept.department_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </Modal>
 
         {/* Modal for Deletion Confirmation */}
-        <Modal
+        < Modal
           title="Are you sure you want to delete?"
           open={isModalOpen2}
           onOk={handleOk2}
           okButtonProps={{ style: { background: 'blue' } }}
           onCancel={handleCancel2}
           style={modalStyle}
-        ></Modal>
+        ></Modal >
 
         {/* Alert for Add User Success*/}
-        {showAlert1 && (
-          <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
-            User Added Successfully
-          </Alert>
-        )}
+        {
+          showAlert1 && (
+            <Alert onClose={handleCloseAlert1} severity="success" style={modalStyle2}>
+              User Added Successfully
+            </Alert>
+          )
+        }
 
         {/* Alert for Add User Failure*/}
-        {showAlert2 && (
-          <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
-            Failed to Add User
-          </Alert>
-        )}
+        {
+          showAlert2 && (
+            <Alert onClose={handleCloseAlert2} severity="error" style={modalStyle2}>
+              Failed to Add User
+            </Alert>
+          )
+        }
 
         {/* Alert for Delete User Success*/}
-        {showAlert3 && (
-          <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
-            User Deleted Successfully
-          </Alert>
-        )}
+        {
+          showAlert3 && (
+            <Alert onClose={handleCloseAlert3} severity="success" style={modalStyle2}>
+              User Deleted Successfully
+            </Alert>
+          )
+        }
 
         {/* Alert for Delete User Failure*/}
-        {showAlert4 && (
-          <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
-            Failed to Delete User
-          </Alert>
-        )}
+        {
+          showAlert4 && (
+            <Alert onClose={handleCloseAlert4} severity="error" style={modalStyle2}>
+              Failed to Delete User
+            </Alert>
+          )
+        }
 
         {/* Alert for Update User Success*/}
-        {showAlert5 && (
-          <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
-            User Updated Successfully
-          </Alert>
-        )}
+        {
+          showAlert5 && (
+            <Alert onClose={handleCloseAlert5} severity="success" style={modalStyle2}>
+              User Updated Successfully
+            </Alert>
+          )
+        }
 
         {/* Alert for Update User Failure*/}
-        {showAlert6 && (
-          <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
-            Failed to Update User
-          </Alert>
-        )}
-      </div>
+        {
+          showAlert6 && (
+            <Alert onClose={handleCloseAlert6} severity="error" style={modalStyle2}>
+              Failed to Update User
+            </Alert>
+          )
+        }
+      </div >
     </>
   )
 }

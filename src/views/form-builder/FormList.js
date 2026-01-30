@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow, CTableDataCell } from '@coreui/react'
-import { Button, Modal, message, Card } from 'antd'
+import { Button, Modal, message, Card, Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import IconButton from '@mui/material/IconButton'
 import VisibilityIcon from '@mui/icons-material/Visibility'
@@ -10,7 +10,7 @@ import { MDBRow, MDBCol, MDBCard, MDBCardHeader, MDBCardBody } from 'mdb-react-u
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
-const FormList = () => {
+function FormList() {
     const navigate = useNavigate()
     const [forms, setForms] = useState([])
     const [loading, setLoading] = useState(false)
@@ -93,7 +93,11 @@ const FormList = () => {
                                 <CTableDataCell>{form.name}</CTableDataCell>
                                 <CTableDataCell>{form.description}</CTableDataCell>
                                 <CTableDataCell>{form.sections_count || 0}</CTableDataCell>
-                                <CTableDataCell>{form.status}</CTableDataCell>
+                                <CTableDataCell>
+                                    <Tag color={form.status === 'active' ? 'green' : form.status === 'draft' ? 'orange' : 'red'}>
+                                        {form.status ? form.status.toUpperCase() : 'UNKNOWN'}
+                                    </Tag>
+                                </CTableDataCell>
                                 <CTableDataCell className="text-center">
                                     <IconButton onClick={() => navigate(`/form-builder/edit/${form.id}`)} color="primary">
                                         <CreateIcon />

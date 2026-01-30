@@ -1,119 +1,222 @@
-import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import {
-    Button,
-    Form,
-    Input,
-    Card,
-    Space,
-    message,
-    Typography,
-    Layout,
-    Tooltip,
-    Affix,
-    Divider,
-    Select as AntSelect,
-    Checkbox,
-    Radio,
-    DatePicker,
-    TimePicker,
-    InputNumber,
-    Rate,
-    Upload
-} from 'antd'
-import {
-    PlusOutlined,
-    SaveOutlined,
-    ArrowLeftOutlined,
-    FontSizeOutlined,
-    NumberOutlined,
-    CalendarOutlined,
-    DownSquareOutlined,
-    AlignLeftOutlined,
-    CheckSquareOutlined,
-    CheckCircleOutlined,
-    EyeOutlined,
-    EditOutlined,
-    LockOutlined,
-    MailOutlined,
-    LinkOutlined,
-    ClockCircleOutlined,
-    AppstoreAddOutlined,
-    UserOutlined,
-    PhoneOutlined,
-    FileOutlined,
-    StarOutlined
-} from '@ant-design/icons'
-import { MDBCard, MDBCardBody, MDBRow, MDBCol } from 'mdb-react-ui-kit'
-import {
-    DndContext,
-    closestCenter,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors,
-    DragOverlay
-} from '@dnd-kit/core'
-import {
-    arrayMove,
-    SortableContext,
-    sortableKeyboardCoordinates,
-    verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
-import {
-    DraggableFieldTemplate,
-    SortableFieldItem,
-    SortableSection
-} from './DndComponents'
+import React, { useState, useEffect, useRef } from 'react'
+import PropTypes from 'prop-types'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import { Button, Input, Affix, Space, message, Spin, Switch, Typography, List, Card, Modal, Form as AntForm } from 'antd'
+import { ArrowLeftOutlined, SaveOutlined, EyeOutlined, EditOutlined, PlusOutlined, DeleteOutlined, MenuOutlined } from '@ant-design/icons'
+import { FormEditor, Form } from '@bpmn-io/form-js'
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy, arrayMove, useSortable, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
-const { Title, Text } = Typography
-const { Content } = Layout
-const { Option } = AntSelect
+// Import form-js styles
+import '@bpmn-io/form-js/dist/assets/form-js.css'
+import '@bpmn-io/form-js/dist/assets/form-js-editor.css'
+import './FormEditor.css'
 
+const { Text, Title } = Typography
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
-const FIELD_TYPES = [
-    { type: 'text', label: 'Text Input', icon: <FontSizeOutlined /> },
-    { type: 'textarea', label: 'Long Text', icon: <AlignLeftOutlined /> },
-    { type: 'name', label: 'Name (First/Last)', icon: <UserOutlined /> },
-    { type: 'email', label: 'Email', icon: <MailOutlined /> },
-    { type: 'phone', label: 'Phone Number', icon: <PhoneOutlined /> },
-    { type: 'password', label: 'Password', icon: <LockOutlined /> },
-    { type: 'url', label: 'URL/Website', icon: <LinkOutlined /> },
-    { type: 'number', label: 'Number', icon: <NumberOutlined /> },
-    { type: 'date', label: 'Date', icon: <CalendarOutlined /> },
-    { type: 'time', label: 'Time', icon: <ClockCircleOutlined /> },
-    { type: 'radio', label: 'Multiple Choice', icon: <CheckCircleOutlined /> },
-    { type: 'checkbox', label: 'Checkboxes', icon: <CheckSquareOutlined /> },
-    { type: 'select', label: 'Dropdown', icon: <DownSquareOutlined /> },
-    { type: 'file', label: 'File Upload', icon: <FileOutlined /> },
-    { type: 'rating', label: 'Rating/Stars', icon: <StarOutlined /> },
-    { type: 'button', label: 'Button', icon: <PlusOutlined /> },
-]
+// --- Sortable Item Component for Section List ---
 
-const getColumnClass = (width) => {
-    switch (width) {
-        case 'half': return 6
-        case 'third': return 4
-        case 'quarter': return 3
-        default: return 12
-    }
+const SortableSectionItem = ({ section, isActive, onClick, onDelete, onNameChange }) => {
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: section.id })
+    const style = { transform: CSS.Transform.toString(transform), transition }
+
+    return (
+        <div ref={setNodeRef} style={{ ...style, marginBottom: 8 }} {...attributes}>
+            <Card
+                size="small"
+                hoverable
+                onClick={onClick}
+                style={{
+                    cursor: 'pointer',
+                    borderColor: isActive ? '#1890ff' : '#f0f0f0',
+                    backgroundColor: isActive ? '#e6f7ff' : '#fff'
+                }}
+            >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                        <MenuOutlined
+                            style={{ marginRight: 8, cursor: 'grab', color: '#999' }}
+                            {...listeners}
+                            onPointerDown={(e) => {
+                                e.stopPropagation()
+                                if (listeners && listeners.onPointerDown) {
+                                    listeners.onPointerDown(e)
+                                }
+                            }}
+                        />
+                        <Input
+                            value={section.name}
+                            onChange={(e) => onNameChange(section.id, e.target.value)}
+                            bordered={false}
+                            style={{
+                                padding: 0,
+                                fontWeight: isActive ? 600 : 400,
+                                background: 'transparent'
+                            }}
+                        />
+                    </div>
+                    <Button
+                        type="text"
+                        danger
+                        icon={<DeleteOutlined />}
+                        size="small"
+                        onClick={(e) => { e.stopPropagation(); onDelete(section.id); }}
+                    />
+                </div>
+            </Card>
+        </div>
+    )
 }
 
-const FormEditor = () => {
+SortableSectionItem.propTypes = {
+    section: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        name: PropTypes.string.isRequired
+    }).isRequired,
+    isActive: PropTypes.bool.isRequired,
+    onClick: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
+    onNameChange: PropTypes.func.isRequired
+}
+
+// --- Preview Component for a Single Section ---
+const SectionPreview = ({ section, masterData, onDataChange }) => {
+    const containerRef = useRef(null)
+    const viewerInstance = useRef(null)
+    useEffect(() => {
+        if (!containerRef.current) return
+
+        const viewer = new Form({ container: containerRef.current })
+        viewerInstance.current = viewer
+
+        const init = async () => {
+            try {
+                // Deep copy to ensure no shared state issues in viewer
+                const schema = section.schema ? JSON.parse(JSON.stringify(section.schema)) : null
+                if (schema && !schema.components) schema.components = []
+
+                await viewer.importSchema(schema || { schemaVersion: 4, exporter: { name: 'form-js', version: '0.1.0' }, type: 'default', components: [] }, masterData)
+
+                // Listen for data changes
+                viewer.on('changed', (event) => {
+                    if (onDataChange) {
+                        onDataChange(section.id, event.data)
+                    }
+                })
+            } catch (err) {
+                console.error(`Failed to load preview for section ${section.name}`, err)
+            }
+        }
+        init()
+
+        return () => {
+            if (viewerInstance.current) viewerInstance.current.destroy()
+        }
+    }, [section, masterData]) // Removed 'onDataChange' from deps to avoid re-init loop if handler is unstable, but ideally it should be stable or ref.
+
+
+    return (
+        <Card title={section.name} className="form-preview-card" style={{ marginBottom: 24, boxShadow: '0 1px 2px 0 rgba(0,0,0,0.03)' }}>
+            <div ref={containerRef} />
+        </Card>
+    )
+}
+
+SectionPreview.propTypes = {
+    section: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        name: PropTypes.string,
+        schema: PropTypes.object
+    }).isRequired,
+    masterData: PropTypes.object,
+    onDataChange: PropTypes.func
+}
+
+const CreateFormEditor = () => {
     const { id } = useParams()
     const navigate = useNavigate()
-    const [formInstance] = Form.useForm()
+    const location = useLocation()
+    const isViewMode = location.pathname.includes('/view/') || location.pathname.includes('/test-form')
+
+    const containerRef = useRef(null)
+    const bpmnInstance = useRef(null)
+
+    // State
     const [loading, setLoading] = useState(false)
     const [saving, setSaving] = useState(false)
+    const [formName, setFormName] = useState('')
+    const [formDescription, setFormDescription] = useState('')
+    const [mode, setMode] = useState(isViewMode ? 'preview' : 'edit') // 'edit' | 'preview'
+    const [formData, setFormData] = useState({})
+
+    // Sections Management
     const [sections, setSections] = useState([])
-    const [activeId, setActiveId] = useState(null)
-    const [focusedFieldId, setFocusedFieldId] = useState(null)
-    const [previewMode, setPreviewMode] = useState(false)
-    const [dynamicData, setDynamicData] = useState({}) // Store fetched dynamic data
+    const [activeSectionId, setActiveSectionId] = useState(null)
+
+    // --- Schema Templates ---
+
+    const initialSchema = {
+        schemaVersion: 4,
+        exporter: { name: 'form-js', version: '0.1.0' },
+        type: 'default',
+        components: [],
+    }
+
+    const getEmptySchema = () => JSON.parse(JSON.stringify(initialSchema))
+
     const local = JSON.parse(localStorage.getItem('user-info'))
     const token = local?.token
 
+    // --- Master Data for Dropdowns ---
+    const [masterData, setMasterData] = useState({})
+
+    useEffect(() => {
+        const fetchMasterData = async () => {
+            try {
+                const headers = token ? { Authorization: `Bearer ${token}` } : {}
+                const endpoints = [
+                    { key: 'campuses', url: `${BASE_URL}/api/form-options/campuses`, map: d => ({ value: d.name, label: d.name }) },
+                    { key: 'faculties', url: `${BASE_URL}/api/form-options/faculties`, map: d => ({ value: d.name, label: d.name }) },
+                    { key: 'departments', url: `${BASE_URL}/api/form-options/departments`, map: d => ({ value: d.department_name, label: d.department_name }) },
+                    { key: 'activityTypes', url: `${BASE_URL}/api/form-options/activityTypes`, map: d => ({ value: d.code, label: d.label || d.code }) },
+                    { key: 'industrySectors', url: `${BASE_URL}/api/form-options/industrySectors`, map: d => ({ value: d, label: d }) },
+                    { key: 'employers', url: `${BASE_URL}/api/form-options/employers`, map: d => ({ value: d, label: d }) },
+                    { key: 'hods', url: `${BASE_URL}/api/form-options/hods`, map: d => ({ value: d.id, label: d.name }) }
+                ]
+
+                const results = await Promise.all(endpoints.map(async ep => {
+                    try {
+                        const res = await fetch(ep.url, { headers })
+                        if (res.ok) {
+                            let data = await res.json()
+                            // Handle various response structures (data wrapper, etc)
+                            // Generic unwrapper
+                            const list = Array.isArray(data) ? data : (data.data && Array.isArray(data.data) ? data.data : [])
+
+                            // Map if mapper provided
+                            return { key: ep.key, data: list.map(item => ep.map(item)) }
+                        }
+                    } catch (e) {
+                        console.error(`Failed to fetch ${ep.key}`, e)
+                    }
+                    return { key: ep.key, data: [] }
+                }))
+
+                const newData = {}
+                results.forEach(r => {
+                    if (r) newData[r.key] = r.data
+                })
+                setMasterData(newData)
+            } catch (err) {
+                console.error("Error loading master data", err)
+            }
+        }
+        fetchMasterData()
+    }, [])
+
+    // --- DND Sensors ---
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
@@ -125,181 +228,136 @@ const FormEditor = () => {
         })
     )
 
+    // --- Editor/Viewer Logic ---
+
+    // Save current active section schema to state before switching
+    const saveCurrentSectionSchema = () => {
+        if (!activeSectionId || !bpmnInstance.current || !sections.length) return
+
+        try {
+            // Check if we are in a state where saving is possible (Edit mode has .saveSchema)
+            // Viewer (Preview) does not have saveSchema, but we shouldn't be editing in preview anyway
+            if (mode === 'edit') {
+                const currentSchema = bpmnInstance.current.saveSchema()
+                setSections(prev => prev.map(s => s.id === activeSectionId ? { ...s, schema: currentSchema } : s))
+            }
+        } catch (err) {
+            console.error('Error auto-saving section schema:', err)
+        }
+    }
+
+    const initEditor = async (schema) => {
+        if (!containerRef.current) return
+        if (bpmnInstance.current) bpmnInstance.current.destroy()
+
+        const editor = new FormEditor({ container: containerRef.current })
+        bpmnInstance.current = editor
+
+        try {
+            const schemaToImport = schema || getEmptySchema()
+            if (!schemaToImport.components) {
+                schemaToImport.components = []
+            }
+            await editor.importSchema(schemaToImport)
+        } catch (err) {
+            // console.error('Failed to import schema into Editor', err)
+            // Fallback if schema is invalid
+            await editor.importSchema(getEmptySchema())
+        }
+    }
+
+    const initViewer = async (schema) => {
+        if (!containerRef.current) return
+        if (bpmnInstance.current) bpmnInstance.current.destroy()
+
+        const viewer = new Form({ container: containerRef.current })
+        bpmnInstance.current = viewer
+
+        try {
+            const schemaToImport = schema || getEmptySchema()
+            if (!schemaToImport.components) {
+                schemaToImport.components = []
+            }
+            await viewer.importSchema(schemaToImport, masterData)
+        } catch (err) {
+            console.error('Failed to import schema into Viewer', err)
+        }
+    }
+
+    // --- Effects ---
+
+    // Load form on mount
     useEffect(() => {
         if (id) {
             fetchForm()
+        } else {
+            // New Form: Create 1 default section
+            const defaultSection = { id: `sec-${Date.now()}`, name: 'Section 1', order: 0, schema: getEmptySchema() }
+            setSections([defaultSection])
+            setActiveSectionId(defaultSection.id)
         }
     }, [id])
 
-    // Fetch dynamic data sources when sections change
+    // Sync mode with view prop
     useEffect(() => {
-        if (sections && sections.length > 0) {
-            fetchDynamicDataSources()
+        if (isViewMode) {
+            setMode('preview')
         }
-    }, [sections])
+    }, [isViewMode])
 
-    const fetchDynamicDataSources = async () => {
-        const dataSourcesToFetch = new Set()
+    // Handle switching sections or modes
+    // When activeSectionId changes, we load that schema into the editor
+    useEffect(() => {
+        if (!activeSectionId) return
 
-        // Find all fields that use dynamic data sources
-        sections.forEach(section => {
-            section.fields.forEach(field => {
-                if (field.data_source) {
-                    dataSourcesToFetch.add(field.data_source)
-                }
-            })
-        })
-
-        if (dataSourcesToFetch.size === 0) return;
-
-        // Fetch each unique data source
-        const dataPromises = Array.from(dataSourcesToFetch).map(async (source) => {
-            try {
-                let endpoint = ''
-                switch (source) {
-                    case 'campuses':
-                        endpoint = `${BASE_URL}/api/getCampuses`
-                        break
-                    case 'faculties':
-                        endpoint = `${BASE_URL}/api/getFaculties`
-                        break
-                    case 'departments':
-                        endpoint = `${BASE_URL}/api/getDepartments`
-                        break
-                    case 'activity_types':
-                        endpoint = `${BASE_URL}/api/getActivityTypes`
-                        break
-                    case 'users':
-                        endpoint = `${BASE_URL}/api/get_users`
-                        break
-                    case 'industry_sectors':
-                        endpoint = `${BASE_URL}/api/getIndustrySectors`
-                        break
-                    case 'employers':
-                        endpoint = `${BASE_URL}/api/getProposedEmployers`
-                        break
-                    case 'department_hods':
-                        endpoint = `${BASE_URL}/api/getHODs`
-                        break
-                    default:
-                        return null
-                }
-
-                const response = await fetch(endpoint, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
-
-                if (response.ok) {
-                    const data = await response.json()
-                    return { source, data }
-                } else {
-                    const errorText = `Failed to fetch ${source}: ${response.status} ${response.statusText}`;
-                    console.error(errorText);
-                }
-            } catch (error) {
-                const errorMsg = `Error fetching ${source}: ${error.message}`;
-                console.error(errorMsg);
-            }
-            return null
-        })
-
-        const results = await Promise.all(dataPromises)
-        const newDynamicData = { ...dynamicData }
-
-        results.forEach(result => {
-            if (result) {
-                newDynamicData[result.source] = result.data;
-            }
-        })
-        setDynamicData(newDynamicData)
-    }
-
-    const getOptionsForField = (field) => {
-        if (field.data_source && dynamicData[field.data_source]) {
-            const data = dynamicData[field.data_source]
-
-            // Transform data based on source type
-            switch (field.data_source) {
-                case 'campuses':
-                    return Array.isArray(data) ? data.map(item => ({
-                        label: item.name,
-                        value: item.name
-                    })) : []
-
-                case 'departments':
-                    return Array.isArray(data) ? data.map(item => ({
-                        label: item.department_name,
-                        value: item.department_name
-                    })) : []
-
-                case 'faculties':
-                    // Faculties returns an object with faculty names as keys
-                    return Object.keys(data).map(name => ({
-                        label: name,
-                        value: name
-                    }))
-
-                case 'activity_types':
-                    return Array.isArray(data) ? data.map(item => ({
-                        label: item.label,
-                        value: item.code
-                    })) : []
-
-                case 'users':
-                    return Array.isArray(data) ? data.map(user => ({
-                        label: user.name || user.email,
-                        value: user.id
-                    })) : []
-
-                case 'industry_sectors':
-                case 'employers':
-                    return Array.isArray(data) ? data.map(item => ({
-                        label: item.name,
-                        value: item.name
-                    })) : []
-
-                case 'department_hods':
-                    return Array.isArray(data) ? data.map(item => ({
-                        label: item.hod_name,
-                        value: item.hod_name
-                    })) : []
-
-                default:
-                    return []
+        const activeSection = sections.find(s => s.id === activeSectionId)
+        if (activeSection) {
+            // console.log('Loading section:', activeSection.name)
+            if (mode === 'edit') {
+                initEditor(activeSection.schema)
+            } else {
+                initViewer(activeSection.schema)
             }
         }
+    }, [activeSectionId, mode])
 
-        // Return manual options if no data source
-        return field.options || []
-    }
+
+    // --- Actions ---
 
     const fetchForm = async () => {
         setLoading(true)
         try {
             const response = await fetch(`${BASE_URL}/api/forms/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             })
             const data = await response.json()
-            formInstance.setFieldsValue({
-                name: data.name,
-                description: data.description,
-                status: data.status,
-            })
-            const sectionsWithIds = (data.sections || []).map(s => ({
-                ...s,
-                id: s.id || `section-${Math.random().toString(36).substr(2, 9)}`,
-                fields: (s.fields || []).map(f => ({
-                    ...f,
-                    id: f.id || `field-${Math.random().toString(36).substr(2, 9)}`
+            setFormName(data.name)
+            setFormDescription(data.description)
+
+            // Check for Sections
+            if (data.sections && data.sections.length > 0) {
+                // Map backend sections to our state
+                const mappedSections = data.sections.map(s => ({
+                    id: s.id || `sec-${Math.random()}`,
+                    name: s.name,
+                    order: s.order,
+                    schema: s.schema || getEmptySchema()
                 }))
-            }))
-            setSections(sectionsWithIds)
-            if (sectionsWithIds.length > 0) {
-                setFocusedFieldId(sectionsWithIds[0].id)
+                // Sort by order
+                mappedSections.sort((a, b) => a.order - b.order)
+
+                setSections(mappedSections)
+                setActiveSectionId(mappedSections[0].id)
+            } else if (data.schema) {
+                // Backward compatibility: Single schema form, convert to 1 section
+                const singleSection = { id: `sec-default`, name: 'Main Section', order: 0, schema: data.schema }
+                setSections([singleSection])
+                setActiveSectionId(singleSection.id)
+            } else {
+                // Empty
+                const defaultSection = { id: `sec-${Date.now()}`, name: 'Section 1', order: 0, schema: getEmptySchema() }
+                setSections([defaultSection])
+                setActiveSectionId(defaultSection.id)
             }
         } catch (error) {
             console.error('Error fetching form:', error)
@@ -309,608 +367,419 @@ const FormEditor = () => {
         }
     }
 
-    const handleSaveForm = async (values) => {
-        setSaving(true)
-        try {
-            let formId = id
-            const method = id ? 'PUT' : 'POST'
-            const url = id ? `${BASE_URL}/api/forms/${id}` : `${BASE_URL}/api/forms`
-
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(values),
-            })
-
-            const data = await response.json()
-            if (!id) formId = data.id
-
-            const structureResponse = await fetch(`${BASE_URL}/api/forms/${formId}/structure`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ sections }),
-            })
-
-            if (structureResponse.ok) {
-                message.success('Form saved successfully')
-                navigate('/form-builder')
-            } else {
-                message.error('Failed to save form structure')
-            }
-        } catch (error) {
-            console.error('Error saving form:', error)
-            message.error('Error saving form')
-        } finally {
-            setSaving(false)
-        }
-    }
-
     const addSection = () => {
-        const newId = `section-${Date.now()}`
-        const newSection = {
-            id: newId,
-            name: `Section ${sections.length + 1}`,
-            order: sections.length,
-            columns_per_row: 1,
-            fields: [],
-        }
-        setSections([...sections, newSection])
-        setFocusedFieldId(newId)
-    }
+        // Capture current schema manually to avoid race conditions with state updates
+        const currentSchema = bpmnInstance.current && mode === 'edit' ? bpmnInstance.current.saveSchema() : null
 
-    const removeSection = (index) => {
-        const newSections = [...sections]
-        newSections.splice(index, 1)
-        setSections(newSections)
-    }
+        setSections(prevSections => {
+            // Update current section if needed
+            const updatedSections = prevSections.map(s =>
+                s.id === activeSectionId && currentSchema
+                    ? { ...s, schema: currentSchema }
+                    : s
+            )
 
-    const updateSectionName = (index, name) => {
-        const newSections = [...sections]
-        newSections[index].name = name
-        setSections(newSections)
-    }
-
-    const addField = (fieldType = 'text') => {
-        // Auto-create first section if none exist
-        if (sections.length === 0) {
-            const newSectionId = `section-${Date.now()}`
             const newSection = {
-                id: newSectionId,
-                name: 'Section 1',
-                order: 0,
-                columns_per_row: 1,
-                fields: [],
+                id: `sec-${Date.now()}`,
+                name: `Section ${updatedSections.length + 1}`,
+                order: updatedSections.length,
+                schema: getEmptySchema()
             }
-            setSections([newSection])
-            setFocusedFieldId(newSectionId)
 
-            // Add field to the new section after a brief delay
-            setTimeout(() => {
-                const fieldId = `field-${Date.now()}`
-                const typeLabel = FIELD_TYPES.find(t => t.type === fieldType)?.label || 'Question'
-                const updatedSection = {
-                    ...newSection,
-                    fields: [{
-                        id: fieldId,
-                        label: typeLabel,
-                        field_type: fieldType,
-                        name: `field_${Date.now()}`,
-                        order: 0,
-                        is_required: false,
-                        column_width: 'full',
-                        options: ['radio', 'checkbox', 'select'].includes(fieldType) ? [{ label: 'Option 1', value: 'option_1' }] : []
-                    }]
-                }
-                setSections([updatedSection])
-                setFocusedFieldId(fieldId)
-            }, 100)
+            // We can't side-effect set the active ID easily here, 
+            // so we'll do it by effect or just set it after. 
+            // But since this is sync, we can just grab the ID.
+            setTimeout(() => setActiveSectionId(newSection.id), 0)
+
+            return [...updatedSections, newSection]
+        })
+    }
+
+    const switchSection = async (id) => {
+        if (id === activeSectionId) return
+
+        // 1. Capture current state
+        let currentSchema = null
+        try {
+            currentSchema = bpmnInstance.current && mode === 'edit' ? bpmnInstance.current.saveSchema() : null
+        } catch (e) {
+            console.error('Failed to save current schema:', e)
+        }
+
+        // 2. Update local state
+        // We need to calculate the NEW sections array to pass to the next render AND to the save function
+        const updatedSections = sections.map(s =>
+            s.id === activeSectionId && currentSchema
+                ? { ...s, schema: currentSchema }
+                : s
+        )
+
+        setSections(updatedSections)
+        setActiveSectionId(id)
+
+        // 3. Auto-save as draft
+        // We use the updatedSections we just calculated
+        // Only auto-save if we have a name (or meaningful data) to avoid creating junk
+        if (formName) {
+            await saveFormPayload(updatedSections, 'draft', true, id) // Pass target active ID
+        }
+    }
+
+    const updateSectionName = (id, newName) => {
+        setSections(sections.map(s => s.id === id ? { ...s, name: newName } : s))
+    }
+
+    const deleteSection = (id) => {
+        if (sections.length <= 1) {
+            message.warning('Forms must have at least one section.')
             return
         }
 
-        let targetSectionIdx = sections.findIndex(s => s.id === focusedFieldId)
-        if (targetSectionIdx === -1) {
-            sections.forEach((s, idx) => {
-                if (s.fields.some(f => f.id === focusedFieldId)) {
-                    targetSectionIdx = idx
+        Modal.confirm({
+            title: 'Delete Section?',
+            content: 'This will delete the section and all its fields.',
+            onOk: () => {
+                const newSections = sections.filter(s => s.id !== id)
+                setSections(newSections)
+                if (activeSectionId === id) {
+                    setActiveSectionId(newSections[0].id)
                 }
-            })
-        }
-        if (targetSectionIdx === -1) targetSectionIdx = sections.length - 1
-
-        const newSections = [...sections]
-        const typeLabel = FIELD_TYPES.find(t => t.type === fieldType)?.label || 'Question'
-        const fieldId = `field-${Date.now()}`
-        newSections[targetSectionIdx].fields.push({
-            id: fieldId,
-            label: typeLabel,
-            field_type: fieldType,
-            name: `field_${Date.now()}`,
-            order: newSections[targetSectionIdx].fields.length,
-            is_required: false,
-            column_width: 'full',
-            options: ['radio', 'checkbox', 'select'].includes(fieldType) ? [{ label: 'Option 1', value: 'option_1' }] : []
+            }
         })
-        setSections(newSections)
-        setFocusedFieldId(fieldId)
-    }
-
-    const duplicateField = (sectionIndex, fieldIndex) => {
-        const newSections = [...sections]
-        const original = newSections[sectionIndex].fields[fieldIndex]
-        const fieldId = `field-copy-${Date.now()}`
-        const copy = {
-            ...original,
-            id: fieldId,
-            name: `${original.name}_copy`,
-            order: original.order + 1
-        }
-        newSections[sectionIndex].fields.splice(fieldIndex + 1, 0, copy)
-        setSections(newSections)
-        setFocusedFieldId(fieldId)
-    }
-
-    const removeField = (sectionIndex, fieldIndex) => {
-        const newSections = [...sections]
-        newSections[sectionIndex].fields.splice(fieldIndex, 1)
-        setSections(newSections)
-    }
-
-    const updateField = (sectionIndex, fieldIndex, fieldData) => {
-        const newSections = [...sections]
-        const updatedField = {
-            ...newSections[sectionIndex].fields[fieldIndex],
-            ...fieldData,
-        };
-        newSections[sectionIndex].fields[fieldIndex] = updatedField;
-        setSections(newSections)
-    }
-
-    const handleDragStart = (event) => {
-        setActiveId(event.active.id)
     }
 
     const handleDragEnd = (event) => {
         const { active, over } = event
-        setActiveId(null)
-
-        if (!over) return
-
         if (active.id !== over.id) {
-            if (active.data.current.type === 'section') {
-                const oldIndex = sections.findIndex(s => s.id === active.id)
-                const newIndex = sections.findIndex(s => s.id === over.id)
-                setSections(arrayMove(sections, oldIndex, newIndex))
-            } else if (active.data.current.type === 'field') {
-                const activeSectionIdx = active.data.current.sectionIndex
-                const overSectionIdx = over.data.current?.sectionIndex
-
-                if (activeSectionIdx === overSectionIdx) {
-                    const newSections = [...sections]
-                    const fields = newSections[activeSectionIdx].fields
-                    const oldIndex = active.data.current.fieldIndex
-                    const newIndex = over.data.current.fieldIndex
-                    newSections[activeSectionIdx].fields = arrayMove(fields, oldIndex, newIndex)
-                    setSections(newSections)
-                }
-            }
+            setSections((items) => {
+                const oldIndex = items.findIndex(i => i.id === active.id)
+                const newIndex = items.findIndex(i => i.id === over.id)
+                return arrayMove(items, oldIndex, newIndex)
+            })
         }
     }
 
-    const renderPreviewField = (field) => {
-        const commonStyle = { width: '100%', borderRadius: '6px' }
+    const toggleMode = () => {
+        saveCurrentSectionSchema()
+        setMode(prev => prev === 'edit' ? 'preview' : 'edit')
+    }
 
-        switch (field.field_type) {
-            case 'text':
-                return <Input placeholder={`Enter ${field.label}`} style={commonStyle} />
-            case 'name':
-                return (
-                    <Space.Compact style={{ width: '100%' }}>
-                        <Input placeholder="First Name" style={{ ...commonStyle, borderRadius: '6px 0 0 6px' }} />
-                        <Input placeholder="Last Name" style={{ ...commonStyle, borderRadius: '0 6px 6px 0' }} />
-                    </Space.Compact>
-                )
-            case 'email':
-                return <Input type="email" placeholder={`Enter ${field.label}`} style={commonStyle} />
-            case 'phone':
-                return <Input placeholder="+1 (555) 000-0000" style={commonStyle} />
-            case 'url':
-                return <Input placeholder="https://example.com" style={commonStyle} />
-            case 'password':
-                return (
-                    <Input.Password
-                        placeholder={`Enter ${field.label}`}
-                        style={commonStyle}
-                        visibilityToggle={field.validation?.allow_show_password !== false}
-                    />
-                )
-            case 'number':
-                return <InputNumber placeholder={`Enter ${field.label}`} style={commonStyle} />
-            case 'textarea':
-                return <Input.TextArea rows={4} placeholder={`Enter ${field.label}`} style={commonStyle} />
-            case 'date':
-                return <DatePicker style={commonStyle} />
-            case 'time':
-                return <TimePicker style={commonStyle} />
-            case 'file':
-                return (
-                    <Upload.Dragger style={{ ...commonStyle, padding: '20px' }}>
-                        <p className="ant-upload-drag-icon">
-                            <FileOutlined style={{ fontSize: '32px', color: '#0070FF' }} />
-                        </p>
-                        <p className="ant-upload-text">Click or drag file to upload</p>
-                        <p className="ant-upload-hint">Support for single or bulk upload</p>
-                    </Upload.Dragger>
-                )
-            case 'rating':
-                return (
-                    <div>
-                        <Rate defaultValue={0} style={{ fontSize: '28px', color: '#0070FF' }} />
-                    </div>
-                )
-            case 'button':
-                const buttonStyle = field.validation?.button_style || 'primary';
-                const buttonText = field.validation?.button_text || field.label || 'Button';
-                return (
-                    <Button
-                        type={buttonStyle}
-                        size="large"
-                        style={{
-                            borderRadius: '6px',
-                            ...(buttonStyle === 'primary' && { background: '#0070FF', border: 'none' })
-                        }}
-                        onClick={() => {
-                            if (field.validation?.action_url) {
-                                window.open(field.validation.action_url, '_blank');
-                            }
-                        }}
-                    >
-                        {buttonText}
-                    </Button>
-                )
-            case 'select':
-                const selectOptions = getOptionsForField(field)
-                return (
-                    <AntSelect
-                        placeholder={`Select ${field.label}`}
-                        style={commonStyle}
-                        loading={field.data_source && !dynamicData[field.data_source]}
-                    >
-                        {selectOptions.map((opt, idx) => (
-                            <Option key={idx} value={opt.value}>{opt.label}</Option>
-                        ))}
-                    </AntSelect>
-                )
-            case 'radio':
-                const radioOptions = getOptionsForField(field)
-                return (
-                    <Radio.Group style={{ width: '100%' }}>
-                        <Space direction="vertical">
-                            {radioOptions.map((opt, idx) => (
-                                <Radio key={idx} value={opt.value}>{opt.label}</Radio>
-                            ))}
-                        </Space>
-                    </Radio.Group>
-                )
-            case 'checkbox':
-                const checkboxOptions = getOptionsForField(field)
-                return (
-                    <Checkbox.Group style={{ width: '100%' }}>
-                        <Space direction="vertical">
-                            {checkboxOptions.map((opt, idx) => (
-                                <Checkbox key={idx} value={opt.value}>{opt.label}</Checkbox>
-                            ))}
-                        </Space>
-                    </Checkbox.Group>
-                )
-            default:
-                return <Input placeholder={`Enter ${field.label}`} style={commonStyle} />
+    const handleSave = async (status = 'active') => {
+        if (!formName) {
+            message.error('Please enter a form name')
+            return
+        }
+
+        // Ensure current active section is up to date in state
+        if (mode === 'edit' && bpmnInstance.current) {
+            const currentSchema = bpmnInstance.current.saveSchema()
+            const payloadSections = sections.map((s, index) => ({
+                name: s.name,
+                order: index,
+                schema: s.id === activeSectionId ? currentSchema : s.schema
+            }))
+
+            await saveFormPayload(payloadSections, status)
+        } else {
+            const payloadSections = sections.map((s, index) => ({
+                name: s.name,
+                order: index,
+                schema: s.schema
+            }))
+            await saveFormPayload(payloadSections, status)
+        }
+    }
+
+    const saveFormPayload = async (sectionsPayload, status = 'active', silent = false, nextActiveId = null) => {
+        const effectiveActiveId = nextActiveId ?? activeSectionId // Use intended (next) ID if provided, due to closure staleness
+        if (!silent) setSaving(true)
+
+        try {
+            const payload = {
+                name: formName,
+                description: formDescription,
+                status: status,
+            }
+
+            const method = id ? 'PUT' : 'POST'
+            const url = id ? `${BASE_URL}/api/forms/${id}` : `${BASE_URL}/api/forms`
+
+            // 1. Save Form Details
+            const response = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify(payload),
+            })
+
+            let savedFormId = id
+            if (response.ok) {
+                const data = await response.json()
+                savedFormId = data.id
+
+                // 2. Save Structure (Sections)
+                const structurePayload = { sections: sectionsPayload }
+
+                const structRes = await fetch(`${BASE_URL}/api/forms/${savedFormId}/structure`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify(structurePayload),
+                })
+
+                if (structRes.ok) {
+                    const savedData = await structRes.json()
+
+                    if (savedData.sections && Array.isArray(savedData.sections)) {
+                        // Sync local sections with backend response to get the new IDs
+                        // We match by 'order' assuming the backend preserves it (which it does)
+                        setSections(prevSections => {
+                            const newSections = [...prevSections]
+                            savedData.sections.forEach(backendSection => {
+                                const localIndex = newSections.findIndex(s => s.order === backendSection.order)
+                                if (localIndex !== -1) {
+                                    // Allow the ID to update, but keep other local state if needed (though backend is source of truth)
+                                    // If the active section ID changes, we must handle that separately or here.
+
+                                    // Check if we are updating the active section's ID (Handle ID change for new sections)
+                                    // Use effectiveActiveId to ensure we don't accidentally revert a user's switch
+                                    if (newSections[localIndex].id === effectiveActiveId && newSections[localIndex].id !== backendSection.id) {
+                                        setActiveSectionId(backendSection.id)
+                                    }
+
+                                    newSections[localIndex] = {
+                                        ...newSections[localIndex],
+                                        id: backendSection.id, // Update ID
+                                        // Update other fields to ensure sync
+                                        name: backendSection.name,
+                                        schema: backendSection.schema
+                                    }
+                                }
+                            })
+                            return newSections
+                        })
+                    }
+
+                    if (!silent) message.success(`Form saved as ${status} successfully`)
+                    if (!id) {
+                        // If it was a new form, navigate to the edit URL with the new ID
+                        navigate(`/form-builder/edit/${savedFormId}`, { replace: true })
+                    }
+                } else {
+                    if (!silent) message.error('Form details saved, but failed to save sections structure.')
+                }
+            } else {
+                if (!silent) message.error('Failed to save form details')
+            }
+        } catch (error) {
+            console.error('Error saving form:', error)
+            if (!silent) message.error('Error saving form')
+        } finally {
+            if (!silent) setSaving(false)
+        }
+    }
+
+    const handleSectionDataChange = (sectionId, data) => {
+        setFormData(prev => ({
+            ...prev,
+            [sectionId]: data
+        }))
+    }
+
+    const handleSubmitForm = async () => {
+        // Merge section data
+        let mergedData = {}
+        Object.values(formData).forEach(sectionData => {
+            mergedData = { ...mergedData, ...sectionData }
+        })
+
+        // Clean data: Remove masterData keys that might have polluted the form data
+        if (masterData) {
+            Object.keys(masterData).forEach(key => {
+                delete mergedData[key]
+            })
+        }
+
+        setLoading(true)
+        try {
+            const response = await fetch(`${BASE_URL}/api/forms/${id}/submit`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {})
+                },
+                body: JSON.stringify({ data: mergedData })
+            })
+
+            const resData = await response.json()
+
+            if (response.ok) {
+                message.success('Form submitted successfully!')
+            } else {
+                if (resData.errors) {
+                    const errorMsg = Object.values(resData.errors).flat()[0] || 'Submission invalid'
+                    message.error(errorMsg)
+                } else {
+                    message.error(resData.message || 'Submission failed')
+                }
+            }
+        } catch (error) {
+            console.error('Submission error:', error)
+            message.error('An error occurred during submission.')
+        } finally {
+            setLoading(false)
         }
     }
 
     return (
-        <Layout style={{ minHeight: '100vh', background: '#f5f5f5' }}>
-            <Affix offsetTop={0}>
-                <div style={{
-                    background: '#ffffff',
-                    borderBottom: '1px solid #f0f0f0',
-                    padding: '16px 24px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
-                }}>
-                    <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Space size="large">
-                            <Button
-                                type="text"
-                                icon={<ArrowLeftOutlined />}
-                                onClick={() => navigate('/form-builder')}
-                            />
-                            <Title level={4} style={{ margin: 0, color: '#262626', fontWeight: '600' }}>
-                                {previewMode ? 'Form Preview' : 'Form Builder'}
-                            </Title>
-                        </Space>
-                        <Space>
-                            <Button
-                                icon={previewMode ? <EditOutlined /> : <EyeOutlined />}
-                                onClick={() => setPreviewMode(!previewMode)}
-                                style={{ borderRadius: '6px' }}
-                            >
-                                {previewMode ? 'Edit' : 'Preview'}
-                            </Button>
-                            <Button
-                                type="primary"
-                                icon={<SaveOutlined />}
-                                loading={saving}
-                                onClick={() => formInstance.submit()}
-                                style={{
-                                    borderRadius: '6px',
-                                    background: '#0070FF',
-                                    border: 'none'
-                                }}
-                            >
-                                Save Form
-                            </Button>
-                        </Space>
+        <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#f5f5f5', overflow: 'hidden' }}>
+            {/* Header */}
+            <div className="editor-header">
+                <Space>
+                    <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/form-builder')} type="text" style={{ fontSize: '16px' }} />
+                    <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '8px' }}>
+                        <Input
+                            placeholder="Form Name"
+                            value={formName}
+                            onChange={(e) => setFormName(e.target.value)}
+                            variant="borderless"
+                            style={{ fontSize: '18px', fontWeight: 'bold', padding: 0, height: '24px' }}
+                        />
+                        <Input
+                            placeholder="Add description..."
+                            value={formDescription}
+                            onChange={(e) => setFormDescription(e.target.value)}
+                            variant="borderless"
+                            size="small"
+                            style={{ color: '#888', padding: 0, fontSize: '12px' }}
+                        />
                     </div>
-                </div>
-            </Affix>
+                </Space>
+                <Space size="middle">
+                    {!isViewMode && (
+                        <div style={{ display: 'flex', alignItems: 'center', background: '#f0f2f5', padding: '4px 8px', borderRadius: '6px' }}>
+                            <Text style={{ marginRight: 8, fontSize: '12px', fontWeight: 500, color: '#666' }}>{mode === 'edit' ? 'Design Mode' : 'Preview Mode'}</Text>
+                            <Switch
+                                checkedChildren={<EyeOutlined />}
+                                unCheckedChildren={<EditOutlined />}
+                                checked={mode === 'preview'}
+                                onChange={toggleMode}
+                                size="small"
+                            />
+                        </div>
+                    )}
+                    {!isViewMode && <Button type="default" icon={<SaveOutlined />} onClick={() => handleSave('draft')} loading={saving}>Save Draft</Button>}
+                    {!isViewMode && <Button type="primary" icon={<SaveOutlined />} onClick={() => handleSave('active')} loading={saving} style={{ background: '#28B463', borderColor: '#28B463' }}>Save & Publish</Button>}
+                </Space>
+            </div>
 
-            <Content style={{ padding: '32px 24px 100px 24px', display: 'flex', justifyContent: 'center' }}>
-                <div style={{ width: '100%', maxWidth: '900px', position: 'relative' }}>
-                    {!previewMode ? (
-                        <>
-                            <MDBCard style={{ border: 'none', boxShadow: 'none', borderRadius: '12px', background: 'transparent' }}>
-                                <MDBCardBody style={{ padding: 0 }}>
-                                    <Form
-                                        form={formInstance}
-                                        layout="vertical"
-                                        onFinish={handleSaveForm}
-                                        initialValues={{ status: 'active' }}
-                                    >
-                                        <div style={{
-                                            background: '#ffffff',
-                                            borderRadius: '12px',
-                                            border: focusedFieldId === 'header' ? '2px solid #0070FF' : '1px solid #f0f0f0',
-                                            padding: '32px',
-                                            marginBottom: '20px',
-                                            transition: 'all 0.2s',
-                                            boxShadow: '0 8px 24px rgba(0,0,0,0.05)'
-                                        }} onClick={() => setFocusedFieldId('header')}>
-                                            <Form.Item name="name" rules={[{ required: true }]} style={{ marginBottom: '16px' }}>
-                                                <Input
-                                                    placeholder="Form Title"
-                                                    variant="borderless"
-                                                    style={{
-                                                        fontSize: '24px',
-                                                        fontWeight: '600',
-                                                        padding: '0',
-                                                        color: '#262626',
-                                                        borderBottom: focusedFieldId === 'header' ? '2px solid #f0f0f0' : 'none'
-                                                    }}
-                                                />
-                                            </Form.Item>
-                                            <Form.Item name="description" style={{ marginBottom: 0 }}>
-                                                <Input.TextArea
-                                                    placeholder="Form description (optional)"
-                                                    variant="borderless"
-                                                    autoSize
-                                                    style={{ fontSize: '14px', padding: '0', color: '#8c8c8c' }}
-                                                />
-                                            </Form.Item>
+            {/* Main Content Area */}
+            <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+
+                {/* Left Sidebar: Sections List and Data Sources */}
+                {mode === 'edit' && (
+                    <div className="editor-sidebar">
+                        <div style={{ padding: '16px', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff' }}>
+                            <Text strong style={{ fontSize: '14px' }}>Form Sections</Text>
+                            <Button type="dashed" size="small" icon={<PlusOutlined />} onClick={addSection}>Add</Button>
+                        </div>
+
+                        <div className="sidebar-list-container" style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
+                            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                                <SortableContext items={sections.map(s => s.id)} strategy={verticalListSortingStrategy}>
+                                    {sections.map(section => (
+                                        <div className="sidebar-section-item" key={section.id}>
+                                            <SortableSectionItem
+                                                section={section}
+                                                isActive={activeSectionId === section.id}
+                                                onClick={() => switchSection(section.id)}
+                                                onDelete={deleteSection}
+                                                onNameChange={updateSectionName}
+                                            />
                                         </div>
-                                    </Form>
-
-                                    <DndContext
-                                        sensors={sensors}
-                                        collisionDetection={closestCenter}
-                                        onDragStart={handleDragStart}
-                                        onDragEnd={handleDragEnd}
-                                    >
-                                        <SortableContext
-                                            items={sections.map(s => s.id)}
-                                            strategy={verticalListSortingStrategy}
-                                        >
-                                            {sections.map((section, sIdx) => (
-                                                <SortableSection
-                                                    key={section.id}
-                                                    id={section.id}
-                                                    section={section}
-                                                    index={sIdx}
-                                                    updateSectionName={updateSectionName}
-                                                    removeSection={removeSection}
-                                                    onFocus={setFocusedFieldId}
-                                                    isActive={focusedFieldId === section.id}
-                                                    sections={sections}
-                                                    setSections={setSections}
-                                                >
-                                                    <SortableContext
-                                                        items={section.fields.map(f => f.id)}
-                                                        strategy={verticalListSortingStrategy}
-                                                    >
-                                                        {section.fields.map((field, fIdx) => (
-                                                            <SortableFieldItem
-                                                                key={field.id}
-                                                                id={field.id}
-                                                                field={field}
-                                                                sectionIndex={sIdx}
-                                                                fieldIndex={fIdx}
-                                                                updateField={updateField}
-                                                                removeField={removeField}
-                                                                isActive={focusedFieldId === field.id}
-                                                                onFocus={setFocusedFieldId}
-                                                                duplicateField={duplicateField}
-                                                                dynamicData={dynamicData}
-                                                                getOptionsForField={getOptionsForField}
-                                                            />
-                                                        ))}
-                                                    </SortableContext>
-                                                </SortableSection>
-                                            ))}
-                                        </SortableContext>
-
-                                        <DragOverlay>
-                                            {activeId ? (
-                                                <div style={{
-                                                    width: '900px',
-                                                    height: '80px',
-                                                    backgroundColor: '#fff',
-                                                    border: '2px solid #0070FF',
-                                                    borderRadius: '12px',
-                                                    boxShadow: '0 8px 24px rgba(0,112,255,0.2)'
-                                                }} />
-                                            ) : null}
-                                        </DragOverlay>
-                                    </DndContext>
-                                </MDBCardBody>
-                            </MDBCard>
-
-                            {/* Floating Toolbar */}
-                            <div style={{ position: 'fixed', right: '40px', top: '50%', transform: 'translateY(-50%)' }}>
-                                <Card
-                                    size="small"
-                                    bodyStyle={{ padding: '12px 8px' }}
-                                    style={{
-                                        width: '56px',
-                                        borderRadius: '12px',
-                                        background: '#ffffff',
-                                        boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
-                                        border: '1px solid #f0f0f0',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center'
-                                    }}
-                                >
-                                    <Tooltip title="Add Field" placement="left">
-                                        <Button
-                                            type="primary"
-                                            icon={<PlusOutlined />}
-                                            onClick={() => addField('text')}
-                                            style={{
-                                                width: '40px',
-                                                height: '40px',
-                                                borderRadius: '8px',
-                                                marginBottom: '8px',
-                                                background: '#0070FF',
-                                                border: 'none'
-                                            }}
-                                        />
-                                    </Tooltip>
-                                    <Tooltip title="Add Section" placement="left">
-                                        <Button
-                                            type="text"
-                                            icon={<AppstoreAddOutlined style={{ fontSize: '18px', color: '#0070FF' }} />}
-                                            onClick={addSection}
-                                            style={{
-                                                width: '40px',
-                                                height: '40px',
-                                                borderRadius: '8px',
-                                                marginBottom: '8px'
-                                            }}
-                                        />
-                                    </Tooltip>
-                                    <Divider style={{ margin: '8px 0', width: '32px' }} />
-                                    {FIELD_TYPES.map(f => (
-                                        <DraggableFieldTemplate
-                                            key={f.type}
-                                            {...f}
-                                            onClick={() => addField(f.type)}
-                                        />
                                     ))}
-                                </Card>
+                                </SortableContext>
+                            </DndContext>
+                        </div>
+
+                        {/* Available Data Sources Help Panel */}
+                        <div style={{ padding: '16px', borderTop: '1px solid #e8e8e8', background: '#fcfcfc' }}>
+                            <div className="data-source-panel-header">
+                                <Text strong style={{ fontSize: '12px', color: '#595959' }}>Master Data Keys</Text>
                             </div>
-                        </>
-                    ) : (
-                        /* Preview Mode */
-                        <Card style={{
-                            borderRadius: '12px',
-                            border: '1px solid #f0f0f0',
-                            background: '#fff',
-                            boxShadow: '0 8px 24px rgba(0,0,0,0.05)'
-                        }}>
-                            <div style={{ padding: '32px' }}>
-                                <div style={{ marginBottom: '32px', borderBottom: '2px solid #0070FF', paddingBottom: '16px' }}>
-                                    <Title level={2} style={{ margin: 0, color: '#262626' }}>
-                                        {formInstance.getFieldValue('name') || 'Untitled Form'}
-                                    </Title>
-                                    {formInstance.getFieldValue('description') && (
-                                        <Text type="secondary" style={{ fontSize: '15px', marginTop: '8px', display: 'block' }}>
-                                            {formInstance.getFieldValue('description')}
-                                        </Text>
+
+                            <div style={{ maxHeight: '150px', overflowY: 'auto' }} className="sidebar-list-container">
+                                <List
+                                    size="small"
+                                    dataSource={Object.keys(masterData)}
+                                    renderItem={key => (
+                                        <List.Item style={{ padding: '6px 0', fontSize: '11px', borderBottom: '1px solid #f5f5f5' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                                                <span style={{ fontFamily: 'monospace', color: '#096dd9' }}>{key}</span>
+                                                <Typography.Paragraph
+                                                    copyable={{ text: key, tooltips: ['Copy', 'Copied!'] }}
+                                                    style={{ margin: 0 }}
+                                                />
+                                            </div>
+                                        </List.Item>
                                     )}
-                                </div>
-
-                                {sections.map((section, sIdx) => {
-                                    const columnsPerRow = section.columns_per_row || 1;
-                                    const colSize = 12 / columnsPerRow; // Bootstrap grid: 12 columns total
-
-                                    return (
-                                        <div key={section.id} style={{ marginBottom: '40px' }}>
-                                            <Title level={4} style={{
-                                                color: '#0070FF',
-                                                marginBottom: '20px',
-                                                paddingBottom: '8px',
-                                                borderBottom: '1px solid #f0f0f0'
-                                            }}>
-                                                {section.name}
-                                            </Title>
-                                            <MDBRow>
-                                                {section.fields.map((field, fIdx) => (
-                                                    <MDBCol
-                                                        key={field.id}
-                                                        md={colSize}
-                                                        style={{ marginBottom: '24px' }}
-                                                    >
-                                                        <div>
-                                                            <Text strong style={{ fontSize: '14px', color: '#374151', display: 'block', marginBottom: '8px' }}>
-                                                                {field.label}
-                                                                {field.is_required && <span style={{ color: '#ef4444', marginLeft: '4px' }}>*</span>}
-                                                            </Text>
-                                                            {renderPreviewField(field)}
-                                                        </div>
-                                                    </MDBCol>
-                                                ))}
-                                            </MDBRow>
-                                        </div>
-                                    );
-                                })}
-
-                                <Divider />
-                                <div style={{ textAlign: 'center' }}>
-                                    <Button
-                                        type="primary"
-                                        size="large"
-                                        style={{
-                                            background: '#0070FF',
-                                            border: 'none',
-                                            borderRadius: '6px',
-                                            padding: '0 48px',
-                                            height: '44px'
-                                        }}
-                                    >
-                                        Submit
-                                    </Button>
-                                </div>
+                                />
                             </div>
-                        </Card>
+                            <Text type="secondary" style={{ fontSize: '10px', display: 'block', marginTop: '8px', lineHeight: '1.4' }}>
+                                Paste these keys into the <b>&quot;Values Key&quot;</b> property of Select components.
+                            </Text>
+                        </div>
+                    </div>
+                )}
+
+                {/* Right Area: Form Editor Canvas / Preview */}
+                <div className="editor-main-canvas-wrapper" style={{ background: mode === 'preview' ? '#f0f2f5' : undefined, overflowY: mode === 'preview' ? 'auto' : 'hidden' }}>
+                    {/* Overlay Loader */}
+                    {loading && (
+                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.8)', zIndex: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', backdropFilter: 'blur(2px)' }}>
+                            <Spin size="large" tip="Loading Form..." />
+                        </div>
+                    )}
+
+                    {mode === 'edit' ? (
+                        <div className="editor-paper-card">
+                            <div className="section-header-bar">
+                                <Text strong style={{ fontSize: '14px', color: '#333' }}>
+                                    Form Designer
+                                </Text>
+                                <Text type="secondary" style={{ fontSize: '12px' }}>
+                                    Active Section: <span style={{ color: '#1890ff', fontWeight: 500 }}>{sections.find(s => s.id === activeSectionId)?.name}</span>
+                                </Text>
+                            </div>
+                            <div
+                                ref={containerRef}
+                                style={{ flex: 1, position: 'relative' }}
+                            />
+                        </div>
+                    ) : (
+                        <div style={{ padding: '40px', maxWidth: '800px', margin: '0 auto', width: '100%' }}>
+                            <div style={{ textAlign: 'center', marginBottom: 40 }}>
+                                <Title level={2} style={{ marginBottom: 8 }}>{formName || 'Untitled Form'}</Title>
+                                <Text type="secondary">{formDescription}</Text>
+                            </div>
+
+                            {sections.map(section => (
+                                <SectionPreview
+                                    key={section.id}
+                                    section={section}
+                                    masterData={masterData}
+                                    onDataChange={handleSectionDataChange}
+                                />
+                            ))}
+
+                            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 40, paddingBottom: 40 }}>
+                                <Button type="primary" size="large" style={{ minWidth: 200, height: 50, fontSize: 16 }} onClick={handleSubmitForm}>Submit Form</Button>
+                            </div>
+                        </div>
                     )}
                 </div>
-            </Content>
 
-            <style>{`
-                .form-field-card:hover .drag-handle {
-                    opacity: 0.8 !important;
-                }
-                .toolbar-btn:hover {
-                    background: rgba(0, 112, 255, 0.1) !important;
-                    transform: scale(1.05);
-                }
-            `}</style>
-        </Layout>
+            </div>
+        </div>
     )
 }
 
-export default FormEditor
+export default CreateFormEditor
