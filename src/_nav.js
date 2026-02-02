@@ -175,7 +175,7 @@ const _navAdmin = [
     icon: <CIcon icon={cilLink} customClassName="nav-icon" />,
     permission: 'Nav_Roles', // Admin only
   },
-  
+
 
   {
     component: CNavGroup,
@@ -319,6 +319,13 @@ const _navAdmin = [
     to: '/form-builder',
     icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
     permission: 'Nav_FSF', // Reusing existing permission for now
+  },
+  {
+    component: CNavItem,
+    name: 'Test Form',
+    to: '/form-builder/view/7',
+    icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
+    permission: 'Nav_FSF',
   },
   {
     component: CNavItem,

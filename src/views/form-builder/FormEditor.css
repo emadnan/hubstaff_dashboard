@@ -1,0 +1,654 @@
+/* ============================================
+   MODERN FORM EDITOR STYLES
+   Updated with contemporary design patterns
+   ============================================ */
+
+/* --- CSS Variables for Consistent Theming --- */
+:root {
+    --color-primary: #3b82f6;
+    --color-primary-hover: #2563eb;
+    --color-success: #10b981;
+    --color-danger: #ef4444;
+    --color-warning: #f59e0b;
+    
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-tertiary: #f1f5f9;
+    --bg-hover: #f0f9ff;
+    
+    --border-light: #e2e8f0;
+    --border-medium: #cbd5e1;
+    --border-focus: #3b82f6;
+    
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Main Container --- */
+.fjs-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    overflow: hidden !important;
+    background: var(--bg-secondary);
+}
+
+/* ============================================
+   EDITOR APPLICATION SHELL
+   ============================================ */
+
+/* --- Header Bar --- */
+.editor-header {
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-light);
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+    z-index: 100;
+    height: 72px;
+    backdrop-filter: blur(8px);
+    position: relative;
+}
+
+.editor-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--color-primary) 50%, 
+        transparent 100%
+    );
+    opacity: 0.1;
+}
+
+/* --- Left Sidebar (Sections List) --- */
+.editor-sidebar {
+    width: 300px;
+    background: var(--bg-primary);
+    border-right: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+    z-index: 50;
+    box-shadow: var(--shadow-md);
+    position: relative;
+}
+
+.sidebar-list-container {
+    padding: 12px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+/* Sidebar Section Item Cards */
+.sidebar-section-item {
+    transition: all var(--transition-base);
+    margin-bottom: 8px;
+}
+
+.sidebar-section-item:hover {
+    transform: translateX(2px);
+}
+
+.sidebar-section-item .ant-card {
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+    position: relative;
+}
+
+.sidebar-section-item .ant-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--color-primary);
+    transform: scaleY(0);
+    transition: transform var(--transition-base);
+    transform-origin: bottom;
+}
+
+.sidebar-section-item .ant-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary);
+}
+
+.sidebar-section-item .ant-card:hover::before {
+    transform: scaleY(1);
+    transform-origin: top;
+}
+
+/* Active section styling */
+.sidebar-section-item .ant-card[style*="e6f7ff"] {
+    background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%) !important;
+    border-color: var(--color-primary) !important;
+    box-shadow: var(--shadow-md), 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.sidebar-section-item .ant-card[style*="e6f7ff"]::before {
+    transform: scaleY(1);
+}
+
+/* Data Source Panel */
+.data-source-panel-header {
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
+}
+
+/* --- Main Canvas Wrapper --- */
+.editor-main-canvas-wrapper {
+    flex: 1;
+    position: relative;
+    background: var(--bg-secondary);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Paper Card Container */
+.editor-paper-card {
+    flex: 1;
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+    transition: box-shadow var(--transition-base);
+    position: relative;
+}
+
+.editor-paper-card:hover {
+    box-shadow: var(--shadow-xl);
+}
+
+/* Section Header Bar */
+.section-header-bar {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-light);
+    background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+.section-header-bar::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--color-primary) 50%, 
+        transparent 100%
+    );
+    opacity: 0.15;
+}
+
+/* ============================================
+   FORM-JS PALETTE (LEFT SIDE)
+   ============================================ */
+
+.fjs-palette-container {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    border-right: 1px solid var(--border-light);
+    overflow: hidden !important;
+    width: 280px;
+    background: var(--bg-primary);
+    box-shadow: var(--shadow-md);
+    position: relative;
+}
+
+/* Palette Header */
+.fjs-palette-header {
+    flex: 0 0 auto !important;
+    z-index: 10;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-light);
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    position: relative;
+}
+
+.fjs-palette-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        var(--color-primary) 0%, 
+        transparent 100%
+    );
+    opacity: 0.2;
+}
+
+/* Scrollable Palette List */
+.fjs-palette-entries,
+.fjs-drag-container.fjs-palette,
+div[data-container-id="palette"] {
+    flex: 1 1 auto !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    padding: 12px !important;
+    padding-bottom: 40px !important;
+    display: block !important;
+    scroll-behavior: smooth;
+}
+
+/* Palette Items */
+.fjs-palette-entry {
+    transition: all var(--transition-fast);
+    border-radius: var(--radius-md);
+    margin-bottom: 6px;
+    border: 1px solid transparent;
+}
+
+.fjs-palette-entry:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-medium);
+    transform: translateX(4px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ============================================
+   FORM-JS PROPERTIES PANEL (RIGHT SIDE)
+   ============================================ */
+
+.fjs-properties-container {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    border-left: 1px solid var(--border-light);
+    background: var(--bg-primary);
+    width: 320px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+}
+
+.fjs-properties-panel {
+    flex: 1 1 auto !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    padding: 16px;
+    padding-bottom: 40px !important;
+    scroll-behavior: smooth;
+}
+
+/* Property Groups */
+.fjs-properties-panel-group {
+    margin-bottom: 20px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+    transition: all var(--transition-base);
+}
+
+.fjs-properties-panel-group:hover {
+    box-shadow: var(--shadow-sm);
+    border-color: var(--border-medium);
+}
+
+.fjs-properties-panel-group-header {
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+    padding: 10px 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-light);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.fjs-properties-panel-group-header:hover {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+}
+
+/* Property Entries */
+.fjs-properties-panel-entry {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-light);
+    transition: background var(--transition-fast);
+}
+
+.fjs-properties-panel-entry:last-child {
+    border-bottom: none;
+}
+
+.fjs-properties-panel-entry:hover {
+    background: var(--bg-hover);
+}
+
+/* ============================================
+   FORM-JS CANVAS (MIDDLE)
+   ============================================ */
+
+.fjs-editor-container {
+    flex: 1;
+    overflow: hidden !important;
+    position: relative;
+    background: var(--bg-primary);
+}
+
+.fjs-form {
+    padding: 24px;
+}
+
+/* Form Fields Styling */
+.fjs-form-field {
+    margin-bottom: 20px;
+    transition: all var(--transition-fast);
+}
+
+.fjs-form-field:hover {
+    transform: translateY(-1px);
+}
+
+.fjs-form-field-label {
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.fjs-input,
+.fjs-textarea,
+.fjs-select {
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-medium);
+    transition: all var(--transition-fast);
+    padding: 10px 12px;
+    font-size: 14px;
+}
+
+.fjs-input:hover,
+.fjs-textarea:hover,
+.fjs-select:hover {
+    border-color: var(--color-primary);
+}
+
+.fjs-input:focus,
+.fjs-textarea:focus,
+.fjs-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ============================================
+   CUSTOM SCROLLBARS
+   ============================================ */
+
+.fjs-palette-entries::-webkit-scrollbar,
+.fjs-properties-panel::-webkit-scrollbar,
+div[data-container-id="palette"]::-webkit-scrollbar,
+.sidebar-list-container::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+}
+
+.fjs-palette-entries::-webkit-scrollbar-track,
+.fjs-properties-panel::-webkit-scrollbar-track,
+div[data-container-id="palette"]::-webkit-scrollbar-track,
+.sidebar-list-container::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+.fjs-palette-entries::-webkit-scrollbar-thumb,
+.fjs-properties-panel::-webkit-scrollbar-thumb,
+div[data-container-id="palette"]::-webkit-scrollbar-thumb,
+.sidebar-list-container::-webkit-scrollbar-thumb {
+    background: var(--border-medium);
+    border-radius: 4px;
+    border: 2px solid var(--bg-tertiary);
+    transition: background var(--transition-fast);
+}
+
+.fjs-palette-entries::-webkit-scrollbar-thumb:hover,
+.fjs-properties-panel::-webkit-scrollbar-thumb:hover,
+div[data-container-id="palette"]::-webkit-scrollbar-thumb:hover,
+.sidebar-list-container::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* ============================================
+   LOADING STATES & OVERLAYS
+   ============================================ */
+
+.editor-loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn var(--transition-base);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   BUTTON ENHANCEMENTS
+   ============================================ */
+
+.ant-btn {
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+}
+
+.ant-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.ant-btn:active {
+    transform: translateY(0);
+}
+
+.ant-btn-primary {
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+}
+
+.ant-btn-dashed {
+    border-style: dashed;
+    border-width: 2px;
+}
+
+.ant-btn-dashed:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* ============================================
+   INPUT ENHANCEMENTS
+   ============================================ */
+
+.ant-input {
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.ant-input:hover {
+    border-color: var(--color-primary);
+}
+
+.ant-input:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ============================================
+   SWITCH ENHANCEMENTS
+   ============================================ */
+
+.ant-switch {
+    border-radius: 12px;
+    transition: all var(--transition-base);
+}
+
+.ant-switch-checked {
+    background: var(--color-primary);
+}
+
+/* ============================================
+   CARD ENHANCEMENTS
+   ============================================ */
+
+.ant-card {
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+}
+
+.ant-card-hoverable:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary);
+}
+
+/* ============================================
+   LIST ENHANCEMENTS
+   ============================================ */
+
+.ant-list-item {
+    transition: all var(--transition-fast);
+    border-radius: var(--radius-sm);
+    padding: 8px !important;
+}
+
+.ant-list-item:hover {
+    background: var(--bg-hover);
+}
+
+/* ============================================
+   DRAG & DROP VISUAL FEEDBACK
+   ============================================ */
+
+.sortable-ghost {
+    opacity: 0.5;
+    background: var(--bg-hover);
+    border: 2px dashed var(--color-primary);
+}
+
+.sortable-drag {
+    opacity: 0.8;
+    box-shadow: var(--shadow-xl);
+    transform: rotate(2deg);
+    cursor: grabbing !important;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 1400px) {
+    .editor-sidebar {
+        width: 260px;
+    }
+    
+    .fjs-palette-container {
+        width: 240px;
+    }
+    
+    .fjs-properties-container {
+        width: 280px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .editor-main-canvas-wrapper {
+        padding: 16px;
+    }
+    
+    .editor-paper-card {
+        border-radius: var(--radius-md);
+    }
+}
+
+/* ============================================
+   ACCESSIBILITY ENHANCEMENTS
+   ============================================ */
+
+*:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============================================
+   DARK MODE SUPPORT (Optional)
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: #1e293b;
+        --bg-secondary: #0f172a;
+        --bg-tertiary: #334155;
+        --bg-hover: #1e3a5f;
+        
+        --border-light: #334155;
+        --border-medium: #475569;
+        
+        --text-primary: #f1f5f9;
+        --text-secondary: #cbd5e1;
+        --text-muted: #64748b;
+    }
+}

@@ -257,13 +257,19 @@ const routes = [
     requiredNavPermision: 'Nav_FSF',
   },
   {
-    path: '/form-builder-edit/:id',
+    path: '/form-builder/edit/:id',
     name: 'Edit Form',
     element: FormEditor,
     requiredNavPermision: 'Nav_FSF',
   },
   {
-    path: '/form-builder-create',
+    path: '/form-builder/view/:id',
+    name: 'View Form',
+    element: FormEditor,
+    requiredNavPermision: 'Nav_FSF',
+  },
+  {
+    path: '/form-builder/create',
     name: 'Create Form',
     element: FormEditor,
     requiredNavPermision: 'Nav_FSF',

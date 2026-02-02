@@ -133,7 +133,8 @@ const LinkagePlanForm = () => {
         }
 
         if (deptsResponse.ok) {
-          setDepartmentsData(unwrap(deptsList, 'list') || [])
+          const unwrappedDepts = unwrap(deptsList, 'list');
+          setDepartmentsData(Array.isArray(unwrappedDepts) ? unwrappedDepts : [])
         }
 
         if (!userContextResponse.ok) {
@@ -955,7 +956,7 @@ const LinkagePlanForm = () => {
                       handleBasicInfoChange('department', val);
                     }
                   }}
-                  options={departmentsData.map(d => ({ value: d.department_name, label: d.department_name }))}
+                  options={(Array.isArray(departmentsData) ? departmentsData : []).map(d => ({ value: d.department_name, label: d.department_name }))}
                 />
               </Form.Item>
             </Col>

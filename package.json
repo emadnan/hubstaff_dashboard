@@ -23,6 +23,7 @@
     "test:debug": "react-scripts --inspect-brk test --runInBand"
   },
   "dependencies": {
+    "@bpmn-io/form-js": "^1.18.0",
     "@coreui/chartjs": "^3.0.0",
     "@coreui/coreui": "^4.2.1",
     "@coreui/icons": "^2.1.0",

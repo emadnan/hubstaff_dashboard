@@ -90,9 +90,10 @@ function LinkageFormsManagement() {
     const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:8000'
 
     const localUser = JSON.parse(localStorage.getItem('user-info') || '{}');
+    console.log(localUser)
     const permissions = localUser.permissions || [];
     const isHodOrOfficer = permissions.some(p => p.name === 'Approve_Linkage_HOD' || p.name === 'Approve_Linkage_Officer');
-
+    console.log(isHodOrOfficer)
     // Fetch Data
     useEffect(() => {
         fetchLinkagePlans()
@@ -701,7 +702,17 @@ function LinkageFormsManagement() {
                     body: { padding: '24px', background: '#f8fafc' }
                 }}
                 footer={
-                    selectedPlan?.can_approve ? (
+                    (selectedPlan?.can_approve || (() => {
+                        const status = selectedPlan?.status || '';
+                        const localUser = JSON.parse(localStorage.getItem('user-info') || '{}');
+                        const permissions = localUser.permissions || [];
+                        const isHod = permissions.some(p => p.name === 'Approve_Linkage_HOD');
+                        const isOfficer = permissions.some(p => p.name === 'Approve_Linkage_Officer');
+
+                        if (isHod && status === 'Pending from HOD') return true;
+                        if (isOfficer && status === 'Pending from Linkage Office') return true;
+                        return false;
+                    })()) ? (
                         <div style={{ textAlign: 'right', padding: '16px 24px' }}>
                             <Space>
                                 <Popconfirm
