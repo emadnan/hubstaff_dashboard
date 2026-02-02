@@ -205,7 +205,7 @@ function LinkageFormsManagement() {
     const handleApprove = async (id) => {
         try {
             const localUser = JSON.parse(localStorage.getItem('user-info'))
-            const response = await fetch(`${BASE_URL}/api/linkage-plans/approve`, {
+            const response = await fetch(`${BASE_URL}/api/approveLinkagePlan`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localUser?.token}`,
@@ -230,7 +230,7 @@ function LinkageFormsManagement() {
     const handleReject = async (id) => {
         try {
             const localUser = JSON.parse(localStorage.getItem('user-info'))
-            const response = await fetch(`${BASE_URL}/api/linkage-plans/reject`, {
+            const response = await fetch(`${BASE_URL}/api/approveLinkagePlan`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localUser?.token}`,
@@ -724,6 +724,7 @@ function LinkageFormsManagement() {
                                     }}
                                     okText="Yes"
                                     cancelText="No"
+                                    okButtonProps={{ danger: true }}
                                 >
                                     <Button danger size="large" icon={<CloseCircleOutlined />}>
                                         Reject
@@ -738,6 +739,7 @@ function LinkageFormsManagement() {
                                     }}
                                     okText="Yes"
                                     cancelText="No"
+                                    okButtonProps={{ style: { background: '#28B463', borderColor: '#28B463' } }}
                                 >
                                     <Button type="primary" size="large" icon={<CheckCircleOutlined />} style={{ background: '#28B463', borderColor: '#28B463' }}>
                                         Approve
