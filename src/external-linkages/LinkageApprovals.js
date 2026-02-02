@@ -171,6 +171,10 @@ const LinkageApprovals = () => {
                 open={reviewModalVisible}
                 onCancel={() => setReviewModalVisible(false)}
                 onOk={() => form.submit()}
+                okButtonProps={{
+                    style: reviewAction === 'approve' ? { background: '#28B463', borderColor: '#28B463' } : {},
+                    danger: reviewAction === 'reject'
+                }}
                 width={700}
             >
                 {selectedPlan && (
