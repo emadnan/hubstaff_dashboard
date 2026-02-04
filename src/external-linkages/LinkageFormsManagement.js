@@ -15,7 +15,6 @@ import {
     Row,
     Col,
     Typography,
-    Divider,
     Badge,
     Tooltip,
     Empty,
@@ -41,10 +40,8 @@ const { Title, Text } = Typography
 const { Option } = Select
 
 function LinkageFormsManagement() {
-    // Modern Styling
     const primaryColor = '#0070FF'
     const secondaryColor = '#28B463'
-    const gradientBg = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
 
     const pageStyle = {
         background: 'linear-gradient(to bottom, #f0f4f8 0%, #ffffff 100%)',
@@ -75,7 +72,7 @@ function LinkageFormsManagement() {
         border: '1px solid #e2e8f0'
     }
 
-    // State Management
+    // State
     const [linkagePlans, setLinkagePlans] = useState([])
     const [filteredData, setFilteredData] = useState([])
     const [loading, setLoading] = useState(false)
@@ -89,12 +86,15 @@ function LinkageFormsManagement() {
     const navigate = useNavigate()
     const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:8000'
 
-    const localUser = JSON.parse(localStorage.getItem('user-info') || '{}');
-    console.log(localUser)
-    const permissions = localUser.permissions || [];
-    const isHodOrOfficer = permissions.some(p => p.name === 'Approve_Linkage_HOD' || p.name === 'Approve_Linkage_Officer');
-    console.log(isHodOrOfficer)
-    // Fetch Data
+    
+
+    const localUser = JSON.parse(localStorage.getItem('user-info') || '{}')
+    const permissions = localUser.permissions || []
+    const isHodOrOfficer = permissions.some(p => 
+        p.name === 'Approve_Linkage_HOD' || p.name === 'Approve_Linkage_Officer'
+    )
+
+    // Fetch
     useEffect(() => {
         fetchLinkagePlans()
         fetchCampuses()
@@ -107,7 +107,6 @@ function LinkageFormsManagement() {
     const fetchLinkagePlans = async () => {
         setLoading(true)
         try {
-            const localUser = JSON.parse(localStorage.getItem('user-info'))
             const response = await fetch(`${BASE_URL}/api/getLinkagePlans`, {
                 headers: {
                     'Authorization': `Bearer ${localUser?.token}`
@@ -116,7 +115,6 @@ function LinkageFormsManagement() {
 
             if (response.ok) {
                 const data = await response.json()
-                console.log('Fetched plans:', data.plans) // Debug log
                 setLinkagePlans(data.plans || [])
             } else {
                 message.error('Failed to fetch linkage plans')
@@ -131,20 +129,12 @@ function LinkageFormsManagement() {
 
     const fetchCampuses = async () => {
         try {
-            const localUser = JSON.parse(localStorage.getItem('user-info'))
             const response = await fetch(`${BASE_URL}/api/getCampuses`, {
-                headers: {
-                    'Authorization': `Bearer ${localUser?.token}`
-                }
+                headers: { 'Authorization': `Bearer ${localUser?.token}` }
             })
             if (response.ok) {
                 const data = await response.json()
-                if (Array.isArray(data)) {
-                    setCampuses(data)
-                } else {
-                    console.error('Campuses data is not an array:', data)
-                    setCampuses([])
-                }
+                setCampuses(Array.isArray(data) ? data : [])
             }
         } catch (error) {
             console.error('Failed to fetch campuses:', error)
@@ -156,55 +146,45 @@ function LinkageFormsManagement() {
         let filtered = [...linkagePlans]
 
         if (searchText) {
-            const lowerSearch = searchText.toLowerCase()
+            const lower = searchText.toLowerCase()
             filtered = filtered.filter(plan => {
                 const facultyName = typeof plan.faculty === 'object' ? plan.faculty?.name : plan.faculty
-                const deptName = typeof plan.department === 'object' ? (plan.department?.department_name || plan.department?.name) : plan.department
+                const deptName   = typeof plan.department === 'object' ? (plan.department?.department_name || plan.department?.name) : plan.department
 
                 return (
-                    facultyName?.toLowerCase().includes(lowerSearch) ||
-                    deptName?.toLowerCase().includes(lowerSearch) ||
-                    plan.focal_person?.toLowerCase().includes(lowerSearch) ||
-                    plan.campus?.toLowerCase().includes(lowerSearch)
+                    (facultyName || '').toLowerCase().includes(lower) ||
+                    (deptName || '').toLowerCase().includes(lower)   ||
+                    (plan.focal_person || '').toLowerCase().includes(lower) ||
+                    (plan.campus || '').toLowerCase().includes(lower)
                 )
             })
         }
 
-        if (campusFilter) {
-            filtered = filtered.filter(plan => plan.campus === campusFilter)
-        }
-
-        if (statusFilter) {
-            filtered = filtered.filter(plan => (plan.status || 'Planned') === statusFilter)
-        }
+        if (campusFilter) filtered = filtered.filter(p => p.campus === campusFilter)
+        if (statusFilter) filtered = filtered.filter(p => (p.status || 'Planned') === statusFilter)
 
         setFilteredData(filtered)
     }
 
-    const handleDelete = async (id) => {
-        try {
-            const localUser = JSON.parse(localStorage.getItem('user-info'))
-            const response = await fetch(`${BASE_URL}/api/deleteLinkagePlan/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localUser?.token}`
-                }
-            })
-
-            if (response.ok) {
-                message.success('Linkage plan deleted successfully')
-                fetchLinkagePlans()
-            } else {
-                message.error('Failed to delete linkage plan')
-            }
-        } catch (error) {
-            message.error('Network error while deleting plan')
+ const handleDelete = async (id) => {
+    try {
+        const response = await fetch(`${BASE_URL}/api/deleteLinkagePlan/${id}`, {
+            method: 'DELETE', // Matches the Route type
+            headers: { 'Authorization': `Bearer ${localUser?.token}` }
+        })
+        if (response.ok) {
+            message.success('Linkage plan deleted')
+            fetchLinkagePlans() // Refreshes the table
+        } else {
+            message.error('Failed to delete plan')
         }
+    } catch (err) {
+        message.error('Network error')
     }
+}
 
     const handleApprove = async (id) => {
         try {
-            const localUser = JSON.parse(localStorage.getItem('user-info'))
             const response = await fetch(`${BASE_URL}/api/approveLinkagePlan`, {
                 method: 'POST',
                 headers: {
@@ -215,22 +195,20 @@ function LinkageFormsManagement() {
             })
 
             if (response.ok) {
-                message.success('Plan approved successfully')
+                message.success('Plan approved')
                 fetchLinkagePlans()
             } else {
-                const errorData = await response.json()
-                message.error(errorData.message || 'Failed to approve plan')
+                const err = await response.json()
+                message.error(err.message || 'Failed to approve')
             }
-        } catch (error) {
-            console.error(error)
+        } catch (err) {
             message.error('Network error')
         }
     }
 
     const handleReject = async (id) => {
         try {
-            const localUser = JSON.parse(localStorage.getItem('user-info'))
-            const response = await fetch(`${BASE_URL}/api/approveLinkagePlan`, {
+            const response = await fetch(`${BASE_URL}/api/rejectLinkagePlan`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localUser?.token}`,
@@ -243,46 +221,43 @@ function LinkageFormsManagement() {
                 message.success('Plan rejected')
                 fetchLinkagePlans()
             } else {
-                const errorData = await response.json()
-                message.error(errorData.message || 'Failed to reject plan')
+                const err = await response.json()
+                message.error(err.message || 'Failed to reject plan')
             }
-        } catch (error) {
-            console.error(error)
-            message.error('Network error')
+        } catch (err) {
+            message.error('Network error while rejecting')
+            console.error(err)
         }
     }
 
     const handleViewDetails = (plan) => {
-        console.log('Selected plan:', plan) // Debug log
         setSelectedPlan(plan)
         setDrawerVisible(true)
     }
 
     const handleEdit = (plan) => {
-        // Navigate to plan form with plan data in state
         navigate('/external-linkages-plan-form', { state: { editMode: true, planData: plan } })
     }
 
     const getStatusConfig = (status) => {
-        if (!status) return { color: '#3b82f6', icon: <ClockCircleOutlined />, bg: '#dbeafe' } // Default Safe Fallback
+        if (!status) return { color: '#3b82f6', icon: <ClockCircleOutlined />, bg: '#dbeafe' }
 
-        if (status.startsWith('Pending from')) {
+        if (status.includes('Pending from')) {
             return { color: '#8b5cf6', icon: <ClockCircleOutlined />, bg: '#ede9fe' }
         }
-        if (status.startsWith('Rejected') || status === 'Rejected') {
+        if (status.includes('Rejected') || status === 'Rejected') {
             return { color: '#ef4444', icon: <CloseCircleOutlined />, bg: '#fee2e2' }
         }
-        if (status === 'Approved') {
+        if (status === 'Approved' || status === 'Planned') {
             return { color: '#10b981', icon: <CheckCircleOutlined />, bg: '#d1fae5' }
         }
 
         const configs = {
-            'Planned': { color: '#3b82f6', icon: <ClockCircleOutlined />, bg: '#dbeafe' },
-            'Draft': { color: '#94a3b8', icon: <EditOutlined />, bg: '#f1f5f9' },
+            'Planned':   { color: '#3b82f6', icon: <ClockCircleOutlined />, bg: '#dbeafe' },
+            'Draft':     { color: '#94a3b8', icon: <EditOutlined />, bg: '#f1f5f9' },
             'In Progress': { color: '#f59e0b', icon: <ClockCircleOutlined />, bg: '#fef3c7' },
             'Completed': { color: '#10b981', icon: <CheckCircleOutlined />, bg: '#d1fae5' },
-            'Cancelled': { color: '#ef4444', icon: <CloseCircleOutlined />, bg: '#fee2e2' },
-            'Pending': { color: '#8b5cf6', icon: <ClockCircleOutlined />, bg: '#ede9fe' }
+            'Cancelled': { color: '#ef4444', icon: <CloseCircleOutlined />, bg: '#fee2e2' }
         }
         return configs[status] || configs['Planned']
     }
@@ -293,199 +268,160 @@ function LinkageFormsManagement() {
         setStatusFilter(null)
     }
 
-    // Table Columns
     const columns = [
         {
-            title: <Text strong style={{ color: '#1e293b' }}>Campus</Text>,
+            title: <Text strong>Campus</Text>,
             dataIndex: 'campus',
             key: 'campus',
             width: 140,
-            render: (text) => (
-                <Tag color="blue" style={{ borderRadius: '6px', padding: '4px 12px', fontWeight: 500 }}>
-                    {text}
+            render: text => (
+                <Tag color="blue" style={{ borderRadius: '6px', padding: '4px 12px' }}>
+                    {text || '—'}
                 </Tag>
             )
         },
         {
-            title: <Text strong style={{ color: '#1e293b' }}>Faculty</Text>,
+            title: <Text strong>Faculty</Text>,
             dataIndex: 'faculty',
             key: 'faculty',
             ellipsis: true,
-            render: (text) => {
-                const name = typeof text === 'object' && text !== null ? text.name : text
-                return (
-                    <Tooltip title={name}>
-                        <span style={{ color: '#64748b' }}>{name || 'N/A'}</span>
-                    </Tooltip>
-                )
+            render: text => {
+                const name = typeof text === 'object' ? text?.name : text
+                return <Tooltip title={name}><span style={{ color: '#64748b' }}>{name || '—'}</span></Tooltip>
             }
         },
         {
-            title: <Text strong style={{ color: '#1e293b' }}>Department</Text>,
+            title: <Text strong>Department</Text>,
             dataIndex: 'department',
             key: 'department',
             ellipsis: true,
-            render: (text) => {
-                const name = typeof text === 'object' && text !== null ? (text.department_name || text.name) : text
-                return (
-                    <Tooltip title={name}>
-                        <span style={{ color: '#64748b' }}>{name || 'N/A'}</span>
-                    </Tooltip>
-                )
+            render: text => {
+                const name = typeof text === 'object' ? (text?.department_name || text?.name) : text
+                return <Tooltip title={name}><span style={{ color: '#64748b' }}>{name || '—'}</span></Tooltip>
             }
         },
         {
-            title: <Text strong style={{ color: '#1e293b' }}>Focal Person</Text>,
+            title: <Text strong>Focal Person</Text>,
             dataIndex: 'focal_person',
             key: 'focal_person',
-            render: (text) => (
+            render: text => (
                 <Space>
                     <div style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: '50%',
+                        width: 32, height: 32, borderRadius: '50%',
                         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
-                        fontWeight: 'bold',
-                        fontSize: '14px'
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: 'white', fontWeight: 'bold', fontSize: '14px'
                     }}>
-                        {text?.charAt(0)?.toUpperCase()}
+                        {(text || '')[0]?.toUpperCase() || '?'}
                     </div>
-                    <Text>{text}</Text>
+                    <Text>{text || '—'}</Text>
                 </Space>
             )
         },
         {
-            title: <Text strong style={{ color: '#1e293b' }}>Email</Text>,
+            title: <Text strong>Email</Text>,
             dataIndex: 'email',
             key: 'email',
             ellipsis: true,
-            render: (text) => (
-                <div style={{ fontSize: '13px', color: '#334155' }}>{text || 'N/A'}</div>
-            )
+            render: text => <div style={{ fontSize: '13px', color: '#334155' }}>{text || '—'}</div>
         },
         {
-            title: <Text strong style={{ color: '#1e293b' }}>Status</Text>,
+            title: <Text strong>Status</Text>,
             dataIndex: 'status',
             key: 'status',
             width: 200,
-            render: (status) => {
-                const config = getStatusConfig(status || 'Planned')
-
-                // Show "Pending" instead of "Pending from HOD" if user is HOD
-                let displayStatus = status || 'Planned';
-                const localUser = JSON.parse(localStorage.getItem('user-info') || '{}');
-                const permissions = localUser.permissions || [];
-                const isHod = permissions.some(p => p.name === 'Approve_Linkage_HOD');
-                const isOfficer = permissions.some(p => p.name === 'Approve_Linkage_Officer');
-
-                if (isHod && displayStatus === 'Pending from HOD') {
-                    displayStatus = 'Pending';
-                }
-                if (isOfficer && displayStatus === 'Pending from Linkage Office') {
-                    displayStatus = 'Pending';
-                }
-
+            render: status => {
+                const config = getStatusConfig(status)
+                const display = status || 'Planned'
                 return (
                     <Tag
                         icon={config.icon}
                         color={config.color}
-                        style={{
-                            borderRadius: '20px',
-                            padding: '0 10px',
-                            border: 'none',
-                            fontWeight: 500
-                        }}
+                        style={{ borderRadius: '20px', padding: '0 10px', fontWeight: 500 }}
                     >
-                        {displayStatus}
+                        {display}
                     </Tag>
                 )
             }
         },
         {
-            title: <Text strong style={{ color: '#1e293b' }}>Submitted</Text>,
-            dataIndex: 'created_at',
+            title: <Text strong>Submitted</Text>,
+            dataIndex: 'Submitted',
             key: 'created_at',
-            width: 130,
-            render: (date) => (
+            width: 160,
+            render: date => (
                 <Text style={{ color: '#64748b', fontSize: '13px' }}>
-                    {moment(date).format('MMM DD, YYYY')}
+                    {date ? moment(date).format('MMM DD, YYYY') : '—'}
                 </Text>
             )
         },
-        {
-            title: <Text strong style={{ color: '#1e293b' }}>Actions</Text>,
-            key: 'actions',
-            width: 100,
-            render: (_, record) => {
-                const localUser = JSON.parse(localStorage.getItem('user-info'))
-                // Access ID from 'Users' object inside localUser (based on UserController response)
-                const userId = localUser?.Users?.id || localUser?.id
-                const isInitiator = userId == record.submitted_by
+    
+{
+    title: <Text strong style={{ color: '#1e293b' }}>Actions</Text>,
+    key: 'actions',
+    width: 100,
+    render: (_, record) => {
+        const localUser = JSON.parse(localStorage.getItem('user-info') || '{}');
+        
+        // 1. Get the current logged-in User ID
+        const currentUserId = localUser?.Users?.id || localUser?.id;
+        
+        // 2. Check for the specific permission in the permissions array
+        const hasLinkagePermission = localUser?.permissions?.some(
+            p => p.name === 'Nav_LinkagePlanForm'
+        );
 
-                return (
-                    <Space size="small">
-                        <Tooltip title="View Details">
+        // 3. Logic: User is initiator IF (ID matches OR they have the required permission)
+        // AND the record is currently 'Rejected'
+        const isInitiator = currentUserId == record.user_id || hasLinkagePermission;
+        const isRejected = record.status === 'Rejected';
+
+        return (
+            <Space size="small">
+                <Tooltip title="View Details">
+                    <Button
+                        shape="circle"
+                        icon={<EyeOutlined style={{ color: '#0070FF' }} />}
+                        size="small"
+                        onClick={() => handleViewDetails(record)}
+                    />
+                </Tooltip>
+
+                {isInitiator && isRejected && (
+                    <>
+                        <Tooltip title="Edit and Resubmit">
                             <Button
                                 shape="circle"
-                                icon={<EyeOutlined style={{ color: '#0070FF' }} />}
+                                icon={<EditOutlined style={{ color: '#f59e0b' }} />}
                                 size="small"
-                                onClick={() => handleViewDetails(record)}
-                                style={{
-                                    border: '1px solid #e2e8f0',
-                                    background: 'white',
-                                    boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
-                                }}
+                                onClick={() => handleEdit(record)}
+                                style={{ border: '1px solid #fed7aa', background: '#fff7ed' }}
                             />
                         </Tooltip>
-                        {/* Show Edit/Delete only for Rejected plans */}
-                        {isInitiator && record.status?.toLowerCase().includes('rejected') && (
-                            <>
-                                <Tooltip title="Edit and Resubmit">
-                                    <Button
-                                        shape="circle"
-                                        icon={<EditOutlined style={{ color: '#f59e0b' }} />}
-                                        size="small"
-                                        onClick={() => handleEdit(record)}
-                                        style={{
-                                            border: '1px solid #fed7aa',
-                                            background: '#fff7ed',
-                                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-                                        }}
-                                    />
-                                </Tooltip>
-                                <Popconfirm
-                                    title="Delete Rejected Plan?"
-                                    description="Are you sure you want to remove this rejected plan?"
-                                    onConfirm={() => handleDelete(record.id)}
-                                    okText="Yes"
-                                    cancelText="No"
-                                    okButtonProps={{ danger: true, size: 'small' }}
-                                    cancelButtonProps={{ size: 'small' }}
-                                >
-                                    <Tooltip title="Delete">
-                                        <Button
-                                            danger
-                                            shape="circle"
-                                            icon={<DeleteOutlined />}
-                                            size="small"
-                                            style={{
-                                                background: '#fff1f2',
-                                                border: '1px solid #fecdd3',
-                                                color: '#ef4444'
-                                            }}
-                                        />
-                                    </Tooltip>
-                                </Popconfirm>
-                            </>
-                        )}
-                    </Space>
-                )
-            }
-        }
+                        <Popconfirm
+                            title="Delete Rejected Plan?"
+                            onConfirm={() => handleDelete(record.id)}
+                            okText="Yes"
+                            cancelText="No"
+                            okButtonProps={{ danger: true, size: 'small' }}
+                        >
+                            <Tooltip title="Delete">
+                                <Button
+                                    danger
+                                    shape="circle"
+                                    icon={<DeleteOutlined />}
+                                    size="small"
+                                    style={{ background: '#fff1f2' }}
+                                />
+                            </Tooltip>
+                        </Popconfirm>
+                    </>
+                )}
+            </Space>
+        );
+    }
+}
+      
     ]
 
     return (
@@ -605,7 +541,7 @@ function LinkageFormsManagement() {
                             size="large"
                         >
                             <Option value="Planned">Planned</Option>
-                            <Option value="Pending from HOD">Pending from HOD</Option>
+                            <Option value="pending from HOD">pending from HOD</Option>
                             <Option value="Pending from Linkage Office">Pending from Linkage Office</Option>
                             <Option value="Rejected">Rejected</Option>
                             <Option value="Draft">Draft</Option>
@@ -709,7 +645,7 @@ function LinkageFormsManagement() {
                         const isHod = permissions.some(p => p.name === 'Approve_Linkage_HOD');
                         const isOfficer = permissions.some(p => p.name === 'Approve_Linkage_Officer');
 
-                        if (isHod && status === 'Pending from HOD') return true;
+                        if (isHod && status === 'pending from HOD') return true;
                         if (isOfficer && status === 'Pending from Linkage Office') return true;
                         return false;
                     })()) ? (

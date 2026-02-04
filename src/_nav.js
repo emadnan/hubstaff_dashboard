@@ -20,6 +20,11 @@ import {
 } from '@coreui/icons'
 import { CNavGroup, CNavItem } from '@coreui/react'
 
+//Local Storage data
+const local = JSON.parse(localStorage.getItem('user-info'))
+const permissions = local?.permissions || []
+const permissionNames = permissions.map((permission) => permission.name)
+
 const _navAdmin = [
   {
     component: CNavItem,
@@ -317,7 +322,7 @@ const _navAdmin = [
   },
   {
     component: CNavItem,
-    name: 'Test Form',
+    name: 'Departmental External Linkage Plan',
     to: '/form-builder/view/1',
     icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
     permission: 'Nav_FSF',
@@ -331,52 +336,27 @@ const _navAdmin = [
   },
 ]
 
-const getNavigation = () => {
-  const local = JSON.parse(localStorage.getItem('user-info'))
-  const permissions = local?.permissions || []
-  const permissionNames = permissions.map((permission) => permission.name)
-
-  const userRoles = local?.user?.roles || local?.roles || []
-  const roleNames = Array.isArray(userRoles)
-    ? userRoles.map(r => (typeof r === 'string' ? r : r.name))
-    : (typeof userRoles === 'string' ? [userRoles] : [])
-
-  const isAdmin = roleNames.includes('Admin') || roleNames.includes('Super Admin')
-
-  const filterNavItems = (items) => {
-    return items
-      .map((item) => {
-        let newItem = { ...item }
-
-        // If Admin, bypass permission check but allow toggling via explicit false (if needed later)
-        // For now, assume Admin sees ALL defined nav items.
-        // However, we must recurse for groups.
-        if (isAdmin) {
-          if (item.component === CNavGroup && item.items) {
-            newItem.items = filterNavItems(item.items)
+const filterNavItems = (items) => {
+  return items
+    .map((item) => {
+      if (item.component === CNavGroup) {
+        // Check if parent group has permission
+        if (permissionNames.includes(item.permission)) {
+          const filteredSubItems = filterNavItems(item.items)
+          // Show group if it has permission AND has at least one visible child
+          if (filteredSubItems.length > 0) {
+            return { ...item, items: filteredSubItems }
           }
-          return newItem
         }
-
-        if (newItem.component && newItem.items) {
-          if (item.component === CNavGroup) {
-            if (permissionNames.includes(item.permission)) {
-              const filteredSubItems = filterNavItems(item.items)
-              if (filteredSubItems.length > 0) {
-                newItem.items = filteredSubItems
-                return newItem
-              }
-            }
-          }
-        } else if (permissionNames.includes(item.permission)) {
-          return item
-        }
-        return null
-      })
-      .filter((item) => item !== null)
-  }
-
-  return filterNavItems(_navAdmin)
+      } else if (permissionNames.includes(item.permission)) {
+        // Show individual nav item if user has permission
+        return item
+      }
+      return null
+    })
+    .filter((item) => item !== null)
 }
 
-export { getNavigation }
+const filteredBaseNavItems = filterNavItems(_navAdmin)
+
+export const navigationConfig = [...filteredBaseNavItems]

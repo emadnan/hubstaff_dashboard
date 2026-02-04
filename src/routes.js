@@ -60,8 +60,8 @@ const TaskAssignmentUserSide = React.lazy(() =>
 const NotFound = React.lazy(() => import('./views/notFoundPage/NotFound'))
 
 // Function to check if the user has access to a specific route based on their role
-const hasAccess = (requiredNavPermision, userNavPermision) => {
-  return requiredNavPermision.includes(userNavPermision)
+const hasAccess = (userPermissions, requiredPermission) => {
+  return userPermissions.includes(requiredPermission)
 }
 
 //Path setting for routes
@@ -277,9 +277,25 @@ const routes = [
   { path: '/404', name: '404 Page', element: NotFound, requiredNavPermision: 'Nav_NotFound', },
 ]
 
+// Helper to check if user is admin
+const isUserAdmin = () => {
+  const local = JSON.parse(localStorage.getItem('user-info'))
+  const userRoles = local?.user?.roles || (Array.isArray(local?.roles) ? local.roles : [])
+  const roleNames = Array.isArray(userRoles)
+    ? userRoles.map(r => (typeof r === 'string' ? r : r.name))
+    : (typeof userRoles === 'string' ? [userRoles] : [])
+  return roleNames.includes('Admin') || roleNames.includes('Super Admin')
+}
+
 export const filteredRoutes = routes.filter((route) => {
+  // If no permission required, check generic auth
   if (!route.requiredNavPermision || route.requiredNavPermision.length === 0) {
     return isAuthenticated()
+  }
+
+  // If Admin, bypass permission check
+  if (isUserAdmin()) {
+    return true
   }
 
   const permissionNames = getUserNavPermision()
