@@ -57,7 +57,7 @@ const FormEditor = React.lazy(() => import('./views/form-builder/FormEditor'))
 const TaskAssignmentUserSide = React.lazy(() =>
   import('./views/taskmanagement/TaskAssignmentUserSide'),
 )
-const Workflow = React.lazy(() => import('./views/Workflow/Workflow'))
+
 const NotFound = React.lazy(() => import('./views/notFoundPage/NotFound'))
 
 // Function to check if the user has access to a specific route based on their role
@@ -275,12 +275,7 @@ const routes = [
     element: FormEditor,
     requiredNavPermision: 'Nav_FSF',
   },
-  {
-    path: '/workflow',
-    name: 'Workflow',
-    element: Workflow,
-    requiredNavPermision: 'Nav_LinkagePlanForm',
-  },
+
   { path: '/404', name: '404 Page', element: NotFound, requiredNavPermision: 'Nav_NotFound', },
 ]
 

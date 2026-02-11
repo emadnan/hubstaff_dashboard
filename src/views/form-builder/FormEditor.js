@@ -14,216 +14,27 @@ import '@bpmn-io/form-js/dist/assets/form-js-editor.css'
 import './FormEditor.css'
 
 const { Text, Title } = Typography
+const { Option } = Select
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
 // Define read-only system keys
 const READ_ONLY_MASTER_KEYS = ['campuses', 'faculties', 'departments', 'activityTypes', 'industrySectors', 'hods']
 
+// Helper function to get empty schema
+const getEmptySchema = () => ({
+    schemaVersion: 4,
+    exporter: { name: 'form-js', version: '0.1.0' },
+    type: 'default',
+    components: []
+})
 
-// --- Submission Status Manager Component ---
-const SubmissionStatusManager = ({ formId, visible, onClose }) => {
-    const [submissions, setSubmissions] = useState([])
-    const [loading, setLoading] = useState(false)
-    const [updatingId, setUpdatingId] = useState(null)
-
-    const local = JSON.parse(localStorage.getItem('user-info') || '{}')
-    const token = local?.token
-
-    useEffect(() => {
-        if (visible && formId) {
-            fetchSubmissions()
-        }
-    }, [visible, formId])
-
-    const fetchSubmissions = async () => {
-        setLoading(true)
-        try {
-            const response = await fetch(`${BASE_URL}/api/forms/${formId}/submissions`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-
-            if (response.ok) {
-                const data = await response.json()
-                setSubmissions(data)
-            } else {
-                message.error('Failed to fetch submissions')
-            }
-        } catch (error) {
-            console.error('Error fetching submissions:', error)
-            message.error('Error fetching submissions')
-        } finally {
-            setLoading(false)
-        }
+// Helper function to prepare schema for saving
+const prepareSchema = (schema) => {
+    if (!schema) return getEmptySchema()
+    return {
+        ...schema,
+        components: schema.components || []
     }
-
-    const updateSubmissionStatus = async (submissionId, newStatus) => {
-        setUpdatingId(submissionId)
-        try {
-            const response = await fetch(`${BASE_URL}/api/form-submissions/${submissionId}/status`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({ status: newStatus })
-            })
-
-            if (response.ok) {
-                message.success('Status updated successfully')
-                fetchSubmissions() // Refresh the list
-            } else {
-                const error = await response.json()
-                message.error(error.message || 'Failed to update status')
-            }
-        } catch (error) {
-            console.error('Error updating status:', error)
-            message.error('Error updating status')
-        } finally {
-            setUpdatingId(null)
-        }
-    }
-    const handleDeleteSubmission = async (submissionId) => {
-        try {
-            const response = await fetch(`${BASE_URL}/api/form-submissions/${submissionId}`, {
-                method: 'DELETE',
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-
-            if (response.ok) {
-                message.success('Submission deleted successfully')
-                fetchSubmissions()
-            } else {
-                const error = await response.json()
-                message.error(error.message || 'Failed to delete submission')
-            }
-        } catch (error) {
-            console.error('Error deleting submission:', error)
-            message.error('Error deleting submission')
-        }
-    }
-
-    const handleEditSubmission = (record) => {
-        // Navigate to edit page or open edit modal
-        Modal.info({
-            title: 'Edit Rejected Submission',
-            content: (
-                <div>
-                    <p>Submission ID: {record.id}</p>
-                    <p>Status: <Tag color="red">Rejected</Tag></p>
-                    <pre style={{ maxHeight: '400px', overflow: 'auto', background: '#f5f5f5', padding: '12px' }}>
-                        {JSON.stringify(record.submission_data, null, 2)}
-                    </pre>
-                </div>
-            ),
-            width: 700
-        })
-    }
-    const getStatusColor = (status) => {
-        const colors = {
-            'draft': 'default',
-            'submitted': 'blue',
-            'Pending from HOD': 'orange',
-            'approved': 'green',
-            'rejected': 'red'
-        }
-        return colors[status] || 'default'
-    }
-
-    const columns = [
-        {
-            title: 'Submission ID',
-            dataIndex: 'id',
-            key: 'id',
-            width: 120
-        },
-        {
-            title: 'Submitted At',
-            dataIndex: 'created_at',
-            key: 'created_at',
-            render: (date) => new Date(date).toLocaleString(),
-            width: 200
-        },
-        {
-            title: 'Current Status',
-            dataIndex: 'status',
-            key: 'status',
-            render: (status) => (
-                <Tag color={getStatusColor(status)}>
-                    {status.toUpperCase()}
-                </Tag>
-            ),
-            width: 150
-        },
-        {
-            title: 'Actions',
-            key: 'actions',
-            render: (_, record) => (
-                <Space>
-                    <Select
-                        value={record.status}
-                        style={{ width: 180 }}
-                        onChange={(value) => updateSubmissionStatus(record.id, value)}
-                        loading={updatingId === record.id}
-                        disabled={updatingId === record.id}
-                    >
-                        <Option value="draft">Draft</Option>
-                        <Option value="submitted">Submitted</Option>
-                        <Option value="ending from HOD">Pending from HOD</Option>
-                        <Option value="approved">Approved</Option>
-                        <Option value="rejected">Rejected</Option>
-                    </Select>
-                    <Button
-                        icon={<EyeOutlined />}
-                        onClick={() => {
-                            Modal.info({
-                                title: 'Submission Data',
-                                content: (
-                                    <pre style={{ maxHeight: '400px', overflow: 'auto' }}>
-                                        {JSON.stringify(record.submission_data, null, 2)}
-                                    </pre>
-                                ),
-                                width: 600
-                            })
-                        }}
-                    >
-                        View Data
-                    </Button>
-                </Space>
-            )
-        }
-    ]
-
-    return (
-        <Modal
-            title="Manage Form Submissions"
-            open={visible}
-            onCancel={onClose}
-            footer={[
-                <Button key="close" onClick={onClose}>
-                    Close
-                </Button>
-            ]}
-            width={1000}
-        >
-            <Table
-                columns={columns}
-                dataSource={submissions}
-                loading={loading}
-                rowKey="id"
-                pagination={{ pageSize: 10 }}
-            />
-        </Modal>
-    )
-}
-
-SubmissionStatusManager.propTypes = {
-    formId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    visible: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired
 }
 
 // --- Submission Status Manager Component ---
@@ -290,6 +101,7 @@ const SubmissionStatusManager = ({ formId, visible, onClose }) => {
             setUpdatingId(null)
         }
     }
+
     const handleDeleteSubmission = async (submissionId) => {
         try {
             const response = await fetch(`${BASE_URL}/api/form-submissions/${submissionId}`, {
@@ -328,6 +140,7 @@ const SubmissionStatusManager = ({ formId, visible, onClose }) => {
             width: 700
         })
     }
+
     const getStatusColor = (status) => {
         const colors = {
             'draft': 'default',
@@ -378,7 +191,7 @@ const SubmissionStatusManager = ({ formId, visible, onClose }) => {
                     >
                         <Option value="draft">Draft</Option>
                         <Option value="submitted">Submitted</Option>
-                        <Option value="ending from HOD">Pending from HOD</Option>
+                        <Option value="Pending from HOD">Pending from HOD</Option>
                         <Option value="approved">Approved</Option>
                         <Option value="rejected">Rejected</Option>
                     </Select>
@@ -398,6 +211,17 @@ const SubmissionStatusManager = ({ formId, visible, onClose }) => {
                     >
                         View Data
                     </Button>
+                    <Button
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => {
+                            Modal.confirm({
+                                title: 'Delete Submission?',
+                                content: 'Are you sure you want to delete this submission? This action cannot be undone.',
+                                onOk: () => handleDeleteSubmission(record.id)
+                            })
+                        }}
+                    />
                 </Space>
             )
         }
@@ -431,8 +255,8 @@ SubmissionStatusManager.propTypes = {
     visible: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired
 }
+
 // --- Sortable Item Component for Section List ---
-
 const SortableSectionItem = ({ section, isActive, onClick, onDelete, onNameChange }) => {
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: section.id })
     const style = { transform: CSS.Transform.toString(transform), transition }
@@ -530,7 +354,7 @@ const SectionPreview = ({ section, masterData, onDataChange }) => {
         return () => {
             if (viewerInstance.current) viewerInstance.current.destroy()
         }
-    }, [section, masterData]) // Removed 'onDataChange' from deps to avoid re-init loop if handler is unstable, but ideally it should be stable or ref.
+    }, [section, masterData])
 
 
     return (
@@ -1088,7 +912,7 @@ const CreateFormEditor = () => {
         // We use the updatedSections we just calculated
         // Only auto-save if we have a name (or meaningful data) to avoid creating junk
         if (formName) {
-            await saveFormPayload(updatedSections, 'draft', true, id) // Pass target active ID
+            await saveFormPayload(updatedSections, 'draft', true)
         }
     }
 
@@ -1169,7 +993,7 @@ const CreateFormEditor = () => {
             console.error('Error in handleSave:', err);
             message.error('Failed to prepare form data for saving.');
         } finally {
-            if (!silent) setSaving(false)
+            setSaving(false)
         }
     }
 
@@ -1410,8 +1234,9 @@ const CreateFormEditor = () => {
 
                         {/* Available Data Sources Help Panel */}
                         <div style={{ padding: '16px', borderTop: '1px solid #e8e8e8', background: '#fcfcfc' }}>
-                            <div className="data-source-panel-header">
+                            <div className="data-source-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Text strong style={{ fontSize: '12px', color: '#595959' }}>Master Data Keys</Text>
+                                <Button type="link" size="small" icon={<PlusOutlined />} onClick={openAddMasterKeyModal} style={{ padding: 0 }}>Add New</Button>
                             </div>
 
                             <div style={{ maxHeight: '150px', overflowY: 'auto' }} className="sidebar-list-container">
@@ -1422,10 +1247,18 @@ const CreateFormEditor = () => {
                                         <List.Item style={{ padding: '6px 0', fontSize: '11px', borderBottom: '1px solid #f5f5f5' }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
                                                 <span style={{ fontFamily: 'monospace', color: '#096dd9' }}>{key}</span>
-                                                <Typography.Paragraph
-                                                    copyable={{ text: key, tooltips: ['Copy', 'Copied!'] }}
-                                                    style={{ margin: 0 }}
-                                                />
+                                                <Space>
+                                                    {!READ_ONLY_MASTER_KEYS.includes(key) && (
+                                                        <>
+                                                            <Button size="small" type="text" icon={<EditOutlined />} onClick={() => openEditMasterKeyModal(key)} />
+                                                            <Button size="small" type="text" danger icon={<DeleteOutlined />} onClick={() => handleDeleteMasterKey(key)} />
+                                                        </>
+                                                    )}
+                                                    <Typography.Paragraph
+                                                        copyable={{ text: key, tooltips: ['Copy', 'Copied!'] }}
+                                                        style={{ margin: 0 }}
+                                                    />
+                                                </Space>
                                             </div>
                                         </List.Item>
                                     )}
@@ -1552,11 +1385,61 @@ const CreateFormEditor = () => {
             </div>
 
             {/* Submission Status Manager Modal */}
+            {/* Submission Status Manager Modal */}
             <SubmissionStatusManager
                 formId={id}
                 visible={submissionModalVisible}
                 onClose={() => setSubmissionModalVisible(false)}
             />
+
+            {/* Master Key Management Modal */}
+            <Modal
+                title={editingKey ? "Edit Master Key" : "Create Master Key"}
+                open={isMasterKeyModalOpen}
+                onCancel={() => setIsMasterKeyModalOpen(false)}
+                onOk={handleSaveMasterKey}
+                confirmLoading={creatingMasterKey}
+            >
+                <AntForm form={masterKeyForm} layout="vertical">
+                    <AntForm.Item
+                        name="name"
+                        label="Key Name"
+                        rules={[{ required: true, message: 'Please enter a key name' }]}
+                    >
+                        <Input placeholder="e.g., productTypes" disabled={!!editingKey} />
+                    </AntForm.Item>
+                    <AntForm.List name="values">
+                        {(fields, { add, remove }) => (
+                            <>
+                                {fields.map(({ key, name, ...restField }) => (
+                                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                                        <AntForm.Item
+                                            {...restField}
+                                            name={[name, 'label']}
+                                            rules={[{ required: true, message: 'Missing label' }]}
+                                        >
+                                            <Input placeholder="Label" />
+                                        </AntForm.Item>
+                                        <AntForm.Item
+                                            {...restField}
+                                            name={[name, 'value']}
+                                            rules={[{ required: true, message: 'Missing value' }]}
+                                        >
+                                            <Input placeholder="Value" />
+                                        </AntForm.Item>
+                                        <Button type="text" danger icon={<DeleteOutlined />} onClick={() => remove(name)} />
+                                    </Space>
+                                ))}
+                                <AntForm.Item>
+                                    <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                        Add Value
+                                    </Button>
+                                </AntForm.Item>
+                            </>
+                        )}
+                    </AntForm.List>
+                </AntForm>
+            </Modal>
         </div>
     )
 }
