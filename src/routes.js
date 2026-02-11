@@ -274,6 +274,12 @@ const routes = [
     element: FormEditor,
     requiredNavPermision: 'Nav_FSF',
   },
+  {
+    path: '/workflow',
+    name: 'Workflow',
+    element: Workflow,
+    requiredNavPermision: 'Nav_LinkagePlanForm',
+  },
   { path: '/404', name: '404 Page', element: NotFound, requiredNavPermision: 'Nav_NotFound', },
 ]
 

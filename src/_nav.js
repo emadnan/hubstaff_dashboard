@@ -322,8 +322,8 @@ const _navAdmin = [
   },
   {
     component: CNavItem,
-    name: 'Test Form',
-    to: '/form-builder/view/7',
+    name: 'Departmental External Linkage Plan',
+    to: '/form-builder-view/1',
     icon: <CIcon icon={cilLineWeight} customClassName="nav-icon" />,
     permission: 'Nav_FSF',
   },
