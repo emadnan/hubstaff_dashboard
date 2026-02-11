@@ -20,6 +20,7 @@ const BASE_URL = process.env.REACT_APP_BASE_URL
 // Define read-only system keys
 const READ_ONLY_MASTER_KEYS = ['campuses', 'faculties', 'departments', 'activityTypes', 'industrySectors', 'hods']
 
+
 // --- Submission Status Manager Component ---
 const SubmissionStatusManager = ({ formId, visible, onClose }) => {
     const [submissions, setSubmissions] = useState([])
@@ -43,7 +44,7 @@ const SubmissionStatusManager = ({ formId, visible, onClose }) => {
                     Authorization: `Bearer ${token}`
                 }
             })
-            
+
             if (response.ok) {
                 const data = await response.json()
                 setSubmissions(data)
@@ -84,44 +85,44 @@ const SubmissionStatusManager = ({ formId, visible, onClose }) => {
             setUpdatingId(null)
         }
     }
-const handleDeleteSubmission = async (submissionId) => {
-    try {
-        const response = await fetch(`${BASE_URL}/api/form-submissions/${submissionId}`, {
-            method: 'DELETE',
-            headers: {
-                Authorization: `Bearer ${token}`
+    const handleDeleteSubmission = async (submissionId) => {
+        try {
+            const response = await fetch(`${BASE_URL}/api/form-submissions/${submissionId}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+            if (response.ok) {
+                message.success('Submission deleted successfully')
+                fetchSubmissions()
+            } else {
+                const error = await response.json()
+                message.error(error.message || 'Failed to delete submission')
             }
-        })
-
-        if (response.ok) {
-            message.success('Submission deleted successfully')
-            fetchSubmissions()
-        } else {
-            const error = await response.json()
-            message.error(error.message || 'Failed to delete submission')
+        } catch (error) {
+            console.error('Error deleting submission:', error)
+            message.error('Error deleting submission')
         }
-    } catch (error) {
-        console.error('Error deleting submission:', error)
-        message.error('Error deleting submission')
     }
-}
 
-const handleEditSubmission = (record) => {
-    // Navigate to edit page or open edit modal
-    Modal.info({
-        title: 'Edit Rejected Submission',
-        content: (
-            <div>
-                <p>Submission ID: {record.id}</p>
-                <p>Status: <Tag color="red">Rejected</Tag></p>
-                <pre style={{ maxHeight: '400px', overflow: 'auto', background: '#f5f5f5', padding: '12px' }}>
-                    {JSON.stringify(record.submission_data, null, 2)}
-                </pre>
-            </div>
-        ),
-        width: 700
-    })
-}
+    const handleEditSubmission = (record) => {
+        // Navigate to edit page or open edit modal
+        Modal.info({
+            title: 'Edit Rejected Submission',
+            content: (
+                <div>
+                    <p>Submission ID: {record.id}</p>
+                    <p>Status: <Tag color="red">Rejected</Tag></p>
+                    <pre style={{ maxHeight: '400px', overflow: 'auto', background: '#f5f5f5', padding: '12px' }}>
+                        {JSON.stringify(record.submission_data, null, 2)}
+                    </pre>
+                </div>
+            ),
+            width: 700
+        })
+    }
     const getStatusColor = (status) => {
         const colors = {
             'draft': 'default',
@@ -226,6 +227,242 @@ SubmissionStatusManager.propTypes = {
     onClose: PropTypes.func.isRequired
 }
 
+// --- Submission Status Manager Component ---
+const SubmissionStatusManager = ({ formId, visible, onClose }) => {
+    const [submissions, setSubmissions] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [updatingId, setUpdatingId] = useState(null)
+
+    const local = JSON.parse(localStorage.getItem('user-info') || '{}')
+    const token = local?.token
+
+    useEffect(() => {
+        if (visible && formId) {
+            fetchSubmissions()
+        }
+    }, [visible, formId])
+
+    const fetchSubmissions = async () => {
+        setLoading(true)
+        try {
+            const response = await fetch(`${BASE_URL}/api/forms/${formId}/submissions`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+            if (response.ok) {
+                const data = await response.json()
+                setSubmissions(data)
+            } else {
+                message.error('Failed to fetch submissions')
+            }
+        } catch (error) {
+            console.error('Error fetching submissions:', error)
+            message.error('Error fetching submissions')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const updateSubmissionStatus = async (submissionId, newStatus) => {
+        setUpdatingId(submissionId)
+        try {
+            const response = await fetch(`${BASE_URL}/api/form-submissions/${submissionId}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ status: newStatus })
+            })
+
+            if (response.ok) {
+                message.success('Status updated successfully')
+                fetchSubmissions() // Refresh the list
+            } else {
+                const error = await response.json()
+                message.error(error.message || 'Failed to update status')
+            }
+        } catch (error) {
+            console.error('Error updating status:', error)
+            message.error('Error updating status')
+        } finally {
+            setUpdatingId(null)
+        }
+    }
+    const handleDeleteSubmission = async (submissionId) => {
+        try {
+            const response = await fetch(`${BASE_URL}/api/form-submissions/${submissionId}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+            if (response.ok) {
+                message.success('Submission deleted successfully')
+                fetchSubmissions()
+            } else {
+                const error = await response.json()
+                message.error(error.message || 'Failed to delete submission')
+            }
+        } catch (error) {
+            console.error('Error deleting submission:', error)
+            message.error('Error deleting submission')
+        }
+    }
+
+    const handleEditSubmission = (record) => {
+        // Navigate to edit page or open edit modal
+        Modal.info({
+            title: 'Edit Rejected Submission',
+            content: (
+                <div>
+                    <p>Submission ID: {record.id}</p>
+                    <p>Status: <Tag color="red">Rejected</Tag></p>
+                    <pre style={{ maxHeight: '400px', overflow: 'auto', background: '#f5f5f5', padding: '12px' }}>
+                        {JSON.stringify(record.submission_data, null, 2)}
+                    </pre>
+                </div>
+            ),
+            width: 700
+        })
+    }
+    const getStatusColor = (status) => {
+        const colors = {
+            'draft': 'default',
+            'submitted': 'blue',
+            'Pending from HOD': 'orange',
+            'approved': 'green',
+            'rejected': 'red'
+        }
+        return colors[status] || 'default'
+    }
+
+    const columns = [
+        {
+            title: 'Submission ID',
+            dataIndex: 'id',
+            key: 'id',
+            width: 120
+        },
+        {
+            title: 'Submitted At',
+            dataIndex: 'created_at',
+            key: 'created_at',
+            render: (date) => new Date(date).toLocaleString(),
+            width: 200
+        },
+        {
+            title: 'Current Status',
+            dataIndex: 'status',
+            key: 'status',
+            render: (status) => (
+                <Tag color={getStatusColor(status)}>
+                    {status.toUpperCase()}
+                </Tag>
+            ),
+            width: 150
+        },
+        {
+            title: 'Actions',
+            key: 'actions',
+            render: (_, record) => (
+                <Space>
+                    <Select
+                        value={record.status}
+                        style={{ width: 180 }}
+                        onChange={(value) => updateSubmissionStatus(record.id, value)}
+                        loading={updatingId === record.id}
+                        disabled={updatingId === record.id}
+                    >
+                        <Option value="draft">Draft</Option>
+                        <Option value="submitted">Submitted</Option>
+                        <Option value="ending from HOD">Pending from HOD</Option>
+                        <Option value="approved">Approved</Option>
+                        <Option value="rejected">Rejected</Option>
+                    </Select>
+                    <Button
+                        icon={<EyeOutlined />}
+                        onClick={() => {
+                            Modal.info({
+                                title: 'Submission Data',
+                                content: (
+                                    <pre style={{ maxHeight: '400px', overflow: 'auto' }}>
+                                        {JSON.stringify(record.submission_data, null, 2)}
+                                    </pre>
+                                ),
+                                width: 600
+                            })
+                        }}
+                    >
+                        View Data
+                    </Button>
+                </Space>
+            )
+        }
+    ]
+
+    return (
+        <Modal
+            title="Manage Form Submissions"
+            open={visible}
+            onCancel={onClose}
+            footer={[
+                <Button key="close" onClick={onClose}>
+                    Close
+                </Button>
+            ]}
+            width={1000}
+        >
+            <Table
+                columns={columns}
+                dataSource={submissions}
+                loading={loading}
+                rowKey="id"
+                pagination={{ pageSize: 10 }}
+            />
+        </Modal>
+    )
+}
+
+SubmissionStatusManager.propTypes = {
+    formId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    visible: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired
+}
+// --- Sortable Item Component for Section List ---
+
+    return (
+        <Modal
+            title="Manage Form Submissions"
+            open={visible}
+            onCancel={onClose}
+            footer={[
+                <Button key="close" onClick={onClose}>
+                    Close
+                </Button>
+            ]}
+            width={1000}
+        >
+            <Table
+                columns={columns}
+                dataSource={submissions}
+                loading={loading}
+                rowKey="id"
+                pagination={{ pageSize: 10 }}
+            />
+        </Modal>
+    )
+}
+
+SubmissionStatusManager.propTypes = {
+    formId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    visible: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired
+}
+
 // --- Sortable Item Component for Section List ---
 const SortableSectionItem = ({ section, isActive, onClick, onDelete, onNameChange }) => {
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: section.id })
@@ -295,7 +532,7 @@ SortableSectionItem.propTypes = {
 const SectionPreview = ({ section, masterData, onDataChange }) => {
     const containerRef = useRef(null)
     const viewerInstance = useRef(null)
-    
+
     useEffect(() => {
         if (!containerRef.current) return
 
@@ -326,10 +563,10 @@ const SectionPreview = ({ section, masterData, onDataChange }) => {
 
 
     return (
-        <Card 
-            className="form-preview-card" 
-            style={{ 
-                marginBottom: 32, 
+        <Card
+            className="form-preview-card"
+            style={{
+                marginBottom: 32,
                 boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                 borderRadius: '12px',
                 border: '1px solid #e8e8e8',
@@ -345,13 +582,13 @@ const SectionPreview = ({ section, masterData, onDataChange }) => {
             }}
         >
             {/* Section Title */}
-            <div style={{ 
-                marginBottom: '32px', 
-                paddingBottom: '16px', 
+            <div style={{
+                marginBottom: '32px',
+                paddingBottom: '16px',
                 borderBottom: '2px solid #f0f0f0'
             }}>
-                <Title level={4} style={{ 
-                    margin: 0, 
+                <Title level={4} style={{
+                    margin: 0,
                     color: '#262626',
                     fontSize: '18px',
                     fontWeight: 600
@@ -359,15 +596,15 @@ const SectionPreview = ({ section, masterData, onDataChange }) => {
                     {section.name}
                 </Title>
             </div>
-            
+
             {/* Form Fields Container */}
-            <div 
-                ref={containerRef} 
-                style={{ 
+            <div
+                ref={containerRef}
+                style={{
                     position: 'relative',
                     minHeight: '100px',
                     overflow: 'visible'
-                }} 
+                }}
                 className="form-preview-fields"
             />
         </Card>
@@ -449,16 +686,20 @@ const CreateFormEditor = () => {
 
     // Sections Management
     const [sections, setSections] = useState([])
+    const [workflows, setWorkflows] = useState([])
+    const [selectedWorkflowId, setSelectedWorkflowId] = useState(null)
     const [activeSectionId, setActiveSectionId] = useState(null)
     const [isMasterKeyModalOpen, setIsMasterKeyModalOpen] = useState(false)
     const [masterKeyForm] = AntForm.useForm()
     const [creatingMasterKey, setCreatingMasterKey] = useState(false)
-    
+
     // Submission Status Manager
     const [submissionModalVisible, setSubmissionModalVisible] = useState(false)
 
-    const local = JSON.parse(localStorage.getItem('user-info') || '{}')
-    const token = local?.token
+        masterKeyForm.setFieldsValue({
+            name: key,
+            values: currentValues
+        })
 
     // --- Master Data for Dropdowns ---
     const [masterData, setMasterData] = useState({})
@@ -515,7 +756,7 @@ const CreateFormEditor = () => {
 
             if (res.ok) {
                 message.success(editingKey ? 'Master key updated successfully!' : 'Master key created successfully!')
-                
+
                 // Update masterData state
                 setMasterData(prev => ({
                     ...prev,
@@ -524,7 +765,7 @@ const CreateFormEditor = () => {
                         value: v.value
                     }))
                 }))
-                
+
                 // If editing and name changed, remove old key
                 if (editingKey && editingKey !== values.name) {
                     setMasterData(prev => {
@@ -533,7 +774,7 @@ const CreateFormEditor = () => {
                         return updated
                     })
                 }
-                
+
                 masterKeyForm.resetFields()
                 setIsMasterKeyModalOpen(false)
                 setEditingKey(null)
@@ -572,7 +813,7 @@ const CreateFormEditor = () => {
 
             if (res.ok) {
                 const data = await res.json();
-                
+
                 if (!isAutoSave) {
                     message.success(status === 'draft' ? 'Draft saved successfully!' : 'Form saved successfully!');
                 }
@@ -583,7 +824,7 @@ const CreateFormEditor = () => {
                         return data.sections.map((dbSection, idx) => {
                             // Match by database ID OR by the current index if it's a new section
                             const localMatch = prevSections.find(s => s.id === dbSection.id) || prevSections[idx];
-                            
+
                             return {
                                 ...dbSection,
                                 // Prioritize the schema we currently have in memory to avoid "jumping" back to old DB versions
@@ -594,7 +835,7 @@ const CreateFormEditor = () => {
                 }
 
                 if (!id && data.id) {
-                    navigate(`/form-builder/edit/${data.id}`, { replace: true });
+                    navigate(`/form-builder-edit/${data.id}`, { replace: true });
                 }
             } else {
                 const err = await res.json();
@@ -640,7 +881,7 @@ const CreateFormEditor = () => {
                     const res = await fetch(`${BASE_URL}/api/form-options/departments`, { headers });
                     if (res.ok) {
                         const data = await res.json();
-                        newData.departments = Array.isArray(data) 
+                        newData.departments = Array.isArray(data)
                             ? data.map(d => ({
                                 label: d.label,
                                 value: d.value || d.id?.toString()
@@ -656,7 +897,7 @@ const CreateFormEditor = () => {
                     const res = await fetch(`${BASE_URL}/api/form-options/activityTypes`, { headers });
                     if (res.ok) {
                         const data = await res.json();
-                        newData.activityTypes = Array.isArray(data) 
+                        newData.activityTypes = Array.isArray(data)
                             ? data.map(item => ({
                                 value: item.value || item.code,
                                 label: item.label
@@ -710,7 +951,7 @@ const CreateFormEditor = () => {
                 }
 
                 setMasterData(newData);
-                
+
             } catch (err) {
                 message.error('Failed to load form options. Please refresh the page.');
             }
@@ -858,6 +1099,7 @@ const CreateFormEditor = () => {
             const data = await response.json()
             setFormName(data.name)
             setFormDescription(data.description)
+            if (data.workflow_id) setSelectedWorkflowId(data.workflow_id)
 
             if (data.sections && data.sections.length > 0) {
                 const mappedSections = data.sections.map(s => ({
@@ -1013,7 +1255,7 @@ const CreateFormEditor = () => {
             });
 
             // 3. Update local state immediately so UI is in sync
-            setSections(prev => prev.map(s => 
+            setSections(prev => prev.map(s =>
                 s.id === activeSectionId && currentSchema ? { ...s, schema: currentSchema } : s
             ));
 
@@ -1129,22 +1371,22 @@ const CreateFormEditor = () => {
                 const keys = await res.json()
                 console.log('=== ALL MASTER KEYS ===')
                 console.log('Raw Response:', keys)
-                
+
                 const formattedKeys = keys.map(key => ({
                     name: key.name,
                     valueCount: Array.isArray(key.values) ? key.values.length : 0,
                     values: key.values || [],
                 }))
-                
+
                 console.table(formattedKeys.map(k => ({
                     Name: k.name,
                     'Value Count': k.valueCount
                 })))
-                
+
                 formattedKeys.forEach(k => {
                     console.log(`\n📋 ${k.name} (${k.valueCount} values):`, k.values)
                 })
-                
+
                 message.success(`Retrieved ${keys.length} master keys. Check browser console for details.`)
                 return keys
             } else {
@@ -1243,18 +1485,50 @@ const CreateFormEditor = () => {
                             style={{ color: '#888', padding: 0, fontSize: '12px' }}
                         />
                     </div>
+                    <div style={{ marginLeft: 24, display: 'flex', alignItems: 'center' }}>
+                        <Text strong style={{ marginRight: 8, whiteSpace: 'nowrap' }}>Workflow:</Text>
+                        <Select
+                            placeholder="Attach Workflow"
+                            value={selectedWorkflowId}
+                            onChange={setSelectedWorkflowId}
+                            style={{ width: 200 }}
+                            allowClear
+                        >
+                            {workflows.map(w => (
+                                <Option key={w.id} value={w.id}>{w.name || `Workflow #${w.id}`}</Option>
+                            ))}
+                        </Select>
+                        <Space style={{ marginLeft: 8 }}>
+                            <Button
+                                type="text"
+                                size="small"
+                                icon={<PlusOutlined />}
+                                onClick={() => navigate('/workflow-builder')}
+                                title="Create New Workflow"
+                            />
+                            {selectedWorkflowId && (
+                                <Button
+                                    type="text"
+                                    size="small"
+                                    icon={<EditOutlined />}
+                                    onClick={() => navigate(`/workflow-builder`)}
+                                    title="Edit Selected Workflow"
+                                />
+                            )}
+                        </Space>
+                    </div>
                 </Space>
                 <Space size="middle">
                     {/* Manage Submissions Button - only show when editing an existing form */}
                     {id && !isViewMode && (
-                        <Button 
-                            icon={<EditOutlined />} 
+                        <Button
+                            icon={<EditOutlined />}
                             onClick={() => setSubmissionModalVisible(true)}
                         >
                             Manage Submissions
                         </Button>
                     )}
-                    
+
                     {!isViewMode && (
                         <div style={{ display: 'flex', alignItems: 'center', background: '#f0f2f5', padding: '4px 8px', borderRadius: '6px' }}>
                             <Text style={{ marginRight: 8, fontSize: '12px', fontWeight: 500, color: '#666' }}>{mode === 'edit' ? 'Design Mode' : 'Preview Mode'}</Text>
@@ -1422,25 +1696,25 @@ const CreateFormEditor = () => {
                             />
                         </div>
                     ) : (
-                        <div style={{ 
-                            padding: '48px 24px', 
-                            maxWidth: '900px', 
-                            margin: '0 auto', 
+                        <div style={{
+                            padding: '48px 24px',
+                            maxWidth: '900px',
+                            margin: '0 auto',
                             width: '100%',
                             overflow: 'visible',
                             position: 'relative'
                         }}>
                             {/* Form Header */}
-                            <div style={{ 
-                                textAlign: 'center', 
+                            <div style={{
+                                textAlign: 'center',
                                 marginBottom: 48,
                                 padding: '32px',
                                 background: '#ffffff',
                                 borderRadius: '12px',
                                 boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
                             }}>
-                                <Title level={2} style={{ 
-                                    marginBottom: 12, 
+                                <Title level={2} style={{
+                                    marginBottom: 12,
                                     color: '#1a1a1a',
                                     fontSize: '28px',
                                     fontWeight: 600
@@ -1448,8 +1722,8 @@ const CreateFormEditor = () => {
                                     {formName || 'Untitled Form'}
                                 </Title>
                                 {formDescription && (
-                                    <Text style={{ 
-                                        fontSize: '15px', 
+                                    <Text style={{
+                                        fontSize: '15px',
                                         color: '#666',
                                         display: 'block',
                                         lineHeight: 1.6
@@ -1470,37 +1744,37 @@ const CreateFormEditor = () => {
                             ))}
 
                             {/* Submit Buttons */}
-                            <div style={{ 
-                                display: 'flex', 
-                                justifyContent: 'center', 
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'center',
                                 gap: '16px',
-                                marginTop: 48, 
-                                paddingBottom: 48 
+                                marginTop: 48,
+                                paddingBottom: 48
                             }}>
-                                <Button 
-                                    size="large" 
-                                    style={{ 
-                                        minWidth: 180, 
-                                        height: 48, 
+                                <Button
+                                    size="large"
+                                    style={{
+                                        minWidth: 180,
+                                        height: 48,
                                         fontSize: 15,
                                         fontWeight: 500,
                                         borderRadius: '8px'
-                                    }} 
+                                    }}
                                     onClick={() => handleSubmitForm(true)}
                                 >
                                     Save as Draft
                                 </Button>
-                                <Button 
-                                    type="primary" 
-                                    size="large" 
-                                    style={{ 
-                                        minWidth: 200, 
-                                        height: 48, 
+                                <Button
+                                    type="primary"
+                                    size="large"
+                                    style={{
+                                        minWidth: 200,
+                                        height: 48,
                                         fontSize: 15,
                                         fontWeight: 500,
                                         borderRadius: '8px',
                                         boxShadow: '0 2px 0 rgba(0,0,0,0.045)'
-                                    }} 
+                                    }}
                                     onClick={() => handleSubmitForm(false)}
                                 >
                                     Submit Form
@@ -1510,9 +1784,9 @@ const CreateFormEditor = () => {
                     )}
                 </div>
             </div>
-            
+
             {/* Submission Status Manager Modal */}
-            <SubmissionStatusManager 
+            <SubmissionStatusManager
                 formId={id}
                 visible={submissionModalVisible}
                 onClose={() => setSubmissionModalVisible(false)}

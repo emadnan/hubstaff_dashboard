@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { CTable, CTableBody, CTableHead, CTableHeaderCell, CTableRow, CTableDataCell } from '@coreui/react'
-import { Button, Modal, message, Card, Tag } from 'antd'
+import { Button, Modal, message, Card, Tag, Typography } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import IconButton from '@mui/material/IconButton'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import CreateIcon from '@mui/icons-material/Create'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { MDBRow, MDBCol, MDBCard, MDBCardHeader, MDBCardBody } from 'mdb-react-ui-kit'
+
+const { Text } = Typography
 
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -123,11 +125,11 @@ function FormList() {
     const handleContinueDraft = (formId, submissionId, draftType) => {
         if (draftType === 'form_structure') {
             // Navigate to edit mode to continue editing the form structure
-            navigate(`/form-builder/edit/${formId}`)
+            navigate(`/form-builder-edit/${formId}`)
         } else {
             // Navigate to view mode with submission ID to continue filling the form
             // TODO: Implement loading submission data in FormRenderer
-            navigate(`/form-builder/view/${formId}?submissionId=${submissionId}`)
+            navigate(`/form-builder-view/${formId}?submissionId=${submissionId}`)
         }
     }
 
@@ -139,7 +141,7 @@ function FormList() {
                     <Button onClick={openDraftsModal} style={{ marginRight: 8 }}>
                         View Drafts
                     </Button>
-                    <Button type="primary" onClick={() => navigate('/form-builder/create')}>
+                    <Button type="primary" onClick={() => navigate('/form-builder-create')}>
                         Create New Form
                     </Button>
                 </div>
@@ -151,6 +153,7 @@ function FormList() {
                             <CTableHeaderCell>Name</CTableHeaderCell>
                             <CTableHeaderCell>Description</CTableHeaderCell>
                             <CTableHeaderCell>Sections</CTableHeaderCell>
+                            <CTableHeaderCell>Workflow</CTableHeaderCell>
                             <CTableHeaderCell>Status</CTableHeaderCell>
                             <CTableHeaderCell className="text-center">Actions</CTableHeaderCell>
                         </CTableRow>
@@ -162,15 +165,22 @@ function FormList() {
                                 <CTableDataCell>{form.description}</CTableDataCell>
                                 <CTableDataCell>{form.sections_count || 0}</CTableDataCell>
                                 <CTableDataCell>
+                                    {form.workflow ? (
+                                        <Tag color="blue">{form.workflow.name || `Workflow #${form.workflow.id}`}</Tag>
+                                    ) : (
+                                        <Text type="secondary" style={{ fontSize: '12px' }}>None</Text>
+                                    )}
+                                </CTableDataCell>
+                                <CTableDataCell>
                                     <Tag color={form.status === 'active' ? 'green' : form.status === 'draft' ? 'orange' : 'red'}>
                                         {form.status ? form.status.toUpperCase() : 'UNKNOWN'}
                                     </Tag>
                                 </CTableDataCell>
                                 <CTableDataCell className="text-center">
-                                    <IconButton onClick={() => navigate(`/form-builder/view/${form.id}`)} color="info" title="Preview Form">
+                                    <IconButton onClick={() => navigate(`/form-builder-view/${form.id}`)} color="info" title="Preview Form">
                                         <VisibilityIcon />
                                     </IconButton>
-                                    <IconButton onClick={() => navigate(`/form-builder/edit/${form.id}`)} color="primary" title="Edit Form">
+                                    <IconButton onClick={() => navigate(`/form-builder-edit/${form.id}`)} color="primary" title="Edit Form">
                                         <CreateIcon />
                                     </IconButton>
                                     <IconButton onClick={() => handleDelete(form.id)} color="error" title="Delete Form">
