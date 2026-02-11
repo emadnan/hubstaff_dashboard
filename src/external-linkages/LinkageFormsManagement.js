@@ -86,15 +86,12 @@ function LinkageFormsManagement() {
     const navigate = useNavigate()
     const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:8000'
 
-    
-
-    const localUser = JSON.parse(localStorage.getItem('user-info') || '{}')
-    const permissions = localUser.permissions || []
-    const isHodOrOfficer = permissions.some(p => 
-        p.name === 'Approve_Linkage_HOD' || p.name === 'Approve_Linkage_Officer'
-    )
-
-    // Fetch
+    const localUser = JSON.parse(localStorage.getItem('user-info') || '{}');
+    console.log(localUser)
+    const permissions = localUser.permissions || [];
+    const isHodOrOfficer = permissions.some(p => p.name === 'Approve_Linkage_HOD' || p.name === 'Approve_Linkage_Officer');
+    console.log(isHodOrOfficer)
+    // Fetch Data
     useEffect(() => {
         fetchLinkagePlans()
         fetchCampuses()
@@ -152,10 +149,10 @@ function LinkageFormsManagement() {
                 const deptName   = typeof plan.department === 'object' ? (plan.department?.department_name || plan.department?.name) : plan.department
 
                 return (
-                    (facultyName || '').toLowerCase().includes(lower) ||
-                    (deptName || '').toLowerCase().includes(lower)   ||
-                    (plan.focal_person || '').toLowerCase().includes(lower) ||
-                    (plan.campus || '').toLowerCase().includes(lower)
+                    facultyName?.toLowerCase().includes(lowerSearch) ||
+                    deptName?.toLowerCase().includes(lowerSearch) ||
+                    plan.focal_person?.toLowerCase().includes(lowerSearch) ||
+                    plan.campus?.toLowerCase().includes(lowerSearch)
                 )
             })
         }
@@ -166,24 +163,28 @@ function LinkageFormsManagement() {
         setFilteredData(filtered)
     }
 
- const handleDelete = async (id) => {
-    try {
-        const response = await fetch(`${BASE_URL}/api/deleteLinkagePlan/${id}`, {
-            method: 'DELETE', // Matches the Route type
-            headers: { 'Authorization': `Bearer ${localUser?.token}` }
-        })
-        if (response.ok) {
-            message.success('Linkage plan deleted')
-            fetchLinkagePlans() // Refreshes the table
-        } else {
-            message.error('Failed to delete plan')
-        }
-    } catch (err) {
-        message.error('Network error')
-    }
-}
+    const handleDelete = async (id) => {
+        try {
+            const localUser = JSON.parse(localStorage.getItem('user-info'))
+            const response = await fetch(`${BASE_URL}/api/deleteLinkagePlan/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localUser?.token}`
+                }
+            })
 
-    const handleApprove = async (id) => {
+            if (response.ok) {
+                message.success('Linkage plan deleted successfully')
+                fetchLinkagePlans()
+            } else {
+                message.error('Failed to delete linkage plan')
+            }
+        } catch (error) {
+            message.error('Network error while deleting plan')
+        }
+    }
+
+    const handleWorkflowAction = async (planId, transitionId, actionLabel, comments = '') => {
         try {
             const response = await fetch(`${BASE_URL}/api/approveLinkagePlan`, {
                 method: 'POST',
@@ -191,7 +192,11 @@ function LinkageFormsManagement() {
                     'Authorization': `Bearer ${localUser?.token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ id })
+                body: JSON.stringify({
+                    submission_id: planId,
+                    transition_id: transitionId,
+                    comments
+                })
             })
 
             if (response.ok) {
@@ -208,7 +213,8 @@ function LinkageFormsManagement() {
 
     const handleReject = async (id) => {
         try {
-            const response = await fetch(`${BASE_URL}/api/rejectLinkagePlan`, {
+            const localUser = JSON.parse(localStorage.getItem('user-info'))
+            const response = await fetch(`${BASE_URL}/api/approveLinkagePlan`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localUser?.token}`,
@@ -221,12 +227,12 @@ function LinkageFormsManagement() {
                 message.success('Plan rejected')
                 fetchLinkagePlans()
             } else {
-                const err = await response.json()
-                message.error(err.message || 'Failed to reject plan')
+                const errorData = await response.json()
+                message.error(errorData.message || 'Failed to reject plan')
             }
-        } catch (err) {
-            message.error('Network error while rejecting')
-            console.error(err)
+        } catch (error) {
+            console.error(error)
+            message.error('Network error')
         }
     }
 
@@ -259,7 +265,7 @@ function LinkageFormsManagement() {
             'Completed': { color: '#10b981', icon: <CheckCircleOutlined />, bg: '#d1fae5' },
             'Cancelled': { color: '#ef4444', icon: <CloseCircleOutlined />, bg: '#fee2e2' }
         }
-        return configs[status] || configs['Planned']
+        return configs[s] || { color: '#3b82f6', icon: <ClockCircleOutlined />, bg: '#dbeafe' }
     }
 
     const clearFilters = () => {
@@ -355,73 +361,76 @@ function LinkageFormsManagement() {
                 </Text>
             )
         },
-    
-{
-    title: <Text strong style={{ color: '#1e293b' }}>Actions</Text>,
-    key: 'actions',
-    width: 100,
-    render: (_, record) => {
-        const localUser = JSON.parse(localStorage.getItem('user-info') || '{}');
-        
-        // 1. Get the current logged-in User ID
-        const currentUserId = localUser?.Users?.id || localUser?.id;
-        
-        // 2. Check for the specific permission in the permissions array
-        const hasLinkagePermission = localUser?.permissions?.some(
-            p => p.name === 'Nav_LinkagePlanForm'
-        );
+        {
+            title: <Text strong style={{ color: '#1e293b' }}>Actions</Text>,
+            key: 'actions',
+            width: 100,
+            render: (_, record) => {
+                const localUser = JSON.parse(localStorage.getItem('user-info'))
+                // Access ID from 'Users' object inside localUser (based on UserController response)
+                const userId = localUser?.Users?.id || localUser?.id
+                const isInitiator = userId == record.submitted_by
 
-        // 3. Logic: User is initiator IF (ID matches OR they have the required permission)
-        // AND the record is currently 'Rejected'
-        const isInitiator = currentUserId == record.user_id || hasLinkagePermission;
-        const isRejected = record.status === 'Rejected';
-
-        return (
-            <Space size="small">
-                <Tooltip title="View Details">
-                    <Button
-                        shape="circle"
-                        icon={<EyeOutlined style={{ color: '#0070FF' }} />}
-                        size="small"
-                        onClick={() => handleViewDetails(record)}
-                    />
-                </Tooltip>
-
-                {isInitiator && isRejected && (
-                    <>
-                        <Tooltip title="Edit and Resubmit">
+                return (
+                    <Space size="small">
+                        <Tooltip title="View Details">
                             <Button
                                 shape="circle"
-                                icon={<EditOutlined style={{ color: '#f59e0b' }} />}
+                                icon={<EyeOutlined style={{ color: '#0070FF' }} />}
                                 size="small"
-                                onClick={() => handleEdit(record)}
-                                style={{ border: '1px solid #fed7aa', background: '#fff7ed' }}
+                                onClick={() => handleViewDetails(record)}
+                                style={{
+                                    border: '1px solid #e2e8f0',
+                                    background: 'white',
+                                    boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
+                                }}
                             />
                         </Tooltip>
-                        <Popconfirm
-                            title="Delete Rejected Plan?"
-                            onConfirm={() => handleDelete(record.id)}
-                            okText="Yes"
-                            cancelText="No"
-                            okButtonProps={{ danger: true, size: 'small' }}
-                        >
-                            <Tooltip title="Delete">
-                                <Button
-                                    danger
-                                    shape="circle"
-                                    icon={<DeleteOutlined />}
-                                    size="small"
-                                    style={{ background: '#fff1f2' }}
-                                />
-                            </Tooltip>
-                        </Popconfirm>
-                    </>
-                )}
-            </Space>
-        );
-    }
-}
-      
+                        {/* Show Edit/Delete only for Rejected plans */}
+                        {isInitiator && record.status?.toLowerCase().includes('rejected') && (
+                            <>
+                                <Tooltip title="Edit and Resubmit">
+                                    <Button
+                                        shape="circle"
+                                        icon={<EditOutlined style={{ color: '#f59e0b' }} />}
+                                        size="small"
+                                        onClick={() => handleEdit(record)}
+                                        style={{
+                                            border: '1px solid #fed7aa',
+                                            background: '#fff7ed',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                        }}
+                                    />
+                                </Tooltip>
+                                <Popconfirm
+                                    title="Delete Rejected Plan?"
+                                    description="Are you sure you want to remove this rejected plan?"
+                                    onConfirm={() => handleDelete(record.id)}
+                                    okText="Yes"
+                                    cancelText="No"
+                                    okButtonProps={{ danger: true, size: 'small' }}
+                                    cancelButtonProps={{ size: 'small' }}
+                                >
+                                    <Tooltip title="Delete">
+                                        <Button
+                                            danger
+                                            shape="circle"
+                                            icon={<DeleteOutlined />}
+                                            size="small"
+                                            style={{
+                                                background: '#fff1f2',
+                                                border: '1px solid #fecdd3',
+                                                color: '#ef4444'
+                                            }}
+                                        />
+                                    </Tooltip>
+                                </Popconfirm>
+                            </>
+                        )}
+                    </Space>
+                )
+            }
+        }
     ]
 
     return (
@@ -651,36 +660,50 @@ function LinkageFormsManagement() {
                     })()) ? (
                         <div style={{ textAlign: 'right', padding: '16px 24px' }}>
                             <Space>
-                                <Popconfirm
-                                    title="Reject Plan"
-                                    description="Are you sure you want to reject this plan?"
-                                    onConfirm={() => {
-                                        handleReject(selectedPlan.id)
-                                        setDrawerVisible(false) // Close drawer after action
-                                    }}
-                                    okText="Yes"
-                                    cancelText="No"
-                                    okButtonProps={{ danger: true }}
-                                >
-                                    <Button danger size="large" icon={<CloseCircleOutlined />}>
-                                        Reject
-                                    </Button>
-                                </Popconfirm>
-                                <Popconfirm
-                                    title="Approve Plan"
-                                    description="Are you sure you want to approve this plan?"
-                                    onConfirm={() => {
-                                        handleApprove(selectedPlan.id)
-                                        setDrawerVisible(false) // Close drawer after action
-                                    }}
-                                    okText="Yes"
-                                    cancelText="No"
-                                    okButtonProps={{ style: { background: '#28B463', borderColor: '#28B463' } }}
-                                >
-                                    <Button type="primary" size="large" icon={<CheckCircleOutlined />} style={{ background: '#28B463', borderColor: '#28B463' }}>
-                                        Approve
-                                    </Button>
-                                </Popconfirm>
+                                {selectedPlan.transitions.filter(t => {
+                                    // 1. Check if user has the role required by transition
+                                    const hasRole = permissions.some(p =>
+                                        p.name === t.from_role ||
+                                        p.name?.toLowerCase() === t.from_role?.toLowerCase()
+                                    );
+                                    if (!hasRole && !permissions.some(p => p.name === 'Admin' || p.name === 'Super Admin')) return false;
+
+                                    // 2. Extra check for HODs – must match department
+                                    const isHodRole = t.from_role?.toLowerCase().includes('hod');
+                                    if (isHodRole && !permissions.some(p => p.name === 'Admin' || p.name === 'Super Admin')) {
+                                        const userDept = (localUser.department?.department_name || localUser.department?.name || '').toLowerCase();
+                                        const planDept = (selectedPlan.department || '').toLowerCase();
+
+                                        if (userDept && planDept && userDept !== planDept) return false;
+
+                                        // Also strictly check if this specific user is the assigned HOD for the plan
+                                        const currentUserId = localUser.id || localUser.Users?.id;
+                                        if (selectedPlan.dean_head_id && currentUserId != selectedPlan.dean_head_id) return false;
+                                    }
+
+                                    return true;
+                                }).map(t => {
+                                    const isReject = t.action_label.toLowerCase().includes('reject');
+                                    return (
+                                        <Popconfirm
+                                            key={t.id}
+                                            title={`${t.action_label} this Plan?`}
+                                            onConfirm={() => handleWorkflowAction(selectedPlan.id, t.id, t.action_label)}
+                                            okText="Yes"
+                                            cancelText="No"
+                                        >
+                                            <Button
+                                                type={isReject ? "default" : "primary"}
+                                                danger={isReject}
+                                                size="large"
+                                                icon={isReject ? <CloseCircleOutlined /> : <CheckCircleOutlined />}
+                                                style={!isReject ? { background: '#28B463', borderColor: '#28B463' } : {}}
+                                            >
+                                                {t.action_label}
+                                            </Button>
+                                        </Popconfirm>
+                                    );
+                                })}
                             </Space>
                         </div>
                     ) : null
