@@ -183,7 +183,7 @@ function FormList() {
                                     <IconButton onClick={() => navigate(`/form-builder-edit/${form.id}`)} color="primary" title="Edit Form">
                                         <CreateIcon />
                                     </IconButton>
-                                    <IconButton onClick={() => handleDelete(form.id)} color="error">
+                                    <IconButton onClick={() => handleDelete(form.id)} color="error" title="Delete Form">
                                         <DeleteIcon />
                                     </IconButton>
                                 </CTableDataCell>

@@ -15,7 +15,6 @@ import {
     Row,
     Col,
     Typography,
-    Divider,
     Badge,
     Tooltip,
     Empty,
@@ -41,10 +40,8 @@ const { Title, Text } = Typography
 const { Option } = Select
 
 function LinkageFormsManagement() {
-    // Modern Styling
     const primaryColor = '#0070FF'
     const secondaryColor = '#28B463'
-    const gradientBg = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
 
     const pageStyle = {
         background: 'linear-gradient(to bottom, #f0f4f8 0%, #ffffff 100%)',
@@ -75,7 +72,7 @@ function LinkageFormsManagement() {
         border: '1px solid #e2e8f0'
     }
 
-    // State Management
+    // State
     const [linkagePlans, setLinkagePlans] = useState([])
     const [filteredData, setFilteredData] = useState([])
     const [loading, setLoading] = useState(false)
@@ -107,7 +104,6 @@ function LinkageFormsManagement() {
     const fetchLinkagePlans = async () => {
         setLoading(true)
         try {
-            const localUser = JSON.parse(localStorage.getItem('user-info'))
             const response = await fetch(`${BASE_URL}/api/getLinkagePlans`, {
                 headers: {
                     'Authorization': `Bearer ${localUser?.token}`
@@ -116,7 +112,6 @@ function LinkageFormsManagement() {
 
             if (response.ok) {
                 const data = await response.json()
-                console.log('Fetched plans:', data.plans) // Debug log
                 setLinkagePlans(data.plans || [])
             } else {
                 message.error('Failed to fetch linkage plans')
@@ -131,20 +126,12 @@ function LinkageFormsManagement() {
 
     const fetchCampuses = async () => {
         try {
-            const localUser = JSON.parse(localStorage.getItem('user-info'))
             const response = await fetch(`${BASE_URL}/api/getCampuses`, {
-                headers: {
-                    'Authorization': `Bearer ${localUser?.token}`
-                }
+                headers: { 'Authorization': `Bearer ${localUser?.token}` }
             })
             if (response.ok) {
                 const data = await response.json()
-                if (Array.isArray(data)) {
-                    setCampuses(data)
-                } else {
-                    console.error('Campuses data is not an array:', data)
-                    setCampuses([])
-                }
+                setCampuses(Array.isArray(data) ? data : [])
             }
         } catch (error) {
             console.error('Failed to fetch campuses:', error)
@@ -156,10 +143,10 @@ function LinkageFormsManagement() {
         let filtered = [...linkagePlans]
 
         if (searchText) {
-            const lowerSearch = searchText.toLowerCase()
+            const lower = searchText.toLowerCase()
             filtered = filtered.filter(plan => {
                 const facultyName = typeof plan.faculty === 'object' ? plan.faculty?.name : plan.faculty
-                const deptName = typeof plan.department === 'object' ? (plan.department?.department_name || plan.department?.name) : plan.department
+                const deptName   = typeof plan.department === 'object' ? (plan.department?.department_name || plan.department?.name) : plan.department
 
                 return (
                     facultyName?.toLowerCase().includes(lowerSearch) ||
@@ -170,13 +157,8 @@ function LinkageFormsManagement() {
             })
         }
 
-        if (campusFilter) {
-            filtered = filtered.filter(plan => plan.campus === campusFilter)
-        }
-
-        if (statusFilter) {
-            filtered = filtered.filter(plan => (plan.status || 'Planned') === statusFilter)
-        }
+        if (campusFilter) filtered = filtered.filter(p => p.campus === campusFilter)
+        if (statusFilter) filtered = filtered.filter(p => (p.status || 'Planned') === statusFilter)
 
         setFilteredData(filtered)
     }
@@ -202,27 +184,29 @@ function LinkageFormsManagement() {
         }
     }
 
-    const handleApprove = async (id) => {
+    const handleWorkflowAction = async (planId, transitionId, actionLabel, comments = '') => {
         try {
-            const localUser = JSON.parse(localStorage.getItem('user-info'))
             const response = await fetch(`${BASE_URL}/api/approveLinkagePlan`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${localUser?.token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ id })
+                body: JSON.stringify({
+                    submission_id: planId,
+                    transition_id: transitionId,
+                    comments
+                })
             })
 
             if (response.ok) {
-                message.success('Plan approved successfully')
+                message.success('Plan approved')
                 fetchLinkagePlans()
             } else {
-                const errorData = await response.json()
-                message.error(errorData.message || 'Failed to approve plan')
+                const err = await response.json()
+                message.error(err.message || 'Failed to approve')
             }
-        } catch (error) {
-            console.error(error)
+        } catch (err) {
             message.error('Network error')
         }
     }
@@ -253,38 +237,35 @@ function LinkageFormsManagement() {
     }
 
     const handleViewDetails = (plan) => {
-        console.log('Selected plan:', plan) // Debug log
         setSelectedPlan(plan)
         setDrawerVisible(true)
     }
 
     const handleEdit = (plan) => {
-        // Navigate to plan form with plan data in state
         navigate('/external-linkages-plan-form', { state: { editMode: true, planData: plan } })
     }
 
     const getStatusConfig = (status) => {
-        if (!status) return { color: '#3b82f6', icon: <ClockCircleOutlined />, bg: '#dbeafe' } // Default Safe Fallback
+        if (!status) return { color: '#3b82f6', icon: <ClockCircleOutlined />, bg: '#dbeafe' }
 
-        if (status.startsWith('Pending from')) {
+        if (status.includes('Pending from')) {
             return { color: '#8b5cf6', icon: <ClockCircleOutlined />, bg: '#ede9fe' }
         }
-        if (status.startsWith('Rejected') || status === 'Rejected') {
+        if (status.includes('Rejected') || status === 'Rejected') {
             return { color: '#ef4444', icon: <CloseCircleOutlined />, bg: '#fee2e2' }
         }
-        if (status === 'Approved') {
+        if (status === 'Approved' || status === 'Planned') {
             return { color: '#10b981', icon: <CheckCircleOutlined />, bg: '#d1fae5' }
         }
 
         const configs = {
-            'Planned': { color: '#3b82f6', icon: <ClockCircleOutlined />, bg: '#dbeafe' },
-            'Draft': { color: '#94a3b8', icon: <EditOutlined />, bg: '#f1f5f9' },
+            'Planned':   { color: '#3b82f6', icon: <ClockCircleOutlined />, bg: '#dbeafe' },
+            'Draft':     { color: '#94a3b8', icon: <EditOutlined />, bg: '#f1f5f9' },
             'In Progress': { color: '#f59e0b', icon: <ClockCircleOutlined />, bg: '#fef3c7' },
             'Completed': { color: '#10b981', icon: <CheckCircleOutlined />, bg: '#d1fae5' },
-            'Cancelled': { color: '#ef4444', icon: <CloseCircleOutlined />, bg: '#fee2e2' },
-            'Pending': { color: '#8b5cf6', icon: <ClockCircleOutlined />, bg: '#ede9fe' }
+            'Cancelled': { color: '#ef4444', icon: <CloseCircleOutlined />, bg: '#fee2e2' }
         }
-        return configs[status] || configs['Planned']
+        return configs[s] || { color: '#3b82f6', icon: <ClockCircleOutlined />, bg: '#dbeafe' }
     }
 
     const clearFilters = () => {
@@ -293,126 +274,90 @@ function LinkageFormsManagement() {
         setStatusFilter(null)
     }
 
-    // Table Columns
     const columns = [
         {
-            title: <Text strong style={{ color: '#1e293b' }}>Campus</Text>,
+            title: <Text strong>Campus</Text>,
             dataIndex: 'campus',
             key: 'campus',
             width: 140,
-            render: (text) => (
-                <Tag color="blue" style={{ borderRadius: '6px', padding: '4px 12px', fontWeight: 500 }}>
-                    {text}
+            render: text => (
+                <Tag color="blue" style={{ borderRadius: '6px', padding: '4px 12px' }}>
+                    {text || '—'}
                 </Tag>
             )
         },
         {
-            title: <Text strong style={{ color: '#1e293b' }}>Faculty</Text>,
+            title: <Text strong>Faculty</Text>,
             dataIndex: 'faculty',
             key: 'faculty',
             ellipsis: true,
-            render: (text) => {
-                const name = typeof text === 'object' && text !== null ? text.name : text
-                return (
-                    <Tooltip title={name}>
-                        <span style={{ color: '#64748b' }}>{name || 'N/A'}</span>
-                    </Tooltip>
-                )
+            render: text => {
+                const name = typeof text === 'object' ? text?.name : text
+                return <Tooltip title={name}><span style={{ color: '#64748b' }}>{name || '—'}</span></Tooltip>
             }
         },
         {
-            title: <Text strong style={{ color: '#1e293b' }}>Department</Text>,
+            title: <Text strong>Department</Text>,
             dataIndex: 'department',
             key: 'department',
             ellipsis: true,
-            render: (text) => {
-                const name = typeof text === 'object' && text !== null ? (text.department_name || text.name) : text
-                return (
-                    <Tooltip title={name}>
-                        <span style={{ color: '#64748b' }}>{name || 'N/A'}</span>
-                    </Tooltip>
-                )
+            render: text => {
+                const name = typeof text === 'object' ? (text?.department_name || text?.name) : text
+                return <Tooltip title={name}><span style={{ color: '#64748b' }}>{name || '—'}</span></Tooltip>
             }
         },
         {
-            title: <Text strong style={{ color: '#1e293b' }}>Focal Person</Text>,
+            title: <Text strong>Focal Person</Text>,
             dataIndex: 'focal_person',
             key: 'focal_person',
-            render: (text) => (
+            render: text => (
                 <Space>
                     <div style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: '50%',
+                        width: 32, height: 32, borderRadius: '50%',
                         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
-                        fontWeight: 'bold',
-                        fontSize: '14px'
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: 'white', fontWeight: 'bold', fontSize: '14px'
                     }}>
-                        {text?.charAt(0)?.toUpperCase()}
+                        {(text || '')[0]?.toUpperCase() || '?'}
                     </div>
-                    <Text>{text}</Text>
+                    <Text>{text || '—'}</Text>
                 </Space>
             )
         },
         {
-            title: <Text strong style={{ color: '#1e293b' }}>Email</Text>,
+            title: <Text strong>Email</Text>,
             dataIndex: 'email',
             key: 'email',
             ellipsis: true,
-            render: (text) => (
-                <div style={{ fontSize: '13px', color: '#334155' }}>{text || 'N/A'}</div>
-            )
+            render: text => <div style={{ fontSize: '13px', color: '#334155' }}>{text || '—'}</div>
         },
         {
-            title: <Text strong style={{ color: '#1e293b' }}>Status</Text>,
+            title: <Text strong>Status</Text>,
             dataIndex: 'status',
             key: 'status',
             width: 200,
-            render: (status) => {
-                const config = getStatusConfig(status || 'Planned')
-
-                // Show "Pending" instead of "Pending from HOD" if user is HOD
-                let displayStatus = status || 'Planned';
-                const localUser = JSON.parse(localStorage.getItem('user-info') || '{}');
-                const permissions = localUser.permissions || [];
-                const isHod = permissions.some(p => p.name === 'Approve_Linkage_HOD');
-                const isOfficer = permissions.some(p => p.name === 'Approve_Linkage_Officer');
-
-                if (isHod && displayStatus === 'Pending from HOD') {
-                    displayStatus = 'Pending';
-                }
-                if (isOfficer && displayStatus === 'Pending from Linkage Office') {
-                    displayStatus = 'Pending';
-                }
-
+            render: status => {
+                const config = getStatusConfig(status)
+                const display = status || 'Planned'
                 return (
                     <Tag
                         icon={config.icon}
                         color={config.color}
-                        style={{
-                            borderRadius: '20px',
-                            padding: '0 10px',
-                            border: 'none',
-                            fontWeight: 500
-                        }}
+                        style={{ borderRadius: '20px', padding: '0 10px', fontWeight: 500 }}
                     >
-                        {displayStatus}
+                        {display}
                     </Tag>
                 )
             }
         },
         {
-            title: <Text strong style={{ color: '#1e293b' }}>Submitted</Text>,
-            dataIndex: 'created_at',
+            title: <Text strong>Submitted</Text>,
+            dataIndex: 'Submitted',
             key: 'created_at',
-            width: 130,
-            render: (date) => (
+            width: 160,
+            render: date => (
                 <Text style={{ color: '#64748b', fontSize: '13px' }}>
-                    {moment(date).format('MMM DD, YYYY')}
+                    {date ? moment(date).format('MMM DD, YYYY') : '—'}
                 </Text>
             )
         },
@@ -605,7 +550,7 @@ function LinkageFormsManagement() {
                             size="large"
                         >
                             <Option value="Planned">Planned</Option>
-                            <Option value="Pending from HOD">Pending from HOD</Option>
+                            <Option value="pending from HOD">pending from HOD</Option>
                             <Option value="Pending from Linkage Office">Pending from Linkage Office</Option>
                             <Option value="Rejected">Rejected</Option>
                             <Option value="Draft">Draft</Option>
@@ -709,42 +654,56 @@ function LinkageFormsManagement() {
                         const isHod = permissions.some(p => p.name === 'Approve_Linkage_HOD');
                         const isOfficer = permissions.some(p => p.name === 'Approve_Linkage_Officer');
 
-                        if (isHod && status === 'Pending from HOD') return true;
+                        if (isHod && status === 'pending from HOD') return true;
                         if (isOfficer && status === 'Pending from Linkage Office') return true;
                         return false;
                     })()) ? (
                         <div style={{ textAlign: 'right', padding: '16px 24px' }}>
                             <Space>
-                                <Popconfirm
-                                    title="Reject Plan"
-                                    description="Are you sure you want to reject this plan?"
-                                    onConfirm={() => {
-                                        handleReject(selectedPlan.id)
-                                        setDrawerVisible(false) // Close drawer after action
-                                    }}
-                                    okText="Yes"
-                                    cancelText="No"
-                                    okButtonProps={{ danger: true }}
-                                >
-                                    <Button danger size="large" icon={<CloseCircleOutlined />}>
-                                        Reject
-                                    </Button>
-                                </Popconfirm>
-                                <Popconfirm
-                                    title="Approve Plan"
-                                    description="Are you sure you want to approve this plan?"
-                                    onConfirm={() => {
-                                        handleApprove(selectedPlan.id)
-                                        setDrawerVisible(false) // Close drawer after action
-                                    }}
-                                    okText="Yes"
-                                    cancelText="No"
-                                    okButtonProps={{ style: { background: '#28B463', borderColor: '#28B463' } }}
-                                >
-                                    <Button type="primary" size="large" icon={<CheckCircleOutlined />} style={{ background: '#28B463', borderColor: '#28B463' }}>
-                                        Approve
-                                    </Button>
-                                </Popconfirm>
+                                {selectedPlan.transitions.filter(t => {
+                                    // 1. Check if user has the role required by transition
+                                    const hasRole = permissions.some(p =>
+                                        p.name === t.from_role ||
+                                        p.name?.toLowerCase() === t.from_role?.toLowerCase()
+                                    );
+                                    if (!hasRole && !permissions.some(p => p.name === 'Admin' || p.name === 'Super Admin')) return false;
+
+                                    // 2. Extra check for HODs – must match department
+                                    const isHodRole = t.from_role?.toLowerCase().includes('hod');
+                                    if (isHodRole && !permissions.some(p => p.name === 'Admin' || p.name === 'Super Admin')) {
+                                        const userDept = (localUser.department?.department_name || localUser.department?.name || '').toLowerCase();
+                                        const planDept = (selectedPlan.department || '').toLowerCase();
+
+                                        if (userDept && planDept && userDept !== planDept) return false;
+
+                                        // Also strictly check if this specific user is the assigned HOD for the plan
+                                        const currentUserId = localUser.id || localUser.Users?.id;
+                                        if (selectedPlan.dean_head_id && currentUserId != selectedPlan.dean_head_id) return false;
+                                    }
+
+                                    return true;
+                                }).map(t => {
+                                    const isReject = t.action_label.toLowerCase().includes('reject');
+                                    return (
+                                        <Popconfirm
+                                            key={t.id}
+                                            title={`${t.action_label} this Plan?`}
+                                            onConfirm={() => handleWorkflowAction(selectedPlan.id, t.id, t.action_label)}
+                                            okText="Yes"
+                                            cancelText="No"
+                                        >
+                                            <Button
+                                                type={isReject ? "default" : "primary"}
+                                                danger={isReject}
+                                                size="large"
+                                                icon={isReject ? <CloseCircleOutlined /> : <CheckCircleOutlined />}
+                                                style={!isReject ? { background: '#28B463', borderColor: '#28B463' } : {}}
+                                            >
+                                                {t.action_label}
+                                            </Button>
+                                        </Popconfirm>
+                                    );
+                                })}
                             </Space>
                         </div>
                     ) : null

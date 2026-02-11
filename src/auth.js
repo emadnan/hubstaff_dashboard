@@ -9,10 +9,13 @@ export const isAuthenticated = () => {
 // Example user Permision retrieval
 export const getUserNavPermision = () => {
   const user = JSON.parse(localStorage.getItem('user-info'))
+  console.log('USER OBJECT FROM LOCALSTORAGE:', user)
   if (user) {
     // Extract the permission names from the permissions array
     const permissions = (user.permissions || []).map((permission) => permission.name)
+    console.log('EXTRACTED PERMISSIONS:', permissions)
     return permissions
   }
+  console.log('NO USER FOUND IN LOCALSTORAGE')
   return null
 }

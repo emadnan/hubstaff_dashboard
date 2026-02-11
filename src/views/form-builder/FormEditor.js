@@ -13,6 +13,7 @@ import '@bpmn-io/form-js/dist/assets/form-js.css'
 import '@bpmn-io/form-js/dist/assets/form-js-editor.css'
 import './FormEditor.css'
 
+const { Option } = Select
 const { Text, Title } = Typography
 const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -433,6 +434,36 @@ SubmissionStatusManager.propTypes = {
 }
 // --- Sortable Item Component for Section List ---
 
+    return (
+        <Modal
+            title="Manage Form Submissions"
+            open={visible}
+            onCancel={onClose}
+            footer={[
+                <Button key="close" onClick={onClose}>
+                    Close
+                </Button>
+            ]}
+            width={1000}
+        >
+            <Table
+                columns={columns}
+                dataSource={submissions}
+                loading={loading}
+                rowKey="id"
+                pagination={{ pageSize: 10 }}
+            />
+        </Modal>
+    )
+}
+
+SubmissionStatusManager.propTypes = {
+    formId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    visible: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired
+}
+
+// --- Sortable Item Component for Section List ---
 const SortableSectionItem = ({ section, isActive, onClick, onDelete, onNameChange }) => {
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: section.id })
     const style = { transform: CSS.Transform.toString(transform), transition }
@@ -464,6 +495,7 @@ const SortableSectionItem = ({ section, isActive, onClick, onDelete, onNameChang
                         <Input
                             value={section.name}
                             onChange={(e) => onNameChange(section.id, e.target.value)}
+                            onClick={(e) => e.stopPropagation()}
                             bordered={false}
                             style={{
                                 padding: 0,
@@ -496,7 +528,7 @@ SortableSectionItem.propTypes = {
     onNameChange: PropTypes.func.isRequired
 }
 
-// --- Preview Component for a Single Section ---
+// --- Preview Component for a Single Section (IMPROVED) ---
 const SectionPreview = ({ section, masterData, onDataChange }) => {
     const containerRef = useRef(null)
     const viewerInstance = useRef(null)
@@ -509,11 +541,8 @@ const SectionPreview = ({ section, masterData, onDataChange }) => {
 
         const init = async () => {
             try {
-                // Deep copy to ensure no shared state issues in viewer
-                const schema = section.schema ? JSON.parse(JSON.stringify(section.schema)) : null
-                if (schema && !schema.components) schema.components = []
-
-                await viewer.importSchema(schema || { schemaVersion: 4, exporter: { name: 'form-js', version: '0.1.0' }, type: 'default', components: [] }, masterData)
+                const schemaToImport = prepareSchema(section.schema)
+                await viewer.importSchema(schemaToImport, masterData)
 
                 // Listen for data changes
                 viewer.on('changed', (event) => {
@@ -530,7 +559,7 @@ const SectionPreview = ({ section, masterData, onDataChange }) => {
         return () => {
             if (viewerInstance.current) viewerInstance.current.destroy()
         }
-    }, [section, masterData]) // Removed 'onDataChange' from deps to avoid re-init loop if handler is unstable, but ideally it should be stable or ref.
+    }, [section.id, section.schema, masterData])
 
 
     return (
@@ -592,6 +621,52 @@ SectionPreview.propTypes = {
     onDataChange: PropTypes.func
 }
 
+// --- Schema Templates ---
+
+const initialSchema = {
+    schemaVersion: 4,
+    exporter: { name: 'form-js', version: '0.1.0' },
+    type: 'default',
+    components: [],
+}
+
+const getEmptySchema = () => JSON.parse(JSON.stringify(initialSchema))
+
+const prepareSchema = (schema) => {
+    // Handle null, undefined, or non-object values
+    if (!schema || typeof schema !== 'object' || Array.isArray(schema)) {
+        return getEmptySchema()
+    }
+
+    // Deep clone to avoid mutations
+    let cloned
+    try {
+        cloned = JSON.parse(JSON.stringify(schema))
+    } catch (e) {
+        console.warn('Failed to clone schema, using empty schema:', e)
+        return getEmptySchema()
+    }
+
+    // Ensure cloned is still an object after cloning
+    if (!cloned || typeof cloned !== 'object' || Array.isArray(cloned)) {
+        return getEmptySchema()
+    }
+
+    // Ensure required root properties for form-js
+    if (!cloned.schemaVersion) cloned.schemaVersion = 4
+    if (!cloned.type) cloned.type = 'default'
+    if (!cloned.components || !Array.isArray(cloned.components)) {
+        cloned.components = []
+    }
+
+    // Ensure exporter object exists
+    if (!cloned.exporter || typeof cloned.exporter !== 'object') {
+        cloned.exporter = { name: 'form-js', version: '0.1.0' }
+    }
+
+    return cloned
+}
+
 const CreateFormEditor = () => {
     const { id } = useParams()
     const navigate = useNavigate()
@@ -621,8 +696,10 @@ const CreateFormEditor = () => {
     // Submission Status Manager
     const [submissionModalVisible, setSubmissionModalVisible] = useState(false)
 
-    const local = JSON.parse(localStorage.getItem('user-info'))
-    const token = local?.token
+        masterKeyForm.setFieldsValue({
+            name: key,
+            values: currentValues
+        })
 
     // --- Master Data for Dropdowns ---
     const [masterData, setMasterData] = useState({})
@@ -879,8 +956,9 @@ const CreateFormEditor = () => {
                 message.error('Failed to load form options. Please refresh the page.');
             }
         }
-        fetchMasterData()
-    }, [])
+
+        fetchMasterData();
+    }, [token]);
 
     // --- DND Sensors ---
     const sensors = useSensors(
@@ -901,11 +979,10 @@ const CreateFormEditor = () => {
         if (!activeSectionId || !bpmnInstance.current || !sections.length) return
 
         try {
-            // Check if we are in a state where saving is possible (Edit mode has .saveSchema)
-            // Viewer (Preview) does not have saveSchema, but we shouldn't be editing in preview anyway
-            if (mode === 'edit') {
+            if (mode === 'edit' && bpmnInstance.current && typeof bpmnInstance.current.saveSchema === 'function') {
                 const currentSchema = bpmnInstance.current.saveSchema()
-                setSections(prev => prev.map(s => s.id === activeSectionId ? { ...s, schema: currentSchema } : s))
+                const validatedSchema = prepareSchema(currentSchema)
+                setSections(prev => prev.map(s => s.id === activeSectionId ? { ...s, schema: validatedSchema } : s))
             }
         } catch (err) {
             console.error('Error auto-saving section schema:', err)
@@ -914,36 +991,63 @@ const CreateFormEditor = () => {
 
     const initEditor = async (schema) => {
         if (!containerRef.current) return
-        if (bpmnInstance.current) bpmnInstance.current.destroy()
+
+        // Cleanup existing instance
+        if (bpmnInstance.current) {
+            try {
+                bpmnInstance.current.destroy()
+            } catch (e) {
+                console.error('Error destroying editor:', e)
+            }
+            bpmnInstance.current = null
+        }
+
+        // Clear container to prevent DOM pollution
+        containerRef.current.innerHTML = ''
 
         const editor = new FormEditor({ container: containerRef.current })
         bpmnInstance.current = editor
 
         try {
-            const schemaToImport = schema || getEmptySchema()
-            if (!schemaToImport.components) {
-                schemaToImport.components = []
+            const schemaToImport = prepareSchema(schema)
+            if (!schemaToImport || !schemaToImport.components || !Array.isArray(schemaToImport.components)) {
+                console.warn('Invalid schema detected, using empty schema')
+                await editor.importSchema(getEmptySchema())
+            } else {
+                await editor.importSchema(schemaToImport)
             }
-            await editor.importSchema(schemaToImport)
         } catch (err) {
-            // console.error('Failed to import schema into Editor', err)
-            // Fallback if schema is invalid
-            await editor.importSchema(getEmptySchema())
+            console.error('Failed to import schema into Editor', err)
+            try {
+                const emptySchema = getEmptySchema()
+                await editor.importSchema(emptySchema)
+            } catch (e) {
+                console.error('Failed to import empty schema:', e)
+            }
         }
     }
 
     const initViewer = async (schema) => {
         if (!containerRef.current) return
-        if (bpmnInstance.current) bpmnInstance.current.destroy()
+
+        // Cleanup existing instance
+        if (bpmnInstance.current) {
+            try {
+                bpmnInstance.current.destroy()
+            } catch (e) {
+                console.error('Error destroying viewer:', e)
+            }
+            bpmnInstance.current = null
+        }
+
+        // Clear container
+        containerRef.current.innerHTML = ''
 
         const viewer = new Form({ container: containerRef.current })
         bpmnInstance.current = viewer
 
         try {
-            const schemaToImport = schema || getEmptySchema()
-            if (!schemaToImport.components) {
-                schemaToImport.components = []
-            }
+            const schemaToImport = prepareSchema(schema)
             await viewer.importSchema(schemaToImport, masterData)
         } catch (err) {
             console.error('Failed to import schema into Viewer', err)
@@ -957,7 +1061,6 @@ const CreateFormEditor = () => {
         if (id) {
             fetchForm()
         } else {
-            // New Form: Create 1 default section
             const defaultSection = { id: `sec-${Date.now()}`, name: 'Section 1', order: 0, schema: getEmptySchema() }
             setSections([defaultSection])
             setActiveSectionId(defaultSection.id)
@@ -972,21 +1075,18 @@ const CreateFormEditor = () => {
     }, [isViewMode])
 
     // Handle switching sections or modes
-    // When activeSectionId changes, we load that schema into the editor
     useEffect(() => {
         if (!activeSectionId) return
 
         const activeSection = sections.find(s => s.id === activeSectionId)
         if (activeSection) {
-            // console.log('Loading section:', activeSection.name)
             if (mode === 'edit') {
                 initEditor(activeSection.schema)
             } else {
                 initViewer(activeSection.schema)
             }
         }
-    }, [activeSectionId, mode])
-
+    }, [activeSectionId, mode, masterData])
 
     // --- Actions ---
 
@@ -1001,27 +1101,23 @@ const CreateFormEditor = () => {
             setFormDescription(data.description)
             if (data.workflow_id) setSelectedWorkflowId(data.workflow_id)
 
-            // Check for Sections
             if (data.sections && data.sections.length > 0) {
-                // Map backend sections to our state
                 const mappedSections = data.sections.map(s => ({
                     id: s.id || `sec-${Math.random()}`,
                     name: s.name,
                     order: s.order,
-                    schema: s.schema || getEmptySchema()
+                    schema: prepareSchema(s.schema)
                 }))
-                // Sort by order
                 mappedSections.sort((a, b) => a.order - b.order)
 
                 setSections(mappedSections)
                 setActiveSectionId(mappedSections[0].id)
             } else if (data.schema) {
-                // Backward compatibility: Single schema form, convert to 1 section
-                const singleSection = { id: `sec-default`, name: 'Main Section', order: 0, schema: data.schema }
+                const validatedSchema = prepareSchema(data.schema)
+                const singleSection = { id: `sec-default`, name: 'Main Section', order: 0, schema: validatedSchema }
                 setSections([singleSection])
                 setActiveSectionId(singleSection.id)
             } else {
-                // Empty
                 const defaultSection = { id: `sec-${Date.now()}`, name: 'Section 1', order: 0, schema: getEmptySchema() }
                 setSections([defaultSection])
                 setActiveSectionId(defaultSection.id)
@@ -1035,15 +1131,21 @@ const CreateFormEditor = () => {
     }
 
     const addSection = () => {
-        // Capture current schema manually to avoid race conditions with state updates
-        const currentSchema = bpmnInstance.current && mode === 'edit' ? bpmnInstance.current.saveSchema() : null
+        let currentSchema = null
+        try {
+            if (bpmnInstance.current && mode === 'edit' && typeof bpmnInstance.current.saveSchema === 'function') {
+                const rawSchema = bpmnInstance.current.saveSchema()
+                currentSchema = prepareSchema(rawSchema)
+            }
+        } catch (e) {
+            console.error('Failed to save current schema when adding section:', e)
+        }
 
         setSections(prevSections => {
-            // Update current section if needed
             const updatedSections = prevSections.map(s =>
                 s.id === activeSectionId && currentSchema
                     ? { ...s, schema: currentSchema }
-                    : s
+                    : { ...s, schema: prepareSchema(s.schema) }
             )
 
             const newSection = {
@@ -1053,9 +1155,6 @@ const CreateFormEditor = () => {
                 schema: getEmptySchema()
             }
 
-            // We can't side-effect set the active ID easily here, 
-            // so we'll do it by effect or just set it after. 
-            // But since this is sync, we can just grab the ID.
             setTimeout(() => setActiveSectionId(newSection.id), 0)
 
             return [...updatedSections, newSection]
@@ -1065,30 +1164,27 @@ const CreateFormEditor = () => {
     const switchSection = async (id) => {
         if (id === activeSectionId) return
 
-        // 1. Capture current state
         let currentSchema = null
         try {
-            currentSchema = bpmnInstance.current && mode === 'edit' ? bpmnInstance.current.saveSchema() : null
+            if (bpmnInstance.current && mode === 'edit' && typeof bpmnInstance.current.saveSchema === 'function') {
+                const rawSchema = bpmnInstance.current.saveSchema()
+                currentSchema = prepareSchema(rawSchema)
+            }
         } catch (e) {
             console.error('Failed to save current schema:', e)
         }
 
-        // 2. Update local state
-        // We need to calculate the NEW sections array to pass to the next render AND to the save function
         const updatedSections = sections.map(s =>
             s.id === activeSectionId && currentSchema
                 ? { ...s, schema: currentSchema }
-                : s
+                : { ...s, schema: prepareSchema(s.schema) }
         )
 
         setSections(updatedSections)
         setActiveSectionId(id)
 
-        // 3. Auto-save as draft
-        // We use the updatedSections we just calculated
-        // Only auto-save if we have a name (or meaningful data) to avoid creating junk
         if (formName) {
-            await saveFormPayload(updatedSections, 'draft', true, id) // Pass target active ID
+            await saveFormPayload(updatedSections, 'draft', true, id)
         }
     }
 
@@ -1169,9 +1265,9 @@ const CreateFormEditor = () => {
             console.error('Error in handleSave:', err);
             message.error('Failed to prepare form data for saving.');
         } finally {
-            if (!silent) setSaving(false)
+            setSaving(false);
         }
-    }
+    };
 
     const handleSectionDataChange = (sectionId, data) => {
         setFormData(prev => ({
@@ -1180,23 +1276,28 @@ const CreateFormEditor = () => {
         }))
     }
 
-    const handleSubmitForm = async () => {
-        // Merge section data
+    const handleSubmitForm = async (isDraft = false) => {
         let mergedData = {}
         Object.values(formData).forEach(sectionData => {
             mergedData = { ...mergedData, ...sectionData }
         })
 
-        // Clean data: Remove masterData keys that might have polluted the form data
         if (masterData) {
             Object.keys(masterData).forEach(key => {
                 delete mergedData[key]
             })
         }
 
+        if (!id) {
+            message.error("Please save the form design first before submitting data.")
+            return
+        }
+
         setLoading(true)
+        const endpoint = isDraft ? `${BASE_URL}/api/forms/${id}/save-draft` : `${BASE_URL}/api/forms/${id}/submit`
+
         try {
-            const response = await fetch(`${BASE_URL}/api/forms/${id}/submit`, {
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1208,18 +1309,21 @@ const CreateFormEditor = () => {
             const resData = await response.json()
 
             if (response.ok) {
-                message.success('Form submitted successfully!')
+                message.success(isDraft ? 'Draft saved successfully!' : 'Form submitted successfully!')
+                if (!isDraft) {
+                    navigate('/form-builder')
+                }
             } else {
                 if (resData.errors) {
-                    const errorMsg = Object.values(resData.errors).flat()[0] || 'Submission invalid'
+                    const errorMsg = Object.values(resData.errors).flat()[0] || (isDraft ? 'Draft save invalid' : 'Submission invalid')
                     message.error(errorMsg)
                 } else {
-                    message.error(resData.message || 'Submission failed')
+                    message.error(resData.message || (isDraft ? 'Draft save failed' : 'Submission failed'))
                 }
             }
         } catch (error) {
             console.error('Submission error:', error)
-            message.error('An error occurred during submission.')
+            message.error(isDraft ? 'An error occurred during draft save.' : 'An error occurred during submission.')
         } finally {
             setLoading(false)
         }
@@ -1297,6 +1401,69 @@ const CreateFormEditor = () => {
 
     return (
         <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#f5f5f5', overflow: 'hidden' }}>
+            {/* Master Key Modal */}
+            <Modal
+                title={editingKey ? "Edit Master Data Key" : "Add Master Data Key"}
+                open={isMasterKeyModalOpen}
+                onCancel={() => {
+                    setIsMasterKeyModalOpen(false)
+                    masterKeyForm.resetFields()
+                    setEditingKey(null)
+                }}
+                onOk={handleSaveMasterKey}
+                okText={editingKey ? "Update Key" : "Add Key"}
+                confirmLoading={creatingMasterKey}
+                width={600}
+            >
+                <AntForm form={masterKeyForm} layout="vertical">
+                    <AntForm.Item
+                        label="Key Name"
+                        name="name"
+                        rules={[{ required: true, message: 'Key name is required' }]}
+                    >
+                        <Input
+                            placeholder="e.g. activityTypes"
+                            disabled={!!editingKey}
+                        />
+                    </AntForm.Item>
+
+                    <AntForm.Item label="Values">
+                        <AntForm.List name="values">
+                            {(fields, { add, remove }) => (
+                                <>
+                                    {fields.map(({ key, name, ...restField }) => (
+                                        <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                                            <AntForm.Item
+                                                {...restField}
+                                                name={[name, 'label']}
+                                                rules={[{ required: true, message: 'Label required' }]}
+                                            >
+                                                <Input placeholder="Label" />
+                                            </AntForm.Item>
+                                            <AntForm.Item
+                                                {...restField}
+                                                name={[name, 'value']}
+                                                rules={[{ required: true, message: 'Value required' }]}
+                                            >
+                                                <Input placeholder="Value" />
+                                            </AntForm.Item>
+                                            <DeleteOutlined
+                                                style={{ color: '#ff4d4f', cursor: 'pointer' }}
+                                                onClick={() => remove(name)}
+                                            />
+                                        </Space>
+                                    ))}
+
+                                    <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                        Add Value
+                                    </Button>
+                                </>
+                            )}
+                        </AntForm.List>
+                    </AntForm.Item>
+                </AntForm>
+            </Modal>
+
             {/* Header */}
             <div className="editor-header">
                 <Space>
@@ -1371,7 +1538,19 @@ const CreateFormEditor = () => {
                                 checked={mode === 'preview'}
                                 onChange={toggleMode}
                                 size="small"
+                                style={{ marginRight: 8 }}
                             />
+                            {mode === 'edit' && (
+                                <Button
+                                    size="small"
+                                    type="text"
+                                    icon={<EyeOutlined style={{ fontSize: '14px', color: '#1890ff' }} />}
+                                    onClick={() => setMode('preview')}
+                                    style={{ padding: '0 4px', height: '22px' }}
+                                >
+                                    Preview
+                                </Button>
+                            )}
                         </div>
                     )}
                     {!isViewMode && <Button type="default" icon={<SaveOutlined />} onClick={() => handleSave('draft')} loading={saving}>Save Draft</Button>}
@@ -1381,8 +1560,7 @@ const CreateFormEditor = () => {
 
             {/* Main Content Area */}
             <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-
-                {/* Left Sidebar: Sections List and Data Sources */}
+                {/* Left Sidebar */}
                 {mode === 'edit' && (
                     <div className="editor-sidebar">
                         <div style={{ padding: '16px', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff' }}>
@@ -1391,56 +1569,111 @@ const CreateFormEditor = () => {
                         </div>
 
                         <div className="sidebar-list-container" style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
-                            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                                <SortableContext items={sections.map(s => s.id)} strategy={verticalListSortingStrategy}>
-                                    {sections.map(section => (
-                                        <div className="sidebar-section-item" key={section.id}>
-                                            <SortableSectionItem
-                                                section={section}
-                                                isActive={activeSectionId === section.id}
-                                                onClick={() => switchSection(section.id)}
-                                                onDelete={deleteSection}
-                                                onNameChange={updateSectionName}
-                                            />
-                                        </div>
-                                    ))}
-                                </SortableContext>
-                            </DndContext>
-                        </div>
-
-                        {/* Available Data Sources Help Panel */}
-                        <div style={{ padding: '16px', borderTop: '1px solid #e8e8e8', background: '#fcfcfc' }}>
-                            <div className="data-source-panel-header">
-                                <Text strong style={{ fontSize: '12px', color: '#595959' }}>Master Data Keys</Text>
-                            </div>
-
-                            <div style={{ maxHeight: '150px', overflowY: 'auto' }} className="sidebar-list-container">
-                                <List
-                                    size="small"
-                                    dataSource={Object.keys(masterData)}
-                                    renderItem={key => (
-                                        <List.Item style={{ padding: '6px 0', fontSize: '11px', borderBottom: '1px solid #f5f5f5' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-                                                <span style={{ fontFamily: 'monospace', color: '#096dd9' }}>{key}</span>
-                                                <Typography.Paragraph
-                                                    copyable={{ text: key, tooltips: ['Copy', 'Copied!'] }}
-                                                    style={{ margin: 0 }}
+                            {sections.length === 0 ? (
+                                <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
+                                    <Text type="secondary">No sections yet. Click &quot;Add&quot; to create one.</Text>
+                                </div>
+                            ) : (
+                                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                                    <SortableContext items={sections.map(s => s.id)} strategy={verticalListSortingStrategy}>
+                                        {sections.map(section => (
+                                            <div className="sidebar-section-item" key={section.id}>
+                                                <SortableSectionItem
+                                                    section={section}
+                                                    isActive={activeSectionId === section.id}
+                                                    onClick={() => switchSection(section.id)}
+                                                    onDelete={deleteSection}
+                                                    onNameChange={updateSectionName}
                                                 />
                                             </div>
-                                        </List.Item>
-                                    )}
-                                />
+                                        ))}
+                                    </SortableContext>
+                                </DndContext>
+                            )}
+                        </div>
+
+                        {/* Master Data Keys Panel */}
+                        <div style={{ padding: 16, borderTop: '1px solid #e8e8e8', background: '#fcfcfc' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                                <Text strong style={{ fontSize: 12, color: '#595959' }}>
+                                    Master Data Keys
+                                </Text>
+                                <Space size="small">
+                                    <Button
+                                        size="small"
+                                        type="text"
+                                        onClick={handleGetAllMasterKeys}
+                                        style={{ fontSize: 11 }}
+                                    >
+                                        Debug
+                                    </Button>
+                                    <Button
+                                        size="small"
+                                        type="text"
+                                        icon={<PlusOutlined />}
+                                        onClick={openAddMasterKeyModal}
+                                    >
+                                        Add
+                                    </Button>
+                                </Space>
                             </div>
-                            <Text type="secondary" style={{ fontSize: '10px', display: 'block', marginTop: '8px', lineHeight: '1.4' }}>
-                                Paste these keys into the <b>&quot;Values Key&quot;</b> property of Select components.
+
+                            <div style={{ maxHeight: 150, overflowY: 'auto' }}>
+                                {Object.keys(masterData).length === 0 ? (
+                                    <Text type="secondary" style={{ fontSize: 11, display: 'block', textAlign: 'center', padding: '8px' }}>
+                                        No master keys yet
+                                    </Text>
+                                ) : (
+                                    <List
+                                        size="small"
+                                        dataSource={Object.keys(masterData)}
+                                        renderItem={key => {
+                                            const isReadOnly = READ_ONLY_MASTER_KEYS.includes(key)
+
+                                            return (
+                                                <List.Item
+                                                    style={{ padding: '6px 0', fontSize: 11 }}
+                                                    actions={
+                                                        isReadOnly
+                                                            ? []
+                                                            : [
+                                                                <EditOutlined
+                                                                    key="edit"
+                                                                    style={{ color: '#1890ff', cursor: 'pointer' }}
+                                                                    onClick={() => openEditMasterKeyModal(key)}
+                                                                />,
+                                                                <DeleteOutlined
+                                                                    key="delete"
+                                                                    style={{ color: '#ff7875', cursor: 'pointer' }}
+                                                                    onClick={() => handleDeleteMasterKey(key)}
+                                                                />
+                                                            ]
+                                                    }
+                                                >
+                                                    <span style={{ fontFamily: 'monospace', color: '#096dd9' }}>
+                                                        {key}
+                                                        {isReadOnly && <Text type="secondary" style={{ fontSize: 10, marginLeft: 4 }}>(system)</Text>}
+                                                    </span>
+                                                    <Typography.Paragraph
+                                                        copyable={{ text: key }}
+                                                        style={{ margin: 0 }}
+                                                    />
+                                                </List.Item>
+                                            )
+                                        }}
+                                    />
+                                )}
+                            </div>
+
+                            <Text type="secondary" style={{ fontSize: 10, marginTop: 8, display: 'block' }}>
+                                Use these keys in Select component → <b>Values Key</b>
                             </Text>
                         </div>
                     </div>
                 )}
 
                 {/* Right Area: Form Editor Canvas / Preview */}
-                <div className="editor-main-canvas-wrapper" style={{ background: mode === 'preview' ? '#f0f2f5' : undefined, overflowY: mode === 'preview' ? 'auto' : 'hidden' }}>
-                    {/* Overlay Loader */}
+                <div className="editor-main-canvas-wrapper" style={{ background: mode === 'preview' ? '#f8f9fa' : undefined, overflowY: mode === 'preview' ? 'auto' : 'hidden' }}>
                     {loading && (
                         <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.8)', zIndex: 20, display: 'flex', justifyContent: 'center', alignItems: 'center', backdropFilter: 'blur(2px)' }}>
                             <Spin size="large" tip="Loading Form..." />
@@ -1500,6 +1733,7 @@ const CreateFormEditor = () => {
                                 )}
                             </div>
 
+                            {/* Form Sections */}
                             {sections.map(section => (
                                 <SectionPreview
                                     key={section.id}
